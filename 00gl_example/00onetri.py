@@ -9,7 +9,8 @@ import sys
 import math
 from PyQt4 import QtCore, QtGui, QtOpenGL
 import OpenGL
-import OpenGL.GL
+from OpenGL import GL
+import numpy
 
 class Window(QtGui.QWidget):
     def __init__(self, parent=None):
@@ -17,53 +18,24 @@ class Window(QtGui.QWidget):
 
         self.glWidget = GLWidget()
 
-#         self.xSlider = self.createSlider(QtCore.SIGNAL("xRotationChanged(int)"),
-#                                          self.glWidget.setXRotation)
-#         self.ySlider = self.createSlider(QtCore.SIGNAL("yRotationChanged(int)"),
-#                                          self.glWidget.setYRotation)
-#         self.zSlider = self.createSlider(QtCore.SIGNAL("zRotationChanged(int)"),
-#                                          self.glWidget.setZRotation)
-
         mainLayout = QtGui.QHBoxLayout()
         mainLayout.addWidget(self.glWidget)
-#         mainLayout.addWidget(self.xSlider)
-#         mainLayout.addWidget(self.ySlider)
-#         mainLayout.addWidget(self.zSlider)
         self.setLayout(mainLayout)
-
-#         self.xSlider.setValue(15 * 16)
-#         self.ySlider.setValue(345 * 16)
-#         self.zSlider.setValue(0 * 16)
-
-        self.setWindowTitle(self.tr("Hello GL"))
-
-#     def createSlider(self, changedSignal, setterSlot):
-#         slider = QtGui.QSlider(QtCore.Qt.Vertical)
-
-#         slider.setRange(0, 360 * 16)
-#         slider.setSingleStep(16)
-#         slider.setPageStep(15 * 16)
-#         slider.setTickInterval(15 * 16)
-#         slider.setTickPosition(QtGui.QSlider.TicksRight)
-
-#         self.glWidget.connect(slider, QtCore.SIGNAL("valueChanged(int)"), setterSlot)
-#         self.connect(self.glWidget, changedSignal, slider, QtCore.SLOT("setValue(int)"))
-
-#         return slider
+        self.setWindowTitle(self.tr("One Triangle GL"))
 
 
 class GLWidget(QtOpenGL.QGLWidget):
     def __init__(self, parent=None):
         QtOpenGL.QGLWidget.__init__(self, parent)
 
-        self.object = 0
+        # DELETEME self.object = 0
         self.xRot = 0
         self.yRot = 0
         self.zRot = 0
 
         self.lastPos = QtCore.QPoint()
 
-        self.trolltechGreen = QtGui.QColor.fromCmykF(0.40, 0.0, 1.0, 0.0)
+        self.trolltechGreen  = QtGui.QColor.fromCmykF(0.40, 0.0, 1.0, 0.0)
         self.trolltechPurple = QtGui.QColor.fromCmykF(0.39, 0.39, 0.0, 0.0)
 
     def xRotation(self):
@@ -85,26 +57,26 @@ class GLWidget(QtOpenGL.QGLWidget):
         angle = self.normalizeAngle(angle)
         if angle != self.xRot:
             self.xRot = angle
-            self.emit(QtCore.SIGNAL("xRotationChanged(int)"), angle)
+            # self.emit(QtCore.SIGNAL("xRotationChanged(int)"), angle)
             self.updateGL()
 
     def setYRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.yRot:
             self.yRot = angle
-            self.emit(QtCore.SIGNAL("yRotationChanged(int)"), angle)
+            # self.emit(QtCore.SIGNAL("yRotationChanged(int)"), angle)
             self.updateGL()
 
     def setZRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.zRot:
             self.zRot = angle
-            self.emit(QtCore.SIGNAL("zRotationChanged(int)"), angle)
+            # self.emit(QtCore.SIGNAL("zRotationChanged(int)"), angle)
             self.updateGL()
 
     def initializeGL(self):
         self.qglClearColor(self.trolltechPurple.dark())
-        self.object = self.makeObject()
+        # self.object = self.makeObject()
         GL.glShadeModel(GL.GL_FLAT)
         GL.glEnable(GL.GL_DEPTH_TEST)
         GL.glEnable(GL.GL_CULL_FACE)
@@ -116,15 +88,15 @@ class GLWidget(QtOpenGL.QGLWidget):
         GL.glRotated(self.xRot / 16.0, 1.0, 0.0, 0.0)
         GL.glRotated(self.yRot / 16.0, 0.0, 1.0, 0.0)
         GL.glRotated(self.zRot / 16.0, 0.0, 0.0, 1.0)
-        GL.glCallList(self.object)
+        self.draw_scene()
 
     def resizeGL(self, width, height):
         side = min(width, height)
         GL.glViewport((width - side) / 2, (height - side) / 2, side, side)
-
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
-        GL.glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0)
+        # GL.glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0)
+        GL.glOrtho(-4, 4, -4, 4, -4, 16)  # I needed large far, but why?
         GL.glMatrixMode(GL.GL_MODELVIEW)
 
     def mousePressEvent(self, event):
@@ -143,78 +115,25 @@ class GLWidget(QtOpenGL.QGLWidget):
 
         self.lastPos = QtCore.QPoint(event.pos())
 
-    def makeObject(self):
-        genList = GL.glGenLists(1)
-        GL.glNewList(genList, GL.GL_COMPILE)
 
-        GL.glBegin(GL.GL_QUADS)
+    # draw a triangle
+    def draw_triangle(self, p1, p2, p3):
+        self.qglColor(self.trolltechGreen.dark(250))
+        GL.glVertex3d(p1[0], p1[1], p1[2])
+        GL.glVertex3d(p2[0], p2[1], p2[2])
+        GL.glVertex3d(p3[0], p3[1], p3[2])
 
-        x1 = +0.06
-        y1 = -0.14
-        x2 = +0.14
-        y2 = -0.06
-        x3 = +0.08
-        y3 = +0.00
-        x4 = +0.30
-        y4 = +0.22
 
-        self.quad(x1, y1, x2, y2, y2, x2, y1, x1)
-        self.quad(x3, y3, x4, y4, y4, x4, y3, x3)
+    # draw the whole scene
+    def draw_scene(self):
+        p1 = numpy.array([-1, 0, 0])
+        p2 = numpy.array([ 1, 0, 0])
+        p3 = numpy.array([ 0, 2 * math.sqrt(3), 0])
 
-        self.extrude(x1, y1, x2, y2)
-        self.extrude(x2, y2, y2, x2)
-        self.extrude(y2, x2, y1, x1)
-        self.extrude(y1, x1, x1, y1)
-        self.extrude(x3, y3, x4, y4)
-        self.extrude(x4, y4, y4, x4)
-        self.extrude(y4, x4, y3, x3)
-
-        Pi = 3.14159265358979323846
-        NumSectors = 200
-
-        for i in range(NumSectors):
-            angle1 = (i * 2 * Pi) / NumSectors
-            x5 = 0.30 * math.sin(angle1)
-            y5 = 0.30 * math.cos(angle1)
-            x6 = 0.20 * math.sin(angle1)
-            y6 = 0.20 * math.cos(angle1)
-
-            angle2 = ((i + 1) * 2 * Pi) / NumSectors
-            x7 = 0.20 * math.sin(angle2)
-            y7 = 0.20 * math.cos(angle2)
-            x8 = 0.30 * math.sin(angle2)
-            y8 = 0.30 * math.cos(angle2)
-
-            self.quad(x5, y5, x6, y6, x7, y7, x8, y8)
-
-            self.extrude(x6, y6, x7, y7)
-            self.extrude(x8, y8, x5, y5)
-
+        GL.glBegin(GL.GL_TRIANGLES)
+        self.draw_triangle(p1, p2, p3)
         GL.glEnd()
-        GL.glEndList()
 
-        return genList
-
-    def quad(self, x1, y1, x2, y2, x3, y3, x4, y4):
-        self.qglColor(self.trolltechGreen)
-
-        GL.glVertex3d(x1, y1, -0.05)
-        GL.glVertex3d(x2, y2, -0.05)
-        GL.glVertex3d(x3, y3, -0.05)
-        GL.glVertex3d(x4, y4, -0.05)
-
-        GL.glVertex3d(x4, y4, +0.05)
-        GL.glVertex3d(x3, y3, +0.05)
-        GL.glVertex3d(x2, y2, +0.05)
-        GL.glVertex3d(x1, y1, +0.05)
-
-    def extrude(self, x1, y1, x2, y2):
-        self.qglColor(self.trolltechGreen.dark(250 + int(100 * x1)))
-
-        GL.glVertex3d(x1, y1, +0.05)
-        GL.glVertex3d(x2, y2, +0.05)
-        GL.glVertex3d(x2, y2, -0.05)
-        GL.glVertex3d(x1, y1, -0.05)
 
     def normalizeAngle(self, angle):
         while angle < 0:
