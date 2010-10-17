@@ -8,3 +8,7 @@ ExaminerWindow
         Menu Render -- Render GL
                     -- Render IFGI
 
+
+
+Tools:
+        diffuse (diff against to repository)
