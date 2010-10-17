@@ -1,0 +1,10 @@
+Examiner
+        Camera
+        GLCamera
+        IFGICamera
+
+ExaminerWindow
+        Menu File   -- Open
+        Menu Render -- Render GL
+                    -- Render IFGI
+

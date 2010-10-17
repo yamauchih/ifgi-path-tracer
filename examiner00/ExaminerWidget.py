@@ -1,40 +1,40 @@
 #!/usr/bin/env python
 #
-# one triangle example
+# Examiner version 0.0.0
+#
+# \author Yamauchi, Hitoshi
 #
 
-"""IFGI one triangle"""
+"""IFGI Examiner Version 0.0.0"""
 
 import sys
 import math
-from PyQt4 import QtCore, QtGui, QtOpenGL
 import OpenGL
-from OpenGL import GL
 import numpy
 
-class Window(QtGui.QWidget):
-    def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+from PyQt4  import QtCore, QtGui, QtOpenGL
+from OpenGL import GL
+from OpenGL import GLU
 
-        self.glWidget = GLWidget()
+import camera
 
-        mainLayout = QtGui.QHBoxLayout()
-        mainLayout.addWidget(self.glWidget)
-        self.setLayout(mainLayout)
-        self.setWindowTitle(self.tr("One Triangle GL"))
-
-
-class GLWidget(QtOpenGL.QGLWidget):
+#
+# Scene examiner
+#
+class ExaminerWidget(QtOpenGL.QGLWidget):
     def __init__(self, parent=None):
         QtOpenGL.QGLWidget.__init__(self, parent)
+
+        # cameras
+        self.gl_camera   = camera.GLCamera()
+        # self.ifgi_camera = camera.IFGICamera()
+
+        # FIXME remove below...
         self.xRot = 0
         self.yRot = 0
         self.zRot = 0
-
         self.lastPos = QtCore.QPoint()
 
-        self.trolltechGreen  = QtGui.QColor.fromCmykF(0.40, 0.0, 1.0, 0.0)
-        self.trolltechPurple = QtGui.QColor.fromCmykF(0.39, 0.39, 0.0, 0.0)
 
     def xRotation(self):
         return self.xRot
@@ -72,29 +72,47 @@ class GLWidget(QtOpenGL.QGLWidget):
             # self.emit(QtCore.SIGNAL("zRotationChanged(int)"), angle)
             self.updateGL()
 
+    # initialize open GL
     def initializeGL(self):
-        self.qglClearColor(self.trolltechPurple.dark())
-        # self.object = self.makeObject()
+        bgblack = QtGui.QColor(0, 0, 0, 255)
+        self.qglClearColor(bgblack)
         GL.glShadeModel(GL.GL_FLAT)
         GL.glEnable(GL.GL_DEPTH_TEST)
         GL.glEnable(GL.GL_CULL_FACE)
 
+    # paint
     def paintGL(self):
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+
         GL.glLoadIdentity()
-        GL.glTranslated(0.0, 0.0, 0.0) # translate
+
+        ep = self.gl_camera.eye_pos  # eye pos
+        vd = self.gl_camera.view_dir # lookat point
+        up = self.gl_camera.up_dir   # up vector
+        GLU.gluLookAt(ep[0], ep[1], ep[2],
+                      vd[0], vd[1], vd[2],
+                      up[0], up[1], up[2])
+
         GL.glRotated(self.xRot / 16.0, 1.0, 0.0, 0.0)
         GL.glRotated(self.yRot / 16.0, 0.0, 1.0, 0.0)
         GL.glRotated(self.zRot / 16.0, 0.0, 0.0, 1.0)
         self.draw_scene()
 
+    # resize
     def resizeGL(self, width, height):
         side = min(width, height)
+
         GL.glViewport((width - side) / 2, (height - side) / 2, side, side)
+
+        # perspective is for projection matrix
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
-        # GL.glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0)
-        GL.glOrtho(-4, 4, -4, 4,  4, -4)  # I needed large far, but why?
+
+        # DEBUG: self.gl_camera.print_obj()
+        GLU.gluPerspective(self.gl_camera.get_fov() * 180 /math.pi,
+                           self.gl_camera.get_aspect_ratio(),
+                           self.gl_camera.get_z_near(),
+                           self.gl_camera.get_z_far())
         GL.glMatrixMode(GL.GL_MODELVIEW)
 
     def mousePressEvent(self, event):
@@ -116,7 +134,8 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     # draw a triangle
     def draw_triangle(self, p1, p2, p3):
-        self.qglColor(self.trolltechGreen.dark(250))
+        red = QtGui.QColor(255, 0, 0, 255)
+        self.qglColor(red)
         GL.glVertex3d(p1[0], p1[1], p1[2])
         GL.glVertex3d(p2[0], p2[1], p2[2])
         GL.glVertex3d(p3[0], p3[1], p3[2])
@@ -141,10 +160,24 @@ class GLWidget(QtOpenGL.QGLWidget):
         return angle
 
 #
-# main
+# MainWindow for Test
+#
+class TestExaminerWindow(QtGui.QWidget):
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+
+        self.examinerWidget = ExaminerWidget()
+
+        mainLayout = QtGui.QHBoxLayout()
+        mainLayout.addWidget(self.examinerWidget)
+        self.setLayout(mainLayout)
+        self.setWindowTitle(self.tr("TestExaminerWindow"))
+
+#
+# main test
 #
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    window = Window()
+    window = TestExaminerWindow()
     window.show()
     sys.exit(app.exec_())

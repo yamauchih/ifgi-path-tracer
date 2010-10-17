@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 #
-# one triangle example
+# one triangle example: perspective projection
 #
 
-"""IFGI one triangle"""
+"""IFGI one triangle perspective"""
 
 import sys
 import math
 from PyQt4 import QtCore, QtGui, QtOpenGL
 import OpenGL
 from OpenGL import GL
+from OpenGL import GLU
 import numpy
 
 class Window(QtGui.QWidget):
@@ -21,12 +22,13 @@ class Window(QtGui.QWidget):
         mainLayout = QtGui.QHBoxLayout()
         mainLayout.addWidget(self.glWidget)
         self.setLayout(mainLayout)
-        self.setWindowTitle(self.tr("One Triangle GL"))
+        self.setWindowTitle(self.tr("One Triangle GL: perspective"))
 
 
 class GLWidget(QtOpenGL.QGLWidget):
     def __init__(self, parent=None):
         QtOpenGL.QGLWidget.__init__(self, parent)
+
         self.xRot = 0
         self.yRot = 0
         self.zRot = 0
@@ -74,15 +76,18 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def initializeGL(self):
         self.qglClearColor(self.trolltechPurple.dark())
-        # self.object = self.makeObject()
         GL.glShadeModel(GL.GL_FLAT)
         GL.glEnable(GL.GL_DEPTH_TEST)
         GL.glEnable(GL.GL_CULL_FACE)
 
     def paintGL(self):
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+
         GL.glLoadIdentity()
-        GL.glTranslated(0.0, 0.0, 0.0) # translate
+        GLU.gluLookAt(0, 0,    5,    # eye pos
+                      0, 1.7,  0,    # lookat point y = (2 sqrt(3))/2, center of tri
+                      0, 1,    0)    # up
+
         GL.glRotated(self.xRot / 16.0, 1.0, 0.0, 0.0)
         GL.glRotated(self.yRot / 16.0, 0.0, 1.0, 0.0)
         GL.glRotated(self.zRot / 16.0, 0.0, 0.0, 1.0)
@@ -91,10 +96,17 @@ class GLWidget(QtOpenGL.QGLWidget):
     def resizeGL(self, width, height):
         side = min(width, height)
         GL.glViewport((width - side) / 2, (height - side) / 2, side, side)
+
+        # perspective is for projection matrix
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
-        # GL.glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0)
-        GL.glOrtho(-4, 4, -4, 4,  4, -4)  # I needed large far, but why?
+        # GL.glFrustum(-1.0, 1.0, -1.0, 1.0, 1, 20.0)
+        GLU.gluPerspective(45.0, # fov 45 degree
+                           1.0,  # aspect ratio
+                           0.1,  # z-near
+                           1000  # z-far
+                           )
+
         GL.glMatrixMode(GL.GL_MODELVIEW)
 
     def mousePressEvent(self, event):
