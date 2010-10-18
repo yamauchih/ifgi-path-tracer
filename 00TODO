@@ -8,6 +8,17 @@ ExaminerWindow
         Menu Render -- Render GL
                     -- Render IFGI
 
+Scene
+        Primitive
+        一つしか object を持てない
+
+ObjLoader
+        Scene に object を入れる
+
+
+OGLNode
+        Scene の要素を参照して draw する (update は v0 では考えない)
+
 
 
 Tools:
