@@ -55,32 +55,31 @@ class BBox(Primitive):
         assert 0, "NIN."
         return None
 
-
 #
 # Triangle
 #
-class Triangle(Primitive):
-    # default constructor
-    def __init__(self):
-        self.vertex = [
-            numpy.array([1, 0, 0])
-            numpy.array([0, 1, 0])
-            numpy.array([0, 0  1])
-            ]
-        self.bbox = BBox()
+# class Triangle(Primitive):
+#     # default constructor
+#     def __init__(self):
+#         self.vertex = [
+#             numpy.array([1, 0, 0])
+#             numpy.array([0, 1, 0])
+#             numpy.array([0, 0  1])
+#             ]
+#         self.bbox = BBox()
 
-    # class name
-    def get_classname(self):
-        return 'Triangle'
+#     # class name
+#     def get_classname(self):
+#         return 'Triangle'
 
-    # get the bounding box
-    def get_bbox(self):
-        return self.bbox
+#     # get the bounding box
+#     def get_bbox(self):
+#         return self.bbox
 
-    # compute ray intersection
-    def ray_intersect(self, _ray):
-        assert 0, "NIN."
-        return None
+#     # compute ray intersection
+#     def ray_intersect(self, _ray):
+#         assert 0, "NIN."
+#         return None
 
 
 #

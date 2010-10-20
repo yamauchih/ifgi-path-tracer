@@ -16,7 +16,7 @@ from PyQt4  import QtCore, QtGui, QtOpenGL
 from OpenGL import GL
 from OpenGL import GLU
 
-import camera
+import Camera
 
 #
 # Scene examiner
@@ -26,8 +26,8 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         QtOpenGL.QGLWidget.__init__(self, parent)
 
         # cameras
-        self.gl_camera   = camera.GLCamera()
-        # self.ifgi_camera = camera.IFGICamera()
+        self.gl_camera   = Camera.GLCamera()
+        # self.ifgi_camera = Camera.IFGICamera()
 
         # FIXME remove below...
         self.xRot = 0
