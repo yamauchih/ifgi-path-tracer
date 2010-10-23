@@ -111,23 +111,23 @@ class ObjReader(object):
         elif (objcom == 'vt'):
             print 'NIN: vt'
         elif (objcom == 'f'):
-            dat = sline[1:]
+            dat       = sline[1:]
             firstitem = dat[0].split('/')
-            nitem = len(firstitem)
-
-            procdict = self.get_process_dict(firstitem)
+            nitem       = len(firstitem)
+            procdict    = self.get_process_dict(firstitem)
             splitteddat = map((lambda x: x.split('/')), dat)
-            if (procdict('face_idx') == True):
+
+            if (procdict['face_idx'] == True):
                 # vertex index exists
-                self.face_idx_list.append((lambda x: int(x[0])), splitteddat)
+                self.face_idx_list.append(map((lambda x: int(x[0])), splitteddat))
 
-            if (procdict('texcoord_idx') == True):
+            if (procdict['texcoord_idx'] == True):
                 # texture coodinate index exists
-                self.texcoord_idx_list. append((lambda x: int(x[1])), splitteddat)
+                self.texcoord_idx_list. append(map((lambda x: int(x[1])), splitteddat))
 
-            if (procdict('normal_idx') == True):
+            if (procdict['normal_idx'] == True):
                 # normal index exists
-                self.normal_idx_list.   append((lambda x: int(x[2])), splitteddat)
+                self.normal_idx_list.   append(map((lambda x: int(x[2])), splitteddat))
         else:
             print 'Warning! unsupported entity [' + objcom + '] at line ' +\
                 str(self.curline)
@@ -158,13 +158,10 @@ class ObjReader(object):
             print i
 
         print '--- texcoord idx'
-        for i in self.normal_idx_list:
-            print 'normal ',
+        for i in self.tex_idx_list:
+            print 'tex_idx ',
             print i
 
-
-        self.tex_idx_list    = []
-        self.normal_idx_list = []
 
 
     # read file
