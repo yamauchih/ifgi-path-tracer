@@ -9,6 +9,7 @@
 
 """IFGI Examiner Window"""
 
+import os
 import sys
 import math
 import OpenGL
@@ -56,7 +57,22 @@ class ExaminerWindow(QtGui.QMainWindow):
         self.statusBar().showMessage('NIN: File--New invoked')
 
     def menu_file_open(self):
-        self.statusBar().showMessage('NIN: File--Open invoked')
+        options = QtGui.QFileDialog.Options()
+        # if not self.native.isChecked(): 
+        options |= QtGui.QFileDialog.DontUseNativeDialog
+        fileName = QtGui.QFileDialog.getOpenFileName(self, 
+                                                     "Open a scene file",
+                                                     '', # use last selected item
+                                                     '', # 
+                                                     "All Files (*);;obj Files (*.obj)", 
+                                                     options)
+        if fileName:
+            print 'fileName = ' + fileName
+        else:
+            print 'canceled'
+
+        self.statusBar().showMessage('WIP: File--Open invoked')
+
 
     def menu_process_ifgi_ptrace(self):
         self.statusBar().showMessage('NIN: Process--IFGI ptrace invoked')

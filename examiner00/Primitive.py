@@ -88,8 +88,35 @@ class BBox(Primitive):
 class TriMesh(Primitive):
     # default constructor
     def __init__(self):
-        self.triangle = []
-        self.bbox = BBox()
+        self.vertex_list       = []
+        self.face_idx_list     = []
+        self.texcoord_list     = []
+        self.texcoord_idx_list = []
+        self.normal_list       = []
+        self.normal_idx_list   = []
+        self.bbox              = BBox()
+
+    # set data
+    #
+    # \param[in]  _vlist     vertex list (len(_vlist) must be > 0)
+    # \param[in]  _fidxlist  face index list
+    # \param[in]  _tclist    texture coordinate list
+    # \param[in]  _tcidxlist texture coordinate index list
+    # \param[in]  _nlist     normal list
+    # \param[in]  _nidxlist  normal index list
+    def set_data(self, _vlist, _fidxlist, _tclist, _tcidxlist, _nlist, _nidxlist):
+        assert(len(_vlist) > 0) # at least, some points must be there.
+        self.vertex_list       = _vlist
+        self.face_idx_list     = _fidxlist
+        self.texcoord_list     = _tclist
+        self.texcoord_idx_list = _tcidxlist
+        self.normal_list       = _nlist
+        self.normal_idx_list   = _nidxlist
+        self.update_bbox()
+
+    # update bounding box according to current vertex list
+    def update_bbox(self):
+        print 'update_bbox NIN'
 
     # class name
     def get_classname(self):

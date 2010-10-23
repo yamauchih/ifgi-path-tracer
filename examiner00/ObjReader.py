@@ -178,6 +178,7 @@ class ObjReader(object):
         except StandardError, extrainfo:
             print 'fail to read [' + _objfname + ']', extrainfo
 
+
 #
 # main test ... test_ObjReader
 #
