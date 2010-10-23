@@ -34,13 +34,13 @@ import exceptions
 class ObjReader(object):
     # default constructor
     def __init__(self):
-        self.curline         = 0
-        self.vertex_list     = []
-        self.texcoord_list   = []
-        self.normal_list     = []
-        self.face_idx_list   = []
-        self.tex_idx_list    = []
-        self.normal_idx_list = []
+        self.curline           = 0
+        self.vertex_list       = []
+        self.face_idx_list     = []
+        self.texcoord_list     = []
+        self.texcoord_idx_list = []
+        self.normal_list       = []
+        self.normal_idx_list   = []
 
 
     # check the file is obj file of not
@@ -60,6 +60,27 @@ class ObjReader(object):
                 raise StandardError, ("line does not start with 'v '")
 
             # maybe this is obj file
+
+    # get the process list
+    #
+    # example
+    #   {'face_idx': True, 'texcoord_idx': False, 'normal_idx': True }
+    #
+    def get_process_dict(self, _firstitem_list):
+        nitem = len(_firstitem_list)
+        assert(nitem > 0)
+
+        process_list = [False, False, False]
+        i = 0
+        while i < nitem:
+            if (_firstitem_list[i] != ''):
+                process_list[i] = True
+            i = i + 1
+
+        process_dict = {'face_idx':     process_list[0],
+                        'texcoord_idx': process_list[1],
+                        'normal_idx':   process_list[2] }
+        return process_dict
 
     # parse line
     #
@@ -83,38 +104,67 @@ class ObjReader(object):
                                       str(self.curline))
             vpos = numpy.array([float(sline[1]), float(sline[2]), float(sline[3])])
             self.vertex_list.append(vpos)
-            print 'DEBUG: vertex:',
-            print vpos
-
-        # HEREHERE 2010-10-20(Wed)
-        # print _line
-
+            # print 'DEBUG: vertex:',
+            # print vpos
         elif (objcom == 'vn'):
             print 'NIN: vn'
         elif (objcom == 'vt'):
             print 'NIN: vt'
-
         elif (objcom == 'f'):
-            dat = spline[1:]
-            for items in dat:
-                item = items.split('/')
-                nitem = len(item)
-                if (nitem == 1):
-                    # vertex only
-                    pass
-                elif(nitem == 2):
-                    # vertex/texcoord
-                    pass
-                elif(nitem == 3):
-                    # vertex/texcoord/normal
-                    pass
-                else:
-                    raise StandardError, ('Error: illigal f line at line ' +
-                                          str(self.curline))
+            dat = sline[1:]
+            firstitem = dat[0].split('/')
+            nitem = len(firstitem)
+
+            procdict = self.get_process_dict(firstitem)
+            splitteddat = map((lambda x: x.split('/')), dat)
+            if (procdict('face_idx') == True):
+                # vertex index exists
+                self.face_idx_list.append((lambda x: int(x[0])), splitteddat)
+
+            if (procdict('texcoord_idx') == True):
+                # texture coodinate index exists
+                self.texcoord_idx_list. append((lambda x: int(x[1])), splitteddat)
+
+            if (procdict('normal_idx') == True):
+                # normal index exists
+                self.normal_idx_list.   append((lambda x: int(x[2])), splitteddat)
         else:
             print 'Warning! unsupported entity [' + objcom + '] at line ' +\
-                sssstr(self.curline)
+                str(self.curline)
 
+
+    # dump the internal data
+    def dump(self):
+        # self.curline         = 0
+
+        print '--- Vertex coord'
+        for i in self.vertex_list:
+            print 'v ',
+            print i
+
+        print '--- Face'
+        for i in self.face_idx_list:
+            print 'f ',
+            print i
+
+        print '--- Texcoord'
+        for i in self.texcoord_list:
+            print 'texcoord ',
+            print i
+
+        print '--- Normal idx'
+        for i in self.normal_idx_list:
+            print 'normal ',
+            print i
+
+        print '--- texcoord idx'
+        for i in self.normal_idx_list:
+            print 'normal ',
+            print i
+
+
+        self.tex_idx_list    = []
+        self.normal_idx_list = []
 
 
     # read file
@@ -132,8 +182,9 @@ class ObjReader(object):
             print 'fail to read [' + _objfname + ']', extrainfo
 
 #
-# main test
+# main test ... test_ObjReader
 #
-if __name__ == '__main__':
-    objreader = ObjReader()
-    objreader.read('../sampledata/one_tri.obj')
+# if __name__ == '__main__':
+#     objreader = ObjReader()
+#     objreader.read('../sampledata/one_tri.obj')
+#
