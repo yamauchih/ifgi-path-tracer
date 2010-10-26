@@ -1,10 +1,14 @@
-Examiner
-        Camera
-        GLCamera
-        IFGICamera
-
 ExaminerWindow
         Menu File   -- Open
+
+             Add SceneGraph   test
+             Add GLSceneGraph
+             Add GLSceneGraph test
+             render the obj file
+
+        Implement trackball rotaetion
+
+
         Menu Render -- Render GL
                     -- Render IFGI
 
@@ -16,7 +20,7 @@ ObjLoader
         Scene に object を入れる
 
 
-OGLNode
+GLNode
         Scene の要素を参照して draw する (update は v0 では考えない)
 
 

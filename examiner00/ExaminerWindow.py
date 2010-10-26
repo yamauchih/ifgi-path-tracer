@@ -20,6 +20,7 @@ from OpenGL import GL
 from OpenGL import GLU
 
 import ExaminerWidget
+import SceneGraph
 
 class ExaminerWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -58,20 +59,29 @@ class ExaminerWindow(QtGui.QMainWindow):
 
     def menu_file_open(self):
         options = QtGui.QFileDialog.Options()
-        # if not self.native.isChecked(): 
+        # if not self.native.isChecked():
         options |= QtGui.QFileDialog.DontUseNativeDialog
-        fileName = QtGui.QFileDialog.getOpenFileName(self, 
+        fileName = QtGui.QFileDialog.getOpenFileName(self,
                                                      "Open a scene file",
                                                      '', # use last selected item
-                                                     '', # 
-                                                     "All Files (*);;obj Files (*.obj)", 
+                                                     '', #
+                                                     "All Files (*);;obj Files (*.obj)",
                                                      options)
         if fileName:
             print 'fileName = ' + fileName
         else:
             print 'canceled'
+            self.statusBar().showMessage('File--Open: cancelled')
+            return
 
-        self.statusBar().showMessage('WIP: File--Open invoked')
+        # got the filename, create a generic scene graph
+        sg = SceneGraph.create_one_trimeh_scenegraph(fileName)
+
+        # attach the GL scene graph
+        # NIN FIXME
+
+
+        self.statusBar().showMessage('File--Open [' + fileName + ']')
 
 
     def menu_process_ifgi_ptrace(self):

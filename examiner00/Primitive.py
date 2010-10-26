@@ -126,6 +126,12 @@ class TriMesh(Primitive):
     def get_bbox(self):
         return self.bbox
 
+    # is valid object? At least len(vertex_list) > 0
+    def is_valid(self):
+        if len(self.vertex_list) > 0:
+            return True
+        return False
+
     # compute ray intersection
     def ray_intersect(self, _ray):
         assert 0, "NIN."
