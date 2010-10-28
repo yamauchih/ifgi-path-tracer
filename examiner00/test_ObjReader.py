@@ -42,7 +42,7 @@ class TestObjReader(unittest.TestCase):
     def test_objreader_sample0(self):
         objreader = ObjReader.ObjReader()
         objreader.read('../sampledata/one_tri.obj')
-        objreader.dump()
+        # objreader.dump()
 
         self.assertEquals(len(objreader.vertex_list), 3)   # nvertices
         self.assertEquals(len(objreader.face_idx_list), 1) # nface
@@ -50,10 +50,11 @@ class TestObjReader(unittest.TestCase):
     def test_objreader_sample2(self):
         objreader = ObjReader.ObjReader()
         objreader.read('../sampledata/cylinder.obj')
-        objreader.dump()
+        # objreader.dump()
 
-        self.assertEquals(len(objreader.vertex_list),  142)   # nvertices
-        self.assertEquals(len(objreader.face_idx_list), 1) # nface
+        self.assertEquals(len(objreader.vertex_list),   142) # nvertices
+        self.assertEquals(len(objreader.face_idx_list), 280) # nface
+
 
 
 

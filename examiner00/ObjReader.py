@@ -107,9 +107,25 @@ class ObjReader(object):
             # print 'DEBUG: vertex:',
             # print vpos
         elif (objcom == 'vn'):
-            print 'NIN: vn'
+            if (len(sline) != 4):
+                raise StandardError, ('Error: illigal vn line at line ' +
+                                      str(self.curline))
+
+            vn = numpy.array([float(sline[1]), float(sline[2]), float(sline[3])])
+            self.normal_list.append(vn)
+
+
         elif (objcom == 'vt'):
-            print 'NIN: vt'
+            if (len(sline) == 3):
+                tc = numpy.array([float(sline[1]), float(sline[2])])
+                self.texcoord_list.append(tc)
+            elif (len(sline) == 4):
+                tc = numpy.array([float(sline[1]), float(sline[2]), float(sline[3])])
+                self.texcoord_list.append(tc)
+            else:
+                raise StandardError, ('Error: illigal vt line at line ' +
+                                      str(self.curline))
+
         elif (objcom == 'f'):
             dat       = sline[1:]
             firstitem = dat[0].split('/')
@@ -158,7 +174,7 @@ class ObjReader(object):
             print i
 
         print '--- texcoord idx'
-        for i in self.tex_idx_list:
+        for i in self.texcoord_idx_list:
             print 'tex_idx ',
             print i
 
