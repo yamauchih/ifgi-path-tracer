@@ -25,9 +25,35 @@ class SceneGraph(object):
         self.camera       = Camera.IFGICamera()
         self.root_node    = None
 
+
+    # for debug
+    #  print out scenegraph nodes
+    def print_sgnode_sub(self, _cur_node, _level):
+        _cur_node.print_nodeinfo(_level)
+        if _cur_node.primitive == None:
+            # children container
+            for chnode in _cur_node.children:
+                chnode.print_nodeinfo(_level)
+                self.print_sgnode_sub(chnode, _level + 1)
+
+
+    # for debug
+    #  print out scenegraph nodes
+    def print_sgnode(self, _cur_node):
+        level = 0
+        self.print_sgnode_sub(_cur_node, level)
+
+
     # for debug
     def print_obj(self):
-        pass
+        print '# SceneGraph'
+        print '# SceneGraph::camera'
+        self.camera.print_obj()
+        if self.root_node == None:
+            print 'no root_node'
+            return
+        self.print_sgnode(self.root_node)
+
 
 
 #
@@ -60,12 +86,25 @@ class SceneGraphNode(object):
         self.children.append(_child)
 
     # for debug
-    def print_obj(self):
-        pass
+    #     def print_obj(self):
+    #         pass
 
+    # for debug
+    #
+    # \param[in] _depth node depth
+    def print_nodeinfo(self, _level):
+        indent = '  ' * _level
+        if self.primitive != None:
+            print indent + '# SceneGraphNode:Primitive'
+        else:
+            print indent + '# # children = ' + str(len(self.children))
 
 
 # temporal: create trimesh scenegraph from obj filename for test
+#
+# SceneGraph +--+ ifgi camera
+#            +--+ SceneGraphNode: root_node
+#                                           +--+ TriMesh: primitive
 #
 # TODO: create a scenegraph more general
 def create_one_trimeh_scenegraph(_objfname):

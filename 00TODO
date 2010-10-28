@@ -22,8 +22,8 @@ ObjLoader
 
 GLNode
         Scene の要素を参照して draw する (update は v0 では考えない)
-
-
+        HEREHERE Traverse して SceneGraph の copy tree を作成する．
+        
 
 Tools:
         diffuse (diff against to repository)

@@ -21,6 +21,7 @@ from OpenGL import GLU
 
 import ExaminerWidget
 import SceneGraph
+import GLSceneGraph
 
 class ExaminerWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -76,9 +77,13 @@ class ExaminerWindow(QtGui.QMainWindow):
 
         # got the filename, create a generic scene graph
         sg = SceneGraph.create_one_trimeh_scenegraph(fileName)
+        sg.print_obj()          # for debug
+
 
         # attach the GL scene graph
-        # NIN FIXME
+        glsg = GLSceneGraph.GLSceneGraph()
+        glsg.set_scenegraph(sg)
+
 
 
         self.statusBar().showMessage('File--Open [' + fileName + ']')

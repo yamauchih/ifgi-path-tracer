@@ -132,24 +132,10 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         self.lastPos = QtCore.QPoint(event.pos())
 
 
-    # draw a triangle
-    def draw_triangle(self, p1, p2, p3):
-        red = QtGui.QColor(255, 0, 0, 255)
-        self.qglColor(red)
-        GL.glVertex3d(p1[0], p1[1], p1[2])
-        GL.glVertex3d(p2[0], p2[1], p2[2])
-        GL.glVertex3d(p3[0], p3[1], p3[2])
-
-
     # draw the whole scene
     def draw_scene(self):
-        p1 = numpy.array([-1, 0, 0])
-        p2 = numpy.array([ 1, 0, 0])
-        p3 = numpy.array([ 0, 2 * math.sqrt(3), 0])
-
-        GL.glBegin(GL.GL_TRIANGLES)
-        self.draw_triangle(p1, p2, p3)
-        GL.glEnd()
+        # self.test_draw_one_triangle()
+        pass
 
 
     def normalizeAngle(self, angle):
@@ -158,6 +144,28 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         while angle > 360 * 16:
             angle -= 360 * 16
         return angle
+
+
+    # draw a triangle for test
+    def test_draw_triangle(self, p1, p2, p3):
+        red = QtGui.QColor(255, 0, 0, 255)
+        self.qglColor(red)
+        GL.glVertex3d(p1[0], p1[1], p1[2])
+        GL.glVertex3d(p2[0], p2[1], p2[2])
+        GL.glVertex3d(p3[0], p3[1], p3[2])
+
+    # draw a triangle in the whole scene for test
+    def test_draw_one_triangle(self):
+        p1 = numpy.array([-1, 0, 0])
+        p2 = numpy.array([ 1, 0, 0])
+        p3 = numpy.array([ 0, 2 * math.sqrt(3), 0])
+
+        GL.glBegin(GL.GL_TRIANGLES)
+        self.test_draw_triangle(p1, p2, p3)
+        GL.glEnd()
+
+
+
 
 #
 # MainWindow for Test
