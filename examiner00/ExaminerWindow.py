@@ -80,11 +80,15 @@ class ExaminerWindow(QtGui.QMainWindow):
         sg.print_obj()          # for debug
 
 
-        # attach the GL scene graph
+        # attach the GL scene graph to SceneGraph
         glsg = GLSceneGraph.GLSceneGraph()
         glsg.set_scenegraph(sg)
 
+        # attach the GL scene graph to Examiner to see
+        self.examiner_widget.attach_gl_scenegraph(glsg)
 
+        # debug mode on
+        self.examiner_widget.set_debug_mode(True)
 
         self.statusBar().showMessage('File--Open [' + fileName + ']')
 

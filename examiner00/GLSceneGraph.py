@@ -27,7 +27,6 @@ class GLSceneGraph(object):
         self.scenegraph   = _sg
 
         self.gl_root_node = GLSceneGraphNode()
-        
 
         # check self.scenegraph validity
 
@@ -43,15 +42,23 @@ class GLSceneGraph(object):
     def copy_sgnode_sub(self, _cur_sgnode, _cur_glnode, _level):
         if _cur_sgnode.primitive != None:
             # create primitive node and set the primitive
-            glsgnode = new_gl_scenegraph_primitive_node(_cur_sgnode.primitive)
-            glsgnode.set_primitive(_cur_sgnode.primitive)
+            print 'Create primitive and set'
+            gl_prim_node = new_gl_scenegraph_primitive_node(_cur_sgnode.primitive)
+            _cur_glnode.set_primitive(gl_prim_node)
 
         else:
+            print 'Go to children'
             for ch_sgnode in _cur_sgnode.children:
                 # create and refer the sg node
                 ch_glnode = GLSceneGraphNode()
                 _cur_sgnode.append_child(ch_glnode)
                 self.copy_sgnode_sub(ch_sgnode, ch_glnode, _level + 1)
+
+
+    # scenegraph draw
+    # \param[in] HEREHERE
+    def draw(self, _global_mode):
+        self.gl_root_node.draw(_global_mode)
 
 
     # for debug
@@ -64,12 +71,9 @@ class GLSceneGraph(object):
                 self.print_sgnode_sub(chnode, _level + 1)
 
 
-
-
-
     # for debug
     def print_obj(self):
-        pass
+        print 'NIN: GLSceneGraph: print_obj()'
 
 #
 # OpenGL scene graph node
@@ -85,6 +89,7 @@ class GLSceneGraphNode(object):
     def __init__(self):
         self.children  = []
         self.primitive = None
+        self.is_debug  = False
 
     # set primitive
     def set_primitive(self, _prim):
@@ -109,33 +114,76 @@ class GLSceneGraphNode(object):
             print indent + '# # children = ' + str(len(self.children))
 
 
-
-
     # draw by mode
-    def draw(self, _mode):
-        pass
+    def draw(self, _global_mode):
+        print 'GLSceneGraph::draw is called with ' + str(_global_mode)
 
+        if self.primitive != None:
+            # primitive: draw itself
+            self.primitive.draw(_global_mode)
+            print 'GLSceneGraph::draw: call primitive draw'
+        elif len(self.children) > 0:
+            # no primitive: draw children
+            for ch_glnode in self.children:
+                # create and refer the sg node
+                ch_glnode.draw(_global_mode)
+                print 'GLSceneGraph::draw: call child draw'
+        else:
+            self.debug_out('Node has no primitive, no children')
+            print 'GLSceneGraph::draw: neither'
 
 
     # for debug
     def print_obj(self):
         pass
 
+    # set debug mode
+    # \param[in] _is_debug when true some debug message will show up.
+    def set_debug_mode(self, _is_debug):
+        self.is_debug = _is_debug
+
+    # is debug mode?
+    # \return true when debug mode is on
+    def is_debug_mode(self):
+        return self.is_debug
+
+    # debug output
+    # \param[in] _dbgmes debug message. when debug mode is on, this is visible.
+    def debug_out(self, _dbgmes):
+        if self.is_debug == True:
+            print _dbgmes
+
+
 # OpenGL TriMeshNode
 class GLTriMeshNode(GLSceneGraphNode):
-    pass
+    # default constructor
+    def __init__(self):
+        # call base class constructor to fill the members
+        super(GLTriMeshNode, self).__init__()
+        self.local_draw_mode = 0
+
+    # draw
+    def draw(self, _global_mode):
+        self.draw_flat_shading()
+
+
+    # each draw: flat shading
+    def draw_flat_shading(self):
+        print 'NIN: flatshading'
+
 
 
 # OpenGL scenegraph node factory
-# 
+#
 def new_gl_scenegraph_primitive_node(_primitive):
     if _primitive == None:
         raise StandardError, ('Null primitive.')
 
     if _primitive.get_classname() == 'TriMesh':
+        print 'DEBUGL created Trimesh Primitive'
         return GLTriMeshNode()
     else:
-        print 'unsupported primitive: ' + _primitive.get_classname() 
+        print 'unsupported primitive: ' + _primitive.get_classname()
         return None
 
 

@@ -25,15 +25,24 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     def __init__(self, parent=None):
         QtOpenGL.QGLWidget.__init__(self, parent)
 
-        # cameras
+        # cameras FIXME scenegraph should have the camera
         self.gl_camera   = Camera.GLCamera()
         # self.ifgi_camera = Camera.IFGICamera()
+
+        # OpenGL scene graph
+        self.gl_scenegraph = None
 
         # FIXME remove below...
         self.xRot = 0
         self.yRot = 0
         self.zRot = 0
         self.lastPos = QtCore.QPoint()
+
+        # draw mode
+        self.global_draw_mode = 0
+
+        # some debug facility
+        self.is_debug = False
 
 
     def xRotation(self):
@@ -135,8 +144,10 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     # draw the whole scene
     def draw_scene(self):
         # self.test_draw_one_triangle()
-        pass
-
+        if self.gl_scenegraph != None:
+            self.gl_scenegraph.draw(self.global_draw_mode)
+        else:
+            self.debug_out('No OpenGL scenegraph is set.')
 
     def normalizeAngle(self, angle):
         while angle < 0:
@@ -164,7 +175,25 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         self.test_draw_triangle(p1, p2, p3)
         GL.glEnd()
 
+    # set debug mode
+    # \param[in] _is_debug when true some debug message will show up.
+    def set_debug_mode(self, _is_debug):
+        self.is_debug = _is_debug
 
+    # is debug mode?
+    # \return true when debug mode is on
+    def is_debug_mode(self):
+        return self.is_debug
+
+    # debug output
+    # \param[in] _dbgmes debug message. when debug mode is on, this is visible.
+    def debug_out(self, _dbgmes):
+        if self.is_debug == True:
+            print _dbgmes
+
+    # scenegraph operation
+    def attach_gl_scenegraph(self, _gl_scenegraph):
+        self.gl_scenegraph = _gl_scenegraph
 
 
 #
