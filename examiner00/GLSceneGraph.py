@@ -24,35 +24,44 @@ class GLSceneGraph(object):
 
     # set generic scene graph
     def set_scenegraph(self, _sg):
-        self.scenegraph = _sg
+        self.scenegraph   = _sg
+
+        self.gl_root_node = GLSceneGraphNode()
+        
 
         # check self.scenegraph validity
 
         # create GLSceneGraph from scenegraph
+        self.copy_sgnode_sub(self.scenegraph.root_node,
+                             self.gl_root_node,
+                             0)
 
+        self.print_sgnode_sub(self.gl_root_node, 0)
 
-
-
-    # HEREHERE 2010-10-29(Fri)
 
     # copy scenegraph tree sub
-    def copy_sgnode_sub(self, _cur_sgnode, _level):
-        if _cur_sgnode.primitive == None:
-            # children container
+    def copy_sgnode_sub(self, _cur_sgnode, _cur_glnode, _level):
+        if _cur_sgnode.primitive != None:
+            # create primitive node and set the primitive
+            glsgnode = new_gl_scenegraph_primitive_node(_cur_sgnode.primitive)
+            glsgnode.set_primitive(_cur_sgnode.primitive)
+
+        else:
             for ch_sgnode in _cur_sgnode.children:
                 # create and refer the sg node
-                # HEREHERE
-                self.copy_sgnode_sub(ch_sgnode, _level + 1)
-        else:
-            # primitive
+                ch_glnode = GLSceneGraphNode()
+                _cur_sgnode.append_child(ch_glnode)
+                self.copy_sgnode_sub(ch_sgnode, ch_glnode, _level + 1)
 
 
-            pass
-
-    # copy scenegraph tree main
-    def copy_sgnode(self, _cur_sgnode):
-        level = 0
-        self.copy_sgnode_sub(_cur_sgnode, level)
+    # for debug
+    #  print out scenegraph nodes
+    def print_sgnode_sub(self, cur_glnode, _level):
+        cur_glnode.print_glnodeinfo(_level)
+        if cur_glnode.primitive == None:
+            # children container
+            for chnode in cur_glnode.children:
+                self.print_sgnode_sub(chnode, _level + 1)
 
 
 
@@ -91,9 +100,43 @@ class GLSceneGraphNode(object):
             raise StandardError, ('Can not append a child. already had a primitive.')
         self.children.append(_child)
 
+    # print glnode info
+    def print_glnodeinfo(self, _level):
+        indent = '  ' * _level
+        if self.primitive != None:
+            print indent + '# GLSceneGraphNode:Primitive'
+        else:
+            print indent + '# # children = ' + str(len(self.children))
+
+
+
+
+    # draw by mode
+    def draw(self, _mode):
+        pass
+
+
+
     # for debug
     def print_obj(self):
         pass
+
+# OpenGL TriMeshNode
+class GLTriMeshNode(GLSceneGraphNode):
+    pass
+
+
+# OpenGL scenegraph node factory
+# 
+def new_gl_scenegraph_primitive_node(_primitive):
+    if _primitive == None:
+        raise StandardError, ('Null primitive.')
+
+    if _primitive.get_classname() == 'TriMesh':
+        return GLTriMeshNode()
+    else:
+        print 'unsupported primitive: ' + _primitive.get_classname() 
+        return None
 
 
 #
