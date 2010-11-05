@@ -95,7 +95,7 @@ class SceneGraphNode(object):
     def print_nodeinfo(self, _level):
         indent = '  ' * _level
         if self.primitive != None:
-            print indent + '# SceneGraphNode:Primitive'
+            print indent + '# SceneGraphNode:Primitive:' + self.primitive.get_classname()
         else:
             print indent + '# # children = ' + str(len(self.children))
 

@@ -31,6 +31,9 @@ DONE - Check shared proj
 DONE - Python inheritance check
 
 - Draw a trimesh without mode flat_shading
+
+  誰が TriMesh の data を持っているのかはっきりさせる
+  それを使って GLTriMeshNode は triangle を書く
+
+
 - Add drawmode
-
-

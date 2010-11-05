@@ -134,16 +134,18 @@ class ObjReader(object):
             splitteddat = map((lambda x: x.split('/')), dat)
 
             if (procdict['face_idx'] == True):
-                # vertex index exists
-                self.face_idx_list.append(map((lambda x: int(x[0])), splitteddat))
+                # vertex index exists x[0] means (nth 0 list)
+                # (mapcar (function (lambda (x) (nth 0 x))) '((1 2 3) (4 5 6) (7 8 9)))
+                # objfile's index start with 1, therefore i minused as x[0]-1.
+                self.face_idx_list.append(map((lambda x: int(x[0])-1), splitteddat))
 
             if (procdict['texcoord_idx'] == True):
                 # texture coodinate index exists
-                self.texcoord_idx_list. append(map((lambda x: int(x[1])), splitteddat))
+                self.texcoord_idx_list. append(map((lambda x: int(x[1])-1), splitteddat))
 
             if (procdict['normal_idx'] == True):
                 # normal index exists
-                self.normal_idx_list.   append(map((lambda x: int(x[2])), splitteddat))
+                self.normal_idx_list.   append(map((lambda x: int(x[2])-1), splitteddat))
         else:
             print 'Warning! unsupported entity [' + objcom + '] at line ' +\
                 str(self.curline)
