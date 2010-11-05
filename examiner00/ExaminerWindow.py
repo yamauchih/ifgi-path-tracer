@@ -9,11 +9,13 @@
 
 """IFGI Examiner Window"""
 
+import math
+import numpy
+import optparse
 import os
 import sys
-import math
+
 import OpenGL
-import numpy
 
 from PyQt4  import QtCore, QtGui, QtOpenGL
 from OpenGL import GL
@@ -24,9 +26,13 @@ import SceneGraph
 import GLSceneGraph
 
 class ExaminerWindow(QtGui.QMainWindow):
+    # constructor
     def __init__(self, parent=None):
         super(ExaminerWindow, self).__init__()
+        self.examiner_widget = None
 
+    # create widgets and window
+    def create_window(self):
         widget = QtGui.QWidget()
         self.setCentralWidget(widget)
 
@@ -55,9 +61,32 @@ class ExaminerWindow(QtGui.QMainWindow):
         #         menu.addAction(self.pasteAct)
         #         menu.exec_(event.globalPos())
 
+
+    # init application after window is created.
+    #
+    # call after the window are created. Usually, this set up the
+    # application, like commanline specify some commands. (for
+    # example, load scene)
+    # \param[in] _cmd_opt command line option created by optparse
+    def init_app(self, _cmd_opt):
+        if self.examiner_widget == None:
+            raise StandardError, ('No examiner widget. have you call create_window?')
+
+        # load a file
+        if _cmd_opt.infilename != '':
+            self.com_load_file(_cmd_opt.infilename)
+
+        # other command will be here.
+
+    #----------------------------------------------------------------------
+    # Menu bar
+    #----------------------------------------------------------------------
+
+    # File--New
     def menu_file_new(self):
         self.statusBar().showMessage('NIN: File--New invoked')
 
+    # File--Open
     def menu_file_open(self):
         options = QtGui.QFileDialog.Options()
         # if not self.native.isChecked():
@@ -75,34 +104,22 @@ class ExaminerWindow(QtGui.QMainWindow):
             self.statusBar().showMessage('File--Open: cancelled')
             return
 
-        # got the filename, create a generic scene graph
-        sg = SceneGraph.create_one_trimeh_scenegraph(fileName)
-        sg.print_obj()          # for debug
-
-
-        # attach the GL scene graph to SceneGraph
-        glsg = GLSceneGraph.GLSceneGraph()
-        glsg.set_scenegraph(sg)
-
-        # attach the GL scene graph to Examiner to see
-        self.examiner_widget.attach_gl_scenegraph(glsg)
-
-        # debug mode on
-        self.examiner_widget.set_debug_mode(True)
+        self.com_load_file(fileName)
 
         self.statusBar().showMessage('File--Open [' + fileName + ']')
 
-
+    # Process--IFGI ptrace
     def menu_process_ifgi_ptrace(self):
         self.statusBar().showMessage('NIN: Process--IFGI ptrace invoked')
 
+    # Help--about
     def menu_help_about(self):
         self.statusBar().showMessage('NIN: Help--About invoked')
         QtGui.QMessageBox.about(self, "About Menu",
                                 'ExaminerWindow: simple OpenGL viewer for IFGI path ' +
                                 'tracer<br>' +
                                 'Author: Yamauchi, Hitoshi.')
-
+    # create menubar actions
     def createActions(self):
         self.newAct = QtGui.QAction("&New", self,
                                     shortcut=QtGui.QKeySequence.New,
@@ -127,7 +144,7 @@ class ExaminerWindow(QtGui.QMainWindow):
                                       statusTip="Show the ExaminerWindow's About box",
                                       triggered=self.menu_help_about)
 
-
+    # create menubar
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
         self.fileMenu.addAction(self.newAct)
@@ -142,15 +159,64 @@ class ExaminerWindow(QtGui.QMainWindow):
         self.helpMenu.addAction(self.aboutAct)
 
 
+    #----------------------------------------------------------------------
+    # command action implementation
+    #----------------------------------------------------------------------
+
+    # load file command
+    def com_load_file(self, _infilename):
+        if (_infilename == None) or (_infilename == ''):
+            raise StandardError, ('com_load_file: emoty filename')
+
+        # got the filename, create a generic scene graph
+        sg = SceneGraph.create_one_trimeh_scenegraph(_infilename)
+        sg.print_obj()          # for debug
+
+        # attach the GL scene graph to SceneGraph
+        glsg = GLSceneGraph.GLSceneGraph()
+        glsg.set_scenegraph(sg)
+
+        # debug mode on
+        self.examiner_widget.set_debug_mode(True)
+
+        # attach the GL scene graph to Examiner to see
+        self.examiner_widget.attach_gl_scenegraph(glsg)
+
+
+
+
+
+# get default option list
+# \return default option list
+def get_default_option_list():
+    default_option_list = [
+        optparse.make_option("-v", "--verbose", action="store_true", dest="verbose",
+                             default=False,
+                             help="verbose mode."
+                             "[default %default]"
+                             ),
+        optparse.make_option("-i", "--infile", action="store", dest="infilename",
+                             default='',
+                             help="input scene file name."
+                             "[default [%default]]"
+                             )
+        ]
+    return default_option_list
+
 
 #
 # main
 #
 if __name__ == '__main__':
+    # parse command line
+    arg_parser = optparse.OptionParser(option_list = get_default_option_list(),
+                                       version="%prog 0.1.0")
+    (cmd_options, args) = arg_parser.parse_args()
 
-    import sys
     app = QtGui.QApplication(sys.argv)
-    window = ExaminerWindow()
-    window.show()
+    win = ExaminerWindow()
+    win.create_window()
+    win.init_app(cmd_options)
+    win.show()
     sys.exit(app.exec_())
 
