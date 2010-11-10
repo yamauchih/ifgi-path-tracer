@@ -20,10 +20,10 @@ class TestConvReader2Primitive(unittest.TestCase):
 
         self.assertEquals(len(tmesh.vertex_list),       3) # nvertices
         self.assertEquals(len(tmesh.face_idx_list),     1) # nface
-        self.assertEquals(len(tmesh.texcoord_list),     0) 
-        self.assertEquals(len(tmesh.texcoord_idx_list), 0) 
-        self.assertEquals(len(tmesh.normal_list),       0) 
-        self.assertEquals(len(tmesh.normal_idx_list),   0) 
+        self.assertEquals(len(tmesh.texcoord_list),     0)
+        self.assertEquals(len(tmesh.texcoord_idx_list), 0)
+        self.assertEquals(len(tmesh.normal_list),       0)
+        self.assertEquals(len(tmesh.normal_idx_list),   0)
 
 
 
