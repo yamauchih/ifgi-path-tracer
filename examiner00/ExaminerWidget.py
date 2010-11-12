@@ -48,7 +48,7 @@ def mapToSphere(_win_point2d, _win_width, _win_height):
 
     # get window normalized relative to center coordinate
     rel_x = (wx - (_win_width  / 2)) / _win_width
-    rel_y = (wx - (_win_height / 2)) / _win_height
+    rel_y = ((_win_height / 2) - wy) / _win_height # inverse screen y
 
     # get
     sinx       = math.sin(math.pi * rel_x * 0.5);
@@ -77,13 +77,6 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         # OpenGL scene graph
         self.gl_scenegraph = None
 
-        # FIXME remove below...
-        self.xRot = 0
-        self.yRot = 0
-        self.zRot = 0
-        self.lastPos = QtCore.QPoint()
-
-
         # mouse points
         self.lastPoint2D = QtCore.QPoint()
         self.lastPoint3D = numpy.array([0, 0, 0]) # z == 0, not hit to the trackball sphere
@@ -106,41 +99,11 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         self.is_debug = False
 
 
-    def xRotation(self):
-        return self.xRot
-
-    def yRotation(self):
-        return self.yRot
-
-    def zRotation(self):
-        return self.zRot
-
     def minimumSizeHint(self):
         return QtCore.QSize(50, 50)
 
     def sizeHint(self):
         return QtCore.QSize(400, 400)
-
-    def setXRotation(self, angle):
-        angle = self.normalizeAngle(angle)
-        if angle != self.xRot:
-            self.xRot = angle
-            # self.emit(QtCore.SIGNAL("xRotationChanged(int)"), angle)
-            self.updateGL()
-
-    def setYRotation(self, angle):
-        angle = self.normalizeAngle(angle)
-        if angle != self.yRot:
-            self.yRot = angle
-            # self.emit(QtCore.SIGNAL("yRotationChanged(int)"), angle)
-            self.updateGL()
-
-    def setZRotation(self, angle):
-        angle = self.normalizeAngle(angle)
-        if angle != self.zRot:
-            self.zRot = angle
-            # self.emit(QtCore.SIGNAL("zRotationChanged(int)"), angle)
-            self.updateGL()
 
     # Window info: width
     def glWidth(self):
@@ -165,16 +128,14 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
         GL.glLoadIdentity()
 
-        ep = self.gl_camera.eye_pos  # eye pos
-        vd = self.gl_camera.view_dir # lookat point
-        up = self.gl_camera.up_dir   # up vector
+        ep = self.gl_camera.get_eye_pos()  # eye pos
+        vd = self.gl_camera.get_view_dir() # lookat point
+        up = self.gl_camera.get_up_dir()   # up vector
+        print 'DEBUG: ep = ' + str(ep)
         GLU.gluLookAt(ep[0], ep[1], ep[2],
                       vd[0], vd[1], vd[2],
                       up[0], up[1], up[2])
 
-        GL.glRotated(self.xRot / 16.0, 1.0, 0.0, 0.0)
-        GL.glRotated(self.yRot / 16.0, 0.0, 1.0, 0.0)
-        GL.glRotated(self.zRot / 16.0, 0.0, 0.0, 1.0)
         self.draw_scene()
 
     # resize
@@ -219,9 +180,9 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
         eyepos = self.gl_camera.get_eye_pos() - self.scene_cog
         # Here z is '-', since OpenGL is left hand side coordinates.
-        print 'mat:'      + str(rotation)
-        print 'CamBasis:' + str(cam_basis)
-        print 'pn_axis:'  + str(_pn_axis)
+        # print 'mat:'      + str(rotation)
+        # print 'CamBasis:' + str(cam_basis)
+        # print 'pn_axis:'  + str(_pn_axis)
 
         rmat = ifgimath.get_rotation_mat(-_angle,
                                           cam_basis[0] * _pn_axis[0] +
@@ -230,13 +191,15 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         
 
         # make 4d vector for homogeneous coordinate
-        eyepos[3] = 1.0         # HEREHERE 2010-11-10(Wed)
-        eyepos = rmat * eyepos + self.scene_cog
+        eyepos = ifgimath.transformPoint(rmat, eyepos) + self.scene_cog
+        
 
         # self.gl_camera.lock();
-        self.gl_camera.set_eyepos(eyepos)
-        self.gl_camera.set_viewdir(rotation.transformVector(d_camera.viewingDirection()),
-                                   rotation.transformVector(d_camera.up()));
+        self.gl_camera.set_eye_pos(eyepos)
+        self.gl_camera.set_view_dir(
+            ifgimath.transformVector(rmat, self.gl_camera.get_view_dir()))
+        self.gl_camera.set_up_dir(
+            ifgimath.transformVector(rmat, self.gl_camera.get_up_dir()))
         # self.gl_camera.unlock();
 
 
@@ -375,16 +338,16 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         if (self.lastPoint3D[2] != 0): # z == 0 ... not hit on sphere
             newPoint3D = mapToSphere(_qpoint2D, self.glWidth(), self.glHeight())
             if (newPoint3D[2] != 0): # point hits the sphere
-                rot_axis  = numpy.outer(self.lastPoint3D, newPoint3D)
+                angle = 0
+                rot_axis  = numpy.cross(self.lastPoint3D, newPoint3D)
                 cos_angle = numpy.inner(self.lastPoint3D, newPoint3D)
                 if (math.fabs(cos_angle) < 1.0):
                     angle = math.acos(cos_angle); # radian
                     angle *= 2.0; # inventor rotation
 
                 self.rotate_camera(angle, rot_axis)
-
-            self.lastRotationAxis  = rot_axis;
-            self.lastRotationAngle = angle;
+                print 'DEBUG: Rotate angle = ' + str(angle)
+                print 'DEBUG: Rotate axis  = ' + str(rot_axis)
 
 
     # mouse move event
@@ -395,6 +358,17 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
             ((self.actionMode == PickingMode))): # && !d_popupEnabled) ) {
 
             newPoint2D = _event.pos()
+
+            # DEBUG begin DELETEME
+            # newPoint2D = self.lastPoint2D + QtCore.QPoint(1,0)
+            # newPoint2D = self.lastPoint2D + QtCore.QPoint(0,1)
+            # if self.lastPoint2D.x() > 500:
+            #     self.lastPoint2D.setX(0)
+            # if self.lastPoint2D.y() > 500:
+            #     self.lastPoint2D.setY(0)
+            # DEBUG end
+
+
             isInside = ((newPoint2D.x() >=0 ) and (newPoint2D.x() <= self.glWidth()) and
                         (newPoint2D.y() >=0 ) and (newPoint2D.y() <= self.glHeight()))
             print 'is inside = ' + str(isInside)
@@ -423,19 +397,11 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
                 self.lastPoint2D = newPoint2D;
                 self.lastPoint3D = newPoint3D;
 
-            # updateGL();
+            self.updateGL();
             # d_lastMoveTime.restart();
 
-        # original old code
-        # dx = _event.x() - self.lastPos.x()
-        # dy = _event.y() - self.lastPos.y()
-        # if _event.buttons() & QtCore.Qt.LeftButton:
-        #     self.setXRotation(self.xRot + 8 * dy)
-        #     self.setYRotation(self.yRot + 8 * dx)
-        # elif _event.buttons() & QtCore.Qt.RightButton:
-        #     self.setXRotation(self.xRot + 8 * dy)
-        #     self.setZRotation(self.zRot + 8 * dx)
-        # self.lastPos = QtCore.QPoint(_event.pos())
+            print 'DEBUG: mouse press at ' + str(self.lastPoint2D) +\
+                ', on spehere: ' + str(self.lastPoint3D)
 
 
     # draw the whole scene

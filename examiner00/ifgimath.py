@@ -65,3 +65,29 @@ def get_rotation_mat(_angle, _rot_axis):
   return mat
 
 
+
+
+# transform point (x',y',z',1) = A * (x,y,z,1)
+def transformPoint(_m44, _v3):
+  x  = _m44[0][0]*_v3[0] + _m44[0][1]*_v3[1] + _m44[0][2]*_v3[2] + _m44[0][3];
+  y  = _m44[1][0]*_v3[0] + _m44[1][1]*_v3[1] + _m44[1][2]*_v3[2] + _m44[1][3];
+  z  = _m44[2][0]*_v3[0] + _m44[2][1]*_v3[1] + _m44[2][2]*_v3[2] + _m44[2][3];
+  w1 = _m44[3][0]*_v3[0] + _m44[3][1]*_v3[1] + _m44[3][2]*_v3[2] + _m44[3][3];
+
+  if math.fabs(w1) > 1e-5:
+    w = 1.0 / w1;
+    return numpy.array([x*w, y*w, z*w])
+  else:
+    return numpy.array([0, 0, 0])
+
+
+# transform vector (x',y',z',0) = A * (x,y,z,0)
+def transformVector(_m44, _v3):
+  x = _m44[0][0]*_v3[0] + _m44[0][1]*_v3[1] + _m44[0][2]*_v3[2];
+  y = _m44[1][0]*_v3[0] + _m44[1][1]*_v3[1] + _m44[1][2]*_v3[2];
+  z = _m44[2][0]*_v3[0] + _m44[2][1]*_v3[1] + _m44[2][2]*_v3[2];
+
+  return numpy.array([x, y, z])
+
+
+

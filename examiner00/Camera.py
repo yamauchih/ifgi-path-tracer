@@ -34,14 +34,23 @@ class Camera(object):
     # get eye position
     def get_eye_pos(self):
         return self.eye_pos
+    # set eye position
+    def set_eye_pos(self, _eye_pos):
+        self.eye_pos = _eye_pos
 
     # get view direction
     def get_view_dir(self):
         return self.view_dir
+    # set view direction
+    def set_view_dir(self, _view_dir):
+        self.view_dir = _view_dir
 
     # get up direction
     def get_up_dir(self):
         return self.up_dir
+    # set up direction
+    def set_up_dir(self, _up_dir):
+        self.up_dir = _up_dir
 
     # get fov as radian
     def get_fov(self):
@@ -79,9 +88,9 @@ class Camera(object):
         ey /= numpy.linalg.norm(ey)
         assert(abs(numpy.linalg.norm(self.view_dir) - 1) < 0.000001)
 
-        print 'ex = ' + str(ex)
-        print 'ey = ' + str(ey)
-        print 'ez = ' + str(self.view_dir)
+        # print 'ex = ' + str(ex)
+        # print 'ey = ' + str(ey)
+        # print 'ez = ' + str(self.view_dir)
 
         return [ex, ey, self.view_dir]
 
