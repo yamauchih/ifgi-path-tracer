@@ -12,7 +12,7 @@ import numpy
 # \param[in] _angle radian
 # \param[in] _rot_axis rotation axis
 #
-def get_rotation_mat(_angle, _rot_axis):
+def getRotationMat(_angle, _rot_axis):
 
   x = _rot_axis[0]
   y = _rot_axis[1]
@@ -64,9 +64,6 @@ def get_rotation_mat(_angle, _rot_axis):
 
   return mat
 
-
-
-
 # transform point (x',y',z',1) = A * (x,y,z,1)
 def transformPoint(_m44, _v3):
   x  = _m44[0][0]*_v3[0] + _m44[0][1]*_v3[1] + _m44[0][2]*_v3[2] + _m44[0][3];
@@ -89,5 +86,42 @@ def transformVector(_m44, _v3):
 
   return numpy.array([x, y, z])
 
+
+#
+# 2d point to 3d point map
+#
+# \param[in]  _point2d point in a window coordinate
+# \param[in]  _win_width  window width
+# \param[in]  _win_height window height
+# \return pos3d, position on a sphere
+def mapToSphere(_win_point2d, _win_width, _win_height):
+    assert(_win_width  > 0)
+    assert(_win_height > 0)
+
+    wx = float(_win_point2d.x())
+    wy = float(_win_point2d.y())
+
+    # check _win_point2d is in range
+    if ((wx < 0) or (wx >= _win_width) or (wy < 0) or (wy >= _win_height)):
+        raise StandardError, ('out of range coordinate [' + str(wx) + ',' + str(wy) +
+                              '] should be in [' +
+                              str(_win_width) + ',' + str(_win_height) + ']')
+
+    # get window normalized relative to center coordinate
+    rel_x = (wx - (_win_width  / 2)) / _win_width
+    rel_y = ((_win_height / 2) - wy) / _win_height # inverse screen y
+
+    # get
+    sinx       = math.sin(math.pi * rel_x * 0.5);
+    siny       = math.sin(math.pi * rel_y * 0.5);
+    sinx2siny2 = sinx * sinx + siny * siny;
+
+    z = 0
+    if sinx2siny2 < 1:
+        z = math.sqrt(1 - sinx2siny2)
+
+    pos3d = numpy.array([sinx, siny, z])
+
+    return pos3d
 
 

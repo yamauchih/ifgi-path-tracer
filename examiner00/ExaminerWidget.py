@@ -27,43 +27,6 @@ import Camera
 ActionMode = enum.Enum(['ExamineMode', 'PickingMode'])
 
 #
-# 2d point to 3d point map
-#
-# \param[in]  _point2d point in a window coordinate
-# \param[in]  _win_width  window width
-# \param[in]  _win_height window height
-# \return pos3d, position on a sphere
-def mapToSphere(_win_point2d, _win_width, _win_height):
-    assert(_win_width  > 0)
-    assert(_win_height > 0)
-
-    wx = float(_win_point2d.x())
-    wy = float(_win_point2d.y())
-
-    # check _win_point2d is in range
-    if ((wx < 0) or (wx >= _win_width) or (wy < 0) or (wy >= _win_height)):
-        raise StandardError, ('out of range coordinate [' + str(wx) + ',' + str(wy) +
-                              '] should be in [' +
-                              str(_win_width) + ',' + str(_win_height) + ']')
-
-    # get window normalized relative to center coordinate
-    rel_x = (wx - (_win_width  / 2)) / _win_width
-    rel_y = ((_win_height / 2) - wy) / _win_height # inverse screen y
-
-    # get
-    sinx       = math.sin(math.pi * rel_x * 0.5);
-    siny       = math.sin(math.pi * rel_y * 0.5);
-    sinx2siny2 = sinx * sinx + siny * siny;
-
-    z = 0
-    if sinx2siny2 < 1:
-        z = math.sqrt(1 - sinx2siny2)
-
-    pos3d = numpy.array([sinx, siny, z])
-
-    return pos3d
-
-#
 # Scene examiner
 #
 class ExaminerWidget(QtOpenGL.QGLWidget):
@@ -131,7 +94,6 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         ep = self.gl_camera.get_eye_pos()  # eye pos
         vd = self.gl_camera.get_view_dir() # lookat point
         up = self.gl_camera.get_up_dir()   # up vector
-        print 'DEBUG: ep = ' + str(ep)
         GLU.gluLookAt(ep[0], ep[1], ep[2],
                       vd[0], vd[1], vd[2],
                       up[0], up[1], up[2])
@@ -184,10 +146,10 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         # print 'CamBasis:' + str(cam_basis)
         # print 'pn_axis:'  + str(_pn_axis)
 
-        rmat = ifgimath.get_rotation_mat(-_angle,
-                                          cam_basis[0] * _pn_axis[0] +
-                                          cam_basis[1] * _pn_axis[1] -
-                                          cam_basis[2] * _pn_axis[2]);
+        rmat = ifgimath.getRotationMat(-_angle,
+                                        cam_basis[0] * _pn_axis[0] +
+                                        cam_basis[1] * _pn_axis[1] -
+                                        cam_basis[2] * _pn_axis[2]);
         
 
         # make 4d vector for homogeneous coordinate
@@ -238,12 +200,13 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
             elif (self.actionMode == ActionMode.ExamineMode):
                 # remember this point
                 self.lastPoint2D = _event.pos()
-                self.lastPoint3D = mapToSphere(self.lastPoint2D,
-                                               self.glWidth(), self.glHeight())
+                self.lastPoint3D = ifgimath.mapToSphere(self.lastPoint2D,
+                                                        self.glWidth(), self.glHeight())
 
                 self.isRotating = True
-                print 'DEBUG: mouse press at ' + str(self.lastPoint2D) +\
-                    ', on spehere: ' + str(self.lastPoint3D)
+                # DELETEME
+                # print 'DEBUG: mouse press at ' + str(self.lastPoint2D) +\
+                # ', on spehere: ' + str(self.lastPoint3D)
 
 
             # elif (self.actionMode == Actionmode.FlyToMode):
@@ -336,7 +299,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     # \param[in] _qpoint2D current mouse 2D point
     def examineModeRotateTrackball(self, _qpoint2D):
         if (self.lastPoint3D[2] != 0): # z == 0 ... not hit on sphere
-            newPoint3D = mapToSphere(_qpoint2D, self.glWidth(), self.glHeight())
+            newPoint3D = ifgimath.mapToSphere(_qpoint2D, self.glWidth(), self.glHeight())
             if (newPoint3D[2] != 0): # point hits the sphere
                 angle = 0
                 rot_axis  = numpy.cross(self.lastPoint3D, newPoint3D)
@@ -346,8 +309,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
                     angle *= 2.0; # inventor rotation
 
                 self.rotate_camera(angle, rot_axis)
-                print 'DEBUG: Rotate angle = ' + str(angle)
-                print 'DEBUG: Rotate axis  = ' + str(rot_axis)
+
 
 
     # mouse move event
@@ -359,19 +321,8 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
             newPoint2D = _event.pos()
 
-            # DEBUG begin DELETEME
-            # newPoint2D = self.lastPoint2D + QtCore.QPoint(1,0)
-            # newPoint2D = self.lastPoint2D + QtCore.QPoint(0,1)
-            # if self.lastPoint2D.x() > 500:
-            #     self.lastPoint2D.setX(0)
-            # if self.lastPoint2D.y() > 500:
-            #     self.lastPoint2D.setY(0)
-            # DEBUG end
-
-
             isInside = ((newPoint2D.x() >=0 ) and (newPoint2D.x() <= self.glWidth()) and
                         (newPoint2D.y() >=0 ) and (newPoint2D.y() <= self.glHeight()))
-            print 'is inside = ' + str(isInside)
 
             if  (self.actionMode == ActionMode.PickingMode):
                 self.examineModePick()
@@ -383,7 +334,8 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
                 if (not isInside):
                     return      # do nothing if mouse is outside of the window
 
-                newPoint3D = mapToSphere(newPoint2D, self.glWidth(), self.glHeight());
+                newPoint3D = ifgimath.mapToSphere(newPoint2D, 
+                                                  self.glWidth(), self.glHeight());
                 # makeCurrent()?
 
                 if ((_event.buttons() & QtCore.Qt.LeftButton) and
@@ -400,8 +352,9 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
             self.updateGL();
             # d_lastMoveTime.restart();
 
-            print 'DEBUG: mouse press at ' + str(self.lastPoint2D) +\
-                ', on spehere: ' + str(self.lastPoint3D)
+            # DELETEME
+            # print 'DEBUG: mouse press at ' + str(self.lastPoint2D) +\
+            #     ', on spehere: ' + str(self.lastPoint3D)
 
 
     # draw the whole scene
