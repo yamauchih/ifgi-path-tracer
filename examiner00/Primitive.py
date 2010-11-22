@@ -57,6 +57,11 @@ class BBox(Primitive):
             elif (self.max[i] < _newpos[i]):
                 self.max[i] = _newpos[i]
 
+    # insert bbox, grow the bbox
+    def insert_bbox(self, _bbox):
+        self.insert_point(bbox.min)
+        self.insert_point(bbox.max)
+
     # class name
     def get_classname(self):
         return 'BBox'

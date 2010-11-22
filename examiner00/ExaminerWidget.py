@@ -180,11 +180,10 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
                                         cam_basis[0] * _pn_axis[0] +
                                         cam_basis[1] * _pn_axis[1] -
                                         cam_basis[2] * _pn_axis[2]);
-        
 
         # make 4d vector for homogeneous coordinate
         eyepos = ifgimath.transformPoint(rmat, eyepos) + self.scene_cog
-        
+
 
         # self.gl_camera.lock();
         self.gl_camera.set_eye_pos(eyepos)
@@ -441,6 +440,12 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     def attach_gl_scenegraph(self, _gl_scenegraph):
         self.gl_scenegraph = _gl_scenegraph
 
+        # set scene size information
+        bb = self.gl_scenegraph.scenegraph.get_root_node().get_bbox()
+        self.scene_cog    = 0.5 * (bb.min + bb.max)
+        self.scene_radius = 0.5 * numpy.linalg.norm(bb.max - bb.min)
+        print 'DEBUG:scene_cog: ' + str(self.scene_cog) + ', scene_radius: '\
+            + str(self.scene_radius)
 
 #
 # MainWindow for Test

@@ -292,7 +292,8 @@ class ExaminerWindow(QtGui.QMainWindow):
 
         # got the filename, create a generic scene graph
         sg = SceneGraph.create_one_trimeh_scenegraph(_infilename)
-        sg.print_obj()          # for debug
+        sg.update_all_bbox()
+        sg.print_all_obj()      # for debug
 
         # attach the GL scene graph to SceneGraph
         glsg = GLSceneGraph.GLSceneGraph()

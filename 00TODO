@@ -2,7 +2,13 @@ TODO
 
 Done: Implement trackball rotaetion
 Done: Fix the test: not depends on Qt
+
 - Compute bounding box of the scene and set to the Examiner.
+   FIXME: Update bounding box should use the SceneGraphNode's bbox
+   instead of SGTUpdateBBoxStrategy's bbox
+   Currently. the implementation is wrong.
+   2010-11-22(Mon)
+
 - Scene cog and Scene radius must be set after load mesh.
 - Implement translation
 - Implement zoom
