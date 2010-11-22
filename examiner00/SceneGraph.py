@@ -121,33 +121,6 @@ class SceneGraph(object):
         level = 0
         self.traverse_sgnode_sub(_cur_node, level, _strategy)
 
-    # for debug
-    #  print out scenegraph nodes
-    def print_sgnode_sub(self, _cur_node, _level):
-        _cur_node.print_nodeinfo(_level)
-        if _cur_node.primitive == None:
-            # children container
-            for chnode in _cur_node.children:
-                chnode.print_nodeinfo(_level)
-                self.print_sgnode_sub(chnode, _level + 1)
-
-    # for debug
-    #  print out scenegraph nodes
-    def print_sgnode(self, _cur_node):
-        level = 0
-        self.print_sgnode_sub(_cur_node, level)
-
-
-    # # for debug
-    def print_obj_bak(self):
-        print '# SceneGraph'
-        print '# SceneGraph::camera'
-        self.camera.print_obj()
-        if self.root_node == None:
-            print 'no root_node'
-            return
-        self.print_sgnode(self.root_node)
-
     # for debug and example of usage of SceneGraphTraverseStrategyIF
     def print_obj(self):
         print '# SceneGraph'
