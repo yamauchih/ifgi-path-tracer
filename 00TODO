@@ -1,7 +1,7 @@
 TODO
 
-- Implement trackball rotaetion ... done
-- Fix the test: not depends on Qt
+Done: Implement trackball rotaetion
+Done: Fix the test: not depends on Qt
 - Compute bounding box of the scene and set to the Examiner.
 - Scene cog and Scene radius must be set after load mesh.
 - Implement translation

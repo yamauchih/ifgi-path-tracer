@@ -5,6 +5,7 @@
 
 """IFGI Primitive"""
 
+import sys
 import math
 import numpy
 
@@ -34,13 +35,27 @@ class Primitive(object):
         return None
 
 #
-# BBox: axis aligned bounding box
+# BBox: axis aligned 3D bounding box
 #
 class BBox(Primitive):
     # default constructor
     def __init__(self):
-        self.min = numpy.array([1, 1, 1])
-        self.max = numpy.array([0, 0, 0])
+        self.invalidate()
+
+    # invalidate this bbox
+    def invalidate(self):
+        self.min = numpy.array([sys.float_info.max,
+                                sys.float_info.max,   sys.float_info.max])
+        self.max = numpy.array([-sys.float_info.max,
+                                -sys.float_info.max, -sys.float_info.max])
+
+    # insert point, grow the bbox
+    def insert_point(self, _newpos):
+        for i in xrange(0, 3, 1):
+            if   (self.min[i] > _newpos[i]):
+                self.min[i] = _newpos[i]
+            elif (self.max[i] < _newpos[i]):
+                self.max[i] = _newpos[i]
 
     # class name
     def get_classname(self):
@@ -49,6 +64,12 @@ class BBox(Primitive):
     # get the bounding box
     def get_bbox(self):
         return self
+
+    # string representation
+    def __str__(self):
+        return 'bbox[%g %g %g]-[%g %g %g]' % (self.min[0], self.min[1], self.min[2],
+                                              self.max[0], self.max[1], self.max[2])
+
 
     # compute ray intersection
     def ray_intersect(self, _ray):
@@ -116,7 +137,10 @@ class TriMesh(Primitive):
 
     # update bounding box according to current vertex list
     def update_bbox(self):
-        print 'update_bbox NIN'
+        self.bbox.invalidate()  # reset the bbox
+        for pos in self.vertex_list:
+            self.bbox.insert_poinst(pos)
+
 
     # class name
     def get_classname(self):

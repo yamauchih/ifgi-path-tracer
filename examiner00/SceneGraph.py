@@ -115,6 +115,8 @@ def create_one_trimeh_scenegraph(_objfname):
     if tmesh.is_valid() == False:
         raise StandardError, ('TriMesh is not valid.')
 
+    print 'DEBUG: BBOX = ' + str(tmesh.get_bbox())
+
     # create scenegraph
     sg = SceneGraph()
     assert(sg.root_node == None)

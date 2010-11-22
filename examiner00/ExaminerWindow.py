@@ -214,29 +214,29 @@ class ExaminerWindow(QtGui.QMainWindow):
         self.viewModeGroup.addAction(self.viewLassoAct)
         self.viewModeGroup.addAction(self.viewIdentifyAct)
         self.viewMoveAct.setChecked(True) # default mode
-        
+
         # View menu -- change view related
-        self.viewRestoreHomeyAct = QtGui.QAction("Restore Home", self, 
+        self.viewRestoreHomeyAct = QtGui.QAction("Restore Home", self,
                                                  statusTip="Restore the home view",
                                                  triggered=self.menu_view_restorehome)
-        self.viewSetHomeyAct = QtGui.QAction("Set home", self, 
+        self.viewSetHomeyAct = QtGui.QAction("Set home", self,
                                              statusTip="Set current view to home",
                                              triggered=self.menu_view_sethome)
-        self.viewViewallAct = QtGui.QAction("View all", self, 
+        self.viewViewallAct = QtGui.QAction("View all", self,
                                             statusTip="View whole scene",
                                             triggered=self.menu_view_all)
         self.viewTogglePerspectiveAct = QtGui.QAction(
-            "Toggle Perspective", self, 
+            "Toggle Perspective", self,
             checkable=True,
             statusTip="Toggle Perspective and Orthogonal view",
             triggered=self.menu_view_toggle_perspective)
         # default perspective FIXME check camera
-        self.viewTogglePerspectiveAct.setChecked(True) 
+        self.viewTogglePerspectiveAct.setChecked(True)
 
-        self.viewScenegraphAct = QtGui.QAction("Show scene graph", self, 
+        self.viewScenegraphAct = QtGui.QAction("Show scene graph", self,
                                                statusTip="Show scenegraph control",
                                                triggered=self.menu_view_scenegraph)
-        
+
 
         # Process menu
         self.ifgi_ptraceAct = QtGui.QAction("&IFGI ptrace", self,
@@ -259,7 +259,7 @@ class ExaminerWindow(QtGui.QMainWindow):
         self.fileMenu.addAction(self.exitAct)
 
         # view menu
-        self.viewMenu = self.menuBar().addMenu("&View")        
+        self.viewMenu = self.menuBar().addMenu("&View")
         self.viewMenu.addAction(self.viewMoveAct)
         self.viewMenu.addAction(self.viewPickAct)
         self.viewMenu.addAction(self.viewLassoAct)
