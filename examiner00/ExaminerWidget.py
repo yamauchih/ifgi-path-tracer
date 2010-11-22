@@ -257,11 +257,11 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
     # ExamineMode: move in x,y direction
     def examineModeMoveXYdir(self):
-        #        value_x = d_radius * ((newPoint2D.x() - d_lastPoint2D.x()))
-        #            * 2.0 / (double) glWidth();
-        #        value_y = d_radius * ((newPoint2D.y() - d_lastPoint2D.y()))
-        #            * 2.0 / (double) glHeight();
-        #        translate( base::Vec3f(value_x, -value_y, 0.0) );
+        # value_x = d_radius * ((newPoint2D.x() - d_lastPoint2D.x()))
+        # * 2.0 / (double) glWidth();
+        # value_y = d_radius * ((newPoint2D.y() - d_lastPoint2D.y()))
+        # * 2.0 / (double) glHeight();
+        # translate( base::Vec3f(value_x, -value_y, 0.0) );
         pass
 
     # ExamineMode: Pick

@@ -6,7 +6,12 @@ ExaminerWindow
              Add GLSceneGraph test
              render the obj file
 
-        Implement trackball rotaetion
+        Implement trackball rotaetion ... done
+
+
+
+        Implement translation
+        Implement zoom
 
 
         Menu Render -- Render GL
@@ -34,6 +39,5 @@ DONE - Python inheritance check
 
   誰が TriMesh の data を持っているのかはっきりさせる
   それを使って GLTriMeshNode は triangle を書く
-
 
 - Add drawmode

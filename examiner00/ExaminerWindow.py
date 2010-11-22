@@ -108,6 +108,60 @@ class ExaminerWindow(QtGui.QMainWindow):
 
         self.statusBar().showMessage('File--Open [' + fileName + ']')
 
+
+    # View -- move mode
+    def menu_view_move(self):
+        print 'NIN: menu_view_move'
+
+    # View -- move mode
+    def menu_view_move(self):
+        print 'NIN: menu_view_move'
+
+    # View -- move mode
+    def menu_view_move(self):
+        print 'NIN: menu_view_move'
+
+    # View -- move mode
+    def menu_view_move(self):
+        print 'NIN: menu_view_move'
+
+    # View -- move mode
+    def menu_view_move(self):
+        print 'NIN: menu_view_move'
+
+    # View -- pick mode
+    def menu_view_pick(self):
+        print 'NIN: menu_view_pick'
+
+    # View -- lasso mode
+    def menu_view_lasso(self):
+        print 'NIN: menu_view_lasso'
+
+    # View -- identify mode
+    def menu_view_identify(self):
+        print 'NIN: menu_view_identify'
+
+    # View -- restore home
+    def menu_view_restorehome(self):
+        print 'NIN: menu_view_restorehome'
+
+    # View -- set home
+    def menu_view_sethome(self):
+        print 'NIN: menu_view_sethome'
+
+    # View -- all
+    def menu_view_all(self):
+        print 'NIN: menu_view_all'
+
+    # View -- toggle perspective
+    def menu_view_toggle_perspective(self):
+        print 'NIN: menu_view_toggle_perspective'
+
+    # View -- scenegraph
+    def menu_view_scenegraph(self):
+        print 'NIN: menu_view_scenegraph'
+
+
     # Process--IFGI ptrace
     def menu_process_ifgi_ptrace(self):
         self.statusBar().showMessage('NIN: Process--IFGI ptrace invoked')
@@ -121,6 +175,7 @@ class ExaminerWindow(QtGui.QMainWindow):
                                 'Author: Yamauchi, Hitoshi.')
     # create menubar actions
     def createActions(self):
+        # File menu
         self.newAct = QtGui.QAction("&New", self,
                                     shortcut=QtGui.QKeySequence.New,
                                     statusTip="Create a new scene",
@@ -135,26 +190,93 @@ class ExaminerWindow(QtGui.QMainWindow):
                                      statusTip="Exit the application",
                                      triggered=self.close)
 
+        # View menu -- view mode
+        self.viewMoveAct = QtGui.QAction("Examine mode", self, # shortcut="Ctrl+M",
+                                         checkable=True,
+                                         statusTip="Examine object mode (Trackball)",
+                                         triggered=self.menu_view_move)
+        self.viewPickAct = QtGui.QAction("Picking mode", self, # shortcut="Ctrl+M",
+                                         checkable=True,
+                                         statusTip="Picking mode",
+                                         triggered=self.menu_view_pick)
+        self.viewLassoAct = QtGui.QAction("Lasso mode", self, # shortcut="Ctrl+M",
+                                          checkable=True,
+                                          statusTip="Lasso mode",
+                                          triggered=self.menu_view_lasso)
+        self.viewIdentifyAct = QtGui.QAction("Identify mode", self, # shortcut="Ctrl+M",
+                                             checkable=True,
+                                             statusTip="Identify mode",
+                                             triggered=self.menu_view_identify)
+        # make these a group (radio button)
+        self.viewModeGroup = QtGui.QActionGroup(self)
+        self.viewModeGroup.addAction(self.viewMoveAct)
+        self.viewModeGroup.addAction(self.viewPickAct)
+        self.viewModeGroup.addAction(self.viewLassoAct)
+        self.viewModeGroup.addAction(self.viewIdentifyAct)
+        self.viewMoveAct.setChecked(True) # default mode
+        
+        # View menu -- change view related
+        self.viewRestoreHomeyAct = QtGui.QAction("Restore Home", self, 
+                                                 statusTip="Restore the home view",
+                                                 triggered=self.menu_view_restorehome)
+        self.viewSetHomeyAct = QtGui.QAction("Set home", self, 
+                                             statusTip="Set current view to home",
+                                             triggered=self.menu_view_sethome)
+        self.viewViewallAct = QtGui.QAction("View all", self, 
+                                            statusTip="View whole scene",
+                                            triggered=self.menu_view_all)
+        self.viewTogglePerspectiveAct = QtGui.QAction(
+            "Toggle Perspective", self, 
+            checkable=True,
+            statusTip="Toggle Perspective and Orthogonal view",
+            triggered=self.menu_view_toggle_perspective)
+        # default perspective FIXME check camera
+        self.viewTogglePerspectiveAct.setChecked(True) 
+
+        self.viewScenegraphAct = QtGui.QAction("Show scene graph", self, 
+                                               statusTip="Show scenegraph control",
+                                               triggered=self.menu_view_scenegraph)
+        
+
+        # Process menu
         self.ifgi_ptraceAct = QtGui.QAction("&IFGI ptrace", self,
                                             # shortcut=QtGui.QKeySequence.Undo,
                                             statusTip="invoke the IFGI path tracer",
                                             triggered=self.menu_process_ifgi_ptrace)
 
+        # Help menu
         self.aboutAct = QtGui.QAction("&About", self,
                                       statusTip="Show the ExaminerWindow's About box",
                                       triggered=self.menu_help_about)
 
     # create menubar
     def createMenus(self):
+        # file menu
         self.fileMenu = self.menuBar().addMenu("&File")
         self.fileMenu.addAction(self.newAct)
         self.fileMenu.addAction(self.openAct)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.exitAct)
 
+        # view menu
+        self.viewMenu = self.menuBar().addMenu("&View")        
+        self.viewMenu.addAction(self.viewMoveAct)
+        self.viewMenu.addAction(self.viewPickAct)
+        self.viewMenu.addAction(self.viewLassoAct)
+        self.viewMenu.addAction(self.viewIdentifyAct)
+        self.viewMenu.addSeparator()
+        self.viewMenu.addAction(self.viewRestoreHomeyAct)
+        self.viewMenu.addAction(self.viewSetHomeyAct)
+        self.viewMenu.addAction(self.viewViewallAct)
+        self.viewMenu.addAction(self.viewTogglePerspectiveAct)
+        self.viewMenu.addSeparator()
+        self.viewMenu.addAction(self.viewScenegraphAct)
+
+        # process menu
         self.processMenu = self.menuBar().addMenu("&Process")
         self.processMenu.addAction(self.ifgi_ptraceAct)
 
+        # help menu
         self.helpMenu = self.menuBar().addMenu("&Help")
         self.helpMenu.addAction(self.aboutAct)
 
