@@ -11,7 +11,6 @@ import SceneGraph
 from OpenGL import GL
 from OpenGL import GLU
 
-
 #
 # OpenGL scene graph
 #
@@ -42,7 +41,7 @@ class GLSceneGraph(object):
         self.print_sgnode_sub(self.gl_root_node, 0)
 
 
-    # copy scenegraph tree sub
+    # copy scenegraph tree subroutine
     def copy_sgnode_sub(self, _cur_sgnode, _cur_glnode, _level):
         if _cur_sgnode.primitive != None:
             # create primitive node and set the primitive
@@ -180,7 +179,7 @@ class GLTriMeshNode(GLSceneGraphNode):
 
     # draw
     def draw(self, _global_mode):
-        print 'DEBUG: primitive is ' + self.primitive.get_classname()
+        # print 'DEBUG: primitive is ' + self.primitive.get_classname()
         self.draw_flat_shading()
 
 

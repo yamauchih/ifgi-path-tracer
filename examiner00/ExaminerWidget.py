@@ -351,7 +351,6 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
             ((self.actionMode == PickingMode))): # && !d_popupEnabled) ) {
 
             newPoint2D = QtUtil.QPoint2numpy(_event.pos())
-            print 'DEBUG:' + str(newPoint2D)
             isInside = ((newPoint2D[0] >=0 ) and (newPoint2D[0] <= self.glWidth()) and
                         (newPoint2D[1] >=0 ) and (newPoint2D[1] <= self.glHeight()))
 

@@ -13,6 +13,79 @@ import ConvReader2Primitive
 
 
 #
+# SceneGraph traverse strategy interfgace
+#
+# See the example implementtaion SGTPrintStrategy
+#
+class SceneGraphTraverseStrategyIF(object):
+    # constructor
+    def __init__(self):
+        pass
+
+    # apply strategy to node before recurse
+    #
+    # \param[in]  _cur_node current visting node
+    # \param[in]  _level    current depth
+    #
+    def apply_before_recurse(self, _cur_node, _level):
+        assert(false)           # you need to implement this in the inherited class
+
+    # apply strategy while visiting children
+    #
+    # \param[in]  _cur_node current visting node
+    # \param[in]  _level    current depth
+    #
+    def apply_middle(self, _cur_node, _level):
+        assert(false)           # you need to implement this in the inherited class
+
+    # apply strategy after visiting (when returning from the recurse)
+    #
+    # \param[in]  _cur_node current visting node
+    # \param[in]  _level    current depth
+    #
+    def apply_after_recurse(self, _cur_node, _level):
+        assert(false)           # you need to implement this in the inherited class
+
+
+
+#
+# Example implementation of SceneGraphTraverseStrategyIF
+#
+# Print out all the nodes in the scene graph
+#
+class SGTPrintStrategy(SceneGraphTraverseStrategyIF):
+    # constructor
+    def __init__(self):
+        pass
+
+    # apply strategy to node before recurse. Implementation
+    #
+    # \param[in]  _cur_node current visting node
+    # \param[in]  _level    current depth
+    #
+    def apply_before_recurse(self, _cur_node, _level):
+        _cur_node.print_nodeinfo(_level)
+
+
+    # apply strategy while visiting children. Implementation
+    #
+    # \param[in]  _cur_node current visting node
+    # \param[in]  _level    current depth
+    #
+    def apply_middle(self, _cur_node, _level):
+        pass                    # not use in this class
+
+    # apply strategy after visiting (when returning from the recurse). Implementation
+    #
+    # \param[in]  _cur_node current visting node
+    # \param[in]  _level    current depth
+    #
+    def apply_after_recurse(self, _cur_node, _level):
+        pass                    # not use in this class
+
+
+
+#
 # scene graph
 #
 # This has
@@ -25,6 +98,28 @@ class SceneGraph(object):
         self.camera       = Camera.IFGICamera()
         self.root_node    = None
 
+    # travertse the scenegraph. subroutine of traverse_sgnode
+    #
+    #  traverse scenegraph and apply _strategy to all nodes
+    #
+    # \param[in] _cur_node current visiting node
+    # \param[in] _level    current depth of the graph from the root
+    def traverse_sgnode_sub(self, _cur_node, _level, _strategy):
+        _strategy.apply_before_recurse(_cur_node, _level)
+        if _cur_node.primitive == None:
+            # children container
+            for chnode in _cur_node.children:
+                _strategy.apply_middle(chnode, _level)
+                self.traverse_sgnode_sub(chnode, _level + 1, _strategy)
+
+        _strategy.apply_after_recurse(_cur_node, _level)
+
+
+    # traverse the scenegraph
+    #
+    def traverse_sgnode(self, _cur_node, _strategy):
+        level = 0
+        self.traverse_sgnode_sub(_cur_node, level, _strategy)
 
     # for debug
     #  print out scenegraph nodes
@@ -36,7 +131,6 @@ class SceneGraph(object):
                 chnode.print_nodeinfo(_level)
                 self.print_sgnode_sub(chnode, _level + 1)
 
-
     # for debug
     #  print out scenegraph nodes
     def print_sgnode(self, _cur_node):
@@ -44,8 +138,8 @@ class SceneGraph(object):
         self.print_sgnode_sub(_cur_node, level)
 
 
-    # for debug
-    def print_obj(self):
+    # # for debug
+    def print_obj_bak(self):
         print '# SceneGraph'
         print '# SceneGraph::camera'
         self.camera.print_obj()
@@ -54,10 +148,23 @@ class SceneGraph(object):
             return
         self.print_sgnode(self.root_node)
 
+    # for debug and example of usage of SceneGraphTraverseStrategyIF
+    def print_obj(self):
+        print '# SceneGraph'
+        print '# SceneGraph::camera'
+        self.camera.print_obj()
+        if self.root_node == None:
+            print 'no root_node'
+            return
+        print_strategy = SGTPrintStrategy()
+        self.traverse_sgnode(self.root_node, print_strategy)
+
+
+
 
 
 #
-# scene graph node
+# Scene Graph Node
 #
 # This has
 #   - children
@@ -115,7 +222,7 @@ def create_one_trimeh_scenegraph(_objfname):
     if tmesh.is_valid() == False:
         raise StandardError, ('TriMesh is not valid.')
 
-    print 'DEBUG: BBOX = ' + str(tmesh.get_bbox())
+    print 'DEBUG:BBOX = ' + str(tmesh.get_bbox())
 
     # create scenegraph
     sg = SceneGraph()

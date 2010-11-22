@@ -139,7 +139,7 @@ class TriMesh(Primitive):
     def update_bbox(self):
         self.bbox.invalidate()  # reset the bbox
         for pos in self.vertex_list:
-            self.bbox.insert_poinst(pos)
+            self.bbox.insert_point(pos)
 
 
     # class name
