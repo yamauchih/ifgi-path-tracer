@@ -20,7 +20,7 @@ def getRotationMat(_angle, _rot_axis):
 
   mag = math.sqrt( x*x + y*y + z*z );
   if (mag == 0):
-      raise StandardError, ('Zero axis')
+      raise StandardError, ('Zero axis: ' + str(_rot_axis))
 
   s = math.sin(_angle);
   c = math.cos(_angle);
@@ -90,7 +90,7 @@ def transformVector(_m44, _v3):
 #
 # 2d point to 3d point map
 #
-# \param[in]  _point2d point in a window coordinate
+# \param[in]  _point2d point in a window coordinate (numpy array)
 # \param[in]  _win_width  window width
 # \param[in]  _win_height window height
 # \return pos3d, position on a sphere
@@ -98,8 +98,8 @@ def mapToSphere(_win_point2d, _win_width, _win_height):
     assert(_win_width  > 0)
     assert(_win_height > 0)
 
-    wx = float(_win_point2d.x())
-    wy = float(_win_point2d.y())
+    wx = _win_point2d[0]
+    wy = _win_point2d[1]
 
     # check _win_point2d is in range
     if ((wx < 0) or (wx >= _win_width) or (wy < 0) or (wy >= _win_height)):
@@ -123,5 +123,4 @@ def mapToSphere(_win_point2d, _win_width, _win_height):
     pos3d = numpy.array([sinx, siny, z])
 
     return pos3d
-
 

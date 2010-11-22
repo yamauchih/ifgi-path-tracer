@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 #
-# test for Examiner widget related functions
+# test for ifgi math module
 #
 
-"""test IFGI ExaminerWidget"""
+"""test IFGI math module"""
 
 import unittest
 import numpy
 import ifgimath
 
-class TestExaminerWidget(unittest.TestCase):
-
+class TestIFGImathModule(unittest.TestCase):
     # test mapToSphere function
     def test_mapToSphere(self):
 
@@ -27,11 +26,11 @@ class TestExaminerWidget(unittest.TestCase):
 
         for wpos in win_pos_list:
             ret = ifgimath.mapToSphere(wpos, win_width, win_height)
-            print 'map to sphere ' + str(wpos) + ' -> ' + str(ret)
+            # print 'map to sphere ' + str(wpos) + ' -> ' + str(ret)
 
 #
 # main test
 #
-suit0   = unittest.TestLoader().loadTestsFromTestCase(TestExaminerWidget)
+suit0   = unittest.TestLoader().loadTestsFromTestCase(TestIFGImathModule)
 alltest = unittest.TestSuite([suit0])
 unittest.TextTestRunner(verbosity=2).run(alltest)

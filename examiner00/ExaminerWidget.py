@@ -20,6 +20,7 @@ from OpenGL import GLU
 import enum
 import ifgimath
 import Camera
+import QtUtil
 
 #
 # Examiner's action mode
@@ -41,8 +42,9 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         self.gl_scenegraph = None
 
         # mouse points
-        self.lastPoint2D = QtCore.QPoint()
-        self.lastPoint3D = numpy.array([0, 0, 0]) # z == 0, not hit to the trackball sphere
+        self.lastPoint2D = numpy.array([0, 0])
+        # z == 0, not hit to the trackball sphere
+        self.lastPoint3D = numpy.array([0, 0, 0])
 
         # draw mode
         self.global_draw_mode = 0
@@ -227,7 +229,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
             elif (self.actionMode == ActionMode.ExamineMode):
                 # remember this point
-                self.lastPoint2D = _event.pos()
+                self.lastPoint2D = QtUtil.QPoint2numpy(_event.pos())
                 self.lastPoint3D = ifgimath.mapToSphere(self.lastPoint2D,
                                                         self.glWidth(), self.glHeight())
 
@@ -316,7 +318,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         #        arg.x=_event.x();
         #        arg.y=_event.y();
         #        buttonState(_event,arg.button,arg.stateBefore,arg.stateAfter);
-        
+
         #        notify(arg); ioProcessDetachRequests();
         #    }
         pass
@@ -324,10 +326,11 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
     # ExamineMode: Rotate Trackball
     #
-    # \param[in] _qpoint2D current mouse 2D point
-    def examineModeRotateTrackball(self, _qpoint2D):
+    # \param[in] _numpoint2D current mouse 2D point
+    def examineModeRotateTrackball(self, _numpoint2D):
         if (self.lastPoint3D[2] != 0): # z == 0 ... not hit on sphere
-            newPoint3D = ifgimath.mapToSphere(_qpoint2D, self.glWidth(), self.glHeight())
+            newPoint3D = ifgimath.mapToSphere(_numpoint2D,
+                                              self.glWidth(), self.glHeight())
             if (newPoint3D[2] != 0): # point hits the sphere
                 angle = 0
                 rot_axis  = numpy.cross(self.lastPoint3D, newPoint3D)
@@ -347,10 +350,10 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         if ((_event.button() != QtCore.Qt.RightButton) or
             ((self.actionMode == PickingMode))): # && !d_popupEnabled) ) {
 
-            newPoint2D = _event.pos()
-
-            isInside = ((newPoint2D.x() >=0 ) and (newPoint2D.x() <= self.glWidth()) and
-                        (newPoint2D.y() >=0 ) and (newPoint2D.y() <= self.glHeight()))
+            newPoint2D = QtUtil.QPoint2numpy(_event.pos())
+            print 'DEBUG:' + str(newPoint2D)
+            isInside = ((newPoint2D[0] >=0 ) and (newPoint2D[0] <= self.glWidth()) and
+                        (newPoint2D[1] >=0 ) and (newPoint2D[1] <= self.glHeight()))
 
             if  (self.actionMode == ActionMode.PickingMode):
                 self.examineModePick()
@@ -362,7 +365,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
                 if (not isInside):
                     return      # do nothing if mouse is outside of the window
 
-                newPoint3D = ifgimath.mapToSphere(newPoint2D, 
+                newPoint3D = ifgimath.mapToSphere(newPoint2D,
                                                   self.glWidth(), self.glHeight());
                 # makeCurrent()?
 

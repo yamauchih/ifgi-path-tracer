@@ -12,9 +12,9 @@ class TestCamera(unittest.TestCase):
 
     def test_camera0(self):
         glcam = Camera.GLCamera()
-        glcam.print_obj()
+        # glcam.print_obj()
         mat = glcam.getCoordinateSystem()
-        print mat
+        # print mat
 
 
 #

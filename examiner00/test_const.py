@@ -15,7 +15,7 @@ class ConstTest(object):
         const.a = 'hello'
         self.a = const.a
         self.a = 'world'
-        print self.a
+        # print self.a
 
 ConstTest()
 
