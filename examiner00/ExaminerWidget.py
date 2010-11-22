@@ -52,7 +52,8 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         self.isRotating = False
 
         # SceneGraph coordinate
-        self.scene_cog = numpy.array([0,0,0])
+        self.scene_cog    = numpy.array([0,0,0])
+        self.scene_radius = 1.0
 
         # window info
         self.width  = 1
@@ -114,11 +115,38 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         GL.glLoadIdentity()
 
         # DEBUG: self.gl_camera.print_obj()
-        GLU.gluPerspective(self.gl_camera.get_fov() * 180 /math.pi,
+        GLU.gluPerspective(self.gl_camera.get_fovy_rad() * 180 /math.pi,
                            self.gl_camera.get_aspect_ratio(),
                            self.gl_camera.get_z_near(),
                            self.gl_camera.get_z_far())
         GL.glMatrixMode(GL.GL_MODELVIEW)
+
+
+    #----------------------------------------------------------------------
+    # View related methods
+    #----------------------------------------------------------------------
+    # view -- restoreHome
+    def viewRestoreHome(self):
+        print 'NIN: ExaminerWidget viewRestoreHome()'
+
+    # view -- setHome
+    def viewSetHome(self):
+        print 'NIN: ExaminerWidget viewSetHome()'
+
+    # view -- all
+    def viewAll(self):
+        cam_basis = self.gl_camera.getCoordinateSystem()
+        eyepos = self.scene_cog
+        if (self.gl_camera.getProjection() == ProjectionMode.Perspective):
+            halfrad = 0.5 * self.gl_camera.fovy_rad()
+            dist    = self.scene_radius/math.sin(halfrad)
+            dist    = max(dist, dist/self.gl_camera.aspectRatio())
+            eyepos = eyepos - dist * cam_basis[2]
+        else:
+            eyepos = eyepos = (2.0 * self.scene_radius) * cam_basis[2]
+
+        self.gl_camera.set_eye_pos(eyepos)
+        # Ortho mode d_camera.orthoWidth(2.0*d_radius);
 
 
     # translate the camera

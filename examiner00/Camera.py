@@ -24,7 +24,7 @@ class Camera(object):
         self.eye_pos      = numpy.array([0, 0,  5])
         self.view_dir     = numpy.array([0, 0, -1])
         self.up_dir       = numpy.array([0, 1,  0])
-        self.fov          = 45.0 * math.pi / 180.0
+        self.fovy_rad     = 45.0 * math.pi / 180.0
         self.aspect_ratio = 1.0
         self.z_near       = 0.1
         self.z_far        = 1000
@@ -52,9 +52,9 @@ class Camera(object):
     def set_up_dir(self, _up_dir):
         self.up_dir = _up_dir
 
-    # get fov as radian
-    def get_fov(self):
-        return self.fov
+    # get fovy as radian
+    def get_fovy_rad(self):
+        return self.fovy_rad
 
     # get aspect ratio
     def get_aspect_ratio(self):
@@ -100,7 +100,7 @@ class Camera(object):
         print '#' + cname + '::eye_pos = '  + str(self.eye_pos)
         print '#' + cname + '::view_dir = ' + str(self.view_dir)
         print '#' + cname + '::up_dir = '   + str(self.up_dir)
-        print '#' + cname + '::fov = '      + str(self.fov)
+        print '#' + cname + '::fovy_rad = ' + str(self.fovy_rad)
         print '#' + cname + '::aspect_ratio = ' + str(self.aspect_ratio)
         print '#' + cname + '::z_near = '   + str(self.z_near)
         print '#' + cname + '::z_far = '    + str(self.z_far)

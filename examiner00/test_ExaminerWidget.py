@@ -7,7 +7,7 @@
 
 import unittest
 import numpy
-import ExaminerWidget
+import ifgimath
 
 class TestExaminerWidget(unittest.TestCase):
 
@@ -26,7 +26,7 @@ class TestExaminerWidget(unittest.TestCase):
         pos3d_on_sphere = numpy.array([0, 0, 0])
 
         for wpos in win_pos_list:
-            ret = ExaminerWidget.mapToSphere(wpos, win_width, win_height)
+            ret = ifgimath.mapToSphere(wpos, win_width, win_height)
             print 'map to sphere ' + str(wpos) + ' -> ' + str(ret)
 
 #
