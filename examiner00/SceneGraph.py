@@ -5,6 +5,8 @@
 
 """IFGI Generic SceneGraph"""
 
+import copy
+
 # import math
 import Camera
 import Primitive
@@ -94,7 +96,7 @@ class SGTPrintStrategy(SceneGraphTraverseStrategyIF):
 class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
     # constructor
     def __init__(self):
-        self.bbox_list = []
+        pass
 
     # apply strategy to node before recurse. Implementation
     #
@@ -104,9 +106,7 @@ class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
     # \param[in]  _level    current depth
     #
     def apply_before_recurse(self, _cur_node, _level):
-        if len(self.bbox_list) <= _level:
-            self.bbox_list.append(Primitive.BBox())
-
+        pass
 
     # apply strategy while visiting children. Implementation
     #
@@ -116,7 +116,7 @@ class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
     # \param[in]  _level    current depth
     #
     def apply_middle(self, _cur_node, _level):
-        self.bbox_list(_level).insert_bbox(_cur_node.get_bbox())
+        pass
 
 
     # apply strategy after visiting (when returning from the recurse). Implementation
@@ -127,8 +127,15 @@ class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
     # \param[in]  _level    current depth
     #
     def apply_after_recurse(self, _cur_node, _level):
-        if (_level > 0):
-            self.bbox_list(_level - 1).insert_bbox(self.bbox_list(_level))
+        if _cur_node.is_primitive_node():
+            # primitive, get the bbox from primitive
+            _cur_node.set_bbox(_cur_node.get_primitive().get_bbox())
+        else:
+            # This is a group node. The children has already been
+            # updated the bbox. Now we found the bbox that contains
+            # all the children bbox.
+            for chnode in _cur_node.children:
+                _cur_node.get_bbox().insert_bbox(chnode.get_bbox())
 
 #
 # scene graph
@@ -159,7 +166,7 @@ class SceneGraph(object):
     # \param[in] _level    current depth of the graph from the root
     def traverse_sgnode_sub(self, _cur_node, _level, _strategy):
         _strategy.apply_before_recurse(_cur_node, _level)
-        if _cur_node.primitive == None:
+        if (not _cur_node.is_primitive_node()):
             # children container
             for chnode in _cur_node.children:
                 _strategy.apply_middle(chnode, _level)
@@ -208,7 +215,7 @@ class SceneGraphNode(object):
     def __init__(self):
         self.children  = []
         self.primitive = None
-        self.bbox      = None
+        self.bbox      = Primitive.BBox()
 
     # set primitive
     def set_primitive(self, _prim):
@@ -218,22 +225,39 @@ class SceneGraphNode(object):
             print 'Warning. This node has a primitive.'
         self.primitive = _prim
 
+    # is this primitive node?
+    #  otherwise this should be a group node (has children).
+    def is_primitive_node(self):
+        if self.primitive == None:
+            return False
+        return True
+
+    # get primitive
+    #  raise exception when this is not a primitive
+    def get_primitive(self):
+        if (not self.is_primitive_node()):
+            raise StandardError, ('this SceneGraphNode is not a primitive node.')
+        return self.primitive
+
     # append child
     def append_child(self, _child):
-        if self.primitive != None:
-            raise StandardError, ('Can not append a child. already had a primitive.')
+        if self.is_primitive_node():
+            raise StandardError, ('Cannot append a child to a primitive node.')
         self.children.append(_child)
 
     # get bounding box of this node
     def get_bbox(self):
-        if self.primitive != None:
-            # if primitive exists, return its bbox
-            return self.primitive.get_bbox()
-        else:
-            # no primitive, return this bbox
-            if self.bbox == None:
-                self.bbox = Primitive.BBox()
-            return self.bbox
+        # check the consistency for debug
+        if self.is_primitive_node():
+            assert(self.bbox.equal(self.primitive.get_bbox()) == True)
+
+        return self.bbox
+
+    # assign bbox value
+    #   set the bbox object. (_bbox is cloned before set.)
+    def set_bbox(self, _bbox):
+        self.bbox = copy.deepcopy(_bbox)
+
 
     # for debug
     #     def print_obj(self):

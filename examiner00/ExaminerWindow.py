@@ -304,9 +304,7 @@ class ExaminerWindow(QtGui.QMainWindow):
 
         # attach the GL scene graph to Examiner to see
         self.examiner_widget.attach_gl_scenegraph(glsg)
-
-
-
+        self.examiner_widget.view_all()
 
 
 # get default option list

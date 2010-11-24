@@ -52,9 +52,14 @@ class BBox(Primitive):
     # insert point, grow the bbox
     def insert_point(self, _newpos):
         for i in xrange(0, 3, 1):
-            if   (self.min[i] > _newpos[i]):
+            if (self.min[i] > _newpos[i]):
                 self.min[i] = _newpos[i]
-            elif (self.max[i] < _newpos[i]):
+            # here elif (self.max[i] < _newpos[i]): doesn't work, when
+            # just after invalidate() call when [max, max, max]-[-max,
+            # -max, -max], insert [0,0,0], both min, max must be
+            # [0,0,0], if I use elif, only min is updated. Therefore
+            # this must be if:
+            if (self.max[i] < _newpos[i]):
                 self.max[i] = _newpos[i]
 
     # insert bbox, grow the bbox
@@ -70,11 +75,22 @@ class BBox(Primitive):
     def get_bbox(self):
         return self
 
+    # equal?
+    #  comparison self with _other. If exact the same, return True
+    #  otherwise False.
+    # \param[in] _other other bounding box to compare
+    def equal(self, _other):
+        if (self is _other):    # if the same object, True
+            return True
+        elif (((self.min == _other.min).all()) and ((self.max == _other.max).all())):
+            # numpy == is elementwise, all() is all element-and
+            return True
+        return False
+
     # string representation
     def __str__(self):
         return 'bbox[%g %g %g]-[%g %g %g]' % (self.min[0], self.min[1], self.min[2],
                                               self.max[0], self.max[1], self.max[2])
-
 
     # compute ray intersection
     def ray_intersect(self, _ray):
@@ -145,7 +161,6 @@ class TriMesh(Primitive):
         self.bbox.invalidate()  # reset the bbox
         for pos in self.vertex_list:
             self.bbox.insert_point(pos)
-
 
     # class name
     def get_classname(self):

@@ -97,6 +97,9 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         ep = self.gl_camera.get_eye_pos()  # eye pos
         vd = self.gl_camera.get_view_dir() # lookat point
         up = self.gl_camera.get_up_dir()   # up vector
+        # print 'DEBUG: ep = ' + str(ep)
+        # print 'DEBUG: vd = ' + str(vd)
+        # print 'DEBUG: up = ' + str(up)
         GLU.gluLookAt(ep[0], ep[1], ep[2],
                       vd[0], vd[1], vd[2],
                       up[0], up[1], up[2])
@@ -128,26 +131,28 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     # View related methods
     #----------------------------------------------------------------------
     # view -- restoreHome
-    def viewRestoreHome(self):
+    def view_restorehome(self):
         print 'NIN: ExaminerWidget viewRestoreHome()'
 
     # view -- setHome
-    def viewSetHome(self):
+    def view_sethome(self):
         print 'NIN: ExaminerWidget viewSetHome()'
 
     # view -- all
-    def viewAll(self):
+    def view_all(self):
         cam_basis = self.gl_camera.getCoordinateSystem()
         eyepos = self.scene_cog
-        if (self.gl_camera.getProjection() == ProjectionMode.Perspective):
-            halfrad = 0.5 * self.gl_camera.fovy_rad()
-            dist    = self.scene_radius/math.sin(halfrad)
-            dist    = max(dist, dist/self.gl_camera.aspectRatio())
+        if (self.gl_camera.getProjection() == Camera.ProjectionMode.Perspective):
+            halfrad = 0.5 * self.gl_camera.get_fovy_rad()
+            dist    = self.scene_radius/math.tan(halfrad)
+            mag     = 1.2       # slack
+            dist    = mag * max(dist, dist/self.gl_camera.get_aspect_ratio())
             eyepos = eyepos - dist * cam_basis[2]
         else:
             eyepos = eyepos = (2.0 * self.scene_radius) * cam_basis[2]
 
         self.gl_camera.set_eye_pos(eyepos)
+
         # Ortho mode d_camera.orthoWidth(2.0*d_radius);
 
 
@@ -446,6 +451,11 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         self.scene_radius = 0.5 * numpy.linalg.norm(bb.max - bb.min)
         print 'DEBUG:scene_cog: ' + str(self.scene_cog) + ', scene_radius: '\
             + str(self.scene_radius)
+        if self.scene_radius < 1e-6:
+            # nothing seems in there
+            self.scene_radius = 1.0
+            print 'DEBUG:empty scene: adjust radius = 1.0'
+
 
 #
 # MainWindow for Test

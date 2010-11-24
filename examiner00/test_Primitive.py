@@ -30,6 +30,34 @@ class TestPrimitive(unittest.TestCase):
             assert(bbox.min[i] <= bbox.max[i])
             assert(bbox.max[i] <= maxp[i])
 
+    # test primitive: one triangle
+    def test_primitive_one_tri(self):
+        tmesh = Primitive.TriMesh()
+
+        vertex_list       = []
+        face_idx_list     = []
+        texcoord_list     = []
+        texcoord_idx_list = []
+        normal_list       = []
+        normal_idx_list   = []
+
+        # add a triangle
+        vertex_list.append(numpy.array([ 1.0, 0.0, 0.0]))
+        vertex_list.append(numpy.array([ 0.0, 1.0, 0.0]))
+        vertex_list.append(numpy.array([-1.0, 0.0, 0.0]))
+        face_idx_list.append(numpy.array([0, 1, 2]))
+
+        tmesh.set_data(vertex_list,
+                       face_idx_list,
+                       texcoord_list,
+                       texcoord_idx_list,
+                       normal_list,
+                       normal_idx_list
+                       )
+        bbox = Primitive.BBox()
+        bbox.insert_point(numpy.array([-1.0, 0.0, 0.0]))
+        bbox.insert_point(numpy.array([ 1.0, 1.0, 0.0]))
+        assert(tmesh.get_bbox().equal(bbox))
 
 #
 # main test
