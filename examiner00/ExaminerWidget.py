@@ -101,7 +101,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         # print 'DEBUG: vd = ' + str(vd)
         # print 'DEBUG: up = ' + str(up)
         GLU.gluLookAt(ep[0], ep[1], ep[2],
-                      vd[0], vd[1], vd[2],
+                      vd[0], vd[1], vd[2], # Wrong! this must be a lookat point. FIXME
                       up[0], up[1], up[2])
 
         self.draw_scene()
@@ -157,14 +157,19 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
 
     # translate the camera
+    # \param[in] _trans translation
     def translate(self, _trans):
-        print 'NIN: translate(self, _trans):'
-#         SceneGraph::Camera::Vec3 ex, ey, ez;
-#         d_camera.coordinateSystem(ex,ey,ez);
-#         SceneGraph::Camera::Vec3 t=ex*_trans[0]+ey*_trans[1]-ez*_trans[2];
-#         d_camera.lock();
-#         d_camera.eye(d_camera.eye()-t);
-#         d_camera.unlock();
+        cam_basis = self.gl_camera.getCoordinateSystem()
+        # print 'DEBUG: ' + str(cam_basis) DELETEME
+        cam_trans = (cam_basis[0] * _trans[0] +
+                     cam_basis[1] * _trans[1] -
+                     cam_basis[2] * _trans[2])
+        # print 'DEBUG: cam_trans ' + str(cam_trans)
+        eyepos = self.gl_camera.get_eye_pos();
+        # print 'DEBUG: eyepos: ' + str(eyepos) + ' -> ',
+        eyepos = eyepos - cam_trans
+        self.gl_camera.set_eye_pos(eyepos);
+        # print 'DEBUG: result: ' + str(self.gl_camera.get_eye_pos())
 
 
     # rotate the camera with an axis
@@ -276,6 +281,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
     # ExamineMode: move in z direction
     def examineModeMoveZdir(self):
+        print 'NIN: examineModeMoveZdir'
         # move in z direction
         #   if (d_camera.projectionMode() == Camera.ProjectionMode.Perspective):
         #       value_y = d_radius * ((newPoint2D.y() - d_lastPoint2D.y()))
@@ -287,16 +293,18 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         #       d_camera.orthoWidth(d_camera.orthoWidth()-value_y);
         #   else:
         #       raise StandardError, ('no such projection mode')
-        pass
+
 
     # ExamineMode: move in x,y direction
-    def examineModeMoveXYdir(self):
-        # value_x = d_radius * ((newPoint2D.x() - d_lastPoint2D.x()))
-        # * 2.0 / (double) glWidth();
-        # value_y = d_radius * ((newPoint2D.y() - d_lastPoint2D.y()))
-        # * 2.0 / (double) glHeight();
-        # translate( base::Vec3f(value_x, -value_y, 0.0) );
-        pass
+    # \param[in] _newPoint2D mouse position on screen
+    def examineModeMoveXYdir(self, _newPoint2D):
+        value_x = (self.scene_radius * (_newPoint2D[0] - self.lastPoint2D[0]) *
+                   2.0 / float(self.glWidth()))
+        value_y = (self.scene_radius * (_newPoint2D[1] - self.lastPoint2D[1]) *
+                   2.0 / float(self.glHeight()))
+        # self.translate(numpy.array([value_x, -value_y, 0.0]));
+        self.translate(numpy.array([value_x, 0.0, 0.0]));
+
 
     # ExamineMode: Pick
     def examineModePick(self):
@@ -376,7 +384,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
                     (_event.buttons() & QtCore.Qt.MidButton)):
                     self.examineModeMoveZdir()
                 elif (_event.buttons() & QtCore.Qt.MidButton):
-                    self.examineModeMoveXYdir()
+                    self.examineModeMoveXYdir(newPoint2D)
                 elif (_event.buttons() & QtCore.Qt.LeftButton):
                     self.examineModeRotateTrackball(newPoint2D)
 

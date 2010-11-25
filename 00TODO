@@ -4,6 +4,8 @@ Done: Implement trackball rotaetion
 Done: Fix the test: not depends on Qt
 Done: Compute bounding box of the scene and set to the Examiner.
 Done: Scene cog and Scene radius must be set after load mesh.
+
+Lookat point has a bug
 - Implement translation
 - Implement zoom
 
