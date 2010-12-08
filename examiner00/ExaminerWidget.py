@@ -94,14 +94,12 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
         GL.glLoadIdentity()
 
-        ep = self.gl_camera.get_eye_pos()  # eye pos
-        vd = self.gl_camera.get_view_dir() # lookat point
-        up = self.gl_camera.get_up_dir()   # up vector
+        [ep, at, up] = self.gl_camera.get_lookat(Camera.EyePosition.EyeCenter)
         # print 'DEBUG: ep = ' + str(ep)
-        # print 'DEBUG: vd = ' + str(vd)
+        # print 'DEBUG: at = ' + str(at)
         # print 'DEBUG: up = ' + str(up)
         GLU.gluLookAt(ep[0], ep[1], ep[2],
-                      vd[0], vd[1], vd[2], # Wrong! this must be a lookat point. FIXME
+                      at[0], at[1], at[2],
                       up[0], up[1], up[2])
 
         self.draw_scene()
@@ -140,9 +138,9 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
     # view -- all
     def view_all(self):
-        cam_basis = self.gl_camera.getCoordinateSystem()
+        cam_basis = self.gl_camera.get_coordinate_system()
         eyepos = self.scene_cog
-        if (self.gl_camera.getProjection() == Camera.ProjectionMode.Perspective):
+        if (self.gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
             halfrad = 0.5 * self.gl_camera.get_fovy_rad()
             dist    = self.scene_radius/math.tan(halfrad)
             mag     = 1.2       # slack
@@ -159,7 +157,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     # translate the camera
     # \param[in] _trans translation
     def translate(self, _trans):
-        cam_basis = self.gl_camera.getCoordinateSystem()
+        cam_basis = self.gl_camera.get_coordinate_system()
         # print 'DEBUG: ' + str(cam_basis) DELETEME
         cam_trans = (cam_basis[0] * _trans[0] +
                      cam_basis[1] * _trans[1] -
@@ -177,7 +175,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     # \param[in] _angle   degree
     # \param[in] _pn_axis rotate axis
     def rotate_camera(self, _angle, _pn_axis):
-        cam_basis = self.gl_camera.getCoordinateSystem()
+        cam_basis = self.gl_camera.get_coordinate_system()
         rotation = numpy.identity(4)
 
         eyepos = self.gl_camera.get_eye_pos() - self.scene_cog
@@ -302,8 +300,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
                    2.0 / float(self.glWidth()))
         value_y = (self.scene_radius * (_newPoint2D[1] - self.lastPoint2D[1]) *
                    2.0 / float(self.glHeight()))
-        # self.translate(numpy.array([value_x, -value_y, 0.0]));
-        self.translate(numpy.array([value_x, 0.0, 0.0]));
+        self.translate(numpy.array([value_x, -value_y, 0.0]));
 
 
     # ExamineMode: Pick

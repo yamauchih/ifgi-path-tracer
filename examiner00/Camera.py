@@ -14,6 +14,11 @@ import enum
 #
 ProjectionMode = enum.Enum(['Perspective', 'Orthographic'])
 
+#
+# Eye Position
+#
+EyePosition = enum.Enum(['EyeCenter', 'EyeLeft', 'EyeRight'])
+
 
 #
 # camera base class
@@ -29,6 +34,7 @@ class Camera(object):
         self.z_near       = 0.1
         self.z_far        = 1000
         self.projection   = ProjectionMode.Perspective
+        self.focal_length = 1.0
         # print 'called Camara.__init__()'
 
     # get eye position
@@ -74,14 +80,26 @@ class Camera(object):
         return None
 
     # get projection mode
-    def getProjection(self):
+    def get_projection(self):
         return self.projection
+
+    # get gluLookAt() parameters 
+    #
+    # \param[in] _eye_position eye position for stereo {EyeCenter,
+    # EyeLeft, EyeRight}, NIN Not implemented now.
+    def get_lookat(self, _eye_position):
+        assert(_eye_position == EyePosition.EyeCenter)
+        assert(self.focal_length != 0)
+        return [self.eye_pos, 
+                self.eye_pos + self.focal_length * self.view_dir,
+                self.up_dir]
+
 
     # Get the camera coordinate system
     #
     # Get orthonrmal basis for camera coordinate system {_ex,_ey,_ez}.
     # \return [ex, ey, ez]  ["right", "up", viewingDriection()] system
-    def getCoordinateSystem(self):
+    def get_coordinate_system(self):
         ex  = numpy.cross(self.view_dir, self.up_dir)
         ex /= numpy.linalg.norm(ex)
         ey  = numpy.cross(ex, self.view_dir)
@@ -105,6 +123,7 @@ class Camera(object):
         print '#' + cname + '::z_near = '   + str(self.z_near)
         print '#' + cname + '::z_far = '    + str(self.z_far)
         print '#' + cname + '::projection = ' + str(self.projection)
+        print '#' + cname + '::focal_length = ' + str(self.focal_length)
 
 
 #
