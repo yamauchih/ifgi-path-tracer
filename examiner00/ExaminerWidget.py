@@ -158,13 +158,11 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     # \param[in] _trans translation
     def translate(self, _trans):
         cam_basis = self.gl_camera.get_coordinate_system()
-        # print 'DEBUG: ' + str(cam_basis) DELETEME
+        # Zdir '-' comes from the OpenGL coordinate system.
         cam_trans = (cam_basis[0] * _trans[0] +
                      cam_basis[1] * _trans[1] -
                      cam_basis[2] * _trans[2])
-        # print 'DEBUG: cam_trans ' + str(cam_trans)
         eyepos = self.gl_camera.get_eye_pos();
-        # print 'DEBUG: eyepos: ' + str(eyepos) + ' -> ',
         eyepos = eyepos - cam_trans
         self.gl_camera.set_eye_pos(eyepos);
         # print 'DEBUG: result: ' + str(self.gl_camera.get_eye_pos())
@@ -276,21 +274,67 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
             #       ioProcessDetachRequests()
 
 
+    # mouse wheel event
+    def wheelEvent(self, _event):
+        print 'Mouse wheel event: ' +  str(_event)
+        if (self.actionMode == ActionMode.PickingMode):
+            print 'NIN: wheel event: no PickingMode'
+            # QPoint newPoint2D = _event->pos();
+            # bool inside=((newPoint2D.x()>=0) && (newPoint2D.x()<=glWidth()) &&
+            #              (newPoint2D.y()>=0) && (newPoint2D.y()<=glHeight()));
+            # if (inside) {
+            #     # give event to the application. Notice wheel event is not a MouseEvent.
+            #     emit signalMouseWheelEvent(_event);
+
+            #     # for SceneGraph
+            #     SceneGraph::ObservableActor_Event arg(ArgumentType::MouseWheelMoved);
+            #     arg.x=_event->x();
+            #     arg.y=_event->y();
+            #     arg.button=0;
+            #     arg.stateAfter=arg.stateBefore=buttonState(_event);
+            #     # _event->orientation() may be not necessary, but in the future?
+            #     arg.wheelDelta=_event->delta();
+            #     notify(arg); ioProcessDetachRequests();
+        # elif (self.actionMode == ActionMode.LassoMode):
+        elif (self.actionMode == ActionMode.ExamineMode):
+            if (self.gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
+                # wheel only return +-120
+                zmove = - (float(_event.delta()) / 120.0) * 0.2 * self.scene_radius
+                self.translate([0.0, 0.0, zmove])
+            else:
+                print 'NIN: wheel movement with Orthographic projectionmode'
+                assert(self.gl_camera.get_projection() == 
+                       Camera.ProjectionMode.Orthographic)
+                # ow = self.gl_camera.get_ortho_width()
+                # zmove = (float)_event->delta() / 120.0 * 0.2 * ow;
+                # self.gl_camera.set_ortho_width(ow + zmove)
+        else:
+            raise StandardError, ('No such examiner mode')
+
+        # emit signalSetView(&d_camera);
+        # SceneGraph::ObservableActor_Event arg(ArgumentType::ViewChanged);
+        # notify(arg); ioProcessDetachRequests();
+        self.updateGL()
+        _event.accept()         # no more wheel event action
+
+
 
     # ExamineMode: move in z direction
-    def examineModeMoveZdir(self):
-        print 'NIN: examineModeMoveZdir'
+    #
+    # \param[in] _newPoint2D mouse position on screen
+    def examineModeMoveZdir(self, _newPoint2D):
         # move in z direction
-        #   if (d_camera.projectionMode() == Camera.ProjectionMode.Perspective):
-        #       value_y = d_radius * ((newPoint2D.y() - d_lastPoint2D.y()))
-        #       * 3.0 / (float) glHeight();
-        #       translate( base::Vec3f(0.0, 0.0, value_y) );
-        #   elif (d_camera.projectionMode() == Camera.ProjectionMode.Orthographic):
-        #       value_y = ((newPoint2D.y() - d_lastPoint2D.y()))
-        #       * d_camera.orthoWidth() / (float) glHeight();
-        #       d_camera.orthoWidth(d_camera.orthoWidth()-value_y);
-        #   else:
-        #       raise StandardError, ('no such projection mode')
+        if (self.gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
+            zmove = self.scene_radius * ((_newPoint2D[1] - self.lastPoint2D[1])
+                                           * 3.0 / float(self.glHeight()))
+            self.translate(numpy.array([0, 0, zmove]))
+        elif (self.gl_camera.get_projection() == Camera.ProjectionMode.Orthographic):
+            print 'NIN: examineModeMoveZdir: in Orthographic projection'
+            # ow    = self.gl_camera.get_ortho_width()
+            # zmove = ((_newPoint2D[1] - self.lastPoint2D[1]) * ow / float(self.glHeight()))
+            # self.gl_camera.set_orthowidth(ow - zmove)
+        else:
+            raise StandardError, ('no such projection mode')
 
 
     # ExamineMode: move in x,y direction
@@ -379,7 +423,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
                 if ((_event.buttons() & QtCore.Qt.LeftButton) and
                     (_event.buttons() & QtCore.Qt.MidButton)):
-                    self.examineModeMoveZdir()
+                    self.examineModeMoveZdir(newPoint2D)
                 elif (_event.buttons() & QtCore.Qt.MidButton):
                     self.examineModeMoveXYdir(newPoint2D)
                 elif (_event.buttons() & QtCore.Qt.LeftButton):
