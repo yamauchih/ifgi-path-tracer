@@ -7,6 +7,12 @@ Done: Scene cog and Scene radius must be set after load mesh.
 Done: Implement translation
 Done: Implement zoom
 
+- Add drawmode
+  - Only use the basic mode
+  - when add a draw mode, check the name and bitmap (power of 2 or not,
+    unique or not)
+
+
 Menu Render -- Render GL
             -- Render IFGI
 
@@ -16,6 +22,9 @@ Scene
 
 ObjLoader
         Scene に object を入れる
+
+OffLoader
+
 
 GLNode
         Scene の要素を参照して draw する (update は v0 では考えない)
@@ -27,8 +36,6 @@ DONE - Python inheritance check
 
   誰が TriMesh の data を持っているのかはっきりさせる
   それを使って GLTriMeshNode は triangle を書く
-
-- Add drawmode
 
 * method name
   foo_bar_baz()

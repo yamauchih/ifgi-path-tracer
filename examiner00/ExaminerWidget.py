@@ -46,6 +46,9 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         # z == 0, not hit to the trackball sphere
         self.lastPoint3D = numpy.array([0, 0, 0])
 
+        # popupmenu
+        self.popupmenu = None
+
         # draw mode
         self.global_draw_mode = 0
 
@@ -200,6 +203,61 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         # self.gl_camera.unlock();
 
 
+    #----------------------------------------------------------------------
+    # popup/context menu implementation
+    #----------------------------------------------------------------------
+
+    # popup -- function -- bgcolor implementation
+    def popup_function_bgcolor(self):
+        print 'NIN: bgcolor implementation'
+
+    # popup -- function -- preference implementation
+    def popup_function_preference(self):
+        print 'NIN: preference implementation'
+
+    #----------------------------------------------------------------------
+    # popup/context menu GUI
+    #----------------------------------------------------------------------
+
+    # create popup menu's function submenu
+    def create_popup_menu_function_menu(self):
+        assert(self.popupmenu != None)
+        self.popup_function_menu = self.popupmenu.addMenu('Function')
+        self.popup_function_bgcolor_act = \
+            QtGui.QAction("Backgroundcolor", self,
+                          statusTip="Set background color",
+                          triggered=self.popup_function_bgcolor)
+        self.popup_function_menu.addAction(self.popup_function_bgcolor_act)
+        
+
+    # create popup menu
+    #
+    def create_popup_menu(self):
+        if (self.popupmenu == None):
+            self.popupmenu = QtGui.QMenu(self)
+            self.create_popup_menu_function_menu()
+            popup_preference_act = \
+                QtGui.QAction("Preference", self,
+                              statusTip="Popup preference dialog",
+                              triggered=self.popup_function_preference)
+            self.popupmenu.addAction(popup_preference_act)
+            self.popupmenu.addSeparator()
+
+            # NIN collect draw mode from the scene graph
+            # 2010-12-10(Fri)
+
+
+        return self.popupmenu
+
+    # popup context menu
+    def popup_context_menu(self, _global_mouse_pos):
+        self.create_popup_menu()
+        self.popupmenu.exec_(_global_mouse_pos)        
+
+    # popupmenu implementation
+    def popupmenu_function(self):
+        print 'NIN: popupmenu_function is called.'
+
     # mouse press event
     #   - right: popup menu
     #   - left:  camera move
@@ -220,6 +278,8 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
             #              item->setChecked(d_backFaceMode==BACK_CULL);
             #      }
             #  }
+            self.popup_context_menu(_event.globalPos())
+
 
             #  d_popupMenu->exec(QCursor::pos().x(),QCursor::pos().y());
             print 'NIN: RightButtonPressed: popup menu'
