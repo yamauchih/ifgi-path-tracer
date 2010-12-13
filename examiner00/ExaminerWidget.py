@@ -554,6 +554,11 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     def attach_gl_scenegraph(self, _gl_scenegraph):
         self.gl_scenegraph = _gl_scenegraph
 
+        # get draw mode information
+        print 'DEBUG: collect draw mode'
+        self.gl_scenegraph.collect_draw_mode()
+
+
         # set scene size information
         bb = self.gl_scenegraph.scenegraph.get_root_node().get_bbox()
         self.scene_cog    = 0.5 * (bb.min + bb.max)

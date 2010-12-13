@@ -6,6 +6,7 @@
 """IFGI OpenGL SceneGraph"""
 
 import Camera
+import DrawMode
 import SceneGraph
 
 from OpenGL import GL
@@ -18,7 +19,7 @@ from OpenGL import GLU
 #   - GLCamera
 #   - GLroot_node
 #
-class GLSceneGraph(object):
+class GLSceneGraph(SceneGraph.SceneGraph):
     # default constructor
     def __init__(self):
         self.gl_camera    = Camera.GLCamera()
@@ -79,6 +80,14 @@ class GLSceneGraph(object):
     def print_obj(self):
         print 'NIN: GLSceneGraph: print_obj()'
 
+    # collect all drawmode
+    def collect_draw_mode(self):
+        collect_drawmode_strategy = GLSGTCollectDrawmodeStrategy()
+        self.traverse_sgnode(self.gl_root_node, collect_drawmode_strategy)
+        print 'DEBUG: collect draw mode done.'
+        collect_drawmode_strategy.drawmodelist.print_obj()
+        
+
 #
 # OpenGL scene graph node
 #
@@ -88,7 +97,7 @@ class GLSceneGraph(object):
 #   - primitive
 # This is exclusive.
 #
-class GLSceneGraphNode(object):
+class GLSceneGraphNode(SceneGraph.SceneGraphNode):
     # default constructor
     def __init__(self):
         self.children  = []
@@ -142,6 +151,13 @@ class GLSceneGraphNode(object):
             self.debug_out('Node has no primitive, no children')
             print self.get_classname() + '::draw: neither'
 
+    # get draw mode of this GLSceneGraphNode
+    #
+    # \return return drawmode, maybe None
+    def get_draw_mode(self):
+        return None
+        # raise StandardError, ('GLSceneGraphNode.get_draw_mode() must be implemented ' + 
+        # 'in derived class. classname = ' + self.get_classname())
 
     # for debug
     def print_obj(self):
@@ -172,16 +188,24 @@ class GLTriMeshNode(GLSceneGraphNode):
         # call base class constructor to fill the members
         super(GLTriMeshNode, self).__init__()
         self.local_draw_mode = 0
+        self.drawmode = DrawMode.DrawModeList()
+        # basic draw mode only 
+        self.drawmode.add_basic_draw_mode()
 
     # get classname
     def get_classname(self):
         return 'GLTriMeshNode'
 
+    # get draw mode of this GLSceneGraphNode
+    #
+    # \return return drawmode
+    def get_draw_mode(self):
+        return self.drawmode
+
     # draw
     def draw(self, _global_mode):
         # print 'DEBUG: primitive is ' + self.primitive.get_classname()
         self.draw_flat_shading()
-
 
     # each draw: flat shading
     def draw_flat_shading(self):
@@ -194,6 +218,8 @@ class GLTriMeshNode(GLSceneGraphNode):
             GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
             GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
         GL.glEnd()
+
+
 
 
 # OpenGL scenegraph node factory
@@ -210,6 +236,46 @@ def new_gl_scenegraph_primitive_node(_primitive):
     else:
         print 'unsupported primitive: ' + _primitive.get_classname()
         return None
+
+
+#
+# collect all drawmode in the scenegraph
+#
+class GLSGTCollectDrawmodeStrategy(SceneGraph.SceneGraphTraverseStrategyIF):
+    # constructor
+    def __init__(self):
+        self.drawmodelist = DrawMode.DrawModeList()
+
+    # apply strategy to node before recurse. Implementation
+    #
+    # add new bbox if needed
+    #
+    # \param[in]  _cur_node current visting node
+    # \param[in]  _level    current depth
+    #
+    def apply_before_recurse(self, _cur_node, _level):
+        pass
+
+    # apply strategy while visiting children. Implementation
+    #
+    # expand this level's bounding box
+    #
+    # \param[in]  _cur_node current visting node
+    # \param[in]  _level    current depth
+    #
+    def apply_middle(self, _cur_node, _level):
+        pass
+
+
+    # apply strategy after visiting (when returning from the recurse). Implementation
+    #
+    # if this is not the root, expand the one level up's bbox
+    #
+    # \param[in]  _cur_node current visting node
+    # \param[in]  _level    current depth
+    #
+    def apply_after_recurse(self, _cur_node, _level):
+        self.drawmodelist.or_drawmode(_cur_node.get_draw_mode())
 
 
 #

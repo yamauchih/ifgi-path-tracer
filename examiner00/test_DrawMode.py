@@ -9,9 +9,10 @@ import unittest
 import DrawMode
 
 class TestDrawMode(unittest.TestCase):
-
     def test_drawmode0(self):
         drmode = DrawMode.DrawModeList()
+        drmode.add_basic_draw_mode()
+        drmode.print_obj()
 
 
 #
