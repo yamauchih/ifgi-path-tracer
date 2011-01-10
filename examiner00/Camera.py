@@ -83,19 +83,18 @@ class Camera(object):
     def get_projection(self):
         return self.projection
 
-    # get gluLookAt() parameters 
+    # get gluLookAt() parameters
     #
     # \param[in] _eye_position eye position for stereo {EyeCenter,
     # EyeLeft, EyeRight}, NIN Not implemented now.
     def get_lookat(self, _eye_position):
         assert(_eye_position == EyePosition.EyeCenter)
         assert(self.focal_length != 0)
-        return [self.eye_pos, 
+        return [self.eye_pos,
                 self.eye_pos + self.focal_length * self.view_dir,
                 self.up_dir]
 
-
-    # Get the camera coordinate system
+    # Get the camera coordinate system as OpenGL (left hand)
     #
     # Get orthonrmal basis for camera coordinate system {_ex,_ey,_ez}.
     # \return [ex, ey, ez]  ["right", "up", viewingDriection()] system

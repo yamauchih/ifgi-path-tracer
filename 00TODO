@@ -1,6 +1,8 @@
 TODO
 
 ExaminerWidget.py: 243
+
+- Check mark the current draw mode.
 - Add drawmode
   - Only use the basic mode
   - when add a draw mode, check the name and bitmap (power of 2 or not,

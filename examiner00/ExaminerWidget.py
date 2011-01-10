@@ -237,17 +237,18 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
             # self.drawmode_list.print_obj()
             for dmi in self.drawmode_list.mode_item_list:
                 if dmi.is_avairable:
-                    # This implementation can not choose which one.
-                    # How can I call popupmenu_set_drawmode + bitmap value?
-                    # Can I make a closure in python and set triggered=?
-                    # NIN: 2011-1-10(Mon)
-                    print 'DEBUG: NIN Adding Drawmode to popup: ' + dmi.mode_name
+                    # Using a closure. mode_closure make a closure
+                    # function that holds self (through this) and
+                    # drawmode bitmap.
+                    def mode_closure(this, drawmode_bitmap):
+                        return (lambda: this.popupmenu_set_drawmode(drawmode_bitmap))
+
+                    modclosure = mode_closure(self, dmi.mode_bitmap)
                     drawmode_act = QtGui.QAction(dmi.mode_name, self,
                                                  statusTip="DrawMode: " + dmi.mode_name,
-                                                 triggered=self.popupmenu_set_drawmode)
-                    drawmode_act.setData(dmi.mode_bitmap)
+                                                 triggered=modclosure)
                     self.popupmenu.addAction(drawmode_act)
-                    
+
 
     # create popup menu: main
     #
@@ -265,25 +266,25 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 
             # add drawmode if exists
             self.create_popup_menu_drawmode()
-            
+
         else:
             print 'DEBUG: reuse popup menu'
-            
+
         return self.popupmenu
 
 
     # popup context menu
     def popup_context_menu(self, _global_mouse_pos):
         self.create_popup_menu()
-        self.popupmenu.exec_(_global_mouse_pos)        
+        self.popupmenu.exec_(_global_mouse_pos)
 
     # popupmenu implementation
     def popupmenu_function(self):
         print 'NIN: popupmenu_function is called.'
 
     # popupmenu implementation: set drawmode
-    def popupmenu_set_drawmode(self):
-        print 'NIN: popupmenu_set_drawmode'
+    def popupmenu_set_drawmode(self, _drawmode_bitmap):
+        print 'DEBUG: popupmenu_set_drawmode: ' + str(_drawmode_bitmap)
 
     # mouse press event
     #   - right: popup menu
@@ -390,7 +391,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
                 self.translate([0.0, 0.0, zmove])
             else:
                 print 'NIN: wheel movement with Orthographic projectionmode'
-                assert(self.gl_camera.get_projection() == 
+                assert(self.gl_camera.get_projection() ==
                        Camera.ProjectionMode.Orthographic)
                 # ow = self.gl_camera.get_ortho_width()
                 # zmove = (float)_event->delta() / 120.0 * 0.2 * ow;
@@ -586,7 +587,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         self.drawmode_list = self.gl_scenegraph.collect_drawmode()
         # if self.drawmode_list != None:
             # print 'DEBUG: found draw mode in the scene'
-            # self.drawmode_list.print_obj()            
+            # self.drawmode_list.print_obj()
             # popup menu will refer this drawmode_list
 
         # set scene size information

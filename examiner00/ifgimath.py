@@ -121,6 +121,52 @@ def mapToSphere(_win_point2d, _win_width, _win_height):
         z = math.sqrt(1 - sinx2siny2)
 
     pos3d = numpy.array([sinx, siny, z])
+    # print 'DEBUG: mouse ' + str(rel_x) + ' ' + str(rel_y) + ', pos3d ' + str(pos3d)
 
     return pos3d
 
+
+#
+# lookat matrix (gluLookAt compatible)
+#
+# Note: in this camera coordinates, the viewing direction is minus
+# direction.
+#
+# \param[in]  _eye    eye point
+# \param[in]  _lookat lookat point
+# \param[in]  _up     up vector
+# \return 4x4 gluLookAt matrix
+def getLookAtMatrix(_eye, _lookat, _up):
+  ez = _eye - _lookat
+  ez = ez / numpy.linalg.norm(ez)
+
+  ex = numpy.cross(_up, ez)
+  ex = ex / numpy.linalg.norm(ex)
+
+  ey = numpy.cross(ez, ex)
+  ey = ey / numpy.linalg.norm(ey)
+
+  rmat = numpy.eye(4)     # 4x4 Identity matrix
+
+  rmat[0][0] = ex[0]
+  rmat[0][1] = ex[1]
+  rmat[0][2] = ex[2]
+
+  rmat[1][0] = ey[0]
+  rmat[1][1] = ey[1]
+  rmat[1][2] = ey[2]
+
+  rmat[2][0] = ez[0]
+  rmat[2][1] = ez[1]
+  rmat[2][2] = ez[2]
+
+
+  tmat = numpy.eye(4)     # 4x4 Identity matrix
+  tmat[0][3] = -_eye[0]
+  tmat[1][3] = -_eye[1]
+  tmat[2][3] = -_eye[2]
+
+  # not rmat * tmat, * is element-wise multiplication
+  lookatmat = numpy.dot(rmat, tmat).transpose()
+
+  return lookatmat

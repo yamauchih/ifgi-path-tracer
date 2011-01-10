@@ -28,6 +28,11 @@ class TestIFGImathModule(unittest.TestCase):
             ret = ifgimath.mapToSphere(wpos, win_width, win_height)
             # print 'map to sphere ' + str(wpos) + ' -> ' + str(ret)
 
+    # test getRotationMat
+    # def test_getRotateMat(self):
+
+
+
 #
 # main test
 #
