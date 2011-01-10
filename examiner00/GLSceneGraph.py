@@ -81,11 +81,12 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         print 'NIN: GLSceneGraph: print_obj()'
 
     # collect all drawmode
-    def collect_draw_mode(self):
+    def collect_drawmode(self):
         collect_drawmode_strategy = GLSGTCollectDrawmodeStrategy()
         self.traverse_sgnode(self.gl_root_node, collect_drawmode_strategy)
-        print 'DEBUG: collect draw mode done.'
-        collect_drawmode_strategy.drawmodelist.print_obj()
+        # print 'DEBUG: collect draw mode done.'
+        # collect_drawmode_strategy.drawmodelist.print_obj()
+        return collect_drawmode_strategy.drawmodelist
         
 
 #
@@ -112,32 +113,41 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
     def set_primitive(self, _prim):
         if len(self.children) > 0:
             raise StandardError, ('Can not set a primitive. already had children.')
+        # can not use is_primitive_node, this method changes the
+        # primitive state
         if self.primitive != None:
             print 'Warning. This node has a primitive.'
         self.primitive = _prim
         print 'DEBUG: set_primitive: ' + self.primitive.get_classname()
 
+    # is this node a primitive node? (primitive node == no children,
+    # just a primitive)
+    def is_primitive_node(self):
+        if self.primitive != None:
+            return True
+
+        return False
 
     # append child
     def append_child(self, _child):
-        if self.primitive != None:
+        if (self.is_primitive_node()):
             raise StandardError, ('Can not append a child. already had a primitive.')
         self.children.append(_child)
 
     # print glnode info
     def print_glnodeinfo(self, _level):
         indent = '  ' * _level
-        if self.primitive != None:
+        if (self.is_primitive_node()):
             print indent + '# ' + self.get_classname() + ':Primitive'
-        else:
-            print indent + '# # children = ' + str(len(self.children))
+
+        print indent + '# # children = ' + str(len(self.children))
 
 
     # draw by mode
     def draw(self, _global_mode):
         print self.get_classname() + '::draw is called with ' + str(_global_mode)
 
-        if self.primitive != None:
+        if (self.is_primitive_node()):
             # primitive: draw itself
             self.primitive.draw(_global_mode)
             print self.get_classname() + '::draw: call primitive draw'
@@ -155,6 +165,9 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
     #
     # \return return drawmode, maybe None
     def get_draw_mode(self):
+        if (self.is_primitive_node()):
+            return self.primitive.get_draw_mode()
+
         return None
         # raise StandardError, ('GLSceneGraphNode.get_draw_mode() must be implemented ' + 
         # 'in derived class. classname = ' + self.get_classname())

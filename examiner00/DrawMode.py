@@ -79,7 +79,7 @@ class DrawModeList(object):
 
         self.mode_item_list.append(_draw_mode_item)
         self.mode_item_map[_draw_mode_item.mode_name] = _draw_mode_item
-        print 'DEBUG: added ' + _draw_mode_item.mode_name
+        # print 'DEBUG: added ' + _draw_mode_item.mode_name
 
     # add basic draw mode
     def add_basic_draw_mode(self):
@@ -106,7 +106,7 @@ class DrawModeList(object):
 
         print 'DrawModeList: Found draw mode list'
         for mi in _other_drawmode.mode_item_list:
-            if (not find_draw_mode(mi)):
+            if (not self.find_draw_mode(mi)):
                 self.add_draw_mode(mi)
 
     # print draw mode list

@@ -50,7 +50,8 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         self.popupmenu = None
 
         # draw mode
-        self.global_draw_mode = 0
+        self.global_drawmode = 0
+        self.drawmode_list    = None
 
         # action mode
         self.actionMode = ActionMode.ExamineMode
@@ -219,7 +220,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     # popup/context menu GUI
     #----------------------------------------------------------------------
 
-    # create popup menu's function submenu
+    # create popup menu: function submenu
     def create_popup_menu_function_menu(self):
         assert(self.popupmenu != None)
         self.popup_function_menu = self.popupmenu.addMenu('Function')
@@ -228,12 +229,31 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
                           statusTip="Set background color",
                           triggered=self.popup_function_bgcolor)
         self.popup_function_menu.addAction(self.popup_function_bgcolor_act)
-        
 
-    # create popup menu
+    # create popup menu: draw mode
+    #
+    def create_popup_menu_drawmode(self):
+        if self.drawmode_list != None:
+            # self.drawmode_list.print_obj()
+            for dmi in self.drawmode_list.mode_item_list:
+                if dmi.is_avairable:
+                    # This implementation can not choose which one.
+                    # How can I call popupmenu_set_drawmode + bitmap value?
+                    # Can I make a closure in python and set triggered=?
+                    # NIN: 2011-1-10(Mon)
+                    print 'DEBUG: NIN Adding Drawmode to popup: ' + dmi.mode_name
+                    drawmode_act = QtGui.QAction(dmi.mode_name, self,
+                                                 statusTip="DrawMode: " + dmi.mode_name,
+                                                 triggered=self.popupmenu_set_drawmode)
+                    drawmode_act.setData(dmi.mode_bitmap)
+                    self.popupmenu.addAction(drawmode_act)
+                    
+
+    # create popup menu: main
     #
     def create_popup_menu(self):
         if (self.popupmenu == None):
+            print 'DEBUG: create_popup_menu'
             self.popupmenu = QtGui.QMenu(self)
             self.create_popup_menu_function_menu()
             popup_preference_act = \
@@ -243,11 +263,14 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
             self.popupmenu.addAction(popup_preference_act)
             self.popupmenu.addSeparator()
 
-            # NIN collect draw mode from the scene graph
-            # 2010-12-10(Fri)
-
-
+            # add drawmode if exists
+            self.create_popup_menu_drawmode()
+            
+        else:
+            print 'DEBUG: reuse popup menu'
+            
         return self.popupmenu
+
 
     # popup context menu
     def popup_context_menu(self, _global_mouse_pos):
@@ -257,6 +280,10 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     # popupmenu implementation
     def popupmenu_function(self):
         print 'NIN: popupmenu_function is called.'
+
+    # popupmenu implementation: set drawmode
+    def popupmenu_set_drawmode(self):
+        print 'NIN: popupmenu_set_drawmode'
 
     # mouse press event
     #   - right: popup menu
@@ -504,7 +531,7 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     def draw_scene(self):
         # self.test_draw_one_triangle()
         if self.gl_scenegraph != None:
-            self.gl_scenegraph.draw(self.global_draw_mode)
+            self.gl_scenegraph.draw(self.global_drawmode)
         else:
             self.debug_out('No OpenGL scenegraph is set.')
 
@@ -555,9 +582,12 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         self.gl_scenegraph = _gl_scenegraph
 
         # get draw mode information
-        print 'DEBUG: collect draw mode'
-        self.gl_scenegraph.collect_draw_mode()
-
+        print 'DEBUG: collect draw mode from the GLSceneGraph'
+        self.drawmode_list = self.gl_scenegraph.collect_drawmode()
+        # if self.drawmode_list != None:
+            # print 'DEBUG: found draw mode in the scene'
+            # self.drawmode_list.print_obj()            
+            # popup menu will refer this drawmode_list
 
         # set scene size information
         bb = self.gl_scenegraph.scenegraph.get_root_node().get_bbox()
