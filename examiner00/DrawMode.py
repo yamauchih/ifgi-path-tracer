@@ -61,38 +61,48 @@ class DrawModeList(object):
 
 
     # find draw mode
-    # \param[in] _draw_mode_name draw mode name
+    # \param[in] _drawmode_name draw mode name
     # \return a DrawModeItem if found, otherwise None.
-    def find_draw_mode(self, _draw_mode_name):
-        if (_draw_mode_name in self.mode_item_map):
-            return self.mode_item_map[_draw_mode_name]
+    def find_drawmode(self, _drawmode_name):
+        if (_drawmode_name in self.mode_item_map):
+            return self.mode_item_map[_drawmode_name]
         else:
             return None
 
+    # has drawmode_bitmap in this list?
+    #
+    # \param[in] _drawmode_bitmap search _drawmode_bitmap in the list
+    # \return true if _drawmode_bitmap is found in the list
+    def has_drawmode_bitmap(self, _drawmode_bitmap):
+        for dm in self.mode_item_list:
+            if (dm.get_bitmap == _drawmode_bitmap):
+                return True
+        return False
+
     # add draw mode
-    # \param[in] _draw_mode_item a draw mode
-    def add_draw_mode(self, _draw_mode_item):
+    # \param[in] _drawmode_item a draw mode
+    def add_drawmode(self, _drawmode_item):
         # check the draw mode item is unique, bitmap is power of two
-        if (self.find_draw_mode(_draw_mode_item.mode_name) != None):
-            raise StandardError ('DrawModeList: ' + _draw_mode_item.mode_name +
+        if (self.find_drawmode(_drawmode_item.mode_name) != None):
+            raise StandardError ('DrawModeList: ' + _drawmode_item.mode_name +
                                  ' has already submitted.')
 
-        self.mode_item_list.append(_draw_mode_item)
-        self.mode_item_map[_draw_mode_item.mode_name] = _draw_mode_item
-        # print 'DEBUG: added ' + _draw_mode_item.mode_name
+        self.mode_item_list.append(_drawmode_item)
+        self.mode_item_map[_drawmode_item.mode_name] = _drawmode_item
+        # print 'DEBUG: added ' + _drawmode_item.mode_name
 
     # add basic draw mode
-    def add_basic_draw_mode(self):
-        self.add_draw_mode(DrawModeItem('BBox',            0x0001, True))
-        self.add_draw_mode(DrawModeItem('Points',          0x0002, True))
-        self.add_draw_mode(DrawModeItem('Wireframe',       0x0004, True))
-        self.add_draw_mode(DrawModeItem('Hiddenline',      0x0008, True))
-        self.add_draw_mode(DrawModeItem('Solid Basecolor', 0x0010, True))
-        self.add_draw_mode(DrawModeItem('Solid Flat',      0x0020, True))
-        self.add_draw_mode(DrawModeItem('Solid Gouraud',   0x0040, True))
-        self.add_draw_mode(DrawModeItem('Solid Texture',   0x0080, True))
+    def add_basic_drawmode(self):
+        self.add_drawmode(DrawModeItem('BBox',            0x0001, True))
+        self.add_drawmode(DrawModeItem('Points',          0x0002, True))
+        self.add_drawmode(DrawModeItem('Wireframe',       0x0004, True))
+        self.add_drawmode(DrawModeItem('Hiddenline',      0x0008, True))
+        self.add_drawmode(DrawModeItem('Solid Basecolor', 0x0010, True))
+        self.add_drawmode(DrawModeItem('Solid Flat',      0x0020, True))
+        self.add_drawmode(DrawModeItem('Solid Gouraud',   0x0040, True))
+        self.add_drawmode(DrawModeItem('Solid Texture',   0x0080, True))
         # internal use only
-        self.add_draw_mode(DrawModeItem('Picking',         0x0100, False))
+        self.add_drawmode(DrawModeItem('Picking',         0x0100, False))
 
 
     # or draw mode
@@ -106,8 +116,8 @@ class DrawModeList(object):
 
         print 'DrawModeList: Found draw mode list'
         for mi in _other_drawmode.mode_item_list:
-            if (not self.find_draw_mode(mi)):
-                self.add_draw_mode(mi)
+            if (not self.find_drawmode(mi)):
+                self.add_drawmode(mi)
 
     # print draw mode list
     def print_obj(self):

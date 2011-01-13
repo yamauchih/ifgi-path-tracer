@@ -164,12 +164,12 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
     # get draw mode of this GLSceneGraphNode
     #
     # \return return drawmode, maybe None
-    def get_draw_mode(self):
+    def get_drawmode(self):
         if (self.is_primitive_node()):
-            return self.primitive.get_draw_mode()
+            return self.primitive.get_drawmode()
 
         return None
-        # raise StandardError, ('GLSceneGraphNode.get_draw_mode() must be implemented ' + 
+        # raise StandardError, ('GLSceneGraphNode.get_drawmode() must be implemented ' + 
         # 'in derived class. classname = ' + self.get_classname())
 
     # for debug
@@ -200,10 +200,10 @@ class GLTriMeshNode(GLSceneGraphNode):
     def __init__(self):
         # call base class constructor to fill the members
         super(GLTriMeshNode, self).__init__()
-        self.local_draw_mode = 0
+        self.local_drawmode = 0
         self.drawmode = DrawMode.DrawModeList()
         # basic draw mode only 
-        self.drawmode.add_basic_draw_mode()
+        self.drawmode.add_basic_drawmode()
 
     # get classname
     def get_classname(self):
@@ -212,7 +212,7 @@ class GLTriMeshNode(GLSceneGraphNode):
     # get draw mode of this GLSceneGraphNode
     #
     # \return return drawmode
-    def get_draw_mode(self):
+    def get_drawmode(self):
         return self.drawmode
 
     # draw
@@ -288,7 +288,7 @@ class GLSGTCollectDrawmodeStrategy(SceneGraph.SceneGraphTraverseStrategyIF):
     # \param[in]  _level    current depth
     #
     def apply_after_recurse(self, _cur_node, _level):
-        self.drawmodelist.or_drawmode(_cur_node.get_draw_mode())
+        self.drawmodelist.or_drawmode(_cur_node.get_drawmode())
 
 
 #

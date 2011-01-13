@@ -50,8 +50,8 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         self.popupmenu = None
 
         # draw mode
-        self.global_drawmode = 0
-        self.drawmode_list    = None
+        self.global_drawmode = 0x0020 # 0x0020: Solid Flat as the default draw mode
+        self.drawmode_list   = None
 
         # action mode
         self.actionMode = ActionMode.ExamineMode
@@ -248,6 +248,11 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
                                                  statusTip="DrawMode: " + dmi.mode_name,
                                                  triggered=modclosure)
                     self.popupmenu.addAction(drawmode_act)
+
+            if not (self.drawmode_list.has_drawmode_bitmap(self.global_drawmode)):
+                # no such draw mode in the list, turn off
+                self.global_drawmode = 0;
+            self.popupmenu_set_drawmode(self.global_drawmode)
 
 
     # create popup menu: main

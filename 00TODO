@@ -1,7 +1,6 @@
 TODO
 
-ExaminerWidget.py: 243
-
+- lookup draw mode bitmap to menu's item and check the mark on it
 - Check mark the current draw mode.
 - Add drawmode
   - Only use the basic mode
