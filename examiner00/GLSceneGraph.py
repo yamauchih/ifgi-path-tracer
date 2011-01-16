@@ -205,6 +205,11 @@ class GLTriMeshNode(GLSceneGraphNode):
         # basic draw mode only 
         self.drawmode.add_basic_drawmode()
 
+        # OpenGL draw state
+        self.current_color4f = None
+        self.shade_model     = GL.GL_FLAT
+
+
     # get classname
     def get_classname(self):
         return 'GLTriMeshNode'
@@ -216,9 +221,90 @@ class GLTriMeshNode(GLSceneGraphNode):
         return self.drawmode
 
     # draw
-    def draw(self, _global_mode):
+    #
+    # \param[in] _drawmode drawmode (or-ed drawmode bitmap)
+    def draw(self, _drawmode):
         # print 'DEBUG: primitive is ' + self.primitive.get_classname()
-        self.draw_flat_shading()
+
+        # push the current GL state
+        self.draw_push_gl_state()
+
+        if ((_drawmode & DrawMode.DrawModeList.DM_BBox) != 0):
+            self.draw_bbox()
+
+        if ((_drawmode & DrawMode.DrawModeList.DM_Points) != 0):
+            self.draw_points()
+
+        if ((_drawmode & DrawMode.DrawModeList.DM_Wireframe) != 0):
+            self.draw_wireframe()
+
+        if ((_drawmode & DrawMode.DrawModeList.DM_Hiddenline) != 0):
+            self.draw_hiddenline()
+
+        if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Basecolor) != 0):
+            self.draw_solid_basecolor()
+
+        if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Flat) != 0):
+            self.draw_flat_shading()
+
+        if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Gouraud) != 0):
+            self.draw_solid_gouraud()
+
+        if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Texture) != 0):
+            self.draw_solid_texture()
+
+        # pop the current GL state
+        self.draw_pop_gl_state()
+
+
+
+    # push the gl state that draw might change
+    #
+    # Subroutine of draw()
+    def draw_push_gl_state(self):
+        self.current_color4f = GL.glGetFloatv(GL.GL_CURRENT_COLOR)
+        self.shade_model     = GL.glGetIntegerv(GL.GL_SHADE_MODEL)
+        self.is_enabled_lighting = GL.glIsEnabled(GL.GL_LIGHTING)
+
+    # pop the gl state
+    #
+    # Subroutine of draw()
+    def draw_pop_gl_state(self):
+        GL.glColor4fv(self.current_color4f)
+        GL.glShadeModel(self.shade_model)
+        if (self.is_enabled_lighting == GL.GL_TRUE):
+            GL.glEnable(GL.GL_LIGHTING)
+        else:
+            GL.glDisable(GL.GL_LIGHTING)
+
+    # each draw: bbox
+    def draw_bbox(self):
+        print 'NIN: draw_bbox'
+
+    # each draw: points
+    def draw_points(self):
+        # no light mode NIN: self.gl_light_mode & POINTS
+        GL.glDisable(GL.GL_LIGHTING)
+        GL.glBegin(GL.GL_POINTS)
+        # draw all points
+        for vp in self.primitive.vertex_list:
+            GL.glVertex3d(vp[0], vp[1], vp[2])
+        GL.glEnd()
+
+    # each draw: wireframe
+    def draw_wireframe(self):
+        GL.glShadeModel(GL.GL_FLAT)
+        print 'NIN: draw_wireframe'
+
+    # each draw: hiddenline
+    def draw_hiddenline(self):
+        GL.glShadeModel(GL.GL_FLAT)
+        print 'NIN: draw_hiddenline'
+
+    # each draw: solid_basecolor
+    def draw_solid_basecolor(self):
+        GL.glShadeModel(GL.GL_FLAT)
+        print 'NIN: draw_solid_basecolor'
 
     # each draw: flat shading
     def draw_flat_shading(self):
@@ -231,6 +317,16 @@ class GLTriMeshNode(GLSceneGraphNode):
             GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
             GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
         GL.glEnd()
+
+    # each draw: solid_gouraud
+    def draw_solid_gouraud(self):
+        GL.glShadeModel(GL.GL_FLAT)
+        print 'NIN: draw_solid_gouraud'
+
+    # each draw: solid_texture
+    def draw_solid_texture(self):
+        GL.glShadeModel(GL.GL_FLAT)
+        print 'NIN: draw_solid_texture'
 
 
 

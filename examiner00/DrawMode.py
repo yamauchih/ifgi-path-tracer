@@ -48,12 +48,24 @@ class DrawModeItem(object):
     def print_obj(self):
         print ('DrawModeItem: [' + self.mode_name + ']\t' + str(self.mode_bitmap) +
                '\t' + str(self.is_avairable))
-        
+
 
 #
 # Draw mode list
 #
 class DrawModeList(object):
+    # basic drawmode bitmap
+    DM_BBox            = 0x0001
+    DM_Points          = 0x0002
+    DM_Wireframe       = 0x0004
+    DM_Hiddenline      = 0x0008
+    DM_Solid_Basecolor = 0x0010
+    DM_Solid_Flat      = 0x0020
+    DM_Solid_Gouraud   = 0x0040
+    DM_Solid_Texture   = 0x0080
+    DM_Picking         = 0x0100
+    DM_USER00          = 0x0200
+
     # default constructor
     def __init__(self):
         self.mode_item_list = []
@@ -93,16 +105,25 @@ class DrawModeList(object):
 
     # add basic draw mode
     def add_basic_drawmode(self):
-        self.add_drawmode(DrawModeItem('BBox',            0x0001, True))
-        self.add_drawmode(DrawModeItem('Points',          0x0002, True))
-        self.add_drawmode(DrawModeItem('Wireframe',       0x0004, True))
-        self.add_drawmode(DrawModeItem('Hiddenline',      0x0008, True))
-        self.add_drawmode(DrawModeItem('Solid Basecolor', 0x0010, True))
-        self.add_drawmode(DrawModeItem('Solid Flat',      0x0020, True))
-        self.add_drawmode(DrawModeItem('Solid Gouraud',   0x0040, True))
-        self.add_drawmode(DrawModeItem('Solid Texture',   0x0080, True))
+        self.add_drawmode(DrawModeItem('BBox',
+                                       DrawModeList.DM_BBox,            True))
+        self.add_drawmode(DrawModeItem('Points',
+                                       DrawModeList.DM_Points,          True))
+        self.add_drawmode(DrawModeItem('Wireframe',
+                                       DrawModeList.DM_Wireframe,       True))
+        self.add_drawmode(DrawModeItem('Hiddenline',
+                                       DrawModeList.DM_Hiddenline,      True))
+        self.add_drawmode(DrawModeItem('Solid Basecolor',
+                                       DrawModeList.DM_Solid_Basecolor, True))
+        self.add_drawmode(DrawModeItem('Solid Flat',
+                                       DrawModeList.DM_Solid_Flat,      True))
+        self.add_drawmode(DrawModeItem('Solid Gouraud',
+                                       DrawModeList.DM_Solid_Gouraud,   True))
+        self.add_drawmode(DrawModeItem('Solid Texture',
+                                       DrawModeList.DM_Solid_Texture,   True))
         # internal use only
-        self.add_drawmode(DrawModeItem('Picking',         0x0100, False))
+        self.add_drawmode(DrawModeItem('Picking',
+                                       DrawModeList.DM_Picking,         False))
 
 
     # or draw mode
