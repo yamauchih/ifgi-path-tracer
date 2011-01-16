@@ -294,7 +294,15 @@ class GLTriMeshNode(GLSceneGraphNode):
     # each draw: wireframe
     def draw_wireframe(self):
         GL.glShadeModel(GL.GL_FLAT)
-        print 'NIN: draw_wireframe'
+
+        GL.glBegin(GL.GL_LINE_STRIP)
+        # vp reference
+        vp = self.primitive.vertex_list
+        for face in self.primitive.face_idx_list:
+            GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
+            GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
+            GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
+        GL.glEnd()
 
     # each draw: hiddenline
     def draw_hiddenline(self):
@@ -303,12 +311,21 @@ class GLTriMeshNode(GLSceneGraphNode):
 
     # each draw: solid_basecolor
     def draw_solid_basecolor(self):
+        GL.glDisable(GL.GL_LIGHTING)
         GL.glShadeModel(GL.GL_FLAT)
-        print 'NIN: draw_solid_basecolor'
+
+        GL.glBegin(GL.GL_TRIANGLES)
+        vp = self.primitive.vertex_list
+        for face in self.primitive.face_idx_list:
+            GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
+            GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
+            GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
+        GL.glEnd()
 
     # each draw: flat shading
     def draw_flat_shading(self):
         GL.glShadeModel(GL.GL_FLAT)
+
         GL.glBegin(GL.GL_TRIANGLES)
         # vp reference
         vp = self.primitive.vertex_list
