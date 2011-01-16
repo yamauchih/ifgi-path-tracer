@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 #
-# Examiner version 0.0.0
+# QtExaminer widget version 0.0.0
 #
 # \author Yamauchi, Hitoshi
 #
 
-"""IFGI Examiner Version 0.0.0"""
+"""IFGI QtExaminerWidget Version 0.0.0"""
 
 import sys
 import math
@@ -23,14 +23,14 @@ import Camera
 import QtUtil
 
 #
-# Examiner's action mode
+# QtExaminer's action mode
 #
 ActionMode = enum.Enum(['ExamineMode', 'PickingMode'])
 
 #
 # Scene examiner
 #
-class ExaminerWidget(QtOpenGL.QGLWidget):
+class QtExaminerWidget(QtOpenGL.QGLWidget):
     def __init__(self, parent=None):
         QtOpenGL.QGLWidget.__init__(self, parent)
 
@@ -136,11 +136,11 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     #----------------------------------------------------------------------
     # view -- restoreHome
     def view_restorehome(self):
-        print 'NIN: ExaminerWidget viewRestoreHome()'
+        print 'NIN: QtExaminerWidget viewRestoreHome()'
 
     # view -- setHome
     def view_sethome(self):
-        print 'NIN: ExaminerWidget viewSetHome()'
+        print 'NIN: QtExaminerWidget viewSetHome()'
 
     # view -- all
     def view_all(self):
@@ -630,22 +630,22 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
 #
 # MainWindow for Test
 #
-class TestExaminerWindow(QtGui.QWidget):
+class TestQtExaminerWindow(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
 
-        self.examinerWidget = ExaminerWidget()
+        self.examinerWidget = QtExaminerWidget()
 
         mainLayout = QtGui.QHBoxLayout()
         mainLayout.addWidget(self.examinerWidget)
         self.setLayout(mainLayout)
-        self.setWindowTitle(self.tr("TestExaminerWindow"))
+        self.setWindowTitle(self.tr("TestQtExaminerWindow"))
 
 #
 # main test
 #
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    window = TestExaminerWindow()
+    window = TestQtExaminerWindow()
     window.show()
     sys.exit(app.exec_())

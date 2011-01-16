@@ -21,14 +21,14 @@ from PyQt4  import QtCore, QtGui, QtOpenGL
 from OpenGL import GL
 from OpenGL import GLU
 
-import ExaminerWidget
+import QtExaminerWidget
 import SceneGraph
 import GLSceneGraph
 
-class ExaminerWindow(QtGui.QMainWindow):
+class QtExaminerWindow(QtGui.QMainWindow):
     # constructor
     def __init__(self, parent=None):
-        super(ExaminerWindow, self).__init__()
+        super(QtExaminerWindow, self).__init__()
         self.examiner_widget = None
 
     # create widgets and window
@@ -37,7 +37,7 @@ class ExaminerWindow(QtGui.QMainWindow):
         self.setCentralWidget(widget)
 
         # currently onle one widget is in the window
-        self.examiner_widget = ExaminerWidget.ExaminerWidget()
+        self.examiner_widget = QtExaminerWidget.QtExaminerWidget()
 
         vbox = QtGui.QVBoxLayout()
         vbox.setMargin(5)
@@ -47,10 +47,10 @@ class ExaminerWindow(QtGui.QMainWindow):
         self.createActions()
         self.createMenus()
 
-        message = "ExaminerWindow ready"
+        message = "QtExaminerWindow ready"
         self.statusBar().showMessage(message)
 
-        self.setWindowTitle("ExaminerWindow 0.0.0")
+        self.setWindowTitle("QtExaminerWindow 0.0.0")
         self.setMinimumSize(100,100)
         self.resize(512,512)
 
@@ -170,7 +170,7 @@ class ExaminerWindow(QtGui.QMainWindow):
     def menu_help_about(self):
         self.statusBar().showMessage('NIN: Help--About invoked')
         QtGui.QMessageBox.about(self, "About Menu",
-                                'ExaminerWindow: simple OpenGL viewer for IFGI path ' +
+                                'QtExaminerWindow: simple OpenGL viewer for IFGI path ' +
                                 'tracer<br>' +
                                 'Author: Yamauchi, Hitoshi.')
     # create menubar actions
@@ -246,7 +246,7 @@ class ExaminerWindow(QtGui.QMainWindow):
 
         # Help menu
         self.aboutAct = QtGui.QAction("&About", self,
-                                      statusTip="Show the ExaminerWindow's About box",
+                                      statusTip="Show the QtExaminerWindow's About box",
                                       triggered=self.menu_help_about)
 
     # create menubar
@@ -335,7 +335,7 @@ if __name__ == '__main__':
     (cmd_options, args) = arg_parser.parse_args()
 
     app = QtGui.QApplication(sys.argv)
-    win = ExaminerWindow()
+    win = QtExaminerWindow()
     win.create_window()
     win.init_app(cmd_options)
     win.show()

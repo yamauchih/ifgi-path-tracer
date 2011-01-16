@@ -295,7 +295,7 @@ class GLTriMeshNode(GLSceneGraphNode):
     def draw_wireframe(self):
         GL.glShadeModel(GL.GL_FLAT)
 
-        GL.glBegin(GL.GL_LINE_STRIP)
+        GL.glBegin(GL.GL_LINE_LOOP)
         # vp reference
         vp = self.primitive.vertex_list
         for face in self.primitive.face_idx_list:
