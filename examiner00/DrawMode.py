@@ -69,15 +69,15 @@ class DrawModeList(object):
         else:
             return None
 
-    # has drawmode_bitmap in this list?
+    # find drawmode_bitmap in this list?
     #
     # \param[in] _drawmode_bitmap search _drawmode_bitmap in the list
     # \return true if _drawmode_bitmap is found in the list
-    def has_drawmode_bitmap(self, _drawmode_bitmap):
+    def find_drawmode_bitmap(self, _drawmode_bitmap):
         for dm in self.mode_item_list:
-            if (dm.get_bitmap == _drawmode_bitmap):
-                return True
-        return False
+            if (dm.get_bitmap() == _drawmode_bitmap):
+                return dm
+        return None
 
     # add draw mode
     # \param[in] _drawmode_item a draw mode

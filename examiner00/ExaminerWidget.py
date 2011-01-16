@@ -47,7 +47,9 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
         self.lastPoint3D = numpy.array([0, 0, 0])
 
         # popupmenu
-        self.popupmenu = None
+        self.popupmenu      = None
+        self.drawmode_group = None # for radio button
+        self.drawmode_bitmap2action = {} # drawmode bitmap to action dictionary
 
         # draw mode
         self.global_drawmode = 0x0020 # 0x0020: Solid Flat as the default draw mode
@@ -234,6 +236,9 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     #
     def create_popup_menu_drawmode(self):
         if self.drawmode_list != None:
+            # radio button group
+            self.drawmode_group = QtGui.QActionGroup(self)
+
             # self.drawmode_list.print_obj()
             for dmi in self.drawmode_list.mode_item_list:
                 if dmi.is_avairable:
@@ -246,11 +251,15 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
                     modclosure = mode_closure(self, dmi.mode_bitmap)
                     drawmode_act = QtGui.QAction(dmi.mode_name, self,
                                                  statusTip="DrawMode: " + dmi.mode_name,
-                                                 triggered=modclosure)
+                                                 triggered=modclosure,
+                                                 checkable=True)
+                    self.drawmode_bitmap2action[dmi.mode_bitmap] = drawmode_act
                     self.popupmenu.addAction(drawmode_act)
+                    self.drawmode_group.addAction(drawmode_act)
 
-            if not (self.drawmode_list.has_drawmode_bitmap(self.global_drawmode)):
+            if (self.drawmode_list.find_drawmode_bitmap(self.global_drawmode) == None):
                 # no such draw mode in the list, turn off
+                print 'no such draw mode in the list, turn off' + str(self.global_drawmode)
                 self.global_drawmode = 0;
             self.popupmenu_set_drawmode(self.global_drawmode)
 
@@ -287,9 +296,20 @@ class ExaminerWidget(QtOpenGL.QGLWidget):
     def popupmenu_function(self):
         print 'NIN: popupmenu_function is called.'
 
-    # popupmenu implementation: set drawmode
+    # popupmenu implementation: set drawmode and change the global drawmode
+    #
+    # \param[in] _drawmode_bitmap global drawmode bitmap to set if
+    # exists in the menu actions
     def popupmenu_set_drawmode(self, _drawmode_bitmap):
-        print 'DEBUG: popupmenu_set_drawmode: ' + str(_drawmode_bitmap)
+        # print 'DEBUG: popupmenu_set_drawmode: ' + str(_drawmode_bitmap)
+        assert(_drawmode_bitmap in self.drawmode_bitmap2action)
+
+        mitem = self.drawmode_bitmap2action[_drawmode_bitmap]
+        assert(mitem != None)
+
+        mitem.setChecked(True)
+        self.global_drawmode = _drawmode_bitmap
+
 
     # mouse press event
     #   - right: popup menu
