@@ -67,6 +67,16 @@ class BBox(Primitive):
         self.insert_point(bbox.min)
         self.insert_point(bbox.max)
 
+    # get minimal point
+    # \return minimal point (numpy.array[3])
+    def get_min(self):
+        return self.min
+
+    # get maximal point
+    # \return maximal point (numpy.array[3])
+    def get_max(self):
+        return self.max
+
     # class name
     def get_classname(self):
         return 'BBox'

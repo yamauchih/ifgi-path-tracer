@@ -108,6 +108,9 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                       at[0], at[1], at[2],
                       up[0], up[1], up[2])
 
+        # own computer gluLookAt matrix test
+        # self.test_gluLookAt_matrix()
+
         self.draw_scene()
 
     # resize
@@ -626,6 +629,41 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
             self.scene_radius = 1.0
             print 'DEBUG:empty scene: adjust radius = 1.0'
 
+    #
+    # test getLookAtMatrix routine
+    #
+    # generate two matrices, glmat by gluLookAt, mat by getLookAtMatrix.
+    # Then compare them. (To run this test, You need OpenGL bindings and
+    # also your Camera implementation that provides eye, lookat, up.)
+    #
+    def test_gluLookAt_matrix(self):
+        GL.glLoadIdentity()
+
+        # This is your camera. It tells eye, lookat, up.
+        [ep, at, up] = self.gl_camera.get_lookat(Camera.EyePosition.EyeCenter)
+        GLU.gluLookAt(ep[0], ep[1], ep[2],
+                      at[0], at[1], at[2],
+                      up[0], up[1], up[2])
+
+        # OpenGL gluLookAt matrix
+        glmat = None
+        glmat = GL.glGetDoublev(GL.GL_MODELVIEW_MATRIX)
+
+        # my matrix
+        mat   = ifgimath.getLookAtMatrix(ep, at, up)
+
+        # debug output
+        print 'glmat'
+        print glmat
+        print 'mat'
+        print mat
+
+        # compare glmat and mat
+        for i in range(4):
+            for j in range(4):
+                if(math.fabs(glmat[i][j] - mat[i][j]) > 1.0e-5):
+                    raise StandardError ('matrix does not match.')
+
 
 #
 # MainWindow for Test
@@ -640,6 +678,8 @@ class TestQtExaminerWindow(QtGui.QWidget):
         mainLayout.addWidget(self.examinerWidget)
         self.setLayout(mainLayout)
         self.setWindowTitle(self.tr("TestQtExaminerWindow"))
+
+
 
 #
 # main test

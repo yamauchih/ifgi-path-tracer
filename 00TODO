@@ -1,7 +1,8 @@
 TODO
 
-- Hidden line draw
 - Bounding box draw
+  BUG: Bounding box is too large.
+
 - Picking
 - SceneGraph dialog, widget
 

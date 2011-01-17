@@ -5,12 +5,14 @@
 
 """IFGI OpenGL SceneGraph"""
 
+from OpenGL import GL
+from OpenGL import GLU
+
 import Camera
 import DrawMode
 import SceneGraph
+import GLUtil
 
-from OpenGL import GL
-from OpenGL import GLU
 
 #
 # OpenGL scene graph
@@ -87,7 +89,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         # print 'DEBUG: collect draw mode done.'
         # collect_drawmode_strategy.drawmodelist.print_obj()
         return collect_drawmode_strategy.drawmodelist
-        
+
 
 #
 # OpenGL scene graph node
@@ -169,7 +171,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
             return self.primitive.get_drawmode()
 
         return None
-        # raise StandardError, ('GLSceneGraphNode.get_drawmode() must be implemented ' + 
+        # raise StandardError, ('GLSceneGraphNode.get_drawmode() must be implemented ' +
         # 'in derived class. classname = ' + self.get_classname())
 
     # for debug
@@ -202,12 +204,16 @@ class GLTriMeshNode(GLSceneGraphNode):
         super(GLTriMeshNode, self).__init__()
         self.local_drawmode = 0
         self.drawmode = DrawMode.DrawModeList()
-        # basic draw mode only 
+        # basic draw mode only
         self.drawmode.add_basic_drawmode()
 
         # OpenGL draw state
+        self.bg_color4f      = None
         self.current_color4f = None
         self.shade_model     = GL.GL_FLAT
+        self.is_enabled_lighting  = GL.GL_TRUE
+        self.is_enabled_depthtest = GL.GL_TRUE
+        self.is_enabled_offset    = GL.GL_FALSE
 
 
     # get classname
@@ -262,9 +268,14 @@ class GLTriMeshNode(GLSceneGraphNode):
     #
     # Subroutine of draw()
     def draw_push_gl_state(self):
+        self.bg_color4f      = GL.glGetFloatv(GL.GL_COLOR_CLEAR_VALUE)
+
         self.current_color4f = GL.glGetFloatv(GL.GL_CURRENT_COLOR)
         self.shade_model     = GL.glGetIntegerv(GL.GL_SHADE_MODEL)
-        self.is_enabled_lighting = GL.glIsEnabled(GL.GL_LIGHTING)
+        self.is_enabled_lighting   = GL.glIsEnabled(GL.GL_LIGHTING)
+        self.is_enabled_depthtest  = GL.glIsEnabled(GL.GL_DEPTH_TEST)
+        self.is_enabled_offsetfill = GL.glIsEnabled(GL.GL_POLYGON_OFFSET_FILL)
+
 
     # pop the gl state
     #
@@ -272,14 +283,26 @@ class GLTriMeshNode(GLSceneGraphNode):
     def draw_pop_gl_state(self):
         GL.glColor4fv(self.current_color4f)
         GL.glShadeModel(self.shade_model)
-        if (self.is_enabled_lighting == GL.GL_TRUE):
-            GL.glEnable(GL.GL_LIGHTING)
+        self.gl_enable_disable(GL.GL_LIGHTING,   self.is_enabled_lighting)
+        self.gl_enable_disable(GL.GL_DEPTH_TEST, self.is_enabled_depthtest)
+        self.gl_enable_disable(GL.GL_POLYGON_OFFSET_FILL, self.is_enabled_offsetfill)
+
+
+    # glEnable/glDisable
+    def gl_enable_disable(self, _gl_function_name, _is_enable):
+        if (_is_enable == GL.GL_TRUE):
+            GL.glEnable(_gl_function_name)
         else:
-            GL.glDisable(GL.GL_LIGHTING)
+            GL.glDisable(_gl_function_name)
+
 
     # each draw: bbox
     def draw_bbox(self):
-        print 'NIN: draw_bbox'
+        assert(self.is_primitive_node() == True)
+        self.primitive.update_bbox()
+        bbox = self.primitive.get_bbox()
+        GLUtil.draw_axis_alighed_box(bbox.get_min(), bbox.get_max())
+
 
     # each draw: points
     def draw_points(self):
@@ -305,9 +328,48 @@ class GLTriMeshNode(GLSceneGraphNode):
         GL.glEnd()
 
     # each draw: hiddenline
+    #
+    # see OpenGL book
     def draw_hiddenline(self):
-        GL.glShadeModel(GL.GL_FLAT)
-        print 'NIN: draw_hiddenline'
+        #
+        # step 1: draw lines
+        #
+        GL.glEnable(GL.GL_DEPTH_TEST)
+        GL.glColor4fv(self.current_color4f)
+
+        # --- draw lines
+        GL.glBegin(GL.GL_LINE_LOOP)
+        vp = self.primitive.vertex_list
+        for face in self.primitive.face_idx_list:
+            GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
+            GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
+            GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
+        GL.glEnd()
+
+        #
+        # step 2: fill the polygon with bg color with slight offset
+        #
+        GL.glDisable(GL.GL_LIGHTING)
+
+        # type(offset0) == 'numpy.float32'
+        offset0 = GL.glGetFloatv(GL.GL_POLYGON_OFFSET_FACTOR)
+        offset1 = GL.glGetFloatv(GL.GL_POLYGON_OFFSET_UNITS)
+
+        GL.glEnable(GL.GL_POLYGON_OFFSET_FILL)
+        GL.glPolygonOffset(1.0, 1.0)
+        GL.glColor4fv(self.bg_color4f)
+
+        GL.glEnable(GL.GL_POLYGON_OFFSET_FILL)
+        GL.glBegin(GL.GL_TRIANGLES)
+        vp = self.primitive.vertex_list
+        for face in self.primitive.face_idx_list:
+            GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
+            GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
+            GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
+        GL.glEnd()          # GL.glBegin(GL.GL_TRIANGLES)
+
+        GL.glPolygonOffset(offset0, offset1)
+
 
     # each draw: solid_basecolor
     def draw_solid_basecolor(self):
