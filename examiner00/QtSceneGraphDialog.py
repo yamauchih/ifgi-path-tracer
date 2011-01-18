@@ -21,16 +21,19 @@ class QtSceneGraphDialog(QtGui.QDialog):
     # constructor
     def __init__(self, parent=None):
         super(QtSceneGraphDialog, self).__init__(parent)
-        # self.setModal(_modal);  
+        # self.setModal(_modal);
 
-        self.sceneGraphViewer = QtSceneGraphWidget.QtSceneGraphWidget(self);
+        self.sceneGraphView = QtSceneGraphWidget.QtSceneGraphViewWidget(self);
         self.layout = QtGui.QVBoxLayout();
         self.layout.setObjectName('SceneGraph viewer, dialog layout');
         self.layout.setMargin(0);
-        self.layout.addWidget(self.sceneGraphViewer);
+        self.layout.addWidget(self.sceneGraphView);
         self.setLayout(self.layout);
+        self.resize(450, 300)
 
-    
+
+
+
     # emitted when dialog is closed
     def closed(self):
         print 'called QtSceneGraphWidget::closed() '
