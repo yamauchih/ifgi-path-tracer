@@ -1,11 +1,7 @@
 TODO
 
-- Bounding box draw
-  BUG: Bounding box is too large.
-
-- Picking
 - SceneGraph dialog, widget
-
+- Picking
 
 Menu Render -- Render GL
             -- Render IFGI

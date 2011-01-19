@@ -61,6 +61,7 @@ class BBox(Primitive):
             # this must be if:
             if (self.max[i] < _newpos[i]):
                 self.max[i] = _newpos[i]
+        # print 'DEBUG: ' + str(self) + ', p' + str(_newpos)
 
     # insert bbox, grow the bbox
     def insert_bbox(self, _bbox):
