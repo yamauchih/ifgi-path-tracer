@@ -1,6 +1,7 @@
 TODO
 
 - SceneGraph dialog, widget
+   - Replace dummy scenegraph node with SceneGraphNode
 - Picking
 
 Menu Render -- Render GL

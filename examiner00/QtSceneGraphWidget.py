@@ -25,11 +25,16 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.setRootIsDecorated(True);
         self.resize(400, 300);
 
-        model = SceneGraphModel()
+        self.model = SceneGraphModel()
 
         # init model here
 
-        self.setModel(model)
+        self.setModel(self.model)
+
+    # get scenegraph model
+    def get_scenegraph_model(self):
+        return self.model
+
 
 #
 # SceneGraphNode tree item.
@@ -84,18 +89,11 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         super(SceneGraphModel, self).__init__(parent)
         self.rootItem = SceneGraphNodeTreeItem(('Node', 'Type', 'Status', 'Mode'))
 
-        # dummy FIXME
-        ti = SceneGraphNodeTreeItem(['rootnode', 'Camera', 'Active', 'global'],
-                                    self.rootItem)
-        self.rootItem.appendChild(ti)
-        ti = SceneGraphNodeTreeItem(['scene',    'Group',  'Active', 'global'],
-                                    self.rootItem)
-        self.rootItem.appendChild(ti)
-        ti2 = SceneGraphNodeTreeItem(['mesh', 'TriMesh',  'Active', 'global'],
-                                     ti)
-        ti.appendChild(ti2)
-
-
+    # get scene graph model root
+    #
+    # \return get scene graph model root
+    def get_scenegraph_model_root(self):
+        return self.rootItem
 
     def columnCount(self, parent):
         if parent.isValid():

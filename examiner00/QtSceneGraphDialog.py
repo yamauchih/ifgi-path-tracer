@@ -24,14 +24,13 @@ class QtSceneGraphDialog(QtGui.QDialog):
         # self.setModal(_modal);
 
         self.sceneGraphView = QtSceneGraphWidget.QtSceneGraphViewWidget(self);
+
         self.layout = QtGui.QVBoxLayout();
         self.layout.setObjectName('SceneGraph viewer, dialog layout');
         self.layout.setMargin(0);
         self.layout.addWidget(self.sceneGraphView);
         self.setLayout(self.layout);
         self.resize(450, 300)
-
-
 
 
     # emitted when dialog is closed
@@ -52,13 +51,25 @@ class QtSceneGraphDialog(QtGui.QDialog):
         super(QtSceneGraphDialog, self).closeEvent(_close_event)
 
 
-
-
-
-
-
-
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     sgdialog = QtSceneGraphDialog()
+
+    # dummy FIXME: replace these with SceneGraphNode
+    sgmodel_root = sgdialog.sceneGraphView.get_scenegraph_model(). \
+        get_scenegraph_model_root()
+
+    ti = QtSceneGraphWidget.SceneGraphNodeTreeItem(
+        ['rootnode', 'Camera', 'Active', 'global'],
+        sgmodel_root)
+    sgmodel_root.appendChild(ti)
+    ti = QtSceneGraphWidget.SceneGraphNodeTreeItem(
+        ['scene',    'Group',  'Active', 'global'],
+        sgmodel_root)
+    sgmodel_root.appendChild(ti)
+    ti2 = QtSceneGraphWidget.SceneGraphNodeTreeItem(
+        ['mesh', 'TriMesh',  'Active', 'global'],
+        ti)
+    ti.appendChild(ti2)
+
     sys.exit(sgdialog.exec_())
