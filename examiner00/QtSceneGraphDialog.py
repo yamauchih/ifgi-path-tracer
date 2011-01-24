@@ -9,6 +9,8 @@
 
 import sys
 import QtSceneGraphWidget
+import SceneGraph
+import GLSceneGraph
 
 from PyQt4 import QtCore, QtGui
 
@@ -59,17 +61,30 @@ if __name__ == '__main__':
     sgmodel_root = sgdialog.sceneGraphView.get_scenegraph_model(). \
         get_scenegraph_model_root()
 
-    ti = QtSceneGraphWidget.SceneGraphNodeTreeItem(
-        ['rootnode', 'Camera', 'Active', 'global'],
-        sgmodel_root)
+    #----------------------------------------------------------------------
+    # 1. create a SceneGraph
+    #
+    # This SceneGraph is independent from GLSceneGraph (can be used
+    # for tracer)
+    sg = SceneGraph.SceneGraph()
+    assert(sg.root_node == None)
+
+    # create scenegraph's root node
+    #   simplest example: root scenegraph node only
+    rootsgnode = SceneGraph.SceneGraphNode()
+    sg.set_root_node(rootsgnode)
+
+    #----------------------------------------------------------------------
+    # 2. create a GLSceneGraph
+    #
+    # attach the SceneGraph to a GLSceneGraph 
+    glsg = GLSceneGraph.GLSceneGraph()
+    glsg.set_scenegraph(sg)
+
+    print type(glsg.gl_root_node)
+
+    # NIN: GLSceneGraph -> SceneGraphNodeTreeItem graph
+    ti = QtSceneGraphWidget.SceneGraphNodeTreeItem(glsg.gl_root_node, sgmodel_root)
     sgmodel_root.appendChild(ti)
-    ti = QtSceneGraphWidget.SceneGraphNodeTreeItem(
-        ['scene',    'Group',  'Active', 'global'],
-        sgmodel_root)
-    sgmodel_root.appendChild(ti)
-    ti2 = QtSceneGraphWidget.SceneGraphNodeTreeItem(
-        ['mesh', 'TriMesh',  'Active', 'global'],
-        ti)
-    ti.appendChild(ti2)
 
     sys.exit(sgdialog.exec_())

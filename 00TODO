@@ -1,7 +1,14 @@
 TODO
 
 - SceneGraph dialog, widget
+   - QtSceneGraphWidget's root item is invalid 
+
+     This is used for the treeview label... Fix is create dummy
+     GLSceneGraph that rerurns the labels of ('Node', 'Type', 'Status', 'Mode').
+
    - Replace dummy scenegraph node with SceneGraphNode
+
+
 - Picking
 
 Menu Render -- Render GL

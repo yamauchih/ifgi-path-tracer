@@ -271,7 +271,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     #
     def create_popup_menu(self):
         if (self.popupmenu == None):
-            print 'DEBUG: create_popup_menu'
+            # print 'DEBUG: create_popup_menu'
             self.popupmenu = QtGui.QMenu(self)
             self.create_popup_menu_function_menu()
             popup_preference_act = \
@@ -336,9 +336,6 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
             #  }
             self.popup_context_menu(_event.globalPos())
 
-
-            #  d_popupMenu->exec(QCursor::pos().x(),QCursor::pos().y());
-            print 'NIN: RightButtonPressed: popup menu'
         else:
             # left button & CTRL pressed and lasso interactive
             if ((_event.modifiers() & QtCore.Qt.ControlModifier) and

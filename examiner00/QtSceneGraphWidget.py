@@ -45,37 +45,63 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 class SceneGraphNodeTreeItem(object):
 
     # constructor
-    def __init__(self, data, parent = None):
-        self.parentItem     = parent
-        self.sceneGraphNode = data
+    #
+    # \param[in] _sgnode a GLSceneGraphNode
+    # \param[in] _parent parent node (None for only root node)
+    def __init__(self, _sgnode, _parent = None):
+        self.parentItem     = _parent
+        self.sceneGraphNode = _sgnode
         self.childItems     = []
 
-    def appendChild(self, item):
-        self.childItems.append(item)
+    # append child
+    def appendChild(self, _item):
+        self.childItems.append(_item)
 
-    def child(self, row):
-        return self.childItems[row]
+    # get child
+    def child(self, _row):
+        return self.childItems[_row]
 
+    # get number of children
     def childCount(self):
         return len(self.childItems)
 
+    # colomnCount
+    # 
+    # always 4. ['Node', 'Type', 'Status', 'Mode']
     def columnCount(self):
-        return len(self.sceneGraphNode)
+        return 4
 
-    def data(self, column):
-        try:
-            return self.sceneGraphNode[column]
-        except IndexError:
-            return None
+    # get GLSceneGraphNode
+    #
+    # \param[in] _column scenegraph node view column (0...3)
+    def data(self, _column):
+        if   (_column == 0):
+            return self.sceneGraphNode.get_nodename()
+        elif (_column == 1):
+            return self.sceneGraphNode.get_classname()
+        elif (_column == 2):
+            if self.sceneGraphNode.is_node_active():
+                return 'Active'
+            else:
+                return 'Deactivated'
+        elif (_column == 3):
+            if self.sceneGraphNode.is_global_drawmode():
+                return 'Global'
+            else:
+                return 'Local: NIN no local drawmode name'
+        else:
+            raise IndexError('SceneGraphNodeTreeItem: data')
+            return 'Error: IndexError'
 
+    # get parent
     def parent(self):
         return self.parentItem
 
+    # get row (depth)
     def row(self):
         if self.parentItem:
             return self.parentItem.childItems.index(self)
         return 0
-
 
 #
 # SceneGraph Model.
@@ -87,7 +113,11 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
     # constructor
     def __init__(self, parent = None):
         super(SceneGraphModel, self).__init__(parent)
-        self.rootItem = SceneGraphNodeTreeItem(('Node', 'Type', 'Status', 'Mode'))
+        self.rootItem = SceneGraphNodeTreeItem(
+            # root is used for the column label
+            # HEREHERE 2011-1-24(Mon)
+            ('Node', 'Type', 'Status', 'Mode')
+            )
 
     # get scene graph model root
     #

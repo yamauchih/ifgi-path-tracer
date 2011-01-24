@@ -295,14 +295,14 @@ class QtExaminerWindow(QtGui.QMainWindow):
         sg.update_all_bbox()
         sg.print_all_obj()      # for debug
 
-        # attach the GL scene graph to SceneGraph
+        # attach the SceneGraph to a GLSceneGraph 
         glsg = GLSceneGraph.GLSceneGraph()
         glsg.set_scenegraph(sg)
 
         # debug mode on
         self.examiner_widget.set_debug_mode(True)
 
-        # attach the GL scene graph to Examiner to see
+        # attach the GLSceneGraph to Examiner to see
         self.examiner_widget.attach_gl_scenegraph(glsg)
         self.examiner_widget.view_all()
 

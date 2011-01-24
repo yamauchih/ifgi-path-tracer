@@ -13,7 +13,6 @@ import DrawMode
 import SceneGraph
 import GLUtil
 
-
 #
 # OpenGL scene graph
 #
@@ -42,6 +41,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
                              0)
 
         self.print_sgnode_sub(self.gl_root_node, 0)
+        
 
 
     # copy scenegraph tree subroutine
@@ -92,7 +92,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
 
 
 #
-# OpenGL scene graph node
+# OpenGL scene graph node (BaseNode/GroupNode)
 #
 # This has
 #   - children
@@ -106,10 +106,47 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         self.children  = []
         self.primitive = None
         self.is_debug  = False
+        self.nodename  = 'NoName'
+        self.is_active = True
+        self.is_global_drawmode = True
 
-    # get classname
+    # set nodename (shown in the SceneGraph viewer as Node)
+    # \param[in] _nodename nodename for scenegraph visualization
+    def set_nodename(self, _nodename):
+        self.nodename = _nodename
+
+    # get nodename
+    # \return node (instance) name
+    def get_nodename(self):
+        return self.nodename
+
+    # get classname (shown in the SceneGraph viewer as node Type)
     def get_classname(self):
         return 'GLSceneGraphNode'
+
+    # set node active (shown in the SceneGraph viewer as Status)
+    #
+    # \param[in] _is_active when True, node status is active,
+    # otherwise deactivated
+    def set_node_active(self, _is_active):
+        self.is_active = _is_active
+
+    # set node active (shown in the SceneGraph viewer as Status)
+    def is_node_active(self):
+        return self.is_active
+
+    # set node global drawmode (shown in the SceneGraph viewer as Mode)
+    #
+    # \param[in] _is_global when True, node drawmode is global,
+    # otherwise local.
+    def set_global_drawmode(self, _is_global):
+        self.is_global_drawmode = _is_global
+
+    # is node global drawmode (shown in the SceneGraph viewer as Mode)
+    #
+    # \return when True, node drawmode is global
+    def is_global_drawmode(self):
+        return self.is_global_drawmode
 
     # set primitive
     def set_primitive(self, _prim):
@@ -299,7 +336,7 @@ class GLTriMeshNode(GLSceneGraphNode):
     # each draw: bbox
     def draw_bbox(self):
         assert(self.is_primitive_node() == True)
-        self.primitive.update_bbox()
+        # self.primitive.update_bbox()
         bbox = self.primitive.get_bbox()
         GLUtil.draw_axis_alighed_box(bbox.get_min(), bbox.get_max())
 

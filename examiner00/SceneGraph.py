@@ -150,6 +150,10 @@ class SceneGraph(object):
         self.camera       = Camera.IFGICamera()
         self.root_node    = None
 
+    # set the root node
+    def set_root_node(self, _root_node):
+        self.root_node = _root_node
+
     # get the root node
     def get_root_node(self):
         return self.root_node
@@ -195,6 +199,7 @@ class SceneGraph(object):
     # update all bounding box recursively
     def update_all_bbox(self):
         update_bbox_strategy = SGTUpdateBBoxStrategy()
+        print 'NIN: update bounding box strategy'
         self.traverse_sgnode(self.root_node, update_bbox_strategy)
 
 
@@ -294,13 +299,13 @@ def create_one_trimeh_scenegraph(_objfname):
 
     # create scenegraph
     sg = SceneGraph()
-    assert(sg.root_node == None)
+    assert(sg.get_root_node() == None)
 
     # create scenegraph's root node
     rootsg = SceneGraphNode()
     rootsg.set_primitive(tmesh)
 
-    sg.root_node = rootsg
+    sg.set_root_node(rootsg)
 
     return sg
 
