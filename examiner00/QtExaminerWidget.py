@@ -1,9 +1,8 @@
 #!/usr/bin/env python
+## QtExaminer widget version 0.0.0
 #
-# QtExaminer widget version 0.0.0
-#
-# \author Yamauchi, Hitoshi
-#
+# \file
+# \brief QtExaminerWidget
 
 """IFGI QtExaminerWidget Version 0.0.0"""
 

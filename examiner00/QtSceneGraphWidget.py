@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-##
+## QtSceneGraphWidget
 # \file
-# \brief SceneGraph inspector
+# \brief SceneGraph inspector widget
 # \module QtSceneGraphWidget
-#
-# \author Yamauchi, Hitoshi
-#
+
 
 """IFGI QtSceneGraphWidget v 0.0.0"""
 
