@@ -4,6 +4,6 @@
 all:
 
 clean:
-	rm -fv *.pyc
+	rm -rfv *.pyc *~ html/
 
 

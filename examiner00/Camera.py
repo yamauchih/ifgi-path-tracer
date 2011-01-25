@@ -20,12 +20,16 @@ ProjectionMode = enum.Enum(['Perspective', 'Orthographic'])
 EyePosition = enum.Enum(['EyeCenter', 'EyeLeft', 'EyeRight'])
 
 
-#
 # camera base class
-#
 class Camera(object):
-    # default constructor
+    """
+    camera base class
+    """
+
     def __init__(self):
+        """
+        default constructor
+        """
         self.eye_pos      = numpy.array([0, 0,  5])
         self.view_dir     = numpy.array([0, 0, -1])
         self.up_dir       = numpy.array([0, 1,  0])
@@ -39,6 +43,11 @@ class Camera(object):
 
     # get eye position
     def get_eye_pos(self):
+        """
+        get eye position
+        return:
+          eye position vector3
+        """
         return self.eye_pos
     # set eye position
     def set_eye_pos(self, _eye_pos):
@@ -150,9 +159,6 @@ class IFGICamera(Camera):
     # class name
     def get_classname(self):
         return 'IFGICamera'
-
-
-
 
 #
 # main test
