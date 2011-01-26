@@ -279,8 +279,8 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
     # \return header label data (string of ['Node', 'Type', 'Status',
     # 'Mode']), None if invalid _section, _orientation
     def headerData(self, _section, _orientation, _role):
-        if ((orientation == QtCore.Qt.Horizontal) and 
-            (role        == QtCore.Qt.DisplayRole)):
+        if ((_orientation == QtCore.Qt.Horizontal) and 
+            (_role        == QtCore.Qt.DisplayRole)):
             return self.rootItem.data(_section)
 
         return None
