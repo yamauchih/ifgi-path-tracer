@@ -12,7 +12,7 @@ import GLSceneGraph
 
 ## QtSceneGraphView
 #
-# tree structured SceneGraph inspector view
+# tree structured SceneGraph inspector view widget
 #
 class QtSceneGraphViewWidget(QtGui.QTreeView):
 
@@ -33,36 +33,109 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
         self.setModel(self.model)
 
+        # init the current/selected scenegrap node 
+        self.cur_tree_item = 0
+        assert(self.selectionModel() != None)
+        qmidx = self.selectionModel().currentIndex()
+        # current node is selected
+        self.slot_activated(qmidx) 
+
+        #------------------------------
+        # connect slots
+        #------------------------------
+        # click event
+        self.clicked.      connect(self.slot_clicked)
+        self.doubleClicked.connect(self.slot_doubleClicked)
+        self.activated.    connect(self.slot_activated)
+        self.collapsed.    connect(self.slot_collapsed)
+        self.expanded.     connect(self.slot_expanded)
+
+  
     ## get scenegraph (Qt) model
+    # \return the model
     def get_scenegraph_model(self):
         return self.model
+
+    ## slot clicked
+    # \param[in] _qmidx clicked item model index
+    def slot_clicked(self, _qmidx):
+        # set the selected current tree item
+        self.slot_activated(_qmidx);
+
+        # selected and right click
+
+        # NIN
+        # if ((self.cur_tree_item != None) and
+        #     (d_mouseButtons == Qt::RightButton)):
+        #     assert(self.cur_tree_item.get_node() != None)
+        #     self.rightButtonPressed(self.cur_tree_item.node());
+
+        # self.adjustColumnSizeByContents()
+        print 'slot clicked'
+
+    ## slot double clicked
+    # \param[in] _qmidx double clicked item model index
+    def slot_doubleClicked(self, _qmidx):
+        print 'slot double clicked'
+        self.slot_activated(_qmidx)
+  
+        if (self.cur_tree_item == None):
+            # no selected node
+            return
+  
+        glsgnode = self.cur_tree_item.get_node()
+        assert(glsgnode != None)
+        # toggle the node active
+        glsgnode.set_node_active(not glsgnode.is_node_active())
+        
+        # inform the data is updated to the view
+        # self.scheduleDelayedItemsLayout();
+        # emit node_changed(glsgnode)
+
+
+    ## slot activated
+    # \param[in] _qmidx activated item model index
+    def slot_activated(self, _qmidx):
+        print 'slot activated'
+        if (_qmidx.isValid()):
+            self.cur_tree_item = _qmidx.internalPointer();
+            print 'slot activated: ' + str(type(self.cur_tree_item))
+        else:
+            self.cur_tree_item = None
+
+
+    ## slot collapsed
+    # \param[in] _qmidx collapsed item model index
+    def slot_collapsed(self, _qmidx):
+        print 'slot collapsed'
+
+    ## slot expanded
+    # \param[in] _qmidx expanded item model index
+    def slot_expanded(self, _qmidx):
+        print 'slot expanded'
+
 
 
 ## ScneGraph node, but for QTreeview's label only
 #
 # returns ['Node', 'Type', 'Status', 'Mode'] for the QTreeView label
-#
 class QtTreeviewLabelGLSceneGraphNode(GLSceneGraph.GLSceneGraphNode):
     ## get nodename
-    #
     # \return node label 'Node'
     def get_nodename(self):
         return 'Node'
 
     ## get classname (shown in the SceneGraph viewer as node Type)
-    #
     # \return class name label 'Type'
     def get_classname(self):
         return 'Type'
 
     ## get node active state string
-    #
     # \return get node active state string label 'Status'
     def get_active_state(self):
         return 'Status'
 
     ## get draw mode string
-    #
     # \return draw mode string label 'Mode'
     def get_global_drawmode_str(self):
         return 'Mode'
@@ -87,27 +160,28 @@ class SceneGraphNodeTreeItem(object):
 
     ## append child
     #
-    #
+    # \param[in] _item child tree item
     def appendChild(self, _item):
         self.childItems.append(_item)
 
     ## get child
     #
-    #
+    # \param[in] _row row position of child
     def child(self, _row):
         return self.childItems[_row]
 
-    # get number of children
+    ## get number of children
+    # \return number of children
     def childCount(self):
         return len(self.childItems)
 
     ## colomnCount
     # 
-    # always 4. ['Node', 'Type', 'Status', 'Mode']
+    # \return always 4. ['Node', 'Type', 'Status', 'Mode']
     def columnCount(self):
         return 4
 
-    ## get GLSceneGraphNode
+    ## get column data string.
     #
     # \param[in] _column scenegraph node view column (0...3)
     def data(self, _column):
@@ -124,14 +198,22 @@ class SceneGraphNodeTreeItem(object):
             return 'Error: IndexError'
 
     ## get parent
+    # \return parent tree item
     def parent(self):
         return self.parentItem
 
     ## get row (depth)
+    # \return get row (depth) size
     def row(self):
         if self.parentItem:
             return self.parentItem.childItems.index(self)
         return 0
+
+    ## get scenegraph node
+    # \return scenegraph node 
+    def get_node(self):
+        return self.sceneGraphNode
+
 
 ## SceneGraph Model
 #
@@ -140,9 +222,11 @@ class SceneGraphNodeTreeItem(object):
 class SceneGraphModel(QtCore.QAbstractItemModel):
 
     ## constructor
-    def __init__(self, parent = None):
-        super(SceneGraphModel, self).__init__(parent)
-        self.rootItem = SceneGraphNodeTreeItem(QtTreeviewLabelGLSceneGraphNode())
+    # \param[in] _parent 
+    def __init__(self, _parent = None):
+        super(SceneGraphModel, self).__init__(_parent)
+        self.rootItem =\
+            SceneGraphNodeTreeItem(QtTreeviewLabelGLSceneGraphNode())
 
     ## get scene graph model root
     #
@@ -150,55 +234,87 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
     def get_scenegraph_model_root(self):
         return self.rootItem
 
-    def columnCount(self, parent):
-        if parent.isValid():
-            return parent.internalPointer().columnCount()
+    ## get numver of columns
+    #
+    # \param[in] _parent parent tree item
+    def columnCount(self, _parent):
+        if _parent.isValid():
+            return _parent.internalPointer().columnCount()
         else:
             return self.rootItem.columnCount()
 
-    def data(self, index, role):
-        if not index.isValid():
+    ## get data
+    #
+    # \param[in] _qmidx model index
+    # \param[in] _role  model role (currently DisplayRole only)
+    # \return tree item data (string, node data of [Node, Type,
+    # Status, Mode])
+    def data(self, _qmidx, _role):
+        if not _qmidx.isValid():
             return None
 
-        if role != QtCore.Qt.DisplayRole:
+        if _role != QtCore.Qt.DisplayRole:
             return None
 
-        item = index.internalPointer()
+        item = _qmidx.internalPointer()
 
-        return item.data(index.column())
+        return item.data(_qmidx.column())
 
-    def flags(self, index):
-        if not index.isValid():
+    ## flag
+    #
+    # \param[in] _qmidx model index
+    # \return tree item flag
+    def flags(self, _qmidx):
+        if not _qmidx.isValid():
             return QtCore.Qt.NoItemFlags
 
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
-    def headerData(self, section, orientation, role):
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
-            return self.rootItem.data(section)
+
+    ## get header data
+    #
+    # \param[in] _section
+    # \param[in] _orientation
+    # \param[in] _role
+    # \return header label data (string of ['Node', 'Type', 'Status',
+    # 'Mode']), None if invalid _section, _orientation
+    def headerData(self, _section, _orientation, _role):
+        if ((orientation == QtCore.Qt.Horizontal) and 
+            (role        == QtCore.Qt.DisplayRole)):
+            return self.rootItem.data(_section)
 
         return None
 
-    def index(self, row, column, parent):
-        if not self.hasIndex(row, column, parent):
+    ## get the model index
+    #
+    # \param[in] _row    row of the view
+    # \param[in] _column column of the view
+    # \param[in] _parent parent tree item
+    # \return corresponding model index
+    def index(self, _row, _column, _parent):
+        if not self.hasIndex(_row, _column, _parent):
             return QtCore.QModelIndex()
 
-        if not parent.isValid():
+        if not _parent.isValid():
             parentItem = self.rootItem
         else:
-            parentItem = parent.internalPointer()
+            parentItem = _parent.internalPointer()
 
-        childItem = parentItem.child(row)
+        childItem = parentItem.child(_row)
         if childItem:
-            return self.createIndex(row, column, childItem)
+            return self.createIndex(_row, _column, childItem)
         else:
             return QtCore.QModelIndex()
 
-    def parent(self, index):
-        if not index.isValid():
+    ## get parent of model index
+    # \param[in] _qmidx model index
+    # \return parent of _qmidx. or invalid model index if _qmidx is a
+    # root or invalid
+    def parent(self, _qmidx):
+        if not _qmidx.isValid():
             return QtCore.QModelIndex()
 
-        childItem = index.internalPointer()
+        childItem = _qmidx.internalPointer()
         parentItem = childItem.parent()
 
         if parentItem == self.rootItem:
@@ -206,13 +322,16 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
         return self.createIndex(parentItem.row(), 0, parentItem)
 
-    def rowCount(self, parent):
-        if parent.column() > 0:
+    ## get number of rows
+    # \param[in] _parent parent tree item
+    # \return number of rows
+    def rowCount(self, _parent):
+        if _parent.column() > 0:
             return 0
 
-        if not parent.isValid():
+        if not _parent.isValid():
             parentItem = self.rootItem
         else:
-            parentItem = parent.internalPointer()
+            parentItem = _parent.internalPointer()
 
         return parentItem.childCount()
