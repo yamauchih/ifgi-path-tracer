@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#
+##
 # reader to primitive converter
 #
 
@@ -8,9 +8,9 @@
 import Primitive
 import ObjReader
 
-#
+##
 # ObjReader to TriMesh converter
-#
+# \param[in] _objreader obj file reader
 def conv_objreader_trimesh(_objreader):
     tmesh = Primitive.TriMesh()
     tmesh.set_data(_objreader.vertex_list,

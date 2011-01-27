@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 ##
+# GLSceneGraph module
 # \file
 # \brief OpenGL scene graph module
 
@@ -76,7 +77,8 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         if _cur_sgnode.primitive != None:
             # create primitive node and set the primitive
             print 'DEBUG: Create primitive and set'
-            gl_prim_node = new_gl_scenegraph_primitive_node(_cur_sgnode.primitive)
+            gl_prim_node = new_gl_scenegraph_primitive_node(
+                _cur_sgnode.primitive)
             print 'DEBUG: Created: ' + gl_prim_node.get_classname()
             _cur_glnode.set_primitive(gl_prim_node)
 
@@ -85,7 +87,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
             for ch_sgnode in _cur_sgnode.children:
                 # create and refer the sg node
                 ch_glnode = GLSceneGraphNode()
-                _cur_sgnode.append_child(ch_glnode)
+                _cur_glnode.append_child(ch_glnode)
                 self.copy_sgnode_sub(ch_sgnode, ch_glnode, _level + 1)
 
 
@@ -262,7 +264,8 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         param[in]: _prim primitive to be set"""
 
         if len(self.children) > 0:
-            raise StandardError, ('Can not set a primitive. already had children.')
+            raise StandardError, (
+                'Cannot set a primitive. already had children.')
         # can not use is_primitive_node, this method changes the
         # primitive state
         if self.primitive != None:
@@ -294,7 +297,8 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         param[in]: _child a child will be appended to this node"""
 
         if (self.is_primitive_node()):
-            raise StandardError, ('Can not append a child. already had a primitive.')
+            raise StandardError, (
+                'Cannot append a child. already had a primitive.')
         self.children.append(_child)
 
     ## print glnode info. Indentation is according to the depth level
@@ -322,7 +326,8 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         param[in]: _global_mode global draw mode
         see: DrawMode"""
 
-        print self.get_classname() + '::draw is called with ' + str(_global_mode)
+        print self.get_classname() + '::draw is called with ' +\
+            str(_global_mode)
 
         if (self.is_primitive_node()):
             # primitive: draw itself
@@ -350,7 +355,8 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
             return self.primitive.get_drawmode()
 
         return None
-        # raise StandardError, ('GLSceneGraphNode.get_drawmode() must be implemented ' +
+        # raise StandardError, (
+        # 'GLSceneGraphNode.get_drawmode() must be implemented ' +
         # 'in derived class. classname = ' + self.get_classname())
 
     ## print this obj for debug

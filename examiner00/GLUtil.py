@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-#
-# GL utility functions
-#
+##
+# OpenGL utility module
+# \file
+# \brief OpenGL utility functions
 
 """IFGI OpenGL utility functions"""
 
@@ -10,7 +11,7 @@ import numpy
 from OpenGL import GL
 from OpenGL import GLU
 
-#
+##
 # OpenGL: draw axis aligned box
 #
 # \param[in] _aabox_min axis aligned box min point

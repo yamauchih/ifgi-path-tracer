@@ -1,12 +1,9 @@
 TODO
 
 - SceneGraph dialog, widget
-   - QtSceneGraphWidget's root item is invalid
+   - Copy the GLSceneGraph to Treeview. See GLSceneGraph's
+     copy_sgnode
 
-     This is used for the treeview label... Fix is create dummy
-     GLSceneGraph that rerurns the labels of ('Node', 'Type', 'Status', 'Mode').
-
-   - Replace dummy scenegraph node with SceneGraphNode
 
 
 - Picking

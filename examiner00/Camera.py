@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-
 ##
 # camera module
-#
+# \file
+# \brief camera
 
 """IFGI Camera"""
 

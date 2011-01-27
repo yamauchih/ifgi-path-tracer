@@ -115,7 +115,6 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         print 'slot expanded'
 
 
-
 ## ScneGraph node, but for QTreeview's label only
 #
 # returns ['Node', 'Type', 'Status', 'Mode'] for the QTreeView label

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-#
+##
 # Draw mode
-#
+# \file
+# \brief draw mode (mainly for OpenGL)
 
 """IFGI Drawmode"""
 
@@ -15,11 +16,12 @@ import enum
 # ProjectionMode = enum.Enum(['Perspective', 'Orthographic'])
 
 
-#
+##
 # Draw mode item
 #
+# a draw mode
 class DrawModeItem(object):
-    # constructor
+    ## constructor
     # \param[in] _name   mode name. should be unique
     # \param[in] _bitmap mode bitmap. should be unique
     # \param[in] _is_available boolean. the mode is visible to GUI or
@@ -29,32 +31,34 @@ class DrawModeItem(object):
         self.mode_bitmap  = _bitmap
         self.is_avairable = _is_available
 
-    # get mode name
+    ## get mode name
     # \return mode name
     def get_name(self):
         return self.mode_name
 
-    # get mode bitmap
+    ## get mode bitmap
     # \return mode bitmap (2^p)
     def get_bitmap(self):
         return self.mode_bitmap
 
-    # get availability/visibility
+    ## get availability/visibility
     # \return mode availability/visibility for popup menu
     def is_avairable(self):
         return self.is_avairable
 
-    # print this object
+    ## print this object
     def print_obj(self):
-        print ('DrawModeItem: [' + self.mode_name + ']\t' + str(self.mode_bitmap) +
-               '\t' + str(self.is_avairable))
+        print ('DrawModeItem: [' + self.mode_name + ']\t' + 
+               str(self.mode_bitmap) + '\t' + str(self.is_avairable))
 
 
-#
+##
 # Draw mode list
 #
+# DrawModeItem container/lookup
+# \see DrawModeItem
 class DrawModeList(object):
-    # basic drawmode bitmap
+    ## basic drawmode bitmap
     DM_BBox            = 0x0001
     DM_Points          = 0x0002
     DM_Wireframe       = 0x0004
@@ -66,13 +70,13 @@ class DrawModeList(object):
     DM_Picking         = 0x0100
     DM_USER00          = 0x0200
 
-    # default constructor
+    ## default constructor
     def __init__(self):
         self.mode_item_list = []
         self.mode_item_map  = {}
 
 
-    # find draw mode
+    ## find draw mode
     # \param[in] _drawmode_name draw mode name
     # \return a DrawModeItem if found, otherwise None.
     def find_drawmode(self, _drawmode_name):
@@ -81,7 +85,7 @@ class DrawModeList(object):
         else:
             return None
 
-    # find drawmode_bitmap in this list?
+    ## find drawmode_bitmap in this list?
     #
     # \param[in] _drawmode_bitmap search _drawmode_bitmap in the list
     # \return true if _drawmode_bitmap is found in the list
@@ -91,7 +95,7 @@ class DrawModeList(object):
                 return dm
         return None
 
-    # add draw mode
+    ## add draw mode
     # \param[in] _drawmode_item a draw mode
     def add_drawmode(self, _drawmode_item):
         # check the draw mode item is unique, bitmap is power of two
@@ -103,7 +107,9 @@ class DrawModeList(object):
         self.mode_item_map[_drawmode_item.mode_name] = _drawmode_item
         # print 'DEBUG: added ' + _drawmode_item.mode_name
 
-    # add basic draw mode
+    ## add basic draw mode
+    #
+    # convenience method
     def add_basic_drawmode(self):
         self.add_drawmode(DrawModeItem('BBox',
                                        DrawModeList.DM_BBox,            True))
@@ -126,7 +132,7 @@ class DrawModeList(object):
                                        DrawModeList.DM_Picking,         False))
 
 
-    # or draw mode
+    ## or draw mode
     #
     # \param[in] _other_drawmode other draw mode. This draw mode is
     # or-ed and updated.
@@ -140,7 +146,7 @@ class DrawModeList(object):
             if (not self.find_drawmode(mi)):
                 self.add_drawmode(mi)
 
-    # print draw mode list
+    ## print draw mode list for debug
     def print_obj(self):
         for dmitem in self.mode_item_list:
             dmitem.print_obj()

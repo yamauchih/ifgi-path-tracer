@@ -11,6 +11,7 @@ import sys
 import QtSceneGraphWidget
 import SceneGraph
 import GLSceneGraph
+import Primitive
 
 from PyQt4 import QtCore, QtGui
 
@@ -74,6 +75,27 @@ if __name__ == '__main__':
     rootsgnode = SceneGraph.SceneGraphNode()
     sg.set_root_node(rootsgnode)
 
+    # create a scenegraph
+    #
+    # + rootnode + child0
+    #            + child1
+    #            + child2
+    #            + child3 + child4 + primitive
+    #
+    child0 = SceneGraph.SceneGraphNode()
+    child1 = SceneGraph.SceneGraphNode()
+    child2 = SceneGraph.SceneGraphNode()
+    child3 = SceneGraph.SceneGraphNode()
+    child4 = SceneGraph.SceneGraphNode()
+    prim0  = Primitive.TriMesh()
+
+    rootsgnode.append_child(child0)
+    rootsgnode.append_child(child1)
+    rootsgnode.append_child(child2)
+    rootsgnode.append_child(child3)
+    child3.append_child(child4)
+    child4.set_primitive(prim0)
+
     #----------------------------------------------------------------------
     # 2. create a GLSceneGraph
     #
@@ -81,10 +103,13 @@ if __name__ == '__main__':
     glsg = GLSceneGraph.GLSceneGraph()
     glsg.set_scenegraph(sg)
 
-    print type(glsg.gl_root_node)
-
     # NIN: GLSceneGraph -> SceneGraphNodeTreeItem graph
-    ti = QtSceneGraphWidget.SceneGraphNodeTreeItem(glsg.gl_root_node, sgmodel_root)
+    ti = QtSceneGraphWidget.SceneGraphNodeTreeItem(glsg.gl_root_node, 
+                                                   sgmodel_root)
     sgmodel_root.appendChild(ti)
+    
+
+
+
 
     sys.exit(sgdialog.exec_())

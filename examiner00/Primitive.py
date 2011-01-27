@@ -135,9 +135,8 @@ class BBox(Primitive):
 #         return None
 
 
-#
-# TriMesh
-#
+##
+# TriMesh: simple triangle mesh primitive
 class TriMesh(Primitive):
     # default constructor
     def __init__(self):
