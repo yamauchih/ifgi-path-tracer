@@ -1,8 +1,8 @@
 TODO
 
 - SceneGraph dialog, widget
-   - Copy the GLSceneGraph to Treeview. See GLSceneGraph's
-     copy_sgnode
+  - Add context menu in SceneGraph Dialog.
+    (depends on the node. Each Node has the context menu.)
 
 
 
