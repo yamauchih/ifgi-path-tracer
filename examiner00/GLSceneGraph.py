@@ -38,7 +38,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
 
         self.scenegraph   = _sg
 
-        self.gl_root_node = GLSceneGraphNode('internalroot')
+        self.gl_root_node = GLSceneGraphNode('gl_rootnode')
 
         # check self.scenegraph validity
 

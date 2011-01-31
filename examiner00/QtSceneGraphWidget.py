@@ -12,8 +12,23 @@ import GLSceneGraph
 class QtSceneGraphViewWidget(QtGui.QTreeView):
     """QtSceneGraphView
 
-    tree structured SceneGraph inspector view widget
+    Tree structured SceneGraph inspector view widget.
+    Current enabled keys:
+      - Ctrl+E       show node config dialog
+      - Ctrl+I       show node information dialog
+      - Ctrl+M       execute a command (copy, paste)
+      - Return       return key pressed (popup context menu)
     """
+    #NIN Keys
+    # - Ctrl+Insert  copy  scene node config
+    # - Shift+Insert paste scene node config
+
+
+    #------------------------------------------------------------
+    # signal: class static
+    #------------------------------------------------------------
+    __signal_key_pressed = QtCore.pyqtSignal()
+
 
     # constructor
     def __init__(self, parent=None):
@@ -28,18 +43,21 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.setRootIsDecorated(True);
         self.resize(400, 300);
 
-        self.model = SceneGraphModel()
+        self.__model = SceneGraphModel()
 
         # init model here
-
-        self.setModel(self.model)
+        self.setModel(self.__model)
 
         # init the current/selected scenegrap node
-        self.cur_tree_item = 0
+        self.__cur_tree_item = None
         assert(self.selectionModel() != None)
         qmidx = self.selectionModel().currentIndex()
         # current node is selected
         self.slot_activated(qmidx)
+
+        # key, mouse state
+        self.__key_modifier_state = None
+        self.__mouse_button_state = None
 
         #------------------------------
         # connect slots
@@ -57,7 +75,142 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         """get scenegraph (Qt) model
         \return the model"""
 
-        return self.model
+        return self.__model
+
+    # show config dialog
+    def show_config_dialog(self, _glsgnode):
+        """show config dialog for _glsgnode.
+        \param[in] _glsgnode gl scenegraph node to configure"""
+        print 'DEBUG: show config dialog'
+
+    # show node info
+    def show_nodeinfo_dialog(self, _glsgnode):
+        """show information dialog for _glsgnode.
+        \param[in] _glsgnode gl scenegraph node"""
+        print 'DEBUG: show info dialog'
+
+    # show dialog for \c _item resp. the corresponding \c _node
+    def right_button_pressed(self, _glsgnode):
+        """right button pressed on _glsgnode.
+        \param[in] _glsgnode GL scenegraph node."""
+
+    # return pressed action will do the same to the rightButtonPressed
+    def return_key_pressed(self):
+        if ((self.__cur_tree_item != None) and
+            (self.__cur_tree_item.get_node() != None)):
+            self.right_button_pressed(self.__cur_tree_item.get_node())
+
+    # initialize parameter option
+    # def initParameter(self):
+
+    # auto adjust column size
+    def adjust_columnsize_by_contents(self):
+        if(self.__columnsize_autoadjust):
+            columns = self.header().count()
+            for i in range(0, columns):
+                self.resizeColumnToContents(i)
+
+
+    #----------------------------------------------------------------------
+    # event handler
+    #----------------------------------------------------------------------
+
+    # key press event
+    def keyPressEvent(self, _qkeyev):
+        """key press event: reimplemented.
+        some action and also remember the modifier change (e.g., shift key).
+        \param[in] _qkeyev key event"""
+        self.__key_modifier_state = _qkeyev.modifiers()
+
+        assert(self.__cur_tree_item != None)
+        assert(self.__cur_tree_item.get_node() != None)
+
+        if (self.__key_modifier_state & QtCore.Qt.ControlModifier != 0):
+            # Ctrl+
+            if (_qkeyev.key() == QtCore.Qt.Key_M):
+                # key M: exec command
+                print 'DEBUG: Ctrl+Key_M'
+                pass
+            elif (_qkeyev.key() == QtCore.Qt.Key_E):
+                # key E: edit config dialog
+                print 'DEBUG: Ctrl+Key_E'
+                self.show_config_dialog(self.__cur_tree_item.get_node())
+
+            elif (_qkeyev.key() == QtCore.Qt.Key_Insert):
+                print 'DEBUG: Ctrl+Key_Insert'
+                # NIN: self.copy_scenegraph_config()
+                pass
+            else:
+                # do nothing for other keys
+                pass
+        elif(self.__key_modifier_state & QtCore.Qt.ShiftModifier != 0):
+            # Shift+
+            if (_qkeyev.key() == QtCore.Qt.Key_Insert):
+                print 'DEBUG: Shift+Key_Insert'
+                # NIN: self.paste_scenegraph_config()
+                pass
+            else:
+                # do nothing for other keys
+                pass
+        elif(self.__key_modifier_state == QtCore.Qt.NoModifier):
+            # note using == insted of & in if
+            # no modifier
+            if (_qkeyev.key() == QtCore.Qt.Key_Return):
+                print 'DEBUG: KEY_Return'
+                self.return_key_pressed()
+            else:
+                # do nothing for other keys
+                pass
+
+        # call super class's event handler to process all the defaults
+        super(QtSceneGraphViewWidget, self).keyPressEvent(_qkeyev)
+
+        # remember current selected node
+        cur_selected_node = None
+        if (self.__cur_tree_item != None):
+            cur_selected_node = self.__cur_tree_item.get_node()
+
+        # NIN __signal_key_pressed.emit(self.scenegraph_root,
+        #                               cur_selected_node, _qkeyev)
+
+
+
+    # key release
+    def keyReleaseEvent(self, _qkeyev):
+        """key release event: reimplemented.
+        remember the modifier change (e.g., shift key).
+        \param[in] _qkeyev key event"""
+
+        # update modifiers, call super::keyReleaseEvent
+        self.__key_modifier_state = _qkeyev.modifiers()
+        super(QtSceneGraphViewWidget, self).keyReleaseEvent(_qkeyev)
+
+    # mouse event
+    def mousePressEvent(self, _qmouseev):
+        """mouse press event: reimplemented.
+        remember the mouse state and might have an action
+        \param[in] _qmouseev mouse event"""
+
+        # keep the modifiers
+        self.__key_modifier_state = _qmouseev.modifiers() # inherited QInputEvent
+        self.__mouse_button_state = _qmouseev.buttons()
+
+        # call super. emit clicked() -> slot_clicked()
+        super(QtSceneGraphViewWidget, self).mousePressEvent(_qmouseev);
+
+
+    # other event
+    # def event(self, _qev):
+    #     """other events.
+    #     Filtering the other events.
+    #     \param[in] _qev qt event
+    #     """
+    #     print 'DEBUG: qevent = ' + str(_qev)
+
+
+    #----------------------------------------------------------------------
+    # slot: (event receiver and action)
+    #----------------------------------------------------------------------
 
     # slot clicked
     def slot_clicked(self, _qmidx):
@@ -68,14 +221,12 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.slot_activated(_qmidx);
 
         # selected and right click
+        if ((self.__cur_tree_item != None) and
+            (self.__mouse_button_state == QtCore.Qt.RightButton)):
+            assert(self.__cur_tree_item.get_node() != None)
+            self.rightButtonPressed(self.__cur_tree_item.node());
 
-        # NIN
-        # if ((self.cur_tree_item != None) and
-        #     (d_mouseButtons == Qt::RightButton)):
-        #     assert(self.cur_tree_item.get_node() != None)
-        #     self.rightButtonPressed(self.cur_tree_item.node());
-
-        # self.adjustColumnSizeByContents()
+        self.adjust_columnsize_by_contents()
         print 'slot clicked'
 
     # slot double clicked
@@ -86,11 +237,11 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         print 'slot double clicked'
         self.slot_activated(_qmidx)
 
-        if (self.cur_tree_item == None):
+        if (self.__cur_tree_item == None):
             # no selected node
             return
 
-        glsgnode = self.cur_tree_item.get_node()
+        glsgnode = self.__cur_tree_item.get_node()
         assert(glsgnode != None)
         # toggle the node active
         glsgnode.set_node_active(not glsgnode.is_node_active())
@@ -107,10 +258,10 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
         print 'slot activated'
         if (_qmidx.isValid()):
-            self.cur_tree_item = _qmidx.internalPointer();
-            print 'slot activated: ' + str(type(self.cur_tree_item))
+            self.__cur_tree_item = _qmidx.internalPointer();
+            print 'slot activated: ' + str(type(self.__cur_tree_item))
         else:
-            self.cur_tree_item = None
+            self.__cur_tree_item = None
 
 
     # slot collapsed
@@ -126,6 +277,8 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         \param[in] _qmidx expanded item model index"""
 
         print 'slot expanded'
+
+
 
 
 # ScneGraph node, but for QTreeview's label only
