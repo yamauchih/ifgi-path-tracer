@@ -24,16 +24,20 @@ class QtSceneGraphDialog(QtGui.QDialog):
         """constructor"""
 
         super(QtSceneGraphDialog, self).__init__(parent)
-        # self.setModal(_modal);
 
-        self.sceneGraphView = QtSceneGraphWidget.QtSceneGraphViewWidget(self);
+        # scenegraph treeview widget
+        self.__sg_view_widget = QtSceneGraphWidget.QtSceneGraphViewWidget(self);
 
-        self.layout = QtGui.QVBoxLayout();
-        self.layout.setObjectName('SceneGraph viewer, dialog layout');
-        self.layout.setMargin(0);
-        self.layout.addWidget(self.sceneGraphView);
-        self.setLayout(self.layout);
+        self.__layout = QtGui.QVBoxLayout();
+        self.__layout.setObjectName('SceneGraph viewer, dialog layout');
+        self.__layout.setMargin(0);
+        self.__layout.addWidget(self.__sg_view_widget);
+        self.setLayout(self.__layout);
         self.resize(450, 300)
+
+    # get scenegraph treeview widget
+    def get_scenegraph_view_widget(self):
+        return self.__sg_view_widget
 
     # a signal emitted when dialog is closed
     def closed(self):
@@ -41,12 +45,15 @@ class QtSceneGraphDialog(QtGui.QDialog):
 
         print 'called QtSceneGraphWidget::closed() '
 
-    # Clear current view and import scene graph _root.
-    def update(self, _sceneGraphRoot):
-        """Clear current view and import scene graph _root.
-        Calls sceneGraphViewer()'s update() method."""
 
-        print 'QtSceneGraphWidget::update called'
+    # Clear current view and import GL scenegraph.
+    def update_scenegraph(self, _gl_scenegraph):
+        """import _gl_scenegraph and update model and view.
+        \param[in] _gl_scenegraph GL scenegraph.
+        """
+        self.__sg_view_widget.update_scenegraph(_gl_scenegraph)
+
+
 
     # emits close(), override Dialog's closeEvent
     def closeEvent(self, _close_event):
@@ -90,12 +97,13 @@ def copy_glsg_to_treeitem_sub(_cur_glsgnode, _cur_tinode, _level):
 # test when called directly
 if __name__ == '__main__':
     """test when called directly"""
+
     app = QtGui.QApplication(sys.argv)
+
     sgdialog = QtSceneGraphDialog()
 
-    # dummy FIXME: replace these with SceneGraphNode
-    sgmodel_root = sgdialog.sceneGraphView.get_scenegraph_model(). \
-        get_scenegraph_model_root()
+    # sgmodel_root = sgdialog.get_scenegraph_view_widget().get_scenegraph_model(). \
+    #     get_scenegraph_model_root()
 
     #----------------------------------------------------------------------
     # 1. create a SceneGraph
@@ -138,11 +146,7 @@ if __name__ == '__main__':
     glsg = GLSceneGraph.GLSceneGraph()
     glsg.set_scenegraph(sg)
 
-    # create tree item root
-    ti = QtSceneGraphWidget.SceneGraphNodeTreeItem(glsg.gl_root_node,
-                                                   sgmodel_root)
-    sgmodel_root.appendChild(ti)
-    # create tree item graph from the GLSceneGraph
-    copy_glsg_to_treeitem_sub(glsg.gl_root_node, ti, 0)
+    # import gl scenegraph to dialog -> treeview widget -> model/view
+    sgdialog.update_scenegraph(glsg)
 
     sys.exit(sgdialog.exec_())

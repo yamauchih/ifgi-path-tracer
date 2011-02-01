@@ -59,6 +59,9 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.__key_modifier_state = None
         self.__mouse_button_state = None
 
+        # property
+        self.__is_columnsize_autoadjust = True
+
         #------------------------------
         # connect slots
         #------------------------------
@@ -68,6 +71,25 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.activated.    connect(self.slot_activated)
         self.collapsed.    connect(self.slot_collapsed)
         self.expanded.     connect(self.slot_expanded)
+
+    # update by scenegraph
+    def update_scenegraph(self, _gl_scenegraph):
+        """update mode and view by scenegraph.
+        Import _gl_scenegraph to treeview widget.
+        \param[in] _gl_scenegraph GL scenegraph
+        """
+        # create tree item root
+        tiroot = SceneGraphNodeTreeItem(_gl_scenegraph.gl_root_node,
+                                        self.__model.get_scenegraph_model_root())
+        # create tree item tree from the GLSceneGraph
+        self.__copy_glsg_to_treeitem_sub(_gl_scenegraph.gl_root_node, tiroot, 0)
+        self.__model.update_tree(tiroot)
+
+        # unselect the current item
+        self.__cur_tree_item = None
+
+        self.adjust_columnsize_by_contents()
+
 
 
     # get scenegraph (Qt) model
@@ -89,10 +111,13 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         \param[in] _glsgnode gl scenegraph node"""
         print 'DEBUG: show info dialog'
 
-    # show dialog for \c _item resp. the corresponding \c _node
+    # right button pressed on _glsgnode.
     def right_button_pressed(self, _glsgnode):
         """right button pressed on _glsgnode.
+        Show context menu with respect to _glsgnode
         \param[in] _glsgnode GL scenegraph node."""
+        print 'DEBUG:  node = ' + str(_glsgnode)
+
 
     # return pressed action will do the same to the rightButtonPressed
     def return_key_pressed(self):
@@ -105,7 +130,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
     # auto adjust column size
     def adjust_columnsize_by_contents(self):
-        if(self.__columnsize_autoadjust):
+        if(self.__is_columnsize_autoadjust):
             columns = self.header().count()
             for i in range(0, columns):
                 self.resizeColumnToContents(i)
@@ -224,7 +249,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         if ((self.__cur_tree_item != None) and
             (self.__mouse_button_state == QtCore.Qt.RightButton)):
             assert(self.__cur_tree_item.get_node() != None)
-            self.rightButtonPressed(self.__cur_tree_item.node());
+            self.right_button_pressed(self.__cur_tree_item.get_node());
 
         self.adjust_columnsize_by_contents()
         print 'slot clicked'
@@ -279,6 +304,32 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         print 'slot expanded'
 
 
+    #------------------------------------------------------------
+    # private methods
+    #------------------------------------------------------------
+
+    # copy scenegraph tree subroutine
+    def __copy_glsg_to_treeitem_sub(self, _cur_glsgnode, _cur_tinode, _level):
+        """copy OpenGL scenegraph tree to tree item graph subroutine
+        \param[in]: _cur_glsgnode current visiting OpenGL scenegraph node
+        \param[in]: _cur_tinode   current visiting tree item node
+        \param[in]: _level        current depth level"""
+
+        ti_parent = _cur_tinode
+        for ch_glsgnode in _cur_glsgnode.children:
+            if ch_glsgnode.is_primitive_node() == True:
+                print 'DEBUG: creating tree item by a primitive'
+                # primitive node
+                ti = SceneGraphNodeTreeItem(ch_glsgnode.get_primitive(),
+                                            ti_parent)
+                ti_parent.appendChild(ti)
+            else:
+                print 'DEBUG: creating tree item by a scenegraph node'
+                # create and refer the glsg node
+                ti = SceneGraphNodeTreeItem(ch_glsgnode, ti_parent)
+                ti_parent.appendChild(ti)
+                self.__copy_glsg_to_treeitem_sub(ch_glsgnode, ti, _level + 1)
+
 
 
 # ScneGraph node, but for QTreeview's label only
@@ -327,12 +378,11 @@ class SceneGraphNodeTreeItem(object):
     """
 
     # constructor
-    def __init__(self, _sgnode, _parent = None):
+    def __init__(self, _sgnode, _parent):
         """constructor
         \param[in] _sgnode a GLSceneGraphNode
         \param[in] _parent parent node (None for only root node)
         """
-
         self.parentItem     = _parent
         self.sceneGraphNode = _sgnode
         self.childItems     = []
@@ -423,15 +473,32 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         \param[in] _parent"""
 
         super(SceneGraphModel, self).__init__(_parent)
-        self.rootItem =\
-            SceneGraphNodeTreeItem(QtTreeviewLabelGLSceneGraphNode())
+        self.__root_item =\
+            SceneGraphNodeTreeItem(QtTreeviewLabelGLSceneGraphNode(), None)
+
+
+    # clear root item
+    def clear_root_item_children(self):
+        """clear root item's children
+        """
+        # reset root item
+        self.__root_item.childItems     = []
 
     # get scene graph model root
     def get_scenegraph_model_root(self):
         """get scene graph model root
         \return get scene graph model root"""
 
-        return self.rootItem
+        return self.__root_item
+
+    # update model
+    def update_tree(self, _tree_root):
+        """update model by a tree item tree.
+        \param[in] _tree_root tree item tree root
+        """
+        self.clear_root_item_children()
+        self.__root_item.appendChild(_tree_root)
+
 
     # get numver of columns
     def columnCount(self, _parent):
@@ -442,7 +509,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         if _parent.isValid():
             return _parent.internalPointer().columnCount()
         else:
-            return self.rootItem.columnCount()
+            return self.__root_item.columnCount()
 
     # get data
     def data(self, _qmidx, _role):
@@ -490,7 +557,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
 
         if ((_orientation == QtCore.Qt.Horizontal) and
             (_role        == QtCore.Qt.DisplayRole)):
-            return self.rootItem.data(_section)
+            return self.__root_item.data(_section)
 
         return None
 
@@ -507,7 +574,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
             return QtCore.QModelIndex()
 
         if not _parent.isValid():
-            parentItem = self.rootItem
+            parentItem = self.__root_item
         else:
             parentItem = _parent.internalPointer()
 
@@ -530,7 +597,7 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
         childItem = _qmidx.internalPointer()
         parentItem = childItem.parent()
 
-        if parentItem == self.rootItem:
+        if parentItem == self.__root_item:
             return QtCore.QModelIndex()
 
         return self.createIndex(parentItem.row(), 0, parentItem)
@@ -545,8 +612,13 @@ class SceneGraphModel(QtCore.QAbstractItemModel):
             return 0
 
         if not _parent.isValid():
-            parentItem = self.rootItem
+            parentItem = self.__root_item
         else:
             parentItem = _parent.internalPointer()
 
         return parentItem.childCount()
+
+    #------------------------------------------------------------
+    # private methods
+    #------------------------------------------------------------
+

@@ -4,8 +4,6 @@ TODO
   - Add context menu in SceneGraph Dialog.
     (depends on the node. Each Node has the context menu.)
 
-
-
 - Picking
 
 Menu Render -- Render GL
