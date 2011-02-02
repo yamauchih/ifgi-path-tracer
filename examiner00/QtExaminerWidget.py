@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 ## QtExaminer widget version 0.0.0
 #
 # \file

@@ -1,17 +1,19 @@
 #!/usr/bin/env python
-##
-# reader to primitive converter
-#
 
-"""IFGI Reader to Primitive Converter"""
+"""reader to primitive converter
+\file
+\brie file reader, then convert the read result to a primitive
+"""
 
 import Primitive
 import ObjReader
 
-##
 # ObjReader to TriMesh converter
-# \param[in] _objreader obj file reader
 def conv_objreader_trimesh(_objreader):
+    """ObjReader to TriMesh converter.
+    \param[in] _objreader obj file reader
+    """
+
     tmesh = Primitive.TriMesh()
     tmesh.set_data(_objreader.vertex_list,
                    _objreader.face_idx_list,

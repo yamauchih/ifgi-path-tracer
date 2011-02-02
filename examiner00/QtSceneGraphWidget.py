@@ -61,6 +61,10 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
         # property
         self.__is_columnsize_autoadjust = True
+        self.__popupmenu              = None
+        self.__drawmode_list          = None
+        self.__gl_scenegraph          = None
+        self.__is_use_global_drawmode = True
 
         #------------------------------
         # connect slots
@@ -88,6 +92,10 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         # unselect the current item
         self.__cur_tree_item = None
 
+        # collect drawmode from the gl scenegraph
+        self.__drawmode_list = _gl_scenegraph.collect_drawmode()
+        self.__gl_scenegraph = _gl_scenegraph
+
         self.adjust_columnsize_by_contents()
 
 
@@ -111,11 +119,35 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         \param[in] _glsgnode gl scenegraph node"""
         print 'DEBUG: show info dialog'
 
+    # global draw mode check
+    def set_global_drawmode(self, _is_use_global_drawmode):
+        """set global drawmode.
+        \param[in] _is_use_global_drawmode when True, use global drawmode
+        """
+        self.__is_use_global_drawmode = _is_use_global_drawmode
+        # DELETEME
+        # print 'DEBUG: __is_use_global_drawmode ' +\
+        #    str(self.__is_use_global_drawmode)
+
+    # get global draw mode
+    def is_global_drawmode(self):
+        """get global drawmode.
+        \return True when use global draw mode
+        """
+        return self.__is_use_global_drawmode
+
+
     # right button pressed on _glsgnode.
     def right_button_pressed(self, _glsgnode):
         """right button pressed on _glsgnode.
         Show context menu with respect to _glsgnode
         \param[in] _glsgnode GL scenegraph node."""
+
+        if(self.__popupmenu == None):
+            self.__create_popupmenu()
+
+        self.__popupmenu.exec_(QtGui.QCursor.pos())
+
         print 'DEBUG:  node = ' + str(_glsgnode)
 
 
@@ -223,6 +255,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         # call super. emit clicked() -> slot_clicked()
         super(QtSceneGraphViewWidget, self).mousePressEvent(_qmouseev);
 
+        print 'DEBUG: global pos = ' + str(_qmouseev.globalPos())
 
     # other event
     # def event(self, _qev):
@@ -330,7 +363,75 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
                 ti_parent.appendChild(ti)
                 self.__copy_glsg_to_treeitem_sub(ch_glsgnode, ti, _level + 1)
 
+    # activate the node. might be a public method.
+    def __popup_status_activate_node(self):
+        """activate a node."""
+        assert(self.__cur_tree_item != None)
+        assert(self.__cur_tree_item.get_node() != None)
+        self.__cur_tree_item.get_node().set_node_active(True)
 
+
+    # deactivate the node. might be a public method.
+    def __popup_status_deactivate_node(self):
+        """deactivate a node."""
+        assert(self.__cur_tree_item != None)
+        assert(self.__cur_tree_item.get_node() != None)
+        self.__cur_tree_item.get_node().set_node_active(False)
+
+
+    # popup menu for right click
+    def __create_popupmenu(self):
+        """create popup menu for right click.
+        """
+        assert(self.__popupmenu == None)
+        self.__popupmenu = QtGui.QMenu()
+
+        # status menu and submenu
+        self.__popup_status_submenu = self.__popupmenu.addMenu('Status')
+        self.__popup_status_activate_act = \
+            QtGui.QAction('Activate', self,
+                          statusTip="activate the node for OpenGL view",
+                          triggered=self.__popup_status_activate_node)
+        self.__popup_status_submenu.addAction(self.__popup_status_activate_act)
+
+        self.__popup_status_deactivate_act = \
+            QtGui.QAction('Deactivate', self,
+                          statusTip="deactivate the node for OpenGL view",
+                          triggered=self.__popup_status_deactivate_node)
+        self.__popup_status_submenu.addAction(self.__popup_status_deactivate_act)
+
+        # configuration
+        self.__popupmenu_configuration_act = \
+            QtGui.QAction('Configuration...', self,
+                          statusTip="configure this glnode",
+                          triggered=self.show_config_dialog)
+        self.__popupmenu.addAction(self.__popupmenu_configuration_act)
+
+        # info
+        self.__popupmenu_info_act = \
+            QtGui.QAction('Info...', self,
+                          statusTip="show information of this glnode",
+                          triggered=self.show_nodeinfo_dialog)
+        self.__popupmenu.addAction(self.__popupmenu_info_act)
+
+        self.__popupmenu.addSeparator()
+
+        # global mode
+        self.__popupmenu_global_drawmode_act = \
+            QtGui.QAction('Global default.', self,
+                          statusTip="use global default when GL draw",
+                          triggered=self.set_global_drawmode,
+                          checkable=True)
+        self.__popupmenu_global_drawmode_act.setChecked(self.is_global_drawmode())
+        self.__popupmenu.addAction(self.__popupmenu_global_drawmode_act)
+
+        self.__popupmenu.addSeparator()
+
+        # NIN: checkable local drawmodes
+
+
+
+#----------------------------------------------------------------------
 
 # ScneGraph node, but for QTreeview's label only
 class QtTreeviewLabelGLSceneGraphNode(GLSceneGraph.GLSceneGraphNode):
