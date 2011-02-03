@@ -65,6 +65,8 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.__drawmode_list          = None
         self.__gl_scenegraph          = None
         self.__is_use_global_drawmode = True
+        self.__drawmode_bitmap2action = {} # drawmode bitmap to action dictionary
+
 
         #------------------------------
         # connect slots
@@ -83,10 +85,10 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         \param[in] _gl_scenegraph GL scenegraph
         """
         # create tree item root
-        tiroot = SceneGraphNodeTreeItem(_gl_scenegraph.gl_root_node,
+        tiroot = SceneGraphNodeTreeItem(_gl_scenegraph.get_gl_root_node(),
                                         self.__model.get_scenegraph_model_root())
         # create tree item tree from the GLSceneGraph
-        self.__copy_glsg_to_treeitem_sub(_gl_scenegraph.gl_root_node, tiroot, 0)
+        self.__copy_glsg_to_treeitem_sub(_gl_scenegraph.get_gl_root_node(), tiroot, 0)
         self.__model.update_tree(tiroot)
 
         # unselect the current item
@@ -145,6 +147,9 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
         if(self.__popupmenu == None):
             self.__create_popupmenu()
+            self.__create_popupmenu_drawmode()
+
+
 
         self.__popupmenu.exec_(QtGui.QCursor.pos())
 
@@ -255,7 +260,8 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         # call super. emit clicked() -> slot_clicked()
         super(QtSceneGraphViewWidget, self).mousePressEvent(_qmouseev);
 
-        print 'DEBUG: global pos = ' + str(_qmouseev.globalPos())
+        # print 'DEBUG: global pos = ' + str(_qmouseev.globalPos())
+
 
     # other event
     # def event(self, _qev):
@@ -379,9 +385,10 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.__cur_tree_item.get_node().set_node_active(False)
 
 
-    # popup menu for right click
+    # create popup menu for right click
     def __create_popupmenu(self):
-        """create popup menu for right click.
+        """create popup menu for right click. controls (without
+        drawmode)
         """
         assert(self.__popupmenu == None)
         self.__popupmenu = QtGui.QMenu()
@@ -426,8 +433,53 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.__popupmenu.addAction(self.__popupmenu_global_drawmode_act)
 
         self.__popupmenu.addSeparator()
+        # checkable local drawmodes will follow in
+        # __create_popup_menu_drawmode().
 
-        # NIN: checkable local drawmodes
+
+    # action function when a draw mode is selected
+    def __popupmenu_set_drawmode(self, _drawmode_bitmap):
+        """action function when a draw mode is selected.
+        \param[in] _drawmode_bitmap drawmode bitmpa that is chosen
+        from the menu.
+        """
+        print 'DEBUG: __popupmenu_set_drawmode: ' + str(_drawmode_bitmap)
+
+
+    # create popup menu: draw mode
+    def __create_popupmenu_drawmode(self):
+        """create popup menu for right click. local draw mode part
+        following the control menu creation."""
+
+        # __drawmode_list is set by update_scenegraph.
+        assert(self.__drawmode_list != None)
+
+        # local draw mode is not radio button. Each can be set/unset
+        # independently. (differ from QtExaminerWidget's
+        # __create_popup_menu_drawmode()).
+
+        for dmi in self.__drawmode_list.get_mode_item_list():
+            if dmi.is_avairable:
+                # Using a closure. mode_closure make a closure
+                # function that holds self (through this) and
+                # drawmode bitmap.
+                def mode_closure(this, drawmode_bitmap):
+                    return (lambda: this.__popupmenu_set_drawmode(drawmode_bitmap))
+
+                modclosure = mode_closure(self, dmi.get_bitmap())
+                drawmode_act = QtGui.QAction(dmi.get_name(), self,
+                                             statusTip="DrawMode: " + dmi.get_name(),
+                                             triggered=modclosure,
+                                             checkable=True)
+                self.__drawmode_bitmap2action[dmi.get_bitmap()] = drawmode_act
+                self.__popupmenu.addAction(drawmode_act)
+
+        # if (self.__drawmode_list.find_drawmode_bitmap(self.global_drawmode) == None):
+        # no such draw mode in the list, turn off
+        # print 'no such draw mode in the list, turn off' +\
+        #    str(self.global_drawmode)
+
+
 
 
 

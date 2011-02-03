@@ -1,23 +1,21 @@
 #!/usr/bin/env python
-##
-# OpenGL utility module
-# \file
-# \brief OpenGL utility functions
 
-"""IFGI OpenGL utility functions"""
-
+"""IFGI OpenGL utility module
+\file
+\brief OpenGL utility functions
+"""
 import numpy
 
 from OpenGL import GL
 from OpenGL import GLU
 
-##
 # OpenGL: draw axis aligned box
-#
-# \param[in] _aabox_min axis aligned box min point
-# \param[in] _aabox_max axis aligned box max point
-#
 def draw_axis_alighed_box(_aabox_min, _aabox_max):
+    """OpenGL: draw axis aligned box
+    \param[in] _aabox_min axis aligned box min point
+    \param[in] _aabox_max axis aligned box max point
+    """
+
     # check min max validity
     assert((_aabox_min <= _aabox_max).all() == True)
 

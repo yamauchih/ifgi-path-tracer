@@ -21,7 +21,7 @@ class Camera(object):
 
     # default constructor
     def __init__(self):
-        """default constructor"""
+        """default constructor (public)"""
         self.__eye_pos      = numpy.array([0, 0,  5])
         self.__view_dir     = numpy.array([0, 0, -1])
         self.__up_dir       = numpy.array([0, 1,  0])
@@ -35,60 +35,67 @@ class Camera(object):
 
     # get eye position
     def get_eye_pos(self):
-        """get eye position
+        """get eye position. (public)
         \return eye position vector3"""
         return self.__eye_pos
 
     # set eye position
     def set_eye_pos(self, _eye_pos):
-        """set eye position
+        """set eye position. (public)
         \param[in] _eye_pos eye position"""
         self.__eye_pos = _eye_pos
 
     # get view direction
     def get_view_dir(self):
-        """get view direction
+        """get view direction. (public)
         \return view direction"""
         return self.__view_dir
 
     # set view direction
     def set_view_dir(self, _view_dir):
-        """set view direction"""
+        """set view direction. (public)
+        \return view direction (normalized)."""
         self.__view_dir = _view_dir
 
     # get up direction
     def get_up_dir(self):
-        """get up direction"""
+        """get up direction. (public)
+        \return up direction"""
         return self.__up_dir
 
     # set up direction
     def set_up_dir(self, _up_dir):
-        """set up direction"""
+        """set up direction. (public)
+        \return up direction vector."""
         self.__up_dir = _up_dir
 
     # get fovy as radian
     def get_fovy_rad(self):
-        """get fovy as radian"""
+        """get fovy as radian. (public)
+        \return field of view Y. (radian)"""
         return self.__fovy_rad
 
     # get aspect ratio
     def get_aspect_ratio(self):
-        """get aspect ratio"""
+        """get aspect ratio. (public)
+        \return aspect ratio."""
         return self.__aspect_ratio
 
     # get z near plane distance
     def get_z_near(self):
-        """get z near plane distance"""
+        """get z near plane distance. (public)
+        \return z near plane distance."""
         return self.__z_near
 
     # get z far plane distance
     def get_z_far(self):
-        """get z far plane distance"""
+        """get z far plane distance. (public)
+        \return z far plane distance."""
         return self.__z_far
 
     # get class name
     def get_classname(self):
-        """get class name.
+        """get class name. (public)
         This must be reimplemented in the inherited class.
         \return None"""
         assert 0, "get_classname must be implemented in a derived class."
@@ -96,12 +103,13 @@ class Camera(object):
 
     # get projection mode
     def get_projection(self):
-        """get projection mode"""
+        """get projection mode. (public)
+        \return projection mode ('Perspective', 'Orthographic')"""
         return self.__projection
 
     # get gluLookAt() parameters
     def get_lookat(self, _eye_type):
-        """get gluLookAt() parameters
+        """get gluLookAt() parameters. (public)
         \param[in] _eye_type eye position for stereo {EyeCenter,
         EyeLeft, EyeRight}, NIN Not implemented now."""
         assert(_eye_type == EyePosition.EyeCenter)
@@ -111,14 +119,12 @@ class Camera(object):
                 self.__up_dir]
 
     # Get the camera coordinate system as OpenGL (left hand)
-    #
-    # Get orthonrmal basis for camera coordinate system {_ex,_ey,_ez}.
-    # \return [ex, ey, ez]  ["right", "up", viewingDriection()] system
     def get_coordinate_system(self):
-        """Get the camera coordinate system as OpenGL (left hand)
+        """Get the camera coordinate system as OpenGL (public)
 
         Get orthonrmal basis for camera coordinate system {_ex,_ey,_ez}.
-        \return [ex, ey, ez]  [right, up, viewingDriection()] system
+        \return [ex, ey, ez]  [right, up, viewingDriection()] system.
+        Left hand system.
         """
 
         ex  = numpy.cross(self.__view_dir, self.__up_dir)
@@ -135,7 +141,7 @@ class Camera(object):
 
     # for debug
     def print_obj(self):
-        """print this object for debug"""
+        """print this object for debug. (public)"""
         cname = self.get_classname()
         print '#' + cname + '::eye_pos = '  + str(self.__eye_pos)
         print '#' + cname + '::view_dir = ' + str(self.__view_dir)
@@ -152,15 +158,14 @@ class Camera(object):
 class GLCamera(Camera):
     """OpenGL camera
     """
-
     # default constructor
     def __init__(self):
-        """default constructor"""
+        """default constructor. (public)"""
         super(GLCamera, self).__init__()
 
     # get class name
     def get_classname(self):
-        """get class name
+        """get class name. (public)
         \return 'GLCamera'
         """
         return 'GLCamera'
@@ -173,12 +178,12 @@ class IFGICamera(Camera):
 
     # default constructor
     def __init__(self):
-        """default constructor"""
+        """default constructor. (public)"""
         super(IFGICamera, self).__init__()
 
     # class name
     def get_classname(self):
-        """get class name
+        """get class name. (public)
         \return 'IFGICamera'"""
         return 'IFGICamera'
 

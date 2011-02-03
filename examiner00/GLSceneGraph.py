@@ -20,39 +20,83 @@ class GLSceneGraph(SceneGraph.SceneGraph):
       - GLroot_node
     """
 
+    # public: ------------------------------------------------------------
+
     # default constructor
     def __init__(self):
-        """default constructor"""
-        self.gl_camera    = Camera.GLCamera()
-        self.gl_root_node = None
-        self.scenegraph   = None
+        """default constructor. (public)"""
+        self.__gl_camera    = Camera.GLCamera()
+        self.__gl_root_node = None
+        self.__scenegraph   = None
 
     # set generic scene graph.
     def set_scenegraph(self, _sg):
-        """set generic scene graph.
+        """set generic scene graph. (public)
 
         Generic scenegraph is for both OpenGL rendering and Path tracing
         rendering.
 
         \param[in] _sg generic scenegraph"""
 
-        self.scenegraph   = _sg
+        self.__scenegraph   = _sg
 
-        self.gl_root_node = GLSceneGraphNode('gl_rootnode')
+        self.__gl_root_node = GLSceneGraphNode('gl_rootnode')
 
-        # check self.scenegraph validity
+        # check self.__scenegraph validity
 
         # create GLSceneGraph from scenegraph
-        self.copy_sgnode_sub(self.scenegraph.root_node,
-                             self.gl_root_node,
-                             0)
+        self.__copy_sgnode_sub(self.__scenegraph.root_node,
+                               self.__gl_root_node,
+                               0)
 
-        self.print_sgnode_sub(self.gl_root_node, 0)
+        self.__print_sgnode_sub(self.__gl_root_node, 0)
 
+    # get generic scene graph.
+    def get_scenegraph(self):
+        """get generic scene graph. (public)
+        \return generic scenegraph.
+        """
+        return self.__scenegraph
+
+    # get OpenGL scene graph root.
+    def get_gl_root_node(self):
+        """get OpenGL scene graph's root node. (public)
+        \return root node of OpenGL scenegraph.
+        """
+        return self.__gl_root_node
+
+
+    # scenegraph draw
+    def draw(self, _global_mode):
+        """scenegraph draw. (public)
+
+        \param[in] _global_mode global draw mode"""
+
+        self.__gl_root_node.draw(_global_mode)
+
+
+    # print object for debug
+    def print_obj(self):
+        """print object for debug. (public)"""
+        print 'NIN: GLSceneGraph: print_obj()'
+
+    # collect all drawmode
+    def collect_drawmode(self):
+        """collect all drawmode. (public)
+        traverse with SceneGraphTraverseStrategyIF strategy
+        \see SceneGraphTraverseStrategyIF"""
+
+        collect_drawmode_strategy = GLSGTCollectDrawmodeStrategy()
+        self.traverse_sgnode(self.__gl_root_node, collect_drawmode_strategy)
+        # print 'DEBUG: collect draw mode done.'
+        # collect_drawmode_strategy.drawmodelist.print_obj()
+        return collect_drawmode_strategy.drawmodelist
+
+    # private: ------------------------------------------------------------
 
     # copy scenegraph tree subroutine
-    def copy_sgnode_sub(self, _cur_sgnode, _cur_glnode, _level):
-        """copy scenegraph tree subroutine
+    def __copy_sgnode_sub(self, _cur_sgnode, _cur_glnode, _level):
+        """copy scenegraph tree subroutine. (private)
         \param[in] _cur_sgnode current visiting (generic) scenegraph node
         \param[in] _cur_glnode current visiting OpenGL scenegraph node
         \param[in] _level      current depth level"""
@@ -71,21 +115,12 @@ class GLSceneGraph(SceneGraph.SceneGraph):
                 # create and refer the sg node
                 ch_glnode = GLSceneGraphNode(ch_sgnode.get_nodename())
                 _cur_glnode.append_child(ch_glnode)
-                self.copy_sgnode_sub(ch_sgnode, ch_glnode, _level + 1)
-
-
-    # scenegraph draw
-    def draw(self, _global_mode):
-        """scenegraph draw
-
-        \param[in] _global_mode global draw mode"""
-
-        self.gl_root_node.draw(_global_mode)
-
+                self.__copy_sgnode_sub(ch_sgnode, ch_glnode, _level + 1)
 
     # print out scenegraph nodes for debug (subroutine of print_sgnode)
-    def print_sgnode_sub(self, _cur_glnode, _level):
-        """print out scenegraph nodes for debug (subroutine of print_sgnode)
+    def __print_sgnode_sub(self, _cur_glnode, _level):
+        """print out scenegraph nodes for debug. (private)
+        subroutine of print_sgnode.
         \param[in] _cur_glnode currect visiting gl node
         \param[in] _level      current visiting depth"""
 
@@ -93,29 +128,13 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         if _cur_glnode.primitive == None:
             # children container
             for chnode in _cur_glnode.children:
-                self.print_sgnode_sub(chnode, _level + 1)
+                self.__print_sgnode_sub(chnode, _level + 1)
 
-    # print object for debug
-    def print_obj(self):
-        """print object for debug"""
-        print 'NIN: GLSceneGraph: print_obj()'
-
-    # collect all drawmode
-    def collect_drawmode(self):
-        """collect all drawmode
-        traverse with SceneGraphTraverseStrategyIF strategy
-        \see SceneGraphTraverseStrategyIF"""
-
-        collect_drawmode_strategy = GLSGTCollectDrawmodeStrategy()
-        self.traverse_sgnode(self.gl_root_node, collect_drawmode_strategy)
-        # print 'DEBUG: collect draw mode done.'
-        # collect_drawmode_strategy.drawmodelist.print_obj()
-        return collect_drawmode_strategy.drawmodelist
 
 
 # OpenGL scene graph node (BaseNode/GroupNode)
 class GLSceneGraphNode(SceneGraph.SceneGraphNode):
-    """OpenGL scene graph node (BaseNode/GroupNode)
+    """OpenGL scene graph node. BaseNode/GroupNode.
 
     This has either
       - children

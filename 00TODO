@@ -9,6 +9,33 @@ TODO
 
 - Picking
 
+- Doxypy-ization
+GLSceneGraph.py (half)
+GLUtil.py
+ObjReader.py
+Primitive.py
+QtExaminerWidget.py
+QtExaminerWindow.py
+QtSceneGraphDialog.py
+QtSceneGraphWidget.py
+QtUtil.py
+Ray.py
+SceneGraph.py
+actionmode.py
+const.py
+enum.py
+ifgimath.py
+test_Camera.py
+test_ConvReader2Primitive.py
+test_DrawMode.py
+test_ObjReader.py
+test_Primitive.py
+test_QtUtil.py
+test_SceneGraph.py
+test_const.py
+test_ifgimath.py
+
+
 Menu Render -- Render GL
             -- Render IFGI
 Scene

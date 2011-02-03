@@ -14,8 +14,8 @@ import Primitive
 class TestSceneGraph(unittest.TestCase):
     # test scenegraph node
     def test_bbox(self):
-        sg_node0 = SceneGraph.SceneGraphNode()
-        sg_node1 = SceneGraph.SceneGraphNode()
+        sg_node0 = SceneGraph.SceneGraphNode('sg_node0')
+        sg_node1 = SceneGraph.SceneGraphNode('sg_node1')
 
         p0 = numpy.array([-2.0, -2.0, -2.0])
         p1 = numpy.array([ 1.0,  1.0,  3.0])

@@ -236,33 +236,33 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         self.popup_function_menu.addAction(self.popup_function_bgcolor_act)
 
     # create popup menu: draw mode
-    #
     def create_popup_menu_drawmode(self):
         if self.drawmode_list != None:
             # radio button group
             self.drawmode_group = QtGui.QActionGroup(self)
 
             # self.drawmode_list.print_obj()
-            for dmi in self.drawmode_list.mode_item_list:
-                if dmi.is_avairable:
+            for dmi in self.drawmode_list.get_mode_item_list():
+                if (dmi.is_avairable() == True):
                     # Using a closure. mode_closure make a closure
                     # function that holds self (through this) and
                     # drawmode bitmap.
                     def mode_closure(this, drawmode_bitmap):
                         return (lambda: this.popupmenu_set_drawmode(drawmode_bitmap))
 
-                    modclosure = mode_closure(self, dmi.mode_bitmap)
-                    drawmode_act = QtGui.QAction(dmi.mode_name, self,
-                                                 statusTip="DrawMode: " + dmi.mode_name,
+                    modclosure = mode_closure(self, dmi.get_bitmap())
+                    drawmode_act = QtGui.QAction(dmi.get_name(), self,
+                                                 statusTip="DrawMode: " + dmi.get_name(),
                                                  triggered=modclosure,
                                                  checkable=True)
-                    self.drawmode_bitmap2action[dmi.mode_bitmap] = drawmode_act
+                    self.drawmode_bitmap2action[dmi.get_bitmap()] = drawmode_act
                     self.popupmenu.addAction(drawmode_act)
                     self.drawmode_group.addAction(drawmode_act)
 
             if (self.drawmode_list.find_drawmode_bitmap(self.global_drawmode) == None):
                 # no such draw mode in the list, turn off
-                print 'no such draw mode in the list, turn off' + str(self.global_drawmode)
+                print 'no such draw mode in the list, turn off' +\
+                      str(self.global_drawmode)
                 self.global_drawmode = 0;
             self.popupmenu_set_drawmode(self.global_drawmode)
 
@@ -616,7 +616,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
             # popup menu will refer this drawmode_list
 
         # set scene size information
-        bb = self.gl_scenegraph.scenegraph.get_root_node().get_bbox()
+        bb = self.gl_scenegraph.get_scenegraph().get_root_node().get_bbox()
         self.scene_cog    = 0.5 * (bb.min + bb.max)
         self.scene_radius = 0.5 * numpy.linalg.norm(bb.max - bb.min)
         print 'DEBUG:scene_cog: ' + str(self.scene_cog) + ', scene_radius: '\
