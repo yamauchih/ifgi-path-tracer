@@ -80,9 +80,9 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         """print object for debug. (public)"""
         print 'NIN: GLSceneGraph: print_obj()'
 
-    # collect all drawmode
-    def collect_drawmode(self):
-        """collect all drawmode. (public)
+    # collect all __drawmode_list list
+    def collect_drawmode_list(self):
+        """collect all __drawmode_list list. (public)
         traverse with SceneGraphTraverseStrategyIF strategy
         \see SceneGraphTraverseStrategyIF"""
 
@@ -105,13 +105,13 @@ class GLSceneGraph(SceneGraph.SceneGraph):
             # create primitive node and set the primitive
             print 'DEBUG: Create primitive and set'
             gl_prim_node = new_gl_scenegraph_primitive_node(
-                _cur_sgnode.primitive)
+                _cur_sgnode.get_primitive())
             print 'DEBUG: Created: ' + gl_prim_node.get_classname()
             _cur_glnode.set_primitive(gl_prim_node)
 
         else:
-            print 'DEBUG: Go to children'
-            for ch_sgnode in _cur_sgnode.children:
+            print 'DEBUG: Go to __children'
+            for ch_sgnode in _cur_sgnode.__children:
                 # create and refer the sg node
                 ch_glnode = GLSceneGraphNode(ch_sgnode.get_nodename())
                 _cur_glnode.append_child(ch_glnode)
@@ -125,9 +125,9 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         \param[in] _level      current visiting depth"""
 
         _cur_glnode.print_glnodeinfo(_level)
-        if _cur_glnode.primitive == None:
-            # children container
-            for chnode in _cur_glnode.children:
+        if _cur_glnode.get_primitive() == None:
+            # __children container
+            for chnode in _cur_glnode.__children:
                 self.__print_sgnode_sub(chnode, _level + 1)
 
 
@@ -147,11 +147,12 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         \param[in] _nodename node name
         """
         SceneGraph.SceneGraphNode.__init__(self, _nodename)
-        self.children  = []
-        self.primitive = None
-        self.is_debug  = False
-        self.is_active = True
-        self.is_drawmode_global = True # can not have the same method and member
+        self.__children  = []
+        self.__primitive = None
+        self.__is_debug  = False
+        self.__is_active = True
+        # can not have the same name method and member variable
+        self.__drawmode  = True
 
     # get classname (shown in the SceneGraph viewer as node Type)
     def get_classname(self):
@@ -166,14 +167,14 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         \param[in] _is_active when True, node status is active,
         otherwise deactivated."""
 
-        self.is_active = _is_active
+        self.__is_active = _is_active
 
     # set node active (shown in the SceneGraph viewer as Status)
     def is_node_active(self):
         """set node active (shown in the SceneGraph viewer as Status)
         \return True if this node is active"""
 
-        return self.is_active
+        return self.__is_active
 
     # get node active state string
     def get_active_state(self):
@@ -186,31 +187,29 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
             return 'Deactivated'
 
     # set node global drawmode (shown in the SceneGraph viewer as Mode)
-    def set_global_drawmode(self, _is_global):
-        """set node global drawmode (shown in the SceneGraph viewer as Mode)
-        \param[in] _is_global when True, node drawmode is global,
-        otherwise local."""
+    def set_drawmode(self, _drawmode):
+        """set node drawmode (shown in the SceneGraph viewer as Mode)
+        \param[in] _drawmode when DrawMode.DM_GlobalMode, node
+        drawmode is global, otherwise local."""
 
-        self.is_drawmode_global = _is_global
+        self.__drawmode = _drawmode
 
-    # is node global drawmode (shown in the SceneGraph viewer as Mode)
-    def is_global_drawmode(self):
+    # is node global __drawmode_list (shown in the SceneGraph viewer as Mode)
+    def get_drawmode(self):
         """is node global drawmode (shown in the SceneGraph viewer as Mode)
         \return when True, node drawmode is global"""
 
-        return self.is_drawmode_global
+        return self.__drawmode
 
     # get draw mode string
-    def get_global_drawmode_str(self):
-        """get draw mode string
+    def get_drawmode_str(self):
+        """get draw mode string.
 
         \return draw mode string"""
 
-        if self.is_global_drawmode():
-            return 'Global drawmode'
-        else:
-            # NIN: use local draw mode combination
-            return 'Local drawmode'
+        dmstr = DrawMode.get_drawmode_string(self.get_drawmode())
+        return dmstr
+
 
 
     # set primitive
@@ -218,36 +217,36 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         """set primitive
         \param[in] _prim primitive to be set"""
 
-        if len(self.children) > 0:
+        if len(self.__children) > 0:
             raise StandardError, (
-                'Cannot set a primitive. already had children.')
+                'Cannot set a __primitive. already had __children.')
         # can not use is_primitive_node, this method changes the
-        # primitive state
-        if self.primitive != None:
-            print 'Warning. This node has a primitive.'
-        self.primitive = _prim
-        print 'DEBUG: set_primitive: ' + self.primitive.get_classname()
+        # __primitive state
+        if self.__primitive != None:
+            print 'Warning. This node has a __primitive.'
+        self.__primitive = _prim
+        print 'DEBUG: set_primitive: ' + self.__primitive.get_classname()
 
-    # is this node a primitive node?
+    # is this node a __primitive node?
     def is_primitive_node(self):
         """is this node a primitive node?
 
         (primitive node == no children, just a primitive)
         \return True if this node is a primitive node"""
 
-        if self.primitive != None:
+        if self.__primitive != None:
             return True
 
         return False
 
-    # get primitive
+    # get __primitive
     def get_primitive(self):
         """get primitive
         \return primitive"""
 
         if self.is_primitive_node() == False:
-            print 'Warning. This node does not have a primitive.'
-        return self.primitive
+            print 'Warning. This node does not have a __primitive.'
+        return self.__primitive
 
 
     # append child
@@ -257,8 +256,8 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
 
         if (self.is_primitive_node()):
             raise StandardError, (
-                'Cannot append a child. already had a primitive.')
-        self.children.append(_child)
+                'Cannot append a child. already had a __primitive.')
+        self.__children.append(_child)
 
     # print glnode info. Indentation is according to the depth level
     def print_glnodeinfo(self, _level):
@@ -270,7 +269,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         if (self.is_primitive_node()):
             print indent + '# ' + self.get_classname() + ':Primitive'
 
-        print indent + '# # children = ' + str(len(self.children))
+        print indent + '# # __children = ' + str(len(self.__children))
 
 
     # draw by mode
@@ -278,37 +277,37 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         """draw by mode
 
         \param[in] _global_mode global draw mode
-        \see: DrawMode"""
+        \see DrawMode"""
 
         print self.get_classname() + '::draw is called with ' +\
             str(_global_mode)
 
         if (self.is_primitive_node()):
-            # primitive: draw itself
-            self.primitive.draw(_global_mode)
-            print self.get_classname() + '::draw: call primitive draw'
-        elif len(self.children) > 0:
-            # no primitive: draw children
-            for ch_glnode in self.children:
+            # __primitive: draw itself
+            self.__primitive.draw(_global_mode)
+            print self.get_classname() + '::draw: call __primitive draw'
+        elif len(self.__children) > 0:
+            # no __primitive: draw __children
+            for ch_glnode in self.__children:
                 # create and refer the sg node
                 ch_glnode.draw(_global_mode)
                 print self.get_classname() + '::draw: call child draw'
         else:
-            self.debug_out('Node has no primitive, no children')
+            self.debug_out('Node has no __primitive, no __children')
             print self.get_classname() + '::draw: neither'
 
     # get draw mode of this GLSceneGraphNode
-    def get_drawmode(self):
+    def get_drawmode_list(self):
         """get draw mode of this GLSceneGraphNode
 
-        \return return drawmode, maybe None"""
+        \return return __drawmode_list, maybe None"""
 
         if (self.is_primitive_node()):
-            return self.primitive.get_drawmode()
+            return self.__primitive.get_drawmode_list()
 
         return None
         # raise StandardError, (
-        # 'GLSceneGraphNode.get_drawmode() must be implemented ' +
+        # 'GLSceneGraphNode.get_drawmode_list() must be implemented ' +
         # 'in derived class. classname = ' + self.get_classname())
 
     # print this obj for debug
@@ -322,7 +321,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
 
         \param[in] _is_debug when true some debug message will show up."""
 
-        self.is_debug = _is_debug
+        self.__is_debug = _is_debug
 
     # is debug mode?
     def is_debug_mode(self):
@@ -330,7 +329,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
 
         \return true when debug mode is on"""
 
-        return self.is_debug
+        return self.__is_debug
 
     # debug output
     def debug_out(self, _dbgmes):
@@ -339,7 +338,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         \param[in] _dbgmes debug message. when debug mode is on, this is visible.
         """
 
-        if self.is_debug == True:
+        if self.__is_debug == True:
             print _dbgmes
 
 
@@ -351,21 +350,22 @@ class GLTriMeshNode(GLSceneGraphNode):
 
     # default constructor
     def __init__(self, _nodename):
-        """default constructor"""
+        """default constructor.
+        \param[in] _nodename this node name."""
         # call base class constructor to fill the members
         GLSceneGraphNode.__init__(self, _nodename)
-        self.local_drawmode = 0
-        self.drawmode = DrawMode.DrawModeList()
+        self.__local_drawmode = 0
+        self.__drawmode_list = DrawMode.DrawModeList()
         # basic draw mode only
-        self.drawmode.add_basic_drawmode()
+        self.__drawmode_list.add_basic_drawmode()
 
         # OpenGL draw state
-        self.bg_color4f      = None
-        self.current_color4f = None
-        self.shade_model     = GL.GL_FLAT
-        self.is_enabled_lighting  = GL.GL_TRUE
-        self.is_enabled_depthtest = GL.GL_TRUE
-        self.is_enabled_offset    = GL.GL_FALSE
+        self.__bg_color4f      = None
+        self.__current_color4f = None
+        self.__shade_model     = GL.GL_FLAT
+        self.__is_enabled_lighting  = GL.GL_TRUE
+        self.__is_enabled_depthtest = GL.GL_TRUE
+        self.__is_enabled_offset    = GL.GL_FALSE
 
 
     # get classname
@@ -377,81 +377,81 @@ class GLTriMeshNode(GLSceneGraphNode):
         return 'GLTriMeshNode'
 
     # get draw mode of this GLSceneGraphNode
-    def get_drawmode(self):
-        """get draw mode of this GLSceneGraphNode
+    def get_drawmode_list(self):
+        """get draw mode list of this GLSceneGraphNode
 
-        \return return drawmode"""
+        \return drawmode list of this node"""
 
-        return self.drawmode
+        return self.__drawmode_list
 
     # draw
     def draw(self, _drawmode):
         """draw
 
-        \param[in] _drawmode drawmode (or-ed drawmode bitmap)"""
+        \param[in] _drawmode __drawmode_list (or-ed __drawmode_list bitmap)"""
 
-        # print 'DEBUG: primitive is ' + self.primitive.get_classname()
+        # print 'DEBUG: primitive is ' + self.get_primitive().get_classname()
 
         # push the current GL state
-        self.draw_push_gl_state()
+        self.__draw_push_gl_state()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_BBox) != 0):
-            self.draw_bbox()
+            self.__draw_bbox()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Points) != 0):
-            self.draw_points()
+            self.__draw_points()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Wireframe) != 0):
-            self.draw_wireframe()
+            self.__draw_wireframe()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Hiddenline) != 0):
-            self.draw_hiddenline()
+            self.__draw_hiddenline()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Basecolor) != 0):
-            self.draw_solid_basecolor()
+            self.__draw_solid_basecolor()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Flat) != 0):
-            self.draw_flat_shading()
+            self.__draw_flat_shading()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Gouraud) != 0):
-            self.draw_solid_gouraud()
+            self.__draw_solid_gouraud()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Texture) != 0):
-            self.draw_solid_texture()
+            self.__draw_solid_texture()
 
         # pop the current GL state
-        self.draw_pop_gl_state()
+        self.__draw_pop_gl_state()
 
 
     # push the gl state that draw might change
-    def draw_push_gl_state(self):
+    def __draw_push_gl_state(self):
         """push the gl state that draw might change
 
         Subroutine of draw()"""
 
-        self.bg_color4f      = GL.glGetFloatv(GL.GL_COLOR_CLEAR_VALUE)
+        self.__bg_color4f      = GL.glGetFloatv(GL.GL_COLOR_CLEAR_VALUE)
 
-        self.current_color4f = GL.glGetFloatv(GL.GL_CURRENT_COLOR)
-        self.shade_model     = GL.glGetIntegerv(GL.GL_SHADE_MODEL)
-        self.is_enabled_lighting   = GL.glIsEnabled(GL.GL_LIGHTING)
-        self.is_enabled_depthtest  = GL.glIsEnabled(GL.GL_DEPTH_TEST)
-        self.is_enabled_offsetfill = GL.glIsEnabled(GL.GL_POLYGON_OFFSET_FILL)
+        self.__current_color4f = GL.glGetFloatv(GL.GL_CURRENT_COLOR)
+        self.__shade_model     = GL.glGetIntegerv(GL.GL_SHADE_MODEL)
+        self.__is_enabled_lighting   = GL.glIsEnabled(GL.GL_LIGHTING)
+        self.__is_enabled_depthtest  = GL.glIsEnabled(GL.GL_DEPTH_TEST)
+        self.__is_enabled_offsetfill = GL.glIsEnabled(GL.GL_POLYGON_OFFSET_FILL)
 
 
     # pop the gl state
-    def draw_pop_gl_state(self):
+    def __draw_pop_gl_state(self):
         """pop the gl state
 
         Subroutine of draw()"""
 
-        GL.glColor4fv(self.current_color4f)
-        GL.glShadeModel(self.shade_model)
-        self.gl_enable_disable(GL.GL_LIGHTING,   self.is_enabled_lighting)
-        self.gl_enable_disable(GL.GL_DEPTH_TEST, self.is_enabled_depthtest)
-        self.gl_enable_disable(GL.GL_POLYGON_OFFSET_FILL, self.is_enabled_offsetfill)
+        GL.glColor4fv(self.__current_color4f)
+        GL.glShadeModel(self.__shade_model)
+        self.__gl_enable_disable(GL.GL_LIGHTING,   self.__is_enabled_lighting)
+        self.__gl_enable_disable(GL.GL_DEPTH_TEST, self.__is_enabled_depthtest)
+        self.__gl_enable_disable(GL.GL_POLYGON_OFFSET_FILL, self.__is_enabled_offsetfill)
 
     # glEnable/glDisable function
-    def gl_enable_disable(self, _gl_function_name, _is_enable):
+    def __gl_enable_disable(self, _gl_function_name, _is_enable):
         """glEnable/glDisable function
 
         \param[in] _gl_function_name function name. ex. GL_LIGHTING
@@ -465,43 +465,43 @@ class GLTriMeshNode(GLSceneGraphNode):
 
 
     # draw bbox
-    def draw_bbox(self):
+    def __draw_bbox(self):
         """draw bbox"""
 
         assert(self.is_primitive_node() == True)
-        # self.primitive.update_bbox()
-        bbox = self.primitive.get_bbox()
+        # self.get_primitive().update_bbox()
+        bbox = self.get_primitive().get_bbox()
         GLUtil.draw_axis_alighed_box(bbox.get_min(), bbox.get_max())
 
 
     # draw points
-    def draw_points(self):
+    def __draw_points(self):
         """draw points"""
 
         # no light mode NIN: self.gl_light_mode & POINTS
         GL.glDisable(GL.GL_LIGHTING)
         GL.glBegin(GL.GL_POINTS)
         # draw all points
-        for vp in self.primitive.vertex_list:
+        for vp in self.get_primitive().vertex_list:
             GL.glVertex3d(vp[0], vp[1], vp[2])
         GL.glEnd()
 
     # draw wireframe
-    def draw_wireframe(self):
+    def __draw_wireframe(self):
         """draw wireframe"""
         GL.glShadeModel(GL.GL_FLAT)
 
         GL.glBegin(GL.GL_LINE_LOOP)
         # vp reference
-        vp = self.primitive.vertex_list
-        for face in self.primitive.face_idx_list:
+        vp = self.get_primitive().vertex_list
+        for face in self.get_primitive().face_idx_list:
             GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
             GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
             GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
         GL.glEnd()
 
     # draw hiddenline
-    def draw_hiddenline(self):
+    def __draw_hiddenline(self):
         """draw hiddenline
 
         see OpenGL book"""
@@ -510,12 +510,12 @@ class GLTriMeshNode(GLSceneGraphNode):
         # step 1: draw lines
         #
         GL.glEnable(GL.GL_DEPTH_TEST)
-        GL.glColor4fv(self.current_color4f)
+        GL.glColor4fv(self.__current_color4f)
 
         # --- draw lines
         GL.glBegin(GL.GL_LINE_LOOP)
-        vp = self.primitive.vertex_list
-        for face in self.primitive.face_idx_list:
+        vp = self.get_primitive().vertex_list
+        for face in self.get_primitive().face_idx_list:
             GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
             GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
             GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
@@ -532,12 +532,12 @@ class GLTriMeshNode(GLSceneGraphNode):
 
         GL.glEnable(GL.GL_POLYGON_OFFSET_FILL)
         GL.glPolygonOffset(1.0, 1.0)
-        GL.glColor4fv(self.bg_color4f)
+        GL.glColor4fv(self.__bg_color4f)
 
         GL.glEnable(GL.GL_POLYGON_OFFSET_FILL)
         GL.glBegin(GL.GL_TRIANGLES)
-        vp = self.primitive.vertex_list
-        for face in self.primitive.face_idx_list:
+        vp = self.get_primitive().vertex_list
+        for face in self.get_primitive().face_idx_list:
             GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
             GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
             GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
@@ -547,44 +547,44 @@ class GLTriMeshNode(GLSceneGraphNode):
 
 
     # draw solid_basecolor
-    def draw_solid_basecolor(self):
+    def __draw_solid_basecolor(self):
         """draw solid_basecolor"""
         GL.glDisable(GL.GL_LIGHTING)
         GL.glShadeModel(GL.GL_FLAT)
 
         GL.glBegin(GL.GL_TRIANGLES)
-        vp = self.primitive.vertex_list
-        for face in self.primitive.face_idx_list:
+        vp = self.get_primitive().vertex_list
+        for face in self.get_primitive().face_idx_list:
             GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
             GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
             GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
         GL.glEnd()
 
     # draw flat shading
-    def draw_flat_shading(self):
+    def __draw_flat_shading(self):
         """draw flat shading"""
         GL.glShadeModel(GL.GL_FLAT)
 
         GL.glBegin(GL.GL_TRIANGLES)
         # vp reference
-        vp = self.primitive.vertex_list
-        for face in self.primitive.face_idx_list:
+        vp = self.get_primitive().vertex_list
+        for face in self.get_primitive().face_idx_list:
             GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
             GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
             GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
         GL.glEnd()
 
     # draw solid_gouraud
-    def draw_solid_gouraud(self):
+    def __draw_solid_gouraud(self):
         """draw solid_gouraud"""
         GL.glShadeModel(GL.GL_FLAT)
-        print 'NIN: draw_solid_gouraud'
+        print 'NIN: __draw_solid_gouraud'
 
     # draw solid_texture
-    def draw_solid_texture(self):
+    def __draw_solid_texture(self):
         """draw solid_texture"""
         GL.glShadeModel(GL.GL_FLAT)
-        print 'NIN: draw_solid_texture'
+        print 'NIN: __draw_solid_texture'
 
 
 # OpenGL scenegraph node factory
@@ -612,7 +612,7 @@ def new_gl_scenegraph_primitive_node(_primitive):
 
 # collect all drawmode in the scenegraph
 class GLSGTCollectDrawmodeStrategy(SceneGraph.SceneGraphTraverseStrategyIF):
-    """collect all drawmode in the scenegraph"""
+    """collect all drawmode_list in the scenegraph"""
 
     # constructor
     def __init__(self):
@@ -652,7 +652,7 @@ class GLSGTCollectDrawmodeStrategy(SceneGraph.SceneGraphTraverseStrategyIF):
         \param[in]  _level    current depth
         """
 
-        self.drawmodelist.or_drawmode(_cur_node.get_drawmode())
+        self.drawmodelist.or_drawmode(_cur_node.get_drawmode_list())
 
 
 #

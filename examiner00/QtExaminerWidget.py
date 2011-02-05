@@ -684,7 +684,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
         # get draw mode information
         print 'DEBUG: collect draw mode from the GLSceneGraph'
-        self.drawmode_list = self.gl_scenegraph.collect_drawmode()
+        self.drawmode_list = self.gl_scenegraph.collect_drawmode_list()
         # if self.drawmode_list != None:
             # print 'DEBUG: found draw mode in the scene'
             # self.drawmode_list.print_obj()

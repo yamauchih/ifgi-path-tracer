@@ -63,6 +63,7 @@ class DrawModeList(object):
     \see DrawModeItem"""
 
     ## basic drawmode bitmap
+    DM_GlobalMode      = 0xffffffff
     DM_BBox            = 0x0001
     DM_Points          = 0x0002
     DM_Wireframe       = 0x0004
@@ -73,6 +74,34 @@ class DrawModeList(object):
     DM_Solid_Texture   = 0x0080
     DM_Picking         = 0x0100
     DM_USER00          = 0x0200
+
+    # in order draw mode list
+    DM_Drawmode_bitmap_key_list = [
+        DM_BBox,
+        DM_Points,
+        DM_Wireframe,
+        DM_Hiddenline,
+        DM_Solid_Basecolor,
+        DM_Solid_Flat,
+        DM_Solid_Gouraud,
+        DM_Solid_Texture,
+        DM_Picking
+        ]
+
+    # lookup table for name. Unfortunately, keys() doesn't return in
+    # order, use DM_Drawmode_bitmap_key_list for iterate keys.
+    DM_Drawmode_bitmap_dict = {
+        DM_BBox:            'BBox',
+        DM_Points:          'Points',
+        DM_Wireframe:       'Wireframe',
+        DM_Hiddenline:      'Hiddenline',
+        DM_Solid_Basecolor: 'Solid_basecolor',
+        DM_Solid_Flat:      'Solid_Flat',
+        DM_Solid_Gouraud:   'Solid_Gouraud',
+        DM_Solid_Texture:   'Solid_Texture',
+        DM_Picking:         'Picking'
+        }
+
 
     # default constructor
     def __init__(self):
@@ -174,3 +203,23 @@ class DrawModeList(object):
         """print draw mode list for debug. (public)"""
         for dmitem in self.__mode_item_list:
             dmitem.print_obj()
+
+
+# get drawmode string
+def get_drawmode_string(_drawmode):
+    if (_drawmode == DrawModeList.DM_GlobalMode):
+        return 'Global'
+
+    retstr = ''
+    for mode in DrawModeList.DM_Drawmode_bitmap_key_list:
+        if ((_drawmode & mode) != 0):
+            if (len(retstr) > 0):
+                retstr += '+'
+            retstr += DrawModeList.DM_Drawmode_bitmap_dict[mode]
+
+    if (retstr == ''):
+        raise StandardError('illegal drawmode [' + str(_drawmode) + ']')
+
+    return retstr
+
+

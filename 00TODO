@@ -1,11 +1,14 @@
 TODO
 
 - SceneGraph dialog, widget
-  - Add context menu in SceneGraph Dialog.
-    (depends on the node. Each Node has the context menu.)
   - QtSceneGraphWidget.py: 430 local drawmode
 
-- Unit test is broken
+       Use node's get_drawmode()
+       When click global, stay global
+       When clicl one of local, remove global
+
+  - Add context menu in SceneGraph Dialog.
+    (depends on the node. Each Node has the context menu.)
 
 - Picking
 
