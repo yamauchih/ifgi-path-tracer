@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-#
-# test for Camera
-#
 
 """test IFGI Camera"""
 
@@ -9,8 +6,10 @@ import unittest
 import Camera
 
 class TestCamera(unittest.TestCase):
+    """test: camera"""
 
     def test_camera0(self):
+        """test camera"""
         glcam = Camera.GLCamera()
         # glcam.print_obj()
         mat = glcam.get_coordinate_system()

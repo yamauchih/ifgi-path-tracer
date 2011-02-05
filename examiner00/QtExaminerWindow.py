@@ -1,13 +1,10 @@
 #!/usr/bin/env python
-#
-# Examiner Window Application
-#
-# Menu etc.
-#
-# \author Yamauchi, Hitoshi
-#
+"""Examiner Window Application
 
-"""IFGI Examiner Window"""
+\file
+\brief geometry examiner window
+\author Yamauchi, Hitoshi
+"""
 
 import math
 import numpy
@@ -325,9 +322,7 @@ def get_default_option_list():
     return default_option_list
 
 
-#
 # main
-#
 if __name__ == '__main__':
     # parse command line
     arg_parser = optparse.OptionParser(option_list = get_default_option_list(),

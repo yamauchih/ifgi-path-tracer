@@ -3,7 +3,8 @@
 """QtSceneGraphWidget
 \file
 \brief SceneGraph inspector widget
-\module QtSceneGraphWidget"""
+\module QtSceneGraphWidget
+"""
 
 from PyQt4 import Qt, QtCore, QtGui
 import GLSceneGraph
@@ -122,7 +123,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         print 'DEBUG: show info dialog'
 
     # global draw mode check
-    def set_global_drawmode(self, _is_use_global_drawmode):
+    def __set_global_drawmode(self, _is_use_global_drawmode):
         """set global drawmode.
         \param[in] _is_use_global_drawmode when True, use global drawmode
         """
@@ -132,7 +133,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         #    str(self.__is_use_global_drawmode)
 
     # get global draw mode
-    def is_global_drawmode(self):
+    def __is_global_drawmode(self):
         """get global drawmode.
         \return True when use global draw mode
         """
@@ -425,11 +426,11 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
         # global mode
         self.__popupmenu_global_drawmode_act = \
-            QtGui.QAction('Global default.', self,
+            QtGui.QAction('Global default', self,
                           statusTip="use global default when GL draw",
-                          triggered=self.set_global_drawmode,
+                          triggered=self.__set_global_drawmode,
                           checkable=True)
-        self.__popupmenu_global_drawmode_act.setChecked(self.is_global_drawmode())
+        self.__popupmenu_global_drawmode_act.setChecked(self.__is_global_drawmode())
         self.__popupmenu.addAction(self.__popupmenu_global_drawmode_act)
 
         self.__popupmenu.addSeparator()

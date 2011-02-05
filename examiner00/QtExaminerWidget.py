@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-## QtExaminer widget version 0.0.0
-#
-# \file
-# \brief QtExaminerWidget
+"""
+QtExaminer widget version 0.0.0
 
-"""IFGI QtExaminerWidget Version 0.0.0"""
+\file
+\brief QtExaminerWidget
+"""
 
 import sys
 import math
@@ -22,17 +22,21 @@ import ifgimath
 import Camera
 import QtUtil
 
-#
-# QtExaminer's action mode
-#
+
+## QtExaminer's action mode
 ActionMode = enum.Enum(['ExamineMode', 'PickingMode'])
 
-#
+
 # Scene examiner
-#
 class QtExaminerWidget(QtOpenGL.QGLWidget):
-    def __init__(self, parent=None):
-        QtOpenGL.QGLWidget.__init__(self, parent)
+    """Scene examiner
+    """
+
+    def __init__(self, _parent=None):
+        """constructor (public).
+        \param[in] parent parent widget.
+        """
+        QtOpenGL.QGLWidget.__init__(self, _parent)
 
         # cameras FIXME scenegraph should have the camera
         self.gl_camera   = Camera.GLCamera()
@@ -72,22 +76,32 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
 
     def minimumSizeHint(self):
+        """reimplemented: minimum size hint (public)."""
         return QtCore.QSize(50, 50)
 
     def sizeHint(self):
+        """reimplemented: size hint (public)."""
         return QtCore.QSize(400, 400)
 
     # Window info: width
     def glWidth(self):
+        """OpenGL Window info: width (public).
+        \return gl window width
+        """
         return self.width
 
     # Window info: height
     def glHeight(self):
+        """OpenGL Window info: height. (public).
+        \return gl window width
+        """
         return self.height
 
 
     # initialize open GL
     def initializeGL(self):
+        """initialize open GL. (public).
+        """
         bgblack = QtGui.QColor(0, 0, 0, 255)
         self.qglClearColor(bgblack)
         GL.glShadeModel(GL.GL_FLAT)
@@ -96,6 +110,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     # paint
     def paintGL(self):
+        """reimplemented: paint (public).
+        """
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
 
         GL.glLoadIdentity()
@@ -114,13 +130,17 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         self.draw_scene()
 
     # resize
-    def resizeGL(self, width, height):
-        self.width  = width
-        self.height = height
+    def resizeGL(self, _width, _height):
+        """reimplemented: resize
+        \param[in] _width  new width
+        \param[in] _height new height
+        """
+        self.width  = _width
+        self.height = _height
 
-        side = min(width, height)
+        side = min(_width, _height)
 
-        GL.glViewport((width - side) / 2, (height - side) / 2, side, side)
+        GL.glViewport((_width - side) / 2, (_height - side) / 2, side, side)
 
         # perspective is for projection matrix
         GL.glMatrixMode(GL.GL_PROJECTION)
@@ -164,8 +184,10 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
 
     # translate the camera
-    # \param[in] _trans translation
     def translate(self, _trans):
+        """translate the camera. (public).
+        \param[in] _trans translation
+        """
         cam_basis = self.gl_camera.get_coordinate_system()
         # Zdir '-' comes from the OpenGL coordinate system.
         cam_trans = (cam_basis[0] * _trans[0] +
@@ -178,10 +200,13 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
 
     # rotate the camera with an axis
-    #
-    # \param[in] _angle   degree
-    # \param[in] _pn_axis rotate axis
     def rotate_camera(self, _angle, _pn_axis):
+        """rotate the camera with an axis.
+
+        \param[in] _angle   degree
+        \param[in] _pn_axis rotate axis
+        """
+
         cam_basis = self.gl_camera.get_coordinate_system()
         rotation = numpy.identity(4)
 
@@ -227,6 +252,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     # create popup menu: function submenu
     def create_popup_menu_function_menu(self):
+        """create popup menu: function submenu.
+        """
         assert(self.popupmenu != None)
         self.popup_function_menu = self.popupmenu.addMenu('Function')
         self.popup_function_bgcolor_act = \
@@ -237,6 +264,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     # create popup menu: draw mode
     def create_popup_menu_drawmode(self):
+        """create popup menu: draw mode.
+        """
         if self.drawmode_list != None:
             # radio button group
             self.drawmode_group = QtGui.QActionGroup(self)
@@ -252,7 +281,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
                     modclosure = mode_closure(self, dmi.get_bitmap())
                     drawmode_act = QtGui.QAction(dmi.get_name(), self,
-                                                 statusTip="DrawMode: " + dmi.get_name(),
+                                                 statusTip="DrawMode: " +
+                                                 dmi.get_name(),
                                                  triggered=modclosure,
                                                  checkable=True)
                     self.drawmode_bitmap2action[dmi.get_bitmap()] = drawmode_act
@@ -268,8 +298,9 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
 
     # create popup menu: main
-    #
     def create_popup_menu(self):
+        """create popup menu: main.
+        """
         if (self.popupmenu == None):
             # print 'DEBUG: create_popup_menu'
             self.popupmenu = QtGui.QMenu(self)
@@ -292,18 +323,25 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     # popup context menu
     def popup_context_menu(self, _global_mouse_pos):
+        """popup context menu.
+        """
         self.create_popup_menu()
         self.popupmenu.exec_(_global_mouse_pos)
 
     # popupmenu implementation
     def popupmenu_function(self):
+        """popupmenu implementation.
+        """
         print 'NIN: popupmenu_function is called.'
 
     # popupmenu implementation: set drawmode and change the global drawmode
-    #
-    # \param[in] _drawmode_bitmap global drawmode bitmap to set if
-    # exists in the menu actions
     def popupmenu_set_drawmode(self, _drawmode_bitmap):
+        """popupmenu implementation: set drawmode and change the
+        global drawmode.
+
+        \param[in] _drawmode_bitmap global drawmode bitmap to set if
+        exists in the menu actions
+        """
         # print 'DEBUG: popupmenu_set_drawmode: ' + str(_drawmode_bitmap)
         assert(_drawmode_bitmap in self.drawmode_bitmap2action)
 
@@ -318,6 +356,12 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     #   - right: popup menu
     #   - left:  camera move
     def mousePressEvent(self, _event):
+        """mouse press event.
+
+          - right: popup menu
+          - left:  camera move
+          """
+
         # press right button: popup menu
         if (_event.buttons() & QtCore.Qt.RightButton):
             #      // lazy update of menu
@@ -389,6 +433,9 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     # mouse wheel event
     def wheelEvent(self, _event):
+        """mouse wheel event.
+        """
+
         print 'Mouse wheel event: ' +  str(_event)
         if (self.actionMode == ActionMode.PickingMode):
             print 'NIN: wheel event: no PickingMode'
@@ -436,6 +483,10 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     #
     # \param[in] _newPoint2D mouse position on screen
     def examineModeMoveZdir(self, _newPoint2D):
+        """ExamineMode: move in z direction.
+
+        \param[in] _newPoint2D mouse position on screen
+        """
         # move in z direction
         if (self.gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
             zmove = self.scene_radius * ((_newPoint2D[1] - self.lastPoint2D[1])
@@ -453,6 +504,10 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     # ExamineMode: move in x,y direction
     # \param[in] _newPoint2D mouse position on screen
     def examineModeMoveXYdir(self, _newPoint2D):
+        """ExamineMode: move in x,y direction.
+
+        \param[in] _newPoint2D mouse position on screen
+        """
         value_x = (self.scene_radius * (_newPoint2D[0] - self.lastPoint2D[0]) *
                    2.0 / float(self.glWidth()))
         value_y = (self.scene_radius * (_newPoint2D[1] - self.lastPoint2D[1]) *
@@ -462,6 +517,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     # ExamineMode: Pick
     def examineModePick(self):
+        """ExamineMode: Pick.
+        """
         # case PickingMode:
         # if (inside) { // give event to application
         #     emit signalMouseEvent(_event);
@@ -476,6 +533,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     # ExamineMode: Question
     def examineModeQuestion(self):
+        """ExamineMode: Question.
+        """
         # case QuestionMode:
         #    if (inside) { // give event to application
         #        emit signalMouseEventIdentify(_event);
@@ -494,6 +553,11 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     #
     # \param[in] _numpoint2D current mouse 2D point
     def examineModeRotateTrackball(self, _numpoint2D):
+        """ExamineMode: Rotate Trackball.
+
+        \param[in] _numpoint2D current mouse 2D point
+        """
+
         if (self.lastPoint3D[2] != 0): # z == 0 ... not hit on sphere
             newPoint3D = ifgimath.mapToSphere(_numpoint2D,
                                               self.glWidth(), self.glHeight())
@@ -508,11 +572,15 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                 self.rotate_camera(angle, rot_axis)
 
 
-
     # mouse move event
     #  - Right drag: context menu
     #  - Left  drag: context menu
     def mouseMoveEvent(self, _event):
+        """mouse move event.
+
+        - Right drag: context menu
+        - Left  drag: context menu
+        """
         if ((_event.button() != QtCore.Qt.RightButton) or
             ((self.actionMode == PickingMode))): # && !d_popupEnabled) ) {
 
@@ -555,22 +623,17 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     # draw the whole scene
     def draw_scene(self):
+        """draw the whole scene.
+        """
         # self.test_draw_one_triangle()
         if self.gl_scenegraph != None:
             self.gl_scenegraph.draw(self.global_drawmode)
         else:
             self.debug_out('No OpenGL scenegraph is set.')
 
-    def normalizeAngle(self, angle):
-        while angle < 0:
-            angle += 360 * 16
-        while angle > 360 * 16:
-            angle -= 360 * 16
-        return angle
-
-
     # draw a triangle for test
     def test_draw_triangle(self, p1, p2, p3):
+        """draw a triangle for test."""
         red = QtGui.QColor(255, 0, 0, 255)
         self.qglColor(red)
         GL.glVertex3d(p1[0], p1[1], p1[2])
@@ -579,6 +642,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     # draw a triangle in the whole scene for test
     def test_draw_one_triangle(self):
+        """draw a triangle in the whole scene for test.
+        """
         p1 = numpy.array([-1, 0, 0])
         p2 = numpy.array([ 1, 0, 0])
         p3 = numpy.array([ 0, 2 * math.sqrt(3), 0])
@@ -588,23 +653,33 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         GL.glEnd()
 
     # set debug mode
-    # \param[in] _is_debug when true some debug message will show up.
     def set_debug_mode(self, _is_debug):
+        """set debug mode.
+        \param[in] _is_debug when true some debug message will show up.
+        """
         self.is_debug = _is_debug
 
     # is debug mode?
     # \return true when debug mode is on
     def is_debug_mode(self):
+        """is debug mode?
+        \return true when debug mode is on
+        """
         return self.is_debug
 
     # debug output
-    # \param[in] _dbgmes debug message. when debug mode is on, this is visible.
     def debug_out(self, _dbgmes):
+        """debug output.
+        \param[in] _dbgmes debug message. when debug mode is on, this
+        is visible.
+        """
         if self.is_debug == True:
             print _dbgmes
 
     # scenegraph operation
     def attach_gl_scenegraph(self, _gl_scenegraph):
+        """scenegraph operation.
+        """
         self.gl_scenegraph = _gl_scenegraph
 
         # get draw mode information
@@ -626,14 +701,15 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
             self.scene_radius = 1.0
             print 'DEBUG:empty scene: adjust radius = 1.0'
 
-    #
     # test getLookAtMatrix routine
-    #
-    # generate two matrices, glmat by gluLookAt, mat by getLookAtMatrix.
-    # Then compare them. (To run this test, You need OpenGL bindings and
-    # also your Camera implementation that provides eye, lookat, up.)
-    #
     def test_gluLookAt_matrix(self):
+        """test getLookAtMatrix routine.
+
+        generate two matrices, glmat by gluLookAt, mat by
+        getLookAtMatrix.  Then compare them. (To run this test, You
+        need OpenGL bindings and also your Camera implementation that
+        provides eye, lookat, up.)
+        """
         GL.glLoadIdentity()
 
         # This is your camera. It tells eye, lookat, up.
@@ -662,12 +738,13 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                     raise StandardError ('matrix does not match.')
 
 
-#
 # MainWindow for Test
-#
 class TestQtExaminerWindow(QtGui.QWidget):
-    def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+    """MainWindow for Test"""
+
+    def __init__(self, _parent=None):
+        """constructor"""
+        QtGui.QWidget.__init__(self, _parent)
 
         self.examinerWidget = QtExaminerWidget()
 
@@ -677,11 +754,10 @@ class TestQtExaminerWindow(QtGui.QWidget):
         self.setWindowTitle(self.tr("TestQtExaminerWindow"))
 
 
-
-#
 # main test
-#
 if __name__ == '__main__':
+    """main test.
+    """
     app = QtGui.QApplication(sys.argv)
     window = TestQtExaminerWindow()
     window.show()

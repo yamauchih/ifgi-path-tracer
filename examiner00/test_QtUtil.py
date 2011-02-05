@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-#
-# test for QtUtil module
-#
 
 """test QtUtil module"""
 
@@ -11,8 +8,10 @@ import QtUtil
 from PyQt4  import QtCore
 
 class TestQtUtil(unittest.TestCase):
-    # test mapToSphere function
+    """test: QtUtil"""
+
     def test_QPoint2numpy(self):
+        """test mapToSphere function"""
         test_numlist = [[1,2], [-5,6]]
 
         for pos in test_numlist:
@@ -20,7 +19,6 @@ class TestQtUtil(unittest.TestCase):
             npos = QtUtil.QPoint2numpy(qpos)
             assert(npos[0] == float(pos[0]))
             assert(npos[1] == float(pos[1]))
-
 
 
 #

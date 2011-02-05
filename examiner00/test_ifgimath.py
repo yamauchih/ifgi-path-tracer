@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-#
-# test for ifgi math module
-#
 
 """test IFGI math module"""
 
@@ -10,8 +7,10 @@ import numpy
 import ifgimath
 
 class TestIFGImathModule(unittest.TestCase):
-    # test mapToSphere function
+    """test: IFGImathModule"""
+
     def test_mapToSphere(self):
+        """test mapToSphere function."""
 
         win_pos_list = [numpy.array([  0,   0]),
                         numpy.array([100,   0]),
@@ -30,7 +29,6 @@ class TestIFGImathModule(unittest.TestCase):
 
     # test getRotationMat
     # def test_getRotateMat(self):
-
 
 
 #
