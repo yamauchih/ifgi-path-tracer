@@ -45,7 +45,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         # check self.__scenegraph validity
 
         # create GLSceneGraph from scenegraph
-        self.__copy_sgnode_sub(self.__scenegraph.root_node,
+        self.__copy_sgnode_sub(self.__scenegraph.get_root_node(),
                                self.__gl_root_node,
                                0)
 
@@ -110,8 +110,8 @@ class GLSceneGraph(SceneGraph.SceneGraph):
             _cur_glnode.set_primitive(gl_prim_node)
 
         else:
-            print 'DEBUG: Go to __children'
-            for ch_sgnode in _cur_sgnode.__children:
+            print 'DEBUG: Go to children'
+            for ch_sgnode in _cur_sgnode.get_children():
                 # create and refer the sg node
                 ch_glnode = GLSceneGraphNode(ch_sgnode.get_nodename())
                 _cur_glnode.append_child(ch_glnode)
@@ -125,9 +125,9 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         \param[in] _level      current visiting depth"""
 
         _cur_glnode.print_glnodeinfo(_level)
-        if _cur_glnode.get_primitive() == None:
+        if (not _cur_glnode.is_primitive_node()):
             # __children container
-            for chnode in _cur_glnode.__children:
+            for chnode in _cur_glnode.get_children():
                 self.__print_sgnode_sub(chnode, _level + 1)
 
 
@@ -152,7 +152,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         self.__is_debug  = False
         self.__is_active = True
         # can not have the same name method and member variable
-        self.__drawmode  = True
+        self.__drawmode  = DrawMode.DrawModeList.DM_GlobalMode
 
     # get classname (shown in the SceneGraph viewer as node Type)
     def get_classname(self):
@@ -648,7 +648,7 @@ class GLSGTCollectDrawmodeStrategy(SceneGraph.SceneGraphTraverseStrategyIF):
 
         if this is not the root, expand the one level up's bbox
 
-        \param[in]  _cur_node current visting node
+        \param[in]  _cur_node current visiting node
         \param[in]  _level    current depth
         """
 

@@ -111,7 +111,7 @@ if __name__ == '__main__':
     # This SceneGraph is independent from GLSceneGraph (can be used
     # for tracer)
     sg = SceneGraph.SceneGraph()
-    assert(sg.root_node == None)
+    assert(sg.get_root_node() == None)
 
     # create scenegraph's root node
     #   simplest example: root scenegraph node only

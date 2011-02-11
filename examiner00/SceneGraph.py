@@ -35,9 +35,9 @@ class SceneGraphTraverseStrategyIF(object):
         """
         assert(false)           # you need to implement this in the inherited class
 
-    # apply strategy while visiting children
+    # apply strategy while visiting __children
     def apply_middle(self, _cur_node, _level):
-        """apply strategy while visiting children
+        """apply strategy while visiting __children
 
         \param[in]  _cur_node current visting node
         \param[in]  _level    current depth
@@ -78,9 +78,9 @@ class SGTPrintStrategy(SceneGraphTraverseStrategyIF):
         _cur_node.print_nodeinfo(_level)
 
 
-    # apply strategy while visiting children. Implementation
+    # apply strategy while visiting __children. Implementation
     def apply_middle(self, _cur_node, _level):
-        """apply strategy while visiting children. Implementation
+        """apply strategy while visiting __children. Implementation
 
         \param[in]  _cur_node current visting node
         \param[in]  _level    current depth
@@ -117,16 +117,16 @@ class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
     def apply_before_recurse(self, _cur_node, _level):
         """apply strategy to node before recurse. Implementation
 
-        add new bbox if needed
+        add new __bbox if needed
 
         \param[in]  _cur_node current visting node
         \param[in]  _level    current depth
         """
         pass
 
-    # apply strategy while visiting children. Implementation
+    # apply strategy while visiting __children. Implementation
     def apply_middle(self, _cur_node, _level):
-        """apply strategy while visiting children. Implementation
+        """apply strategy while visiting __children. Implementation
 
         expand this level's bounding box
 
@@ -141,19 +141,19 @@ class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
         """apply strategy after visiting (when returning from the
         recurse). Implementation
 
-        if this is not the root, expand the one level up's bbox
+        if this is not the root, expand the one level up's __bbox
 
         \param[in]  _cur_node current visting node
         \param[in]  _level    current depth
         """
         if _cur_node.is_primitive_node():
-            # primitive, get the bbox from primitive
+            # __primitive, get the __bbox from __primitive
             _cur_node.set_bbox(_cur_node.get_primitive().get_bbox())
         else:
-            # This is a group node. The children has already been
-            # updated the bbox. Now we found the bbox that contains
-            # all the children bbox.
-            for chnode in _cur_node.children:
+            # This is a group node. The __children has already been
+            # updated the __bbox. Now we found the __bbox that contains
+            # all the __children __bbox.
+            for chnode in _cur_node.__children:
                 _cur_node.get_bbox().insert_bbox(chnode.get_bbox())
 
 # Scene graph
@@ -161,36 +161,36 @@ class SceneGraph(object):
     """Scene graph
 
     This has
-    - camera
-    - root_node
+    - __camera
+    - __root_node
     """
 
     # default constructor
     def __init__(self):
         """default constructor"""
-        self.camera       = Camera.IFGICamera()
-        self.root_node    = None
+        self.__camera       = Camera.IFGICamera()
+        self.__root_node    = None
 
     # set the root node
     def set_root_node(self, _root_node):
         """set the root node
         \param[in] _root_node root node
         """
-        self.root_node = _root_node
+        self.__root_node = _root_node
 
     # get the root node
     def get_root_node(self):
         """get the root node
         \return root node of this scenegraph
         """
-        return self.root_node
+        return self.__root_node
 
-    # get camera
+    # get __camera
     def get_camera(self):
-        """get camera
-        \return camera of this scenegraph
+        """get __camera
+        \return __camera of this scenegraph
         """
-        return self.camera
+        return self.__camera
 
     # travertse the scenegraph. subroutine of traverse_sgnode
     def __traverse_sgnode_sub(self, _cur_node, _level, _strategy):
@@ -204,8 +204,8 @@ class SceneGraph(object):
 
         _strategy.apply_before_recurse(_cur_node, _level)
         if (not _cur_node.is_primitive_node()):
-            # children container
-            for chnode in _cur_node.children:
+            # __children container
+            for chnode in _cur_node.get_children():
                 _strategy.apply_middle(chnode, _level)
                 self.__traverse_sgnode_sub(chnode, _level + 1, _strategy)
 
@@ -227,13 +227,13 @@ class SceneGraph(object):
         SceneGraphTraverseStrategyIF
         """
         print '# SceneGraph'
-        print '# SceneGraph::camera'
-        self.camera.print_obj()
-        if self.root_node == None:
-            print 'no root_node'
+        print '# SceneGraph::__camera'
+        self.__camera.print_obj()
+        if self.__root_node == None:
+            print 'no __root_node'
             return
         print_strategy = SGTPrintStrategy()
-        self.traverse_sgnode(self.root_node, print_strategy)
+        self.traverse_sgnode(self.__root_node, print_strategy)
 
     # update all bounding box recursively
     def update_all_bbox(self):
@@ -242,7 +242,7 @@ class SceneGraph(object):
         """
         update_bbox_strategy = SGTUpdateBBoxStrategy()
         print 'NIN: update bounding box strategy'
-        self.traverse_sgnode(self.root_node, update_bbox_strategy)
+        self.traverse_sgnode(self.__root_node, update_bbox_strategy)
 
 
 # Scene Graph Node
@@ -250,70 +250,70 @@ class SceneGraphNode(object):
     """Scene Graph Node
 
     This has
-      - children
+      - __children
     or
-      - primitive
+      - __primitive
     This is exclusive.
 
     This node also has bounding box.
-    If there is a primitive, primitive's bbox, otherwise this bbox.
+    If there is a __primitive, __primitive's __bbox, otherwise this __bbox.
     """
 
     # constructor
     def __init__(self, _nodename):
         """constructor
         \param[in] _nodename node name"""
-        self.children  = []
-        self.primitive = None
-        self.bbox      = Primitive.BBox()
-        self.nodename  = _nodename
+        self.__children  = []
+        self.__primitive = None
+        self.__bbox      = Primitive.BBox()
+        self.__nodename  = _nodename
 
-    # set nodename (shown in the SceneGraph viewer as Node)
+    # set __nodename (shown in the SceneGraph viewer as Node)
     def set_nodename(self, _nodename):
-        """set nodename (shown in the SceneGraph viewer as Node)
-        \param[in]: _nodename nodename for scenegraph visualization"""
+        """set __nodename (shown in the SceneGraph viewer as Node)
+        \param[in]: _nodename __nodename for scenegraph visualization"""
 
-        self.nodename = _nodename
+        self.__nodename = _nodename
 
-    # get nodename
+    # get __nodename
     def get_nodename(self):
-        """get nodename
+        """get __nodename
         \return: node (instance) name"""
 
-        return self.nodename
+        return self.__nodename
 
-    # set primitive
+    # set __primitive
     def set_primitive(self, _prim):
-        """set primitive.  Node is either a primitive node or a
-        scenegraph node. Primitive node can not have children.
+        """set __primitive.  Node is either a __primitive node or a
+        scenegraph node. Primitive node can not have __children.
         This condition is checked.
 
-        \param[in] _prim primitive"""
-        if len(self.children) > 0:
-            raise StandardError, ('Can not set a primitive. already had children.')
-        if self.primitive != None:
-            print 'Warning. This node has a primitive.'
-        self.primitive = _prim
+        \param[in] _prim __primitive"""
+        if len(self.__children) > 0:
+            raise StandardError, ('Can not set a __primitive. already had __children.')
+        if self.__primitive != None:
+            print 'Warning. This node has a __primitive.'
+        self.__primitive = _prim
 
-    # is this primitive node?
+    # is this __primitive node?
     def is_primitive_node(self):
-        """is this primitive node?
-        otherwise this should be a group node (has children).
-        \return True when this node is primitive node."""
+        """is this __primitive node?
+        otherwise this should be a group node (has __children).
+        \return True when this node is __primitive node."""
 
-        if self.primitive == None:
+        if self.__primitive == None:
             return False
         return True
 
-    # get primitive
+    # get __primitive
     def get_primitive(self):
-        """get primitive.
-        raise exception when this is not a primitive.
-        \return primitive when this is a primitive node."""
+        """get __primitive.
+        raise exception when this is not a __primitive.
+        \return __primitive when this is a __primitive node."""
 
         if (not self.is_primitive_node()):
-            raise StandardError, ('this SceneGraphNode is not a primitive node.')
-        return self.primitive
+            raise StandardError, ('this SceneGraphNode is not a __primitive node.')
+        return self.__primitive
 
     # append child
     def append_child(self, _child):
@@ -321,8 +321,14 @@ class SceneGraphNode(object):
         \param[in] _child child node
         """
         if self.is_primitive_node():
-            raise StandardError, ('Cannot append a child to a primitive node.')
-        self.children.append(_child)
+            raise StandardError, ('Cannot append a child to a __primitive node.')
+        self.__children.append(_child)
+
+    # get child list
+    def get_children(self):
+        """get child list.
+        \return list of children. may None"""
+        return self.__children
 
     # get bounding box of this node
     def get_bbox(self):
@@ -331,17 +337,17 @@ class SceneGraphNode(object):
         """
         # check the consistency for debug
         if self.is_primitive_node():
-            assert(self.bbox.equal(self.primitive.get_bbox()) == True)
+            assert(self.__bbox.equal(self.__primitive.get_bbox()) == True)
 
-        return self.bbox
+        return self.__bbox
 
-    # assign bbox value
+    # assign __bbox value
     def set_bbox(self, _bbox):
-        """assign bbox value.
-        set the bbox object. (_bbox is cloned before set.)
+        """assign __bbox value.
+        set the __bbox object. (_bbox is cloned before set.)
         \param _bbox bounding box to be assigned."""
 
-        self.bbox = copy.deepcopy(_bbox)
+        self.__bbox = copy.deepcopy(_bbox)
 
 
     # for debug
@@ -355,21 +361,21 @@ class SceneGraphNode(object):
         \param[in] _depth node depth"""
 
         indent = '  ' * _level
-        if self.primitive != None:
+        if self.__primitive != None:
             print indent + '# SceneGraphNode:Primitive:' +\
-                  self.primitive.get_classname() +\
-                  ' ' + str(self.primitive.get_bbox())
+                  self.__primitive.get_classname() +\
+                  ' ' + str(self.__primitive.get_bbox())
         else:
-            print indent + '# # children = ' + str(len(self.children))
+            print indent + '# # __children = ' + str(len(self.__children))
 
 
 # temporal: create trimesh scenegraph from obj filename for test
 def create_one_trimeh_scenegraph(_objfname):
     """temporal: create trimesh scenegraph from obj filename for test
 
-    SceneGraph +--+ ifgi camera
-               +--+ SceneGraphNode: root_node
-                                             +--+ TriMesh: primitive
+    SceneGraph +--+ ifgi __camera
+               +--+ SceneGraphNode: __root_node
+                                             +--+ TriMesh: __primitive
 
     TODO: create a scenegraph more general
     """

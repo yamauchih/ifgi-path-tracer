@@ -96,7 +96,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.__cur_tree_item = None
 
         # collect drawmode from the gl scenegraph
-        self.__drawmode_list = _gl_scenegraph.collect_drawmode()
+        self.__drawmode_list = _gl_scenegraph.collect_drawmode_list()
         self.__gl_scenegraph = _gl_scenegraph
 
         self.adjust_columnsize_by_contents()
@@ -356,7 +356,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         \param[in]: _level        current depth level"""
 
         ti_parent = _cur_tinode
-        for ch_glsgnode in _cur_glsgnode.children:
+        for ch_glsgnode in _cur_glsgnode.get_children():
             if ch_glsgnode.is_primitive_node() == True:
                 print 'DEBUG: creating tree item by a primitive'
                 # primitive node
@@ -517,7 +517,7 @@ class QtTreeviewLabelGLSceneGraphNode(GLSceneGraph.GLSceneGraphNode):
         return 'Status'
 
     # get draw mode string
-    def get_global_drawmode_str(self):
+    def get_drawmode_str(self):
         """get draw mode string
         \return draw mode string label 'Mode'"""
 
@@ -585,7 +585,7 @@ class SceneGraphNodeTreeItem(object):
         elif (_column == 2):
             return self.sceneGraphNode.get_active_state()
         elif (_column == 3):
-            return self.sceneGraphNode.get_global_drawmode_str()
+            return self.sceneGraphNode.get_drawmode_str()
         else:
             raise IndexError('SceneGraphNodeTreeItem: data')
             return 'Error: IndexError'
