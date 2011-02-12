@@ -90,7 +90,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         self.traverse_sgnode(self.__gl_root_node, collect_drawmode_strategy)
         # print 'DEBUG: collect draw mode done.'
         # collect_drawmode_strategy.drawmodelist.print_obj()
-        return collect_drawmode_strategy.drawmodelist
+        return collect_drawmode_strategy.get_drawmode_list()
 
     # private: ------------------------------------------------------------
 
@@ -147,8 +147,6 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         \param[in] _nodename node name
         """
         SceneGraph.SceneGraphNode.__init__(self, _nodename)
-        self.__children  = []
-        self.__primitive = None
         self.__is_debug  = False
         self.__is_active = True
         # can not have the same name method and member variable
@@ -210,55 +208,6 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         dmstr = DrawMode.get_drawmode_string(self.get_drawmode())
         return dmstr
 
-
-
-    # set primitive
-    def set_primitive(self, _prim):
-        """set primitive
-        \param[in] _prim primitive to be set"""
-
-        if len(self.__children) > 0:
-            raise StandardError, (
-                'Cannot set a __primitive. already had __children.')
-        # can not use is_primitive_node, this method changes the
-        # __primitive state
-        if self.__primitive != None:
-            print 'Warning. This node has a __primitive.'
-        self.__primitive = _prim
-        print 'DEBUG: set_primitive: ' + self.__primitive.get_classname()
-
-    # is this node a __primitive node?
-    def is_primitive_node(self):
-        """is this node a primitive node?
-
-        (primitive node == no children, just a primitive)
-        \return True if this node is a primitive node"""
-
-        if self.__primitive != None:
-            return True
-
-        return False
-
-    # get __primitive
-    def get_primitive(self):
-        """get primitive
-        \return primitive"""
-
-        if self.is_primitive_node() == False:
-            print 'Warning. This node does not have a __primitive.'
-        return self.__primitive
-
-
-    # append child
-    def append_child(self, _child):
-        """append child
-        \param[in] _child a child will be appended to this node"""
-
-        if (self.is_primitive_node()):
-            raise StandardError, (
-                'Cannot append a child. already had a __primitive.')
-        self.__children.append(_child)
-
     # print glnode info. Indentation is according to the depth level
     def print_glnodeinfo(self, _level):
         """print glnode info. Indentation is according to the depth level
@@ -269,7 +218,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         if (self.is_primitive_node()):
             print indent + '# ' + self.get_classname() + ':Primitive'
 
-        print indent + '# # __children = ' + str(len(self.__children))
+        print indent + '# # __children = ' + str(len(self.get_children()))
 
 
     # draw by mode
@@ -284,11 +233,11 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
 
         if (self.is_primitive_node()):
             # __primitive: draw itself
-            self.__primitive.draw(_global_mode)
+            self.get_primitive().draw(_global_mode)
             print self.get_classname() + '::draw: call __primitive draw'
-        elif len(self.__children) > 0:
+        elif len(self.get_children()) > 0:
             # no __primitive: draw __children
-            for ch_glnode in self.__children:
+            for ch_glnode in self.get_children():
                 # create and refer the sg node
                 ch_glnode.draw(_global_mode)
                 print self.get_classname() + '::draw: call child draw'
@@ -303,7 +252,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         \return return __drawmode_list, maybe None"""
 
         if (self.is_primitive_node()):
-            return self.__primitive.get_drawmode_list()
+            return self.get_primitive().get_drawmode_list()
 
         return None
         # raise StandardError, (
@@ -448,7 +397,8 @@ class GLTriMeshNode(GLSceneGraphNode):
         GL.glShadeModel(self.__shade_model)
         self.__gl_enable_disable(GL.GL_LIGHTING,   self.__is_enabled_lighting)
         self.__gl_enable_disable(GL.GL_DEPTH_TEST, self.__is_enabled_depthtest)
-        self.__gl_enable_disable(GL.GL_POLYGON_OFFSET_FILL, self.__is_enabled_offsetfill)
+        self.__gl_enable_disable(GL.GL_POLYGON_OFFSET_FILL,
+                                 self.__is_enabled_offsetfill)
 
     # glEnable/glDisable function
     def __gl_enable_disable(self, _gl_function_name, _is_enable):
@@ -617,7 +567,7 @@ class GLSGTCollectDrawmodeStrategy(SceneGraph.SceneGraphTraverseStrategyIF):
     # constructor
     def __init__(self):
         """constructor"""
-        self.drawmodelist = DrawMode.DrawModeList()
+        self.__drawmodelist = DrawMode.DrawModeList()
 
     # apply strategy to node before recurse. Implementation
     def apply_before_recurse(self, _cur_node, _level):
@@ -652,8 +602,14 @@ class GLSGTCollectDrawmodeStrategy(SceneGraph.SceneGraphTraverseStrategyIF):
         \param[in]  _level    current depth
         """
 
-        self.drawmodelist.or_drawmode(_cur_node.get_drawmode_list())
+        self.__drawmodelist.or_drawmode(_cur_node.get_drawmode_list())
 
+
+    # get the result
+    def get_drawmode_list(self):
+        """get the drawmode list.
+        \return collected drawmode list."""
+        return self.__drawmodelist
 
 #
 # main test

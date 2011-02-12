@@ -185,7 +185,10 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         \param[in] _qkeyev key event"""
         self.__key_modifier_state = _qkeyev.modifiers()
 
-        assert(self.__cur_tree_item != None)
+        if (self.__cur_tree_item != None):
+            # no item selected. In such case, ignored the key press.
+            return
+
         assert(self.__cur_tree_item.get_node() != None)
 
         if (self.__key_modifier_state & QtCore.Qt.ControlModifier != 0):
