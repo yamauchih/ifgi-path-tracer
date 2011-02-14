@@ -8,6 +8,7 @@
 
 from PyQt4 import Qt, QtCore, QtGui
 import GLSceneGraph
+import DrawMode
 
 # QtSceneGraphView
 class QtSceneGraphViewWidget(QtGui.QTreeView):
@@ -65,7 +66,6 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.__popupmenu              = None
         self.__drawmode_list          = None
         self.__gl_scenegraph          = None
-        self.__is_use_global_drawmode = True
         self.__drawmode_bitmap2action = {} # drawmode bitmap to action dictionary
 
 
@@ -124,20 +124,38 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
     # global draw mode check
     def __set_global_drawmode(self, _is_use_global_drawmode):
-        """set global drawmode.
-        \param[in] _is_use_global_drawmode when True, use global drawmode
+        """set global drawmode. Note: can not turn off the global
+        drawmode by this method.
+
+        \param[in] _is_use_global_drawmode when True, use global
+        drawmode. However, no effect when _is_use_global_drawmode ==
+        False. If you want to turn off the global drawmode, you need
+        to activate one of the local drawmode.
         """
-        self.__is_use_global_drawmode = _is_use_global_drawmode
-        # DELETEME
-        # print 'DEBUG: __is_use_global_drawmode ' +\
-        #    str(self.__is_use_global_drawmode)
+
+        # if try to turn off the global drawmode, ignore
+        if (not _is_use_global_drawmode):
+            print '__set_global_drawmode: can not turn off global drawmode. ' + \
+                'use set local drawmode.'
+            return
+
+        # Only when global mode is off, turn on it and also turn off
+        # all the local mode.
+        assert(self.__cur_tree_item != None)
+        assert(self.__cur_tree_item.get_node() != None)
+
+        cur_node = self.__cur_tree_item.get_node()
+        # set global drawmode
+        cur_node.set_drawmode(DrawMode.DrawModeList.DM_GlobalMode)
+        self.__update_popupmenu_drawmode(DrawMode.DrawModeList.DM_GlobalMode)
 
     # get global draw mode
-    def __is_global_drawmode(self):
-        """get global drawmode.
-        \return True when use global draw mode
-        """
-        return self.__is_use_global_drawmode
+#     def __is_global_drawmode(self):
+#         """get global drawmode.
+#         \return True when use global draw mode
+#         """
+#         return self.__is_use_global_drawmode
+# DELETEME
 
 
     # right button pressed on _glsgnode.
@@ -149,7 +167,8 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         if(self.__popupmenu == None):
             self.__create_popupmenu()
             self.__create_popupmenu_drawmode()
-
+            assert(_glsgnode != None)
+            self.__update_popupmenu_drawmode(_glsgnode.get_drawmode())
 
 
         self.__popupmenu.exec_(QtGui.QCursor.pos())
@@ -433,7 +452,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
                           statusTip="use global default when GL draw",
                           triggered=self.__set_global_drawmode,
                           checkable=True)
-        self.__popupmenu_global_drawmode_act.setChecked(self.__is_global_drawmode())
+        self.__popupmenu_global_drawmode_act.setChecked(True) # default on
         self.__popupmenu.addAction(self.__popupmenu_global_drawmode_act)
 
         self.__popupmenu.addSeparator()
@@ -447,7 +466,39 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         \param[in] _drawmode_bitmap drawmode bitmpa that is chosen
         from the menu.
         """
-        print 'DEBUG: __popupmenu_set_drawmode: ' + str(_drawmode_bitmap)
+
+        assert(self.__cur_tree_item != None)
+        assert(self.__cur_tree_item.get_node() != None)
+        cur_node   = self.__cur_tree_item.get_node()
+        updated_dm = cur_node.get_drawmode();
+
+        if (self.__key_modifier_state & QtCore.Qt.ShiftModifier == 0):
+            # set draw mode (here is local only) without Shift key
+            print 'DEBUG: __popupmenu_set_drawmode: no shift'
+            updated_dm = _drawmode_bitmap
+        else:
+            print 'DEBUG: __popupmenu_set_drawmode: with shift. ' + str(self.__key_modifier_state & QtCore.Qt.ShiftModifier)
+            # set draw mode (here is local only) with Shift key
+
+            if (updated_dm == DrawMode.DrawModeList.DM_GlobalMode):
+                # if global drawmode clear the mode first
+                updated_dm = 0
+
+            assert(self.__key_modifier_state & QtCore.Qt.ShiftModifier != 0)
+            if ((updated_dm & _drawmode_bitmap) == 0):
+                # has been turned off -> turn on
+                updated_dm = updated_dm | _drawmode_bitmap
+            else:
+                # has been turned on -> turn off, but only this bit.
+                # There is the case, all turn off, but that's ok.
+                # In such case, just nothing happens.
+                updated_dm = updated_dm & (~_drawmode_bitmap)
+
+        cur_node.set_drawmode(updated_dm)
+        self.__update_popupmenu_drawmode(updated_dm)
+        print 'DEBUG: __popupmenu_set_drawmode: ' + str(_drawmode_bitmap) +\
+            ' -> ' + str(updated_dm)
+        
 
 
     # create popup menu: draw mode
@@ -484,6 +535,35 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         #    str(self.global_drawmode)
 
 
+    # update popupmenu's drawmode
+    def __update_popupmenu_drawmode(self, _drawmode):
+        """update popupmenu's drawmode.
+        popup menu will be updated according to the _drawmode.
+        \param[in] _drawmode drawmode bitmap
+        """
+        
+        # clear all the local mode
+        for dm in DrawMode.DrawModeList.DM_Drawmode_bitmap_key_list:
+            # key in dict
+            if (dm in self.__drawmode_bitmap2action):
+                act = self.__drawmode_bitmap2action[dm]
+                act.setChecked(False)
+                
+        # Global drawmode?
+        if (_drawmode == DrawMode.DrawModeList.DM_GlobalMode):
+            self.__popupmenu_global_drawmode_act.setChecked(True)
+            # global drawmode only, return
+            return              
+        else:
+            self.__popupmenu_global_drawmode_act.setChecked(False)
+
+        # set all the local mode
+        for dm in DrawMode.DrawModeList.DM_Drawmode_bitmap_key_list:
+            # key in dict
+            if (dm in self.__drawmode_bitmap2action):
+                if ((_drawmode & dm) != 0):
+                    act = self.__drawmode_bitmap2action[dm]
+                    act.setChecked(True)
 
 
 
