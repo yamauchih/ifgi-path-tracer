@@ -20,6 +20,30 @@ class TestQtUtil(unittest.TestCase):
             assert(npos[0] == float(pos[0]))
             assert(npos[1] == float(pos[1]))
 
+    def test_key_modifier(self):
+        """test key modifiers"""
+
+        ctrlmod  = QtCore.Qt.KeyboardModifiers(QtCore.Qt.ControlModifier)
+        altmod   = QtCore.Qt.KeyboardModifiers(QtCore.Qt.AltModifier)
+        shiftmod = QtCore.Qt.KeyboardModifiers(QtCore.Qt.ShiftModifier)
+        nomod    = QtCore.Qt.KeyboardModifiers(QtCore.Qt.NoModifier)
+
+        assert(    QtUtil.in_key_modifier(ctrlmod, QtCore.Qt.ControlModifier))
+        assert(not QtUtil.in_key_modifier(altmod,  QtCore.Qt.ControlModifier))
+
+        allmod = ctrlmod | altmod | shiftmod
+
+        assert(    QtUtil.in_key_modifier(allmod, QtCore.Qt.ControlModifier))
+        assert(    QtUtil.in_key_modifier(allmod, QtCore.Qt.AltModifier))
+        assert(    QtUtil.in_key_modifier(allmod, QtCore.Qt.ShiftModifier))
+        assert(not QtUtil.in_key_modifier(allmod, QtCore.Qt.NoModifier))
+        assert(    QtUtil.in_key_modifier(nomod,  QtCore.Qt.NoModifier))
+        assert(not QtUtil.in_key_modifier(nomod,  QtCore.Qt.AltModifier))
+
+        assert(QtUtil.get_key_modifier_string(ctrlmod)  == 'Ctrl+')
+        assert(QtUtil.get_key_modifier_string(altmod)   == 'Alt+')
+        assert(QtUtil.get_key_modifier_string(shiftmod) == 'Shift+')
+        assert(QtUtil.get_key_modifier_string(allmod)   == 'Ctrl+Alt+Shift+')
 
 #
 # main test

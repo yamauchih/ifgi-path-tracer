@@ -9,6 +9,7 @@
 from PyQt4 import Qt, QtCore, QtGui
 import GLSceneGraph
 import DrawMode
+import QtUtil
 
 # QtSceneGraphView
 class QtSceneGraphViewWidget(QtGui.QTreeView):
@@ -137,6 +138,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         if (not _is_use_global_drawmode):
             print '__set_global_drawmode: can not turn off global drawmode. ' + \
                 'use set local drawmode.'
+            self.__update_popupmenu_drawmode(DrawMode.DrawModeList.DM_GlobalMode)
             return
 
         # Only when global mode is off, turn on it and also turn off
@@ -173,7 +175,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
         self.__popupmenu.exec_(QtGui.QCursor.pos())
 
-        print 'DEBUG:  node = ' + str(_glsgnode)
+        # print 'DEBUG: node = ' + str(_glsgnode)
 
 
     # return pressed action will do the same to the rightButtonPressed
@@ -202,15 +204,23 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         """key press event: reimplemented.
         some action and also remember the modifier change (e.g., shift key).
         \param[in] _qkeyev key event"""
+
         self.__key_modifier_state = _qkeyev.modifiers()
 
-        if (self.__cur_tree_item != None):
+        # print 'DEBUG: type = ' + str(type(self.__key_modifier_state)) +\
+        #     str(isinstance(self.__key_modifier_state,
+        #                    QtCore.Qt.KeyboardModifiers))
+        # print 'DEBUG: ' + \
+        #     QtUtil.get_key_modifier_string(self.__key_modifier_state)
+
+        if (self.__cur_tree_item == None):
             # no item selected. In such case, ignored the key press.
             return
 
         assert(self.__cur_tree_item.get_node() != None)
 
-        if (self.__key_modifier_state & QtCore.Qt.ControlModifier != 0):
+        if (QtUtil.in_key_modifier(self.__key_modifier_state,
+                                   QtCore.Qt.ControlModifier)):
             # Ctrl+
             if (_qkeyev.key() == QtCore.Qt.Key_M):
                 # key M: exec command
@@ -228,7 +238,8 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
             else:
                 # do nothing for other keys
                 pass
-        elif(self.__key_modifier_state & QtCore.Qt.ShiftModifier != 0):
+        elif (QtUtil.in_key_modifier(self.__key_modifier_state,
+                                     QtCore.Qt.ShiftModifier)):
             # Shift+
             if (_qkeyev.key() == QtCore.Qt.Key_Insert):
                 print 'DEBUG: Shift+Key_Insert'
@@ -237,7 +248,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
             else:
                 # do nothing for other keys
                 pass
-        elif(self.__key_modifier_state == QtCore.Qt.NoModifier):
+        elif (self.__key_modifier_state == QtCore.Qt.NoModifier):
             # note using == insted of & in if
             # no modifier
             if (_qkeyev.key() == QtCore.Qt.Key_Return):
@@ -314,7 +325,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
             self.right_button_pressed(self.__cur_tree_item.get_node());
 
         self.adjust_columnsize_by_contents()
-        print 'slot clicked'
+        # print 'slot clicked'
 
     # slot double clicked
     def slot_doubleClicked(self, _qmidx):
@@ -343,10 +354,10 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         """slot activated
         \param[in] _qmidx activated item model index"""
 
-        print 'slot activated'
+        # print 'slot activated'
         if (_qmidx.isValid()):
             self.__cur_tree_item = _qmidx.internalPointer();
-            print 'slot activated: ' + str(type(self.__cur_tree_item))
+            # print 'slot activated: ' + str(type(self.__cur_tree_item))
         else:
             self.__cur_tree_item = None
 
@@ -472,19 +483,19 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         cur_node   = self.__cur_tree_item.get_node()
         updated_dm = cur_node.get_drawmode();
 
-        if (self.__key_modifier_state & QtCore.Qt.ShiftModifier == 0):
+        if (not (QtUtil.in_key_modifier(self.__key_modifier_state,
+                                        QtCore.Qt.ShiftModifier))):
             # set draw mode (here is local only) without Shift key
-            print 'DEBUG: __popupmenu_set_drawmode: no shift'
             updated_dm = _drawmode_bitmap
         else:
-            print 'DEBUG: __popupmenu_set_drawmode: with shift. ' + str(self.__key_modifier_state & QtCore.Qt.ShiftModifier)
             # set draw mode (here is local only) with Shift key
 
             if (updated_dm == DrawMode.DrawModeList.DM_GlobalMode):
                 # if global drawmode clear the mode first
                 updated_dm = 0
 
-            assert(self.__key_modifier_state & QtCore.Qt.ShiftModifier != 0)
+            assert(QtUtil.in_key_modifier(self.__key_modifier_state,
+                                          QtCore.Qt.ShiftModifier))
             if ((updated_dm & _drawmode_bitmap) == 0):
                 # has been turned off -> turn on
                 updated_dm = updated_dm | _drawmode_bitmap
@@ -498,7 +509,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.__update_popupmenu_drawmode(updated_dm)
         print 'DEBUG: __popupmenu_set_drawmode: ' + str(_drawmode_bitmap) +\
             ' -> ' + str(updated_dm)
-        
+
 
 
     # create popup menu: draw mode
@@ -541,19 +552,19 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         popup menu will be updated according to the _drawmode.
         \param[in] _drawmode drawmode bitmap
         """
-        
+
         # clear all the local mode
         for dm in DrawMode.DrawModeList.DM_Drawmode_bitmap_key_list:
             # key in dict
             if (dm in self.__drawmode_bitmap2action):
                 act = self.__drawmode_bitmap2action[dm]
                 act.setChecked(False)
-                
+
         # Global drawmode?
         if (_drawmode == DrawMode.DrawModeList.DM_GlobalMode):
             self.__popupmenu_global_drawmode_act.setChecked(True)
             # global drawmode only, return
-            return              
+            return
         else:
             self.__popupmenu_global_drawmode_act.setChecked(False)
 
