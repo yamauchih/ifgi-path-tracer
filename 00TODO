@@ -14,15 +14,8 @@ TODO
 - Picking
 
 - Doxypy-ization
-GLSceneGraph.py (half)
-GLUtil.py
-ObjReader.py
-Primitive.py
-QtExaminerWidget.py
-QtExaminerWindow.py
-QtSceneGraphDialog.py
-QtSceneGraphWidget.py
-QtUtil.py
+QtExaminerWidget.py (private __ methods)
+QtExaminerWindow.py (private __ methods)
 Ray.py
 SceneGraph.py
 actionmode.py

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-#
-# test for ConvReader2Primitive
-#
 
-"""test IFGI ConvReader2Primitive"""
+"""test IFGI ConvReader2Primitive.
+\file
+\brief test for ConvReader2Primitive
+"""
 
 import unittest
 import ObjReader
@@ -11,8 +11,10 @@ import Primitive
 import ConvReader2Primitive
 
 class TestConvReader2Primitive(unittest.TestCase):
+    """test for ConvReader2Primitive."""
 
     def test_converter_0(self):
+        """"test converter 0"""
         objreader = ObjReader.ObjReader()
         objreader.read('../sampledata/one_tri.obj')
 

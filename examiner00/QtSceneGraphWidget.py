@@ -151,15 +151,6 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         cur_node.set_drawmode(DrawMode.DrawModeList.DM_GlobalMode)
         self.__update_popupmenu_drawmode(DrawMode.DrawModeList.DM_GlobalMode)
 
-    # get global draw mode
-#     def __is_global_drawmode(self):
-#         """get global drawmode.
-#         \return True when use global draw mode
-#         """
-#         return self.__is_use_global_drawmode
-# DELETEME
-
-
     # right button pressed on _glsgnode.
     def right_button_pressed(self, _glsgnode):
         """right button pressed on _glsgnode.

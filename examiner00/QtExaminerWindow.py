@@ -22,14 +22,19 @@ import QtExaminerWidget
 import SceneGraph
 import GLSceneGraph
 
+# examiner window
 class QtExaminerWindow(QtGui.QMainWindow):
+    """Qt geometry examiner window."""
+
     # constructor
     def __init__(self, parent=None):
+        """constructor"""
         super(QtExaminerWindow, self).__init__()
         self.examiner_widget = None
 
     # create widgets and window
     def create_window(self):
+        """create widgets and window."""
         widget = QtGui.QWidget()
         self.setCentralWidget(widget)
 
@@ -60,12 +65,16 @@ class QtExaminerWindow(QtGui.QMainWindow):
 
 
     # init application after window is created.
-    #
-    # call after the window are created. Usually, this set up the
-    # application, like commanline specify some commands. (for
-    # example, load scene)
-    # \param[in] _cmd_opt command line option created by optparse
     def init_app(self, _cmd_opt):
+        """init application after window is created.
+
+        call after the window are created. Usually, this set up the
+        application, like commanline specify some commands. (for
+        example, load scene)
+        \param[in] _cmd_opt command line option created by optparse
+        """
+
+
         if self.examiner_widget == None:
             raise StandardError, ('No examiner widget. have you call create_window?')
 
@@ -81,10 +90,12 @@ class QtExaminerWindow(QtGui.QMainWindow):
 
     # File--New
     def menu_file_new(self):
+        """File--New menu."""
         self.statusBar().showMessage('NIN: File--New invoked')
 
     # File--Open
     def menu_file_open(self):
+        """File--Open menu."""
         options = QtGui.QFileDialog.Options()
         # if not self.native.isChecked():
         options |= QtGui.QFileDialog.DontUseNativeDialog
@@ -108,70 +119,87 @@ class QtExaminerWindow(QtGui.QMainWindow):
 
     # View -- move mode
     def menu_view_move(self):
+        """View -- move mode."""
         print 'NIN: menu_view_move'
 
     # View -- move mode
     def menu_view_move(self):
+        """View -- move mode."""
         print 'NIN: menu_view_move'
 
     # View -- move mode
     def menu_view_move(self):
+        """View -- move mode."""
         print 'NIN: menu_view_move'
 
     # View -- move mode
     def menu_view_move(self):
+        """View -- move mode."""
         print 'NIN: menu_view_move'
 
     # View -- move mode
     def menu_view_move(self):
+        """View -- move mode."""
         print 'NIN: menu_view_move'
 
     # View -- pick mode
     def menu_view_pick(self):
+        """View -- pick mode."""
         print 'NIN: menu_view_pick'
 
     # View -- lasso mode
     def menu_view_lasso(self):
+        """View -- lasso mode."""
         print 'NIN: menu_view_lasso'
 
     # View -- identify mode
     def menu_view_identify(self):
+        """View -- identify mode."""
         print 'NIN: menu_view_identify'
 
     # View -- restore home
     def menu_view_restorehome(self):
+        """View -- restore home."""
         print 'NIN: menu_view_restorehome'
 
     # View -- set home
     def menu_view_sethome(self):
+        """View -- set home."""
         print 'NIN: menu_view_sethome'
 
     # View -- all
     def menu_view_all(self):
+        """View -- all."""
         print 'NIN: menu_view_all'
 
     # View -- toggle perspective
     def menu_view_toggle_perspective(self):
+        """View -- toggle perspective."""
         print 'NIN: menu_view_toggle_perspective'
 
     # View -- scenegraph
     def menu_view_scenegraph(self):
+        """View -- scenegraph."""
         print 'NIN: menu_view_scenegraph'
 
 
     # Process--IFGI ptrace
     def menu_process_ifgi_ptrace(self):
+        """Process--IFGI ptrace."""
         self.statusBar().showMessage('NIN: Process--IFGI ptrace invoked')
 
     # Help--about
     def menu_help_about(self):
+        """Help--about."""
         self.statusBar().showMessage('NIN: Help--About invoked')
         QtGui.QMessageBox.about(self, "About Menu",
-                                'QtExaminerWindow: simple OpenGL viewer for IFGI path ' +
-                                'tracer<br>' +
+                                'QtExaminerWindow: simple OpenGL viewer for ' +
+                                'IFGI path tracer<br>' +
                                 'Author: Yamauchi, Hitoshi.')
     # create menubar actions
     def createActions(self):
+        """create menubar actions."""
+
         # File menu
         self.newAct = QtGui.QAction("&New", self,
                                     shortcut=QtGui.QKeySequence.New,
@@ -248,6 +276,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
 
     # create menubar
     def createMenus(self):
+        """create menubar."""
         # file menu
         self.fileMenu = self.menuBar().addMenu("&File")
         self.fileMenu.addAction(self.newAct)
@@ -284,6 +313,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
 
     # load file command
     def com_load_file(self, _infilename):
+        """load file command."""
         if (_infilename == None) or (_infilename == ''):
             raise StandardError, ('com_load_file: emoty filename')
 
@@ -292,7 +322,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
         sg.update_all_bbox()
         sg.print_all_obj()      # for debug
 
-        # attach the SceneGraph to a GLSceneGraph 
+        # attach the SceneGraph to a GLSceneGraph
         glsg = GLSceneGraph.GLSceneGraph()
         glsg.set_scenegraph(sg)
 
@@ -305,8 +335,10 @@ class QtExaminerWindow(QtGui.QMainWindow):
 
 
 # get default option list
-# \return default option list
 def get_default_option_list():
+    """get default option list.
+    \return default option list"""
+
     default_option_list = [
         optparse.make_option("-v", "--verbose", action="store_true", dest="verbose",
                              default=False,

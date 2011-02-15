@@ -382,8 +382,9 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
         else:
             # left button & CTRL pressed and lasso interactive
-            if ((_event.modifiers() & QtCore.Qt.ControlModifier) and
-                (_event.button() == QtCore.Qt.LeftButton)        and
+            if ((QtUtil.in_key_modifier(_event.modifiers(),
+                                        QtCore.Qt.ControlModifier)) and
+                (_event.button() == QtCore.Qt.LeftButton)           and
                 (self.actionMode == Actionmode.ExamineMode)):
                 # avoid control key being useless for other modes
                 # self.startDrag()
@@ -393,7 +394,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                 # remember this point
                 self.lastPoint2D = QtUtil.QPoint2numpy(_event.pos())
                 self.lastPoint3D = ifgimath.mapToSphere(self.lastPoint2D,
-                                                        self.glWidth(), self.glHeight())
+                                                        self.glWidth(),
+                                                        self.glHeight())
 
                 self.isRotating = True
                 # DELETEME
