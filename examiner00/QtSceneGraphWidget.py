@@ -10,6 +10,7 @@ from PyQt4 import Qt, QtCore, QtGui
 import GLSceneGraph
 import DrawMode
 import QtUtil
+import QtInfoDialog
 
 # QtSceneGraphView
 class QtSceneGraphViewWidget(QtGui.QTreeView):
@@ -121,7 +122,18 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
     def show_nodeinfo_dialog(self, _glsgnode):
         """show information dialog for _glsgnode.
         \param[in] _glsgnode gl scenegraph node"""
+
         print 'DEBUG: show info dialog'
+        # Note: if QtSceneGraphDialog is modal, then these ifo dialog
+        # is also modal, even with show().
+        info_dialog = QtInfoDialog.QtInfoDialog(self)
+        info_dialog.setWindowModality(QtCore.Qt.NonModal)
+
+        assert(self.__cur_tree_item != None)
+        assert(self.__cur_tree_item.get_node() != None)
+        info_dialog.set_html(self.__cur_tree_item.get_node().get_info_html())
+        info_dialog.show()
+
 
     # global draw mode check
     def __set_global_drawmode(self, _is_use_global_drawmode):

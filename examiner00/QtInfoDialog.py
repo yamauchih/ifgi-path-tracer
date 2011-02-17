@@ -21,6 +21,7 @@ class QtInfoDialog(QtGui.QDialog):
         super(QtInfoDialog, self).__init__(parent)
 
         self.setModal(False);
+
         self.setMinimumWidth(0);
 
         # main text
@@ -70,7 +71,7 @@ class QtInfoDialog(QtGui.QDialog):
     def slot_updated(self):
         """slot updated.
         called when updated button is pushed."""
-        print 'DEBUG: NIN: slot_updated'
+        print 'DEBUG: slot_updated'
 
     # a signal emitted when dialog is closed
     def closed(self):
@@ -125,5 +126,7 @@ Copyright (C) 2010-2011 Yamauchi, Hitoshi<BR>
 </HTML>
 ''')
 
-    info_dialog.setModal(False)
-    sys.exit(info_dialog.exec_())
+    # info_dialog.setModal(False)
+    info_dialog.open()
+    s = raw_input('Push return to finish: ')
+    sys.exit()

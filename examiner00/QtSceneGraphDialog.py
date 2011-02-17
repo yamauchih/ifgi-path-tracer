@@ -35,6 +35,11 @@ class QtSceneGraphDialog(QtGui.QDialog):
         self.setLayout(self.__layout);
         self.resize(450, 300)
 
+        # only works with show(), exec_() will override
+        self.setModal(False)
+        self.setWindowModality(QtCore.Qt.NonModal)
+
+
     # get scenegraph treeview widget
     def get_scenegraph_view_widget(self):
         return self.__sg_view_widget
@@ -149,4 +154,6 @@ if __name__ == '__main__':
     # import gl scenegraph to dialog -> treeview widget -> model/view
     sgdialog.update_scenegraph(glsg)
 
-    sys.exit(sgdialog.exec_())
+    sgdialog.show()
+    s = raw_input('Push return to exit: ')
+    sys.exit()

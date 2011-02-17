@@ -259,6 +259,37 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         # 'GLSceneGraphNode.get_drawmode_list() must be implemented ' +
         # 'in derived class. classname = ' + self.get_classname())
 
+    # get info of this node
+    def get_info_html_GLSceneGraphNode(self):
+        """get GLSceneGraphNode base info html text.
+        \return base GL node info."""
+
+        ret_s = '<h2>GLSceneGraphNode information</h2>\n' +\
+            '<h2>General information</h2>\n' +\
+            '<ul>\n' +\
+            '  <li><b>Class name:</b> ' + self.get_classname()    + '\n' +\
+            '  <li><b>Name:</b> '       + self.get_nodename()     + '\n' +\
+            '  <li><b>Status:</b> '     + self.get_active_state() + '\n' +\
+            '  <li><b>Drawmode:</b> '   + self.get_drawmode_str() + '\n' +\
+            '</ul>\n'
+
+        # print 'DEBUG: get_info_html_GLSceneGraphNode\n' + ret_s
+
+        return ret_s
+
+
+    # get info of this node
+    def get_info_html(self):
+        """Get information html text.
+        Usually, this should be overrided.
+        \return base GL node info.
+        """
+        ret_s = self.get_info_html_GLSceneGraphNode()
+
+        return ret_s
+
+
+
     # print this obj for debug
     def print_obj(self):
         """print this obj for debug"""
