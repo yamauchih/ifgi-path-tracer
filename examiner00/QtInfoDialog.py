@@ -9,11 +9,10 @@
 import sys
 from PyQt4 import QtCore, QtGui
 
-
 # QtInfoDialog
 class QtInfoDialog(QtGui.QDialog):
-    """QtSceneGraphDialog
-    SceneGraph viewer dialog"""
+    """QtInfoDialog
+    general information dialog"""
 
     def __init__(self, parent=None):
         """constructor"""
