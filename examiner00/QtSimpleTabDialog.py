@@ -9,6 +9,7 @@
 import sys
 from PyQt4 import QtCore, QtGui
 
+import QtGroupFrame
 
 # QtSimpleTabDialog
 class QtSimpleTabDialog(QtGui.QDialog):
@@ -110,6 +111,19 @@ class QtSimpleTabDialog(QtGui.QDialog):
         super(QtSimpleTabDialog, self).closeEvent(_close_event)
 
 
+    def test_addtab(self, _tabname):
+        """test add a tab"""
+        frame     = QtGui.QFrame()
+        boxlayout = QtGui.QHBoxLayout(frame)
+        boxlayout.addSpacing(10)
+        frame.setLayout(boxlayout)
+
+        groupframe = QtGroupFrame.QtGroupFrame(frame, _tabname);
+        # boxlayout.addWidget(groupframeF);
+
+        self.__tab_widget.addTab(frame, _tabname)
+
+
 # test when called directly
 if __name__ == '__main__':
     """test when called directly"""
@@ -117,6 +131,9 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
 
     tab_dialog = QtSimpleTabDialog()
+    tab_dialog.test_addtab('testtab1')
+    tab_dialog.test_addtab('testtab2')
+
     tab_dialog.open()
     s = raw_input('Push return to finish: ')
     sys.exit()
