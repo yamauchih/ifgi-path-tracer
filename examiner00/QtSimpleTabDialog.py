@@ -10,6 +10,7 @@ import sys
 from PyQt4 import QtCore, QtGui
 
 import QtGroupFrame
+import QtWidgetIO
 
 # QtSimpleTabDialog
 class QtSimpleTabDialog(QtGui.QDialog):
@@ -120,6 +121,12 @@ class QtSimpleTabDialog(QtGui.QDialog):
 
         groupframe = QtGroupFrame.QtGroupFrame(frame, _tabname);
         # boxlayout.addWidget(groupframeF);
+
+        opt = {}
+        groupframe.add(QtWidgetIO.QtLineEditWIO(), 'myLineEdit', 'HelloWorld', opt)
+
+
+
 
         self.__tab_widget.addTab(frame, _tabname)
 
