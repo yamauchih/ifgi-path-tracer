@@ -12,8 +12,10 @@ import SceneGraph
 import Primitive
 
 class TestSceneGraph(unittest.TestCase):
-    # test scenegraph node
+    """test scenegraph node"""
+
     def test_bbox(self):
+        """"scenegraph bbox"""
         sg_node0 = SceneGraph.SceneGraphNode('sg_node0')
         sg_node1 = SceneGraph.SceneGraphNode('sg_node1')
 

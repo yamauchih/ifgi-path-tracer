@@ -18,6 +18,7 @@ const.magic = 88      # raises const.ConstError
 # const for python
 class _const:
     """const for python."""
+
     class ConstError(TypeError):
         """const error."""
         pass

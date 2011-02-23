@@ -122,7 +122,7 @@ class QtSimpleTabDialog(QtGui.QDialog):
         groupframe = QtGroupFrame.QtGroupFrame(frame, _tabname);
         boxlayout.addWidget(groupframe);
 
-        opt = {}
+        opt = {'LABEL': 'Hello'}
         groupframe.add(QtWidgetIO.QtLineEditWIO(), 'myLineEdit', 'HelloWorld', opt)
         self.__tab_widget.addTab(frame, _tabname)
 

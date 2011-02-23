@@ -2,7 +2,7 @@
 
 """reader to primitive converter
 \file
-\brie file reader, then convert the read result to a primitive
+\brief file reader, then convert the read result to a primitive
 """
 
 import Primitive

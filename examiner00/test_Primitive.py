@@ -11,8 +11,10 @@ import random
 import Primitive
 
 class TestPrimitive(unittest.TestCase):
+    """test suit for Primitive."""
     # test bbox
     def test_bbox(self):
+        """test for bbox"""
         random.seed(0)
 
         minp = numpy.array([-2.0, -1.0,  1.2])
@@ -32,6 +34,7 @@ class TestPrimitive(unittest.TestCase):
 
     # test primitive: one triangle
     def test_primitive_one_tri(self):
+        """test primitive: one triangle"""
         tmesh = Primitive.TriMesh()
 
         vertex_list       = []

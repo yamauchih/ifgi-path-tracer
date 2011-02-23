@@ -3,7 +3,6 @@
 """QtWidgetIOIF
 \file
 \brief interface of uniform input output QtWidget
-\module QtWidgetIO
 """
 
 from PyQt4 import Qt, QtCore, QtGui
@@ -44,6 +43,13 @@ class QtWidgetIOIF(QtCore.QObject):
         """apply options to customize after the creation.
 
         \param[in] _dict_opt options
+        """
+        raise StandardError ('Internal Error! must implemented in derived class.')
+
+    # set value
+    def set_value(self, _value):
+        """set value to this widget.
+        \param[in] _value value of this widget IO.
         """
         raise StandardError ('Internal Error! must implemented in derived class.')
 
@@ -108,14 +114,23 @@ class QtLineEditWIO(QtWidgetIOIF):
 
         \param[in] _dict_opt options
         """
-        raise StandardError ('NIN.')
+        if 'LABEL' in _dict_opt:
+            self.__extwidget.set_label(_dict_opt['LABEL'])
+
+    # set value
+    def set_value(self, _value):
+        """set value to this widget.
+        \param[in] _value value of this widget IO.
+        """
+        self.__extwidget.set_value(_value)
 
     # get value
     def get_value(self):
         """get this widget's value.
         \return the value of IO widget.
         """
-        raise StandardError ('NIN.')
+        return self.__extwidget.get_value()
+
 
     # Qt widget implementation
     def get_widget(self):
@@ -126,5 +141,3 @@ class QtLineEditWIO(QtWidgetIOIF):
 
     # slot for returnPressed() signal
     # def slotUpdate(self, _text)
-
-

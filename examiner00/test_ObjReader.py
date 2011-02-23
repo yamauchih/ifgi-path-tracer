@@ -9,8 +9,10 @@ import unittest
 import ObjReader
 
 class TestObjReader(unittest.TestCase):
+    """test for obj file reader"""
 
     def test_objreader_unit0(self):
+        """objreader test 0"""
         objreader = ObjReader.ObjReader()
 
         datlist = [
@@ -40,6 +42,7 @@ class TestObjReader(unittest.TestCase):
 
 
     def test_objreader_sample0(self):
+        """objreader sample0"""
         objreader = ObjReader.ObjReader()
         objreader.read('../sampledata/one_tri.obj')
         # objreader.dump()
@@ -48,6 +51,7 @@ class TestObjReader(unittest.TestCase):
         self.assertEquals(len(objreader.face_idx_list), 1) # nface
 
     def test_objreader_sample2(self):
+        """objreader sample2"""
         objreader = ObjReader.ObjReader()
         objreader.read('../sampledata/cylinder.obj')
         # objreader.dump()
@@ -56,15 +60,9 @@ class TestObjReader(unittest.TestCase):
         self.assertEquals(len(objreader.face_idx_list), 280) # nface
 
 
-
-
-
 #     def test_objreader_sample2(self):
 #         objreader = ObjReader.ObjReader()
 #         objreader.read('../sampledata/cylinder.obj')
-
-
-
 
 #
 # main test

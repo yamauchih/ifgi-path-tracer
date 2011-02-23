@@ -62,7 +62,7 @@ class DrawModeList(object):
     DrawModeItem container/lookup.
     \see DrawModeItem"""
 
-    ## basic drawmode bitmap
+    # basic drawmode bitmap
     DM_GlobalMode      = 0xffffffff
     DM_BBox            = 0x0001
     DM_Points          = 0x0002
@@ -77,14 +77,23 @@ class DrawModeList(object):
 
     # in order draw mode list
     DM_Drawmode_bitmap_key_list = [
+        ## bounding box
         DM_BBox,
+        ## point
         DM_Points,
+        ## wireframe
         DM_Wireframe,
+        ## hidden line
         DM_Hiddenline,
+        ## solid base color
         DM_Solid_Basecolor,
+        ## solid flat shading
         DM_Solid_Flat,
+        ## Gouraud shading
         DM_Solid_Gouraud,
+        ## Texture mapping
         DM_Solid_Texture,
+        ## for Picking
         DM_Picking
         ]
 
@@ -207,6 +216,9 @@ class DrawModeList(object):
 
 # get drawmode string
 def get_drawmode_string(_drawmode):
+    """get drawmode string representation.
+    \return string representation of drawmode."""
+
     if (_drawmode == DrawModeList.DM_GlobalMode):
         return 'Global'
 

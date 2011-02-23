@@ -12,19 +12,22 @@ import numpy
 # Ray class
 #
 class Ray(object):
+    """a ray"""
+
     # default constructor
-    #
-    # \param[in] _origin ray origin
-    # \param[in] _dir    ray direction
     def __init__(self, _origin, _dir):
+        """default constructor.
+        \param[in] _origin ray origin
+        \param[in] _dir    ray direction
+        """
         self.origin = _origin
         self.dir    = _dir
 
     # class name
     def get_classname(self):
-        return "Ray"
-
-
+        """get class name
+        \return class name"""
+        return 'Ray'
 
 #
 # main test

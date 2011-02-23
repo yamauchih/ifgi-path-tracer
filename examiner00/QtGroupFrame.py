@@ -107,10 +107,9 @@ class QtGroupFrame(QtGui.QScrollArea):
         # else
         rowTo = row
 
-        # _interface->applyOptions(opt);
-        # _interface->value( _value );
-
-        # _interface->setObserver(this);
+        _qwidgetio.apply_option(_dict_opt);
+        _qwidgetio.set_value(_value);
+        # _qwidgetio.->setObserver(self);
 
         # special hack for QPushButtons because it would be centered otherwise
         rowspan = rowTo - row + 1;
@@ -118,12 +117,11 @@ class QtGroupFrame(QtGui.QScrollArea):
         assert(rowspan > 0);
         assert(colspan > 0);
 
-        # if (w->metaObject()->className() == "QPushButton"){
-        #   d_pGrid->addWidget(w, row, col, rowspan, colspan, Qt::AlignLeft);
-        # }
-        # else {
+        # if (w->metaObject()->className() == "QPushButton"):
+        #   self.__grid_layout.addWidget(w, row, col, rowspan, colspan,
+        #                                Qt.AlignLeft)
+        # else:
         self.__grid_layout.addWidget(widget, row, col, rowspan, colspan);
-        # }
 
         widget.setParent(self.__group_box)
 
@@ -134,7 +132,7 @@ class QtGroupFrame(QtGui.QScrollArea):
         self.__group_box.updateGeometry()
 
         assert(_qwidgetio.get_widget() != None)
-        # d_widgets[_id]=_interface;
+        # d_widgets[_id] = _qwidgetio;
 
 
 

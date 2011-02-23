@@ -4,6 +4,7 @@
 #
 #
 class Enum(set):
+    """Enum emulation class"""
     def __getattr__(self, _name):
         if _name in self:
             return _name
