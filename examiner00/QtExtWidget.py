@@ -50,6 +50,8 @@ class QtExtTextLine(QtGui.QWidget):
 
         self.setLayout(self.__layout);
 
+        self.setLabel('Hello We are the world')
+
 
     # Sets the widget's label.
     def setLabel(self, _label):

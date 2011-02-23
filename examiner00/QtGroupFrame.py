@@ -15,6 +15,8 @@ class QtGroupFrame(QtGui.QScrollArea):
     QtIOWidget group frame.
     \see QtIOWidget
     """
+    # MIN_WIDTH  = 300
+    # MIN_HEIGHT = 300
 
     def __init__(self, _parent, _groupname):
         """constructor.
@@ -27,9 +29,12 @@ class QtGroupFrame(QtGui.QScrollArea):
         self.setObjectName('GroupFrame.' + _groupname)
         # too flexible, no scroll bar
         self.setWidgetResizable(True)
+        self.setSizePolicy(QtGui.QSizePolicy.Preferred,
+                           QtGui.QSizePolicy.Preferred)
+
 
         self.__group_box = QtGui.QGroupBox(_groupname, self);
-        # self.__group_box.setMinimumSize(MIN_WIDTH, MIN_HEIGHT)
+        # self.__group_box.setMinimumSize(300, 300)
 
         self.__grid_layout = QtGui.QGridLayout()
         self.__grid_layout.setSizeConstraint(QtGui.QLayout.SetMinimumSize);
@@ -40,6 +45,7 @@ class QtGroupFrame(QtGui.QScrollArea):
         self.__main_vbox = QtGui.QVBoxLayout()
         self.__main_vbox.setSizeConstraint(QtGui.QLayout.SetMinimumSize)
         self.__main_vbox.addWidget(self.__group_box)
+        self.setLayout(self.__main_vbox)
 
         self.setWidget(self.__group_box)
 
@@ -61,10 +67,10 @@ class QtGroupFrame(QtGui.QScrollArea):
         # have to copy parameter list, because we're extracting grid parameters
         # base::ParameterList opt = _opt;
 
-        # // extract grid position from parameter list
-        # int nRows =  d_pGrid->rowCount();
-        # int row = -1;
-        # int col = 0;
+        # extract grid position from parameter list
+        nRows =  self.__grid_layout.rowCount()
+        row = -1
+        col = 0
         # if (opt.isDefined("X"))
         # {
         #   col = opt["X"];
@@ -76,50 +82,52 @@ class QtGroupFrame(QtGui.QScrollArea):
         #   opt.remove("Y");
         # }
 
-        # // if only column is specified, stay in the current (last) row
-        # if (row == -1)
-        #   if (col != 0)
-        #     row = nRows -1;
-        #   else
-        #     row = nRows;
+        # if only column is specified, stay in the current (last) row
+        if (row == -1):
+            if (col != 0):
+                row = nRows -1
+            else:
+                row = nRows
 
-        # int colTo = -1;
-        # int rowTo = -1;
+        colTo = -1;
+        rowTo = -1;
         # if (opt.isDefined("XTO"))
         # {
         #   colTo = opt["XTO"];
         #   opt.remove("XTO");
         # }
-        # else colTo = col;
+        # else
+        colTo = col
 
         # if (opt.isDefined("YTO"))
         # {
         #   rowTo = opt["YTO"];
         #   opt.remove("YTO");
         # }
-        # else rowTo = row;
+        # else
+        rowTo = row
 
         # _interface->applyOptions(opt);
         # _interface->value( _value );
 
         # _interface->setObserver(this);
 
-        # // special hack for QPushButtons because it would be centered otherwise
-        # int rowspan = rowTo - row + 1;
-        # int colspan = colTo - col + 1;
-        # assert(rowspan > 0);
-        # assert(colspan > 0);
+        # special hack for QPushButtons because it would be centered otherwise
+        rowspan = rowTo - row + 1;
+        colspan = colTo - col + 1;
+        assert(rowspan > 0);
+        assert(colspan > 0);
 
         # if (w->metaObject()->className() == "QPushButton"){
         #   d_pGrid->addWidget(w, row, col, rowspan, colspan, Qt::AlignLeft);
         # }
         # else {
-        #   d_pGrid->addWidget(w, row, col, rowspan, colspan);
+        self.__grid_layout.addWidget(widget, row, col, rowspan, colspan);
         # }
 
         widget.setParent(self.__group_box)
 
-        # // adjust the minimum size when a Widget is added.
+        # adjust the minimum size when a Widget is added.
         chrect = self.__group_box.childrenRect()
 
         self.__group_box.adjustSize()
