@@ -3,6 +3,9 @@
 """QtWidgetIOIF
 \file
 \brief interface of uniform input output QtWidget
+
+These are interface and underneath widget implementation is in
+QtExtWidget.py
 """
 
 from PyQt4 import Qt, QtCore, QtGui

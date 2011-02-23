@@ -1,15 +1,14 @@
 TODO
 
-- SceneGraph dialog, widget
-  - QtSceneGraphWidget.py: 430 local drawmode
+- Add some QtWidgetIO
+   Color
 
-       Shuft key modifier has a problem... always shift key on
-       Use node's get_drawmode()
-       When click global, stay global
-       When clicl one of local, remove global
+   - GLNode has the configuration script to set up the config.
 
-  - Add context menu in SceneGraph Dialog.
-    (depends on the node. Each Node has the context menu.)
+
+- Shoot rays
+
+
 
 - Picking
 
