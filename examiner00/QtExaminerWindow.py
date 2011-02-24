@@ -21,6 +21,7 @@ from OpenGL import GLU
 import QtExaminerWidget
 import SceneGraph
 import GLSceneGraph
+import QtSceneGraphDialog
 
 # examiner window
 class QtExaminerWindow(QtGui.QMainWindow):
@@ -30,7 +31,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         """constructor"""
         super(QtExaminerWindow, self).__init__()
-        self.examiner_widget = None
+        self.__examiner_widget = None
 
     # create widgets and window
     def create_window(self):
@@ -39,11 +40,11 @@ class QtExaminerWindow(QtGui.QMainWindow):
         self.setCentralWidget(widget)
 
         # currently onle one widget is in the window
-        self.examiner_widget = QtExaminerWidget.QtExaminerWidget()
+        self.__examiner_widget = QtExaminerWidget.QtExaminerWidget()
 
         vbox = QtGui.QVBoxLayout()
         vbox.setMargin(5)
-        vbox.addWidget(self.examiner_widget)
+        vbox.addWidget(self.__examiner_widget)
         widget.setLayout(vbox)
 
         self.createActions()
@@ -75,7 +76,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
         """
 
 
-        if self.examiner_widget == None:
+        if self.__examiner_widget == None:
             raise StandardError, ('No examiner widget. have you call create_window?')
 
         # load a file
@@ -166,6 +167,9 @@ class QtExaminerWindow(QtGui.QMainWindow):
     def menu_view_sethome(self):
         """View -- set home."""
         print 'NIN: menu_view_sethome'
+        sgdialog = QtSceneGraphDialog()
+
+
 
     # View -- all
     def menu_view_all(self):
@@ -180,7 +184,16 @@ class QtExaminerWindow(QtGui.QMainWindow):
     # View -- scenegraph
     def menu_view_scenegraph(self):
         """View -- scenegraph."""
-        print 'NIN: menu_view_scenegraph'
+        print 'DEBUG: menu_view_scenegraph'
+        glsg = self.__examiner_widget.peek_gl_scenegraph()
+
+        # import gl scenegraph to dialog -> treeview widget -> model/view
+        self.__sgdialog = QtSceneGraphDialog.QtSceneGraphDialog()
+        self.__sgdialog.update_scenegraph(glsg)
+
+        self.__sgdialog.show()
+
+
 
 
     # Process--IFGI ptrace
@@ -327,11 +340,11 @@ class QtExaminerWindow(QtGui.QMainWindow):
         glsg.set_scenegraph(sg)
 
         # debug mode on
-        self.examiner_widget.set_debug_mode(True)
+        self.__examiner_widget.set_debug_mode(True)
 
         # attach the GLSceneGraph to Examiner to see
-        self.examiner_widget.attach_gl_scenegraph(glsg)
-        self.examiner_widget.view_all()
+        self.__examiner_widget.attach_gl_scenegraph(glsg)
+        self.__examiner_widget.view_all()
 
 
 # get default option list

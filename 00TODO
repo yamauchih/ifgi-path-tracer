@@ -1,10 +1,13 @@
 TODO
 
+- Scenegraph node
+   - Active/Deactive doesn't work
+   - context menu, draw mode doesn't work
+
+
 - Add some QtWidgetIO
    Color
-
    - GLNode has the configuration script to set up the config.
-
 
 - Shoot rays
 

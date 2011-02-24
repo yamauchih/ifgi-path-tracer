@@ -153,7 +153,7 @@ class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
             # This is a group node. The __children has already been
             # updated the __bbox. Now we found the __bbox that contains
             # all the __children __bbox.
-            for chnode in _cur_node.__children:
+            for chnode in _cur_node.get_children():
                 _cur_node.get_bbox().insert_bbox(chnode.get_bbox())
 
 # Scene graph
@@ -375,11 +375,10 @@ def create_one_trimeh_scenegraph(_objfname):
 
     SceneGraph +--+ ifgi __camera
                +--+ SceneGraphNode: __root_node
-                                             +--+ TriMesh: __primitive
+                                               +--+ TriMesh: __primitive
 
     TODO: create a scenegraph more general
     """
-
 
     # create a trimesh
     objreader = ObjReader.ObjReader()
@@ -388,7 +387,7 @@ def create_one_trimeh_scenegraph(_objfname):
     if tmesh.is_valid() == False:
         raise StandardError, ('TriMesh is not valid.')
 
-    print 'DEBUG:BBOX = ' + str(tmesh.get_bbox())
+    # DELETEME print 'DEBUG:BBOX = ' + str(tmesh.get_bbox())
 
     # create scenegraph
     sg = SceneGraph()
@@ -396,7 +395,10 @@ def create_one_trimeh_scenegraph(_objfname):
 
     # create scenegraph's root node
     rootsg = SceneGraphNode('rootsg')
-    rootsg.set_primitive(tmesh)
+
+    child0 = SceneGraphNode('meshgroup')
+    rootsg.append_child(child0)
+    child0.set_primitive(tmesh)
 
     sg.set_root_node(rootsg)
 

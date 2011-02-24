@@ -39,40 +39,40 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         QtOpenGL.QGLWidget.__init__(self, _parent)
 
         # cameras FIXME scenegraph should have the camera
-        self.gl_camera   = Camera.GLCamera()
+        self.__gl_camera   = Camera.GLCamera()
         # self.ifgi_camera = Camera.IFGICamera()
 
         # OpenGL scene graph
-        self.gl_scenegraph = None
+        self.__gl_scenegraph = None
 
         # mouse points
-        self.lastPoint2D = numpy.array([0, 0])
+        self.__lastpoint_2d = numpy.array([0, 0])
         # z == 0, not hit to the trackball sphere
-        self.lastPoint3D = numpy.array([0, 0, 0])
+        self.__lastpoint_3d = numpy.array([0, 0, 0])
 
         # popupmenu
-        self.popupmenu      = None
-        self.drawmode_group = None # for radio button
-        self.drawmode_bitmap2action = {} # drawmode bitmap to action dictionary
+        self.__popupmenu      = None
+        self.__drawmode_group = None # for radio button
+        self.__drawmode_bitmap2action = {} # drawmode bitmap to action dictionary
 
         # draw mode
-        self.global_drawmode = 0x0020 # 0x0020: Solid Flat as the default draw mode
-        self.drawmode_list   = None
+        self.__global_drawmode = 0x0020 # 0x0020: Solid Flat as the default draw mode
+        self.__drawmode_list   = None
 
         # action mode
-        self.actionMode = ActionMode.ExamineMode
-        self.isRotating = False
+        self.__action_mode = ActionMode.ExamineMode
+        self.__is_rotating = False
 
         # SceneGraph coordinate
-        self.scene_cog    = numpy.array([0,0,0])
-        self.scene_radius = 1.0
+        self.__scene_cog    = numpy.array([0,0,0])
+        self.__scene_radius = 1.0
 
         # window info
-        self.width  = 1
-        self.height = 1
+        self.__width  = 1
+        self.__height = 1
 
         # some debug facility
-        self.is_debug = False
+        self.__is_debug = False
 
 
     def minimumSizeHint(self):
@@ -88,14 +88,14 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """OpenGL Window info: width (public).
         \return gl window width
         """
-        return self.width
+        return self.__width
 
     # Window info: height
     def glHeight(self):
         """OpenGL Window info: height. (public).
         \return gl window width
         """
-        return self.height
+        return self.__height
 
 
     # initialize open GL
@@ -116,7 +116,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
         GL.glLoadIdentity()
 
-        [ep, at, up] = self.gl_camera.get_lookat(Camera.EyePosition.EyeCenter)
+        [ep, at, up] = self.__gl_camera.get_lookat(Camera.EyePosition.EyeCenter)
         # print 'DEBUG: ep = ' + str(ep)
         # print 'DEBUG: at = ' + str(at)
         # print 'DEBUG: up = ' + str(up)
@@ -135,8 +135,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         \param[in] _width  new width
         \param[in] _height new height
         """
-        self.width  = _width
-        self.height = _height
+        self.__width  = _width
+        self.__height = _height
 
         side = min(_width, _height)
 
@@ -146,11 +146,11 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
 
-        # DEBUG: self.gl_camera.print_obj()
-        GLU.gluPerspective(self.gl_camera.get_fovy_rad() * 180 /math.pi,
-                           self.gl_camera.get_aspect_ratio(),
-                           self.gl_camera.get_z_near(),
-                           self.gl_camera.get_z_far())
+        # DEBUG: self.__gl_camera.print_obj()
+        GLU.gluPerspective(self.__gl_camera.get_fovy_rad() * 180 /math.pi,
+                           self.__gl_camera.get_aspect_ratio(),
+                           self.__gl_camera.get_z_near(),
+                           self.__gl_camera.get_z_far())
         GL.glMatrixMode(GL.GL_MODELVIEW)
 
 
@@ -167,18 +167,18 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     # view -- all
     def view_all(self):
-        cam_basis = self.gl_camera.get_coordinate_system()
-        eyepos = self.scene_cog
-        if (self.gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
-            halfrad = 0.5 * self.gl_camera.get_fovy_rad()
-            dist    = self.scene_radius/math.tan(halfrad)
+        cam_basis = self.__gl_camera.get_coordinate_system()
+        eyepos = self.__scene_cog
+        if (self.__gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
+            halfrad = 0.5 * self.__gl_camera.get_fovy_rad()
+            dist    = self.__scene_radius/math.tan(halfrad)
             mag     = 1.2       # slack
-            dist    = mag * max(dist, dist/self.gl_camera.get_aspect_ratio())
+            dist    = mag * max(dist, dist/self.__gl_camera.get_aspect_ratio())
             eyepos = eyepos - dist * cam_basis[2]
         else:
-            eyepos = eyepos = (2.0 * self.scene_radius) * cam_basis[2]
+            eyepos = eyepos = (2.0 * self.__scene_radius) * cam_basis[2]
 
-        self.gl_camera.set_eye_pos(eyepos)
+        self.__gl_camera.set_eye_pos(eyepos)
 
         # Ortho mode d_camera.orthoWidth(2.0*d_radius);
 
@@ -188,15 +188,15 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """translate the camera. (public).
         \param[in] _trans translation
         """
-        cam_basis = self.gl_camera.get_coordinate_system()
+        cam_basis = self.__gl_camera.get_coordinate_system()
         # Zdir '-' comes from the OpenGL coordinate system.
         cam_trans = (cam_basis[0] * _trans[0] +
                      cam_basis[1] * _trans[1] -
                      cam_basis[2] * _trans[2])
-        eyepos = self.gl_camera.get_eye_pos();
+        eyepos = self.__gl_camera.get_eye_pos();
         eyepos = eyepos - cam_trans
-        self.gl_camera.set_eye_pos(eyepos);
-        # print 'DEBUG: result: ' + str(self.gl_camera.get_eye_pos())
+        self.__gl_camera.set_eye_pos(eyepos);
+        # print 'DEBUG: result: ' + str(self.__gl_camera.get_eye_pos())
 
 
     # rotate the camera with an axis
@@ -207,10 +207,10 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         \param[in] _pn_axis rotate axis
         """
 
-        cam_basis = self.gl_camera.get_coordinate_system()
+        cam_basis = self.__gl_camera.get_coordinate_system()
         rotation = numpy.identity(4)
 
-        eyepos = self.gl_camera.get_eye_pos() - self.scene_cog
+        eyepos = self.__gl_camera.get_eye_pos() - self.__scene_cog
         # Here z is '-', since OpenGL is left hand side coordinates.
         # print 'mat:'      + str(rotation)
         # print 'CamBasis:' + str(cam_basis)
@@ -222,16 +222,16 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                                         cam_basis[2] * _pn_axis[2]);
 
         # make 4d vector for homogeneous coordinate
-        eyepos = ifgimath.transformPoint(rmat, eyepos) + self.scene_cog
+        eyepos = ifgimath.transformPoint(rmat, eyepos) + self.__scene_cog
 
 
-        # self.gl_camera.lock();
-        self.gl_camera.set_eye_pos(eyepos)
-        self.gl_camera.set_view_dir(
-            ifgimath.transformVector(rmat, self.gl_camera.get_view_dir()))
-        self.gl_camera.set_up_dir(
-            ifgimath.transformVector(rmat, self.gl_camera.get_up_dir()))
-        # self.gl_camera.unlock();
+        # self.__gl_camera.lock();
+        self.__gl_camera.set_eye_pos(eyepos)
+        self.__gl_camera.set_view_dir(
+            ifgimath.transformVector(rmat, self.__gl_camera.get_view_dir()))
+        self.__gl_camera.set_up_dir(
+            ifgimath.transformVector(rmat, self.__gl_camera.get_up_dir()))
+        # self.__gl_camera.unlock();
 
 
     #----------------------------------------------------------------------
@@ -254,8 +254,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     def create_popup_menu_function_menu(self):
         """create popup menu: function submenu.
         """
-        assert(self.popupmenu != None)
-        self.popup_function_menu = self.popupmenu.addMenu('Function')
+        assert(self.__popupmenu != None)
+        self.popup_function_menu = self.__popupmenu.addMenu('Function')
         self.popup_function_bgcolor_act = \
             QtGui.QAction("Backgroundcolor", self,
                           statusTip="Set background color",
@@ -266,12 +266,12 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     def create_popup_menu_drawmode(self):
         """create popup menu: draw mode.
         """
-        if self.drawmode_list != None:
+        if self.__drawmode_list != None:
             # radio button group
-            self.drawmode_group = QtGui.QActionGroup(self)
+            self.__drawmode_group = QtGui.QActionGroup(self)
 
-            # self.drawmode_list.print_obj()
-            for dmi in self.drawmode_list.get_mode_item_list():
+            # self.__drawmode_list.print_obj()
+            for dmi in self.__drawmode_list.get_mode_item_list():
                 if (dmi.is_avairable() == True):
                     # Using a closure. mode_closure make a closure
                     # function that holds self (through this) and
@@ -285,32 +285,32 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                                                  dmi.get_name(),
                                                  triggered=modclosure,
                                                  checkable=True)
-                    self.drawmode_bitmap2action[dmi.get_bitmap()] = drawmode_act
-                    self.popupmenu.addAction(drawmode_act)
-                    self.drawmode_group.addAction(drawmode_act)
+                    self.__drawmode_bitmap2action[dmi.get_bitmap()] = drawmode_act
+                    self.__popupmenu.addAction(drawmode_act)
+                    self.__drawmode_group.addAction(drawmode_act)
 
-            if (self.drawmode_list.find_drawmode_bitmap(self.global_drawmode) == None):
+            if (self.__drawmode_list.find_drawmode_bitmap(self.__global_drawmode) == None):
                 # no such draw mode in the list, turn off
                 print 'no such draw mode in the list, turn off' +\
-                      str(self.global_drawmode)
-                self.global_drawmode = 0;
-            self.popupmenu_set_drawmode(self.global_drawmode)
+                      str(self.__global_drawmode)
+                self.__global_drawmode = 0;
+            self.__popupmenu_set_drawmode(self.__global_drawmode)
 
 
     # create popup menu: main
     def create_popup_menu(self):
         """create popup menu: main.
         """
-        if (self.popupmenu == None):
+        if (self.__popupmenu == None):
             # print 'DEBUG: create_popup_menu'
-            self.popupmenu = QtGui.QMenu(self)
+            self.__popupmenu = QtGui.QMenu(self)
             self.create_popup_menu_function_menu()
             popup_preference_act = \
                 QtGui.QAction("Preference", self,
                               statusTip="Popup preference dialog",
                               triggered=self.popup_function_preference)
-            self.popupmenu.addAction(popup_preference_act)
-            self.popupmenu.addSeparator()
+            self.__popupmenu.addAction(popup_preference_act)
+            self.__popupmenu.addSeparator()
 
             # add drawmode if exists
             self.create_popup_menu_drawmode()
@@ -318,7 +318,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         else:
             print 'DEBUG: reuse popup menu'
 
-        return self.popupmenu
+        return self.__popupmenu
 
 
     # popup context menu
@@ -326,7 +326,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """popup context menu.
         """
         self.create_popup_menu()
-        self.popupmenu.exec_(_global_mouse_pos)
+        self.__popupmenu.exec_(_global_mouse_pos)
 
     # popupmenu implementation
     def popupmenu_function(self):
@@ -343,13 +343,13 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         exists in the menu actions
         """
         # print 'DEBUG: popupmenu_set_drawmode: ' + str(_drawmode_bitmap)
-        assert(_drawmode_bitmap in self.drawmode_bitmap2action)
+        assert(_drawmode_bitmap in self.__drawmode_bitmap2action)
 
-        mitem = self.drawmode_bitmap2action[_drawmode_bitmap]
+        mitem = self.__drawmode_bitmap2action[_drawmode_bitmap]
         assert(mitem != None)
 
         mitem.setChecked(True)
-        self.global_drawmode = _drawmode_bitmap
+        self.__global_drawmode = _drawmode_bitmap
 
 
     # mouse press event
@@ -385,27 +385,27 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
             if ((QtUtil.in_key_modifier(_event.modifiers(),
                                         QtCore.Qt.ControlModifier)) and
                 (_event.button() == QtCore.Qt.LeftButton)           and
-                (self.actionMode == Actionmode.ExamineMode)):
+                (self.__action_mode == Actionmode.ExamineMode)):
                 # avoid control key being useless for other modes
                 # self.startDrag()
                 pass
 
-            elif (self.actionMode == ActionMode.ExamineMode):
+            elif (self.__action_mode == ActionMode.ExamineMode):
                 # remember this point
-                self.lastPoint2D = QtUtil.QPoint2numpy(_event.pos())
-                self.lastPoint3D = ifgimath.mapToSphere(self.lastPoint2D,
+                self.__lastpoint_2d = QtUtil.QPoint2numpy(_event.pos())
+                self.__lastpoint_3d = ifgimath.mapToSphere(self.__lastpoint_2d,
                                                         self.glWidth(),
                                                         self.glHeight())
 
-                self.isRotating = True
+                self.__is_rotating = True
                 # DELETEME
-                # print 'DEBUG: mouse press at ' + str(self.lastPoint2D) +\
-                # ', on spehere: ' + str(self.lastPoint3D)
+                # print 'DEBUG: mouse press at ' + str(self.__lastpoint_2d) +\
+                # ', on spehere: ' + str(self.__lastpoint_3d)
 
 
-            # elif (self.actionMode == Actionmode.FlyToMode):
+            # elif (self.__action_mode == Actionmode.FlyToMode):
             #       flyTo(_event->pos(), _event->button()==QtCore.Qt.MidButton);
-            #   elif (self.actionMode == Actionmode.PickingMode):
+            #   elif (self.__action_mode == Actionmode.PickingMode):
             #       emit signalMouseEvent(_event);
             #       # same for SceneGraph
             #       SceneGraph::ObservableActor_Event arg(ArgumentType::MousePressed);
@@ -416,11 +416,11 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
             #       notify(arg)
             #       ioProcessDetachRequests();
 
-            #   elif (self.actionMode == Actionmode.LassoMode):
+            #   elif (self.__action_mode == Actionmode.LassoMode):
             #       #  give event to built-in lasso
             #       d_lasso->slotDrawLasso(_event);
 
-            #   elif (self.actionMode == Actionmode.QuestionMode):
+            #   elif (self.__action_mode == Actionmode.QuestionMode):
             #       # give event to application
             #       emit signalMouseEventIdentify(_event);
             #       # // same for SceneGraph
@@ -439,7 +439,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """
 
         print 'Mouse wheel event: ' +  str(_event)
-        if (self.actionMode == ActionMode.PickingMode):
+        if (self.__action_mode == ActionMode.PickingMode):
             print 'NIN: wheel event: no PickingMode'
             # QPoint newPoint2D = _event->pos();
             # bool inside=((newPoint2D.x()>=0) && (newPoint2D.x()<=glWidth()) &&
@@ -457,19 +457,19 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
             #     # _event->orientation() may be not necessary, but in the future?
             #     arg.wheelDelta=_event->delta();
             #     notify(arg); ioProcessDetachRequests();
-        # elif (self.actionMode == ActionMode.LassoMode):
-        elif (self.actionMode == ActionMode.ExamineMode):
-            if (self.gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
+        # elif (self.__action_mode == ActionMode.LassoMode):
+        elif (self.__action_mode == ActionMode.ExamineMode):
+            if (self.__gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
                 # wheel only return +-120
-                zmove = - (float(_event.delta()) / 120.0) * 0.2 * self.scene_radius
+                zmove = - (float(_event.delta()) / 120.0) * 0.2 * self.__scene_radius
                 self.translate([0.0, 0.0, zmove])
             else:
                 print 'NIN: wheel movement with Orthographic projectionmode'
-                assert(self.gl_camera.get_projection() ==
+                assert(self.__gl_camera.get_projection() ==
                        Camera.ProjectionMode.Orthographic)
-                # ow = self.gl_camera.get_ortho_width()
+                # ow = self.__gl_camera.get_ortho_width()
                 # zmove = (float)_event->delta() / 120.0 * 0.2 * ow;
-                # self.gl_camera.set_ortho_width(ow + zmove)
+                # self.__gl_camera.set_ortho_width(ow + zmove)
         else:
             raise StandardError, ('No such examiner mode')
 
@@ -490,15 +490,15 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         \param[in] _newPoint2D mouse position on screen
         """
         # move in z direction
-        if (self.gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
-            zmove = self.scene_radius * ((_newPoint2D[1] - self.lastPoint2D[1])
+        if (self.__gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
+            zmove = self.__scene_radius * ((_newPoint2D[1] - self.__lastpoint_2d[1])
                                            * 3.0 / float(self.glHeight()))
             self.translate(numpy.array([0, 0, zmove]))
-        elif (self.gl_camera.get_projection() == Camera.ProjectionMode.Orthographic):
+        elif (self.__gl_camera.get_projection() == Camera.ProjectionMode.Orthographic):
             print 'NIN: examineModeMoveZdir: in Orthographic projection'
-            # ow    = self.gl_camera.get_ortho_width()
-            # zmove = ((_newPoint2D[1] - self.lastPoint2D[1]) * ow / float(self.glHeight()))
-            # self.gl_camera.set_orthowidth(ow - zmove)
+            # ow    = self.__gl_camera.get_ortho_width()
+            # zmove = ((_newPoint2D[1] - self.__lastpoint_2d[1]) * ow / float(self.glHeight()))
+            # self.__gl_camera.set_orthowidth(ow - zmove)
         else:
             raise StandardError, ('no such projection mode')
 
@@ -510,9 +510,9 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
         \param[in] _newPoint2D mouse position on screen
         """
-        value_x = (self.scene_radius * (_newPoint2D[0] - self.lastPoint2D[0]) *
+        value_x = (self.__scene_radius * (_newPoint2D[0] - self.__lastpoint_2d[0]) *
                    2.0 / float(self.glWidth()))
-        value_y = (self.scene_radius * (_newPoint2D[1] - self.lastPoint2D[1]) *
+        value_y = (self.__scene_radius * (_newPoint2D[1] - self.__lastpoint_2d[1]) *
                    2.0 / float(self.glHeight()))
         self.translate(numpy.array([value_x, -value_y, 0.0]));
 
@@ -560,13 +560,13 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         \param[in] _numpoint2D current mouse 2D point
         """
 
-        if (self.lastPoint3D[2] != 0): # z == 0 ... not hit on sphere
+        if (self.__lastpoint_3d[2] != 0): # z == 0 ... not hit on sphere
             newPoint3D = ifgimath.mapToSphere(_numpoint2D,
                                               self.glWidth(), self.glHeight())
             if (newPoint3D[2] != 0): # point hits the sphere
                 angle = 0
-                rot_axis  = numpy.cross(self.lastPoint3D, newPoint3D)
-                cos_angle = numpy.inner(self.lastPoint3D, newPoint3D)
+                rot_axis  = numpy.cross(self.__lastpoint_3d, newPoint3D)
+                cos_angle = numpy.inner(self.__lastpoint_3d, newPoint3D)
                 if (math.fabs(cos_angle) < 1.0):
                     angle = math.acos(cos_angle); # radian
                     angle *= 2.0; # inventor rotation
@@ -584,19 +584,19 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         - Left  drag: context menu
         """
         if ((_event.button() != QtCore.Qt.RightButton) or
-            ((self.actionMode == PickingMode))): # && !d_popupEnabled) ) {
+            ((self.__action_mode == PickingMode))): # && !d_popupEnabled) ) {
 
             newPoint2D = QtUtil.QPoint2numpy(_event.pos())
             isInside = ((newPoint2D[0] >=0 ) and (newPoint2D[0] <= self.glWidth()) and
                         (newPoint2D[1] >=0 ) and (newPoint2D[1] <= self.glHeight()))
 
-            if  (self.actionMode == ActionMode.PickingMode):
+            if  (self.__action_mode == ActionMode.PickingMode):
                 self.examineModePick()
-            # elif (self.actionMode == ActionMode.LassoMode):
+            # elif (self.__action_mode == ActionMode.LassoMode):
             #     pass
-            # elif (self.actionMode == ActionMode.QuestionMode):
+            # elif (self.__action_mode == ActionMode.QuestionMode):
             #     pass
-            elif (self.actionMode == ActionMode.ExamineMode):
+            elif (self.__action_mode == ActionMode.ExamineMode):
                 if (not isInside):
                     return      # do nothing if mouse is outside of the window
 
@@ -612,15 +612,15 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                 elif (_event.buttons() & QtCore.Qt.LeftButton):
                     self.examineModeRotateTrackball(newPoint2D)
 
-                self.lastPoint2D = newPoint2D;
-                self.lastPoint3D = newPoint3D;
+                self.__lastpoint_2d = newPoint2D;
+                self.__lastpoint_3d = newPoint3D;
 
             self.updateGL();
             # d_lastMoveTime.restart();
 
             # DELETEME
-            # print 'DEBUG: mouse press at ' + str(self.lastPoint2D) +\
-            #     ', on spehere: ' + str(self.lastPoint3D)
+            # print 'DEBUG: mouse press at ' + str(self.__lastpoint_2d) +\
+            #     ', on spehere: ' + str(self.__lastpoint_3d)
 
 
     # draw the whole scene
@@ -628,8 +628,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """draw the whole scene.
         """
         # self.test_draw_one_triangle()
-        if self.gl_scenegraph != None:
-            self.gl_scenegraph.draw(self.global_drawmode)
+        if self.__gl_scenegraph != None:
+            self.__gl_scenegraph.draw(self.__global_drawmode)
         else:
             self.debug_out('No OpenGL scenegraph is set.')
 
@@ -659,7 +659,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """set debug mode.
         \param[in] _is_debug when true some debug message will show up.
         """
-        self.is_debug = _is_debug
+        self.__is_debug = _is_debug
 
     # is debug mode?
     # \return true when debug mode is on
@@ -667,7 +667,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """is debug mode?
         \return true when debug mode is on
         """
-        return self.is_debug
+        return self.__is_debug
 
     # debug output
     def debug_out(self, _dbgmes):
@@ -675,33 +675,39 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         \param[in] _dbgmes debug message. when debug mode is on, this
         is visible.
         """
-        if self.is_debug == True:
+        if self.__is_debug == True:
             print _dbgmes
 
     # scenegraph operation
     def attach_gl_scenegraph(self, _gl_scenegraph):
         """scenegraph operation.
         """
-        self.gl_scenegraph = _gl_scenegraph
+        self.__gl_scenegraph = _gl_scenegraph
 
         # get draw mode information
         print 'DEBUG: collect draw mode from the GLSceneGraph'
-        self.drawmode_list = self.gl_scenegraph.collect_drawmode_list()
-        # if self.drawmode_list != None:
+        self.__drawmode_list = self.__gl_scenegraph.collect_drawmode_list()
+        # if self.__drawmode_list != None:
             # print 'DEBUG: found draw mode in the scene'
-            # self.drawmode_list.print_obj()
+            # self.__drawmode_list.print_obj()
             # popup menu will refer this drawmode_list
 
         # set scene size information
-        bb = self.gl_scenegraph.get_scenegraph().get_root_node().get_bbox()
-        self.scene_cog    = 0.5 * (bb.min + bb.max)
-        self.scene_radius = 0.5 * numpy.linalg.norm(bb.max - bb.min)
-        print 'DEBUG:scene_cog: ' + str(self.scene_cog) + ', scene_radius: '\
-            + str(self.scene_radius)
-        if self.scene_radius < 1e-6:
+        bb = self.__gl_scenegraph.get_scenegraph().get_root_node().get_bbox()
+        self.__scene_cog    = 0.5 * (bb.min + bb.max)
+        self.__scene_radius = 0.5 * numpy.linalg.norm(bb.max - bb.min)
+        print 'DEBUG:scene_cog: ' + str(self.__scene_cog) + ', scene_radius: '\
+            + str(self.__scene_radius)
+        if self.__scene_radius < 1e-6:
             # nothing seems in there
-            self.scene_radius = 1.0
+            self.__scene_radius = 1.0
             print 'DEBUG:empty scene: adjust radius = 1.0'
+
+    # peek gl scenegraph
+    def peek_gl_scenegraph(self):
+        """peek the gl scenegraph reference.
+        \return attached gl scenegraph, may None."""
+        return self.__gl_scenegraph
 
     # test getLookAtMatrix routine
     def test_gluLookAt_matrix(self):
@@ -715,7 +721,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         GL.glLoadIdentity()
 
         # This is your camera. It tells eye, lookat, up.
-        [ep, at, up] = self.gl_camera.get_lookat(Camera.EyePosition.EyeCenter)
+        [ep, at, up] = self.__gl_camera.get_lookat(Camera.EyePosition.EyeCenter)
         GLU.gluLookAt(ep[0], ep[1], ep[2],
                       at[0], at[1], at[2],
                       up[0], up[1], up[2])
