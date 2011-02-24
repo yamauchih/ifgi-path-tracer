@@ -1,23 +1,25 @@
 TODO
 
-- Scenegraph node
+- Scenegraph dialog
    - Active/Deactive doesn't work
    - context menu, draw mode doesn't work
 
-
-- Add some QtWidgetIO
-   Color
-   - GLNode has the configuration script to set up the config.
+- Framebuffer node (choose buffer and draw)
+   - None
+   - RGBA frame buffer (32bit)
+   - Z buffer          (32bit)
 
 - Shoot rays
+   - Intersection routine with a triangle and its test.
 
+- Add some QtWidgetIO
+   - Color button
+   - GLNode has the configuration script to set up the config.
 
 
 - Picking
 
 - Doxypy-ization
-QtExaminerWidget.py (private __ methods)
-QtExaminerWindow.py (private __ methods)
 Ray.py
 SceneGraph.py
 actionmode.py
