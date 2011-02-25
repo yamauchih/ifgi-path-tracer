@@ -294,7 +294,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                 print 'no such draw mode in the list, turn off' +\
                       str(self.__global_drawmode)
                 self.__global_drawmode = 0;
-            self.__popupmenu_set_drawmode(self.__global_drawmode)
+            self.popupmenu_set_drawmode(self.__global_drawmode)
 
 
     # create popup menu: main
@@ -436,9 +436,9 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     # mouse wheel event
     def wheelEvent(self, _event):
         """mouse wheel event.
+        \param[in] _event mouse event.
         """
-
-        print 'Mouse wheel event: ' +  str(_event)
+        # print 'Mouse wheel event: ' +  str(_event)
         if (self.__action_mode == ActionMode.PickingMode):
             print 'NIN: wheel event: no PickingMode'
             # QPoint newPoint2D = _event->pos();

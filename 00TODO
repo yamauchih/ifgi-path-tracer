@@ -1,8 +1,6 @@
 TODO
 
-- Scenegraph dialog
-   - Active/Deactive doesn't work
-   - context menu, draw mode doesn't work
+- See the camera in the SceneGraphView.
 
 - Framebuffer node (choose buffer and draw)
    - None
@@ -16,6 +14,9 @@ TODO
    - Color button
    - GLNode has the configuration script to set up the config.
 
+- Scenegraph dialog
+    updateGL() is not called when node status changed. Need observer
+    implementation. will be later.
 
 - Picking
 

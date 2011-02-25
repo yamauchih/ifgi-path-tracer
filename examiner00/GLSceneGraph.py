@@ -228,19 +228,23 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         \param[in] _global_mode global draw mode
         \see DrawMode"""
 
-        print self.get_classname() + '::draw is called with ' +\
-            str(_global_mode)
+        # print self.get_classname() + '::draw is called with ' +\
+        #     str(_global_mode)
+
+        if (not self.is_node_active()):
+            # node is deactivated, not call draw anymore
+            return
 
         if (self.is_primitive_node()):
             # __primitive: draw itself
             self.get_primitive().draw(_global_mode)
-            print self.get_classname() + '::draw: call __primitive draw'
+            # print self.get_classname() + '::draw: call __primitive draw'
         elif len(self.get_children()) > 0:
             # no __primitive: draw __children
             for ch_glnode in self.get_children():
                 # create and refer the sg node
                 ch_glnode.draw(_global_mode)
-                print self.get_classname() + '::draw: call child draw'
+                # print self.get_classname() + '::draw: call child draw'
         else:
             self.debug_out('Node has no __primitive, no __children')
             print self.get_classname() + '::draw: neither'
@@ -365,12 +369,21 @@ class GLTriMeshNode(GLSceneGraphNode):
         return self.__drawmode_list
 
     # draw
-    def draw(self, _drawmode):
-        """draw
-
-        \param[in] _drawmode __drawmode_list (or-ed __drawmode_list bitmap)"""
+    def draw(self, _global_drawmode):
+        """draw the attached triangle mesh.
+        If node is deactivated, draw nothing.
+        \param[in] _global_drawmode drawmode list (or-ed drawmode list bitmap)."""
 
         # print 'DEBUG: primitive is ' + self.get_primitive().get_classname()
+
+        if (not self.is_node_active()):
+            # node is deactivated, not call draw anymore
+            return
+
+        # check this node's drawmode. Is it local?
+        _drawmode = self.get_drawmode();
+        if (_drawmode == DrawMode.DrawModeList.DM_GlobalMode):
+            _drawmode = _global_drawmode
 
         # push the current GL state
         self.__draw_push_gl_state()

@@ -168,14 +168,12 @@ class QtExaminerWindow(QtGui.QMainWindow):
     def menu_view_sethome(self):
         """View -- set home."""
         print 'NIN: menu_view_sethome'
-        sgdialog = QtSceneGraphDialog()
-
-
+        # sgdialog = QtSceneGraphDialog()
 
     # View -- all
     def menu_view_all(self):
         """View -- all."""
-        print 'NIN: menu_view_all'
+        self.__examiner_widget.view_all()
 
     # View -- toggle perspective
     def menu_view_toggle_perspective(self):
@@ -193,7 +191,6 @@ class QtExaminerWindow(QtGui.QMainWindow):
         self.__sgdialog.update_scenegraph(glsg)
 
         self.__sgdialog.show()
-
 
 
 
