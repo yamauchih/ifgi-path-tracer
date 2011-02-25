@@ -81,7 +81,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
 
         # load a file
         if _cmd_opt.infilename != '':
-            self.com_load_file(_cmd_opt.infilename)
+            self.com_file_load(_cmd_opt.infilename)
 
         # other command will be here.
 
@@ -92,7 +92,8 @@ class QtExaminerWindow(QtGui.QMainWindow):
     # File--New
     def menu_file_new(self):
         """File--New menu."""
-        self.statusBar().showMessage('NIN: File--New invoked')
+        self.com_file_new()
+        self.statusBar().showMessage('File--New invoked')
 
     # File--Open
     def menu_file_open(self):
@@ -113,7 +114,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
             self.statusBar().showMessage('File--Open: cancelled')
             return
 
-        self.com_load_file(fileName)
+        self.com_file_load(fileName)
 
         self.statusBar().showMessage('File--Open [' + fileName + ']')
 
@@ -325,10 +326,29 @@ class QtExaminerWindow(QtGui.QMainWindow):
     #----------------------------------------------------------------------
 
     # load file command
-    def com_load_file(self, _infilename):
+    def com_file_new(self):
+        """file new command.
+        create empty scenegraph and set it to examiner widget.
+        """
+        # create an empty scenegraph
+        sg = SceneGraph.create_empty_scenegraph()
+
+        # attach the SceneGraph to a GLSceneGraph
+        glsg = GLSceneGraph.GLSceneGraph()
+        glsg.set_scenegraph(sg)
+
+        # debug mode on
+        self.__examiner_widget.set_debug_mode(True)
+
+        # attach the GLSceneGraph to Examiner to see
+        self.__examiner_widget.attach_gl_scenegraph(glsg)
+
+
+    # load file command
+    def com_file_load(self, _infilename):
         """load file command."""
         if (_infilename == None) or (_infilename == ''):
-            raise StandardError, ('com_load_file: emoty filename')
+            raise StandardError, ('com_file_load: empty filename')
 
         # got the filename, create a generic scene graph
         sg = SceneGraph.create_one_trimeh_scenegraph(_infilename)

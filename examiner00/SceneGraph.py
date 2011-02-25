@@ -404,6 +404,28 @@ def create_one_trimeh_scenegraph(_objfname):
 
     return sg
 
+# create empty scenegraph for new scene
+def create_empty_scenegraph():
+    """create empty scenegraph
+
+    SceneGraph +--+ ifgi __camera
+               +--+ SceneGraphNode: __root_node
+    """
+
+    # create scenegraph
+    sg = SceneGraph()
+    assert(sg.get_root_node() == None)
+
+    # create scenegraph's root node
+    rootsg = SceneGraphNode('rootsg')
+
+    child0 = SceneGraphNode('group')
+    rootsg.append_child(child0)
+
+    sg.set_root_node(rootsg)
+
+    return sg
+
 #
 # main test
 #
