@@ -472,14 +472,14 @@ class GLTriMeshNode(GLSceneGraphNode):
         """draw wireframe"""
         GL.glShadeModel(GL.GL_FLAT)
 
-        GL.glBegin(GL.GL_LINE_LOOP)
         # vp reference
         vp = self.get_primitive().vertex_list
         for face in self.get_primitive().face_idx_list:
+            GL.glBegin(GL.GL_LINE_LOOP)
             GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
             GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
             GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
-        GL.glEnd()
+            GL.glEnd()
 
     # draw hiddenline
     def __draw_hiddenline(self):
@@ -494,13 +494,13 @@ class GLTriMeshNode(GLSceneGraphNode):
         GL.glColor4fv(self.__current_color4f)
 
         # --- draw lines
-        GL.glBegin(GL.GL_LINE_LOOP)
         vp = self.get_primitive().vertex_list
         for face in self.get_primitive().face_idx_list:
+            GL.glBegin(GL.GL_LINE_LOOP)
             GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
             GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
             GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
-        GL.glEnd()
+            GL.glEnd()
 
         #
         # step 2: fill the polygon with bg color with slight offset
