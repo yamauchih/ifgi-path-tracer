@@ -154,21 +154,21 @@ class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
             # updated the __bbox. Now we found the __bbox that contains
             # all the __children __bbox.
             for chnode in _cur_node.get_children():
-                _cur_node.get_bbox().insert_bbox(chnode.get_bbox())
+                if chnode.has_node_bbox():
+                    _cur_node.get_bbox().insert_bbox(chnode.get_bbox())
 
 # Scene graph
 class SceneGraph(object):
     """Scene graph
 
     This has
-    - __camera
     - __root_node
     """
 
     # default constructor
     def __init__(self):
         """default constructor"""
-        self.__camera       = Camera.IFGICamera()
+        # self.__camera       = Camera.IFGICamera() DELETEME
         self.__root_node    = None
 
     # set the root node
@@ -185,12 +185,12 @@ class SceneGraph(object):
         """
         return self.__root_node
 
-    # get __camera
-    def get_camera(self):
-        """get __camera
-        \return __camera of this scenegraph
-        """
-        return self.__camera
+    # # get __camera
+    # def get_camera(self):
+    #     """get __camera
+    #     \return __camera of this scenegraph
+    #     """
+    #     return self.__camera
 
     # travertse the scenegraph. subroutine of traverse_sgnode
     def __traverse_sgnode_sub(self, _cur_node, _level, _strategy):
@@ -227,8 +227,9 @@ class SceneGraph(object):
         SceneGraphTraverseStrategyIF
         """
         print '# SceneGraph'
-        print '# SceneGraph::__camera'
-        self.__camera.print_obj()
+        # DELETEME
+        # print '# SceneGraph::__camera'
+        # self.__camera.print_obj()
         if self.__root_node == None:
             print 'no __root_node'
             return
@@ -341,6 +342,19 @@ class SceneGraphNode(object):
 
         return self.__bbox
 
+    # has this node bbox
+    def has_node_bbox(self):
+        """Does this node have a bounding box?
+
+        \return True when the node can have a bounding box. Eg.,
+        camera does not have own bbox.
+        """
+        # check the consistency for debug
+        if self.is_primitive_node():
+            assert(self.__bbox.equal(self.__primitive.get_bbox()) == True)
+
+        return self.__bbox
+
     # assign __bbox value
     def set_bbox(self, _bbox):
         """assign __bbox value.
@@ -369,13 +383,46 @@ class SceneGraphNode(object):
             print indent + '# # __children = ' + str(len(self.__children))
 
 
+class CameraNode(SceneGraphNode):
+    """camera node.
+    """
+
+    # constructor
+    def __init__(self, _node_name):
+        """constructor.
+        \param[in] _node_name node name.
+        """
+
+        super(CameraNode, self).__init__(_node_name)
+        self.__camera = Camera.IFGICamera()
+
+    # is this __primitive node?
+    def is_primitive_node(self):
+        """is this __primitive node?
+        camera is not a drawable primitive.
+        \return False"""
+
+        return False
+
+    # has this node bbox
+    def has_node_bbox(self):
+        """Does this node have a bounding box?
+
+        \return False. camera does not have own bbox.
+        """
+        return False
+
+
+
 # temporal: create trimesh scenegraph from obj filename for test
 def create_one_trimeh_scenegraph(_objfname):
     """temporal: create trimesh scenegraph from obj filename for test
 
-    SceneGraph +--+ ifgi __camera
-               +--+ SceneGraphNode: __root_node
-                                               +--+ TriMesh: __primitive
+    SceneGraph +
+               +--+ SceneGraphNode: 'rootsg' __root_node
+                                 +--+ CameraNode: 'main_cam' __camera
+                                 +--+ SceneGraphNode: 'meshgroup'
+                                                   +--+ TriMesh: 'trimesh'
 
     TODO: create a scenegraph more general
     """
@@ -395,10 +442,14 @@ def create_one_trimeh_scenegraph(_objfname):
 
     # create scenegraph's root node
     rootsg = SceneGraphNode('rootsg')
-
-    child0 = SceneGraphNode('meshgroup')
+    child0 = CameraNode('main_cam')
+    child1 = SceneGraphNode('meshgroup')
     rootsg.append_child(child0)
-    child0.set_primitive(tmesh)
+    rootsg.append_child(child1)
+
+    child1_0 = SceneGraphNode('trimesh')
+    child1_0.set_primitive(tmesh)
+    child1.append_child(child1_0)
 
     sg.set_root_node(rootsg)
 
@@ -408,8 +459,10 @@ def create_one_trimeh_scenegraph(_objfname):
 def create_empty_scenegraph():
     """create empty scenegraph
 
-    SceneGraph +--+ ifgi __camera
-               +--+ SceneGraphNode: __root_node
+    SceneGraph +
+               +--+ SceneGraphNode: __root_node 'root_sg'
+                                 +--+ CameraNode: 'main_cam'
+                                 +--+ SceneGraphNode: 'group'
     """
 
     # create scenegraph
@@ -419,8 +472,10 @@ def create_empty_scenegraph():
     # create scenegraph's root node
     rootsg = SceneGraphNode('rootsg')
 
-    child0 = SceneGraphNode('group')
+    child0 = CameraNode('main_cam')
+    child1 = SceneGraphNode('group')
     rootsg.append_child(child0)
+    rootsg.append_child(child1)
 
     sg.set_root_node(rootsg)
 

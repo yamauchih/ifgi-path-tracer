@@ -75,13 +75,15 @@ class QtExaminerWindow(QtGui.QMainWindow):
         \param[in] _cmd_opt command line option created by optparse
         """
 
-
         if self.__examiner_widget == None:
             raise StandardError, ('No examiner widget. have you call create_window?')
 
         # load a file
         if _cmd_opt.infilename != '':
             self.com_file_load(_cmd_opt.infilename)
+        else:
+            # init the scene
+            self.menu_file_new()
 
         # other command will be here.
 

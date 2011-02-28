@@ -1,6 +1,9 @@
-TODO
+TODO list
 
 - See the camera in the SceneGraphView.
+- GLCameraNode has the GLCamera and it is used in Examiner
+
+clean up
 
 - Framebuffer node (choose buffer and draw)
    - None

@@ -101,6 +101,8 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         \param[in] _cur_glnode current visiting OpenGL scenegraph node
         \param[in] _level      current depth level"""
 
+        print type(_cur_sgnode)
+
         if _cur_sgnode.is_primitive_node() == True:
             # create primitive node and set the primitive
             print 'DEBUG: Create primitive and set'
@@ -113,9 +115,16 @@ class GLSceneGraph(SceneGraph.SceneGraph):
             print 'DEBUG: Go to children'
             for ch_sgnode in _cur_sgnode.get_children():
                 # create and refer the sg node
-                ch_glnode = GLSceneGraphNode(ch_sgnode.get_nodename())
-                _cur_glnode.append_child(ch_glnode)
-                self.__copy_sgnode_sub(ch_sgnode, ch_glnode, _level + 1)
+
+                # handle special nodes first: camara
+                if (type(ch_sgnode) == SceneGraph.CameraNode):
+                    print 'DEBUG: Camera Detected.'
+                    ch_gl_camera_node = GLCameraNode(ch_sgnode)
+                    _cur_glnode.append_child(ch_gl_camera_node)
+                else:
+                    ch_glnode = GLSceneGraphNode(ch_sgnode.get_nodename())
+                    _cur_glnode.append_child(ch_glnode)
+                    self.__copy_sgnode_sub(ch_sgnode, ch_glnode, _level + 1)
 
     # print out scenegraph nodes for debug (subroutine of print_sgnode)
     def __print_sgnode_sub(self, _cur_glnode, _level):
@@ -146,7 +155,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         """default constructor
         \param[in] _nodename node name
         """
-        SceneGraph.SceneGraphNode.__init__(self, _nodename)
+        super(GLSceneGraphNode, self).__init__(_nodename)
         self.__is_debug  = False
         self.__is_active = True
         # can not have the same name method and member variable
@@ -195,7 +204,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
     # is node global __drawmode_list (shown in the SceneGraph viewer as Mode)
     def get_drawmode(self):
         """is node global drawmode (shown in the SceneGraph viewer as Mode)
-        \return when True, node drawmode is global"""
+        \return node drawmode (default DrawMode.DrawModeList.DM_GlobalMode)"""
 
         return self.__drawmode
 
@@ -247,7 +256,8 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
                 # print self.get_classname() + '::draw: call child draw'
         else:
             self.debug_out('Node has no __primitive, no __children')
-            print self.get_classname() + '::draw: neither'
+            print self.get_classname() + '::draw: ' + self.get_nodename() +\
+                ' not a primitive and no children. empty scene?'
 
     # get draw mode of this GLSceneGraphNode
     def get_drawmode_list(self):
@@ -325,6 +335,94 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         if self.__is_debug == True:
             print _dbgmes
 
+# OpenGL Camera node
+class GLCameraNode(GLSceneGraphNode):
+    """OpenGL camera node.
+    """
+
+    # default constructor
+    def __init__(self, _sg_camnode):
+        """constructor.
+        \param[in] _sg_camnode scenegraph camera node.
+        """
+        # 2011-2-28(Mon) Hitoshi
+        #
+        # Use super. I made a mistake here to call directry,
+        #
+        # SceneGraph.SceneGraphNode.__init__(self,
+        #                                    _sg_camnode.get_nodename())
+        #
+        # and this is not a real super class of this. In that case,
+        # all the attribute (member) of the super class are not
+        # created, then you can not call many of the members. Because,
+        # for example, there is no self.__is_active attribute that is
+        # created super class's __init__().
+        super(GLCameraNode, self).__init__(_sg_camnode.get_nodename())
+
+
+    # get classname (shown in the SceneGraph viewer as node Type)
+    def get_classname(self):
+        """get classname (shown in the SceneGraph viewer as node Type)
+        \return class name"""
+
+        return 'GLCameraNode'
+
+    # # print glnode info. Indentation is according to the depth level
+    # def print_glnodeinfo(self, _level):
+    #     """print glnode info. Indentation is according to the depth level
+
+    #     \param[in] _level node depth level"""
+
+    #     indent = '  ' * _level
+    #     if (self.is_primitive_node()):
+    #         print indent + '# ' + self.get_classname() + ':Primitive'
+
+    #     print indent + '# # __children = ' + str(len(self.get_children()))
+
+
+    # draw by mode
+    def draw(self, _global_mode):
+        """draw by mode. Camera ignore this.
+        """
+        # DELETEME print 'DEBUG: GLCameraNode::draw'
+        pass
+
+    # get draw mode of this GLCameraNode
+    def get_drawmode_list(self):
+        """get draw mode of GLCameraNode. Camera has no draw mode.
+        \return None"""
+        return None
+
+    # get info of this node
+    def get_info_html_GLCameraNode(self):
+        """get GLCameraNode base info html text.
+        \return base GL node info."""
+
+        ret_s = '<h2>GLCameraNode information</h2>\n' +\
+            '<h2>General information</h2>\n' +\
+            '<ul>\n' +\
+            '  <li><b>Class name:</b> ' + self.get_classname()    + '\n' +\
+            '  <li><b>Name:</b> '       + self.get_nodename()     + '\n' +\
+            '  <li><b>Status:</b> '     + self.get_active_state() + '\n' +\
+            '  <li><b>Drawmode:</b> '   + self.get_drawmode_str() + '\n' +\
+            '</ul>\n'
+
+        # print 'DEBUG: get_info_html_GLCameraNode\n' + ret_s
+
+        return ret_s
+
+
+    # get info of this node
+    def get_info_html(self):
+        """Get information html text.
+        Usually, this should be overrided.
+        \return base GL node info.
+        """
+        ret_s = self.get_info_html_GLCameraNode()
+
+        return ret_s
+
+
 
 # OpenGL TriMeshNode
 class GLTriMeshNode(GLSceneGraphNode):
@@ -337,7 +435,7 @@ class GLTriMeshNode(GLSceneGraphNode):
         """default constructor.
         \param[in] _nodename this node name."""
         # call base class constructor to fill the members
-        GLSceneGraphNode.__init__(self, _nodename)
+        super(GLTriMeshNode, self).__init__(_nodename)
         self.__local_drawmode = 0
         self.__drawmode_list = DrawMode.DrawModeList()
         # basic draw mode only
