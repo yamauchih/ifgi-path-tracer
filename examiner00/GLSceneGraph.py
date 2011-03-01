@@ -16,7 +16,7 @@ import GLUtil
 class GLSceneGraph(SceneGraph.SceneGraph):
     """OpenGL scene graph
     This has
-      - GLCamera
+      - current GLCamera
       - GLroot_node
     """
 
@@ -25,9 +25,9 @@ class GLSceneGraph(SceneGraph.SceneGraph):
     # default constructor
     def __init__(self):
         """default constructor. (public)"""
-        self.__gl_camera    = Camera.GLCamera()
-        self.__gl_root_node = None
-        self.__scenegraph   = None
+        self.__cur_gl_camera = None
+        self.__gl_root_node  = None
+        self.__scenegraph    = None
 
     # set generic scene graph.
     def set_scenegraph(self, _sg):
@@ -41,8 +41,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         self.__scenegraph   = _sg
 
         self.__gl_root_node = GLSceneGraphNode('gl_rootnode')
-
-        # check self.__scenegraph validity
+        assert(self.__scenegraph.is_valid())
 
         # create GLSceneGraph from scenegraph
         self.__copy_sgnode_sub(self.__scenegraph.get_root_node(),
@@ -64,6 +63,39 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         \return root node of OpenGL scenegraph.
         """
         return self.__gl_root_node
+
+    # set current gl camera
+    def set_current_gl_camera(self, _glcamera):
+        """set current GL camera.
+        \param[in] _glcamera gl camera"""
+        if (type(_glcamera) != Camera.GLCamera):
+            raise StandardError('set_current_gl_camera: _glcamera is not a GLCamera')
+
+        # shallow copy.
+        self.__cur_gl_camera = _glcamera
+
+
+    # get current gl camera
+    def get_current_gl_camera(self):
+        """set current GL camera.
+        \return current gl camera"""
+
+        return self.__cur_gl_camera
+
+    # simple validity check
+    def is_valid(self):
+        """is this scenegraph valid?
+        Perform a simple validity test."""
+        if (self.__cur_gl_camera == None):
+            return False
+
+        if (self.__gl_root_node  == None):
+            return False
+
+        if (self.__scenegraph    == None):
+            return False
+
+        return True
 
 
     # scenegraph draw
@@ -101,8 +133,6 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         \param[in] _cur_glnode current visiting OpenGL scenegraph node
         \param[in] _level      current depth level"""
 
-        print type(_cur_sgnode)
-
         if _cur_sgnode.is_primitive_node() == True:
             # create primitive node and set the primitive
             print 'DEBUG: Create primitive and set'
@@ -121,6 +151,8 @@ class GLSceneGraph(SceneGraph.SceneGraph):
                     print 'DEBUG: Camera Detected.'
                     ch_gl_camera_node = GLCameraNode(ch_sgnode)
                     _cur_glnode.append_child(ch_gl_camera_node)
+                    self.set_current_gl_camera(ch_gl_camera_node.get_gl_camera())
+
                 else:
                     ch_glnode = GLSceneGraphNode(ch_sgnode.get_nodename())
                     _cur_glnode.append_child(ch_glnode)
@@ -343,6 +375,10 @@ class GLCameraNode(GLSceneGraphNode):
     # default constructor
     def __init__(self, _sg_camnode):
         """constructor.
+        GLCamara is created with _sg_camnode parameters.
+        scenegraph camera and gl camera are not synchronized,
+        when sync is needed, this should be done explicitly.
+
         \param[in] _sg_camnode scenegraph camera node.
         """
         # 2011-2-28(Mon) Hitoshi
@@ -359,6 +395,12 @@ class GLCameraNode(GLSceneGraphNode):
         # created super class's __init__().
         super(GLCameraNode, self).__init__(_sg_camnode.get_nodename())
 
+        # here new the GLCamera and own this camera.
+        self.__gl_camera = Camera.GLCamera()
+        # keep the reference to the scenegraph camera
+        self.__ifgi_camera_ref = _sg_camnode.get_camera()
+        self.__gl_camera.set_camera_param(self.__ifgi_camera_ref)
+
 
     # get classname (shown in the SceneGraph viewer as node Type)
     def get_classname(self):
@@ -367,24 +409,16 @@ class GLCameraNode(GLSceneGraphNode):
 
         return 'GLCameraNode'
 
-    # # print glnode info. Indentation is according to the depth level
-    # def print_glnodeinfo(self, _level):
-    #     """print glnode info. Indentation is according to the depth level
-
-    #     \param[in] _level node depth level"""
-
-    #     indent = '  ' * _level
-    #     if (self.is_primitive_node()):
-    #         print indent + '# ' + self.get_classname() + ':Primitive'
-
-    #     print indent + '# # __children = ' + str(len(self.get_children()))
-
+    # get gl camera
+    def get_gl_camera(self):
+        """get gl camera of this node.
+        \return gl camera."""
+        return self.__gl_camera
 
     # draw by mode
     def draw(self, _global_mode):
         """draw by mode. Camera ignore this.
         """
-        # DELETEME print 'DEBUG: GLCameraNode::draw'
         pass
 
     # get draw mode of this GLCameraNode

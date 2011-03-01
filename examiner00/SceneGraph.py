@@ -168,8 +168,8 @@ class SceneGraph(object):
     # default constructor
     def __init__(self):
         """default constructor"""
-        # self.__camera       = Camera.IFGICamera() DELETEME
-        self.__root_node    = None
+        self.__cur_camera = None
+        self.__root_node  = None
 
     # set the root node
     def set_root_node(self, _root_node):
@@ -185,12 +185,32 @@ class SceneGraph(object):
         """
         return self.__root_node
 
-    # # get __camera
-    # def get_camera(self):
-    #     """get __camera
-    #     \return __camera of this scenegraph
-    #     """
-    #     return self.__camera
+    # set current camera
+    def set_current_camera(self, _cur_camera):
+        """set current camera.
+        \param[in] current active camera.
+        """
+        self.__cur_camera = _cur_camera
+
+    # get current camera
+    def get_current_camera(self):
+        """get current camera.
+        \return current active camera of this scenegraph
+        """
+        return self.__cur_camera
+
+    # is valid scenegraph
+    def is_valid(self):
+        """test this scenegrapgh validity
+        \return true when the scenegraph is valid."""
+        if(self.get_root_node() == None):
+            return False
+
+        if(self.get_current_camera() == None):
+            return False
+
+        return True
+
 
     # travertse the scenegraph. subroutine of traverse_sgnode
     def __traverse_sgnode_sub(self, _cur_node, _level, _strategy):
@@ -345,15 +365,12 @@ class SceneGraphNode(object):
     # has this node bbox
     def has_node_bbox(self):
         """Does this node have a bounding box?
+        Default is True.
 
         \return True when the node can have a bounding box. Eg.,
         camera does not have own bbox.
         """
-        # check the consistency for debug
-        if self.is_primitive_node():
-            assert(self.__bbox.equal(self.__primitive.get_bbox()) == True)
-
-        return self.__bbox
+        return True
 
     # assign __bbox value
     def set_bbox(self, _bbox):
@@ -362,11 +379,6 @@ class SceneGraphNode(object):
         \param _bbox bounding box to be assigned."""
 
         self.__bbox = copy.deepcopy(_bbox)
-
-
-    # for debug
-    #     def print_obj(self):
-    #         pass
 
     # for debug
     def print_nodeinfo(self, _level):
@@ -392,9 +404,8 @@ class CameraNode(SceneGraphNode):
         """constructor.
         \param[in] _node_name node name.
         """
-
         super(CameraNode, self).__init__(_node_name)
-        self.__camera = Camera.IFGICamera()
+        self.__ifgi_camera = Camera.IFGICamera()
 
     # is this __primitive node?
     def is_primitive_node(self):
@@ -411,6 +422,11 @@ class CameraNode(SceneGraphNode):
         \return False. camera does not have own bbox.
         """
         return False
+
+    # get camera
+    def get_camera(self):
+        """get the camera."""
+        return self.__ifgi_camera
 
 
 
@@ -452,6 +468,9 @@ def create_one_trimeh_scenegraph(_objfname):
     child1.append_child(child1_0)
 
     sg.set_root_node(rootsg)
+    sg.set_current_camera(child0.get_camera())
+
+    assert(sg.is_valid())
 
     return sg
 
@@ -473,11 +492,15 @@ def create_empty_scenegraph():
     rootsg = SceneGraphNode('rootsg')
 
     child0 = CameraNode('main_cam')
-    child1 = SceneGraphNode('group')
     rootsg.append_child(child0)
-    rootsg.append_child(child1)
+
+    # child1 = SceneGraphNode('group')
+    # rootsg.append_child(child1)
 
     sg.set_root_node(rootsg)
+    sg.set_current_camera(child0.get_camera())
+
+    assert(sg.is_valid())
 
     return sg
 

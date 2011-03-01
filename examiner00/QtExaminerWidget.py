@@ -38,9 +38,9 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """
         QtOpenGL.QGLWidget.__init__(self, _parent)
 
-        # cameras FIXME scenegraph should have the camera
+        # camera. This is the default camera, the scenegraph has
+        # cameras.
         self.__gl_camera   = Camera.GLCamera()
-        # self.ifgi_camera = Camera.IFGICamera()
 
         # OpenGL scene graph
         self.__gl_scenegraph = None
@@ -678,11 +678,26 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         if self.__is_debug == True:
             print _dbgmes
 
+
+    # set current gl camera
+    def set_current_gl_camera(self, _cur_gl_camera):
+        """set current gl camera.
+        \param[in] _cur_gl_camera current gl camera"""
+
+        assert(_cur_gl_camera != None)
+        assert(_cur_gl_camera.get_classname() == 'GLCamera')
+        self.__gl_camera = _cur_gl_camera
+
+
+
     # scenegraph operation
     def attach_gl_scenegraph(self, _gl_scenegraph):
         """scenegraph operation.
         """
         self.__gl_scenegraph = _gl_scenegraph
+
+        # get GLCamera from the gl scenegraph
+        self.set_current_gl_camera(self.__gl_scenegraph.get_current_gl_camera())
 
         # get draw mode information
         print 'DEBUG: collect draw mode from the GLSceneGraph'

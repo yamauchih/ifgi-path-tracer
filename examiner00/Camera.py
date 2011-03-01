@@ -154,6 +154,31 @@ class Camera(object):
         print '#' + cname + '::focal_length = ' + str(self.__focal_length)
 
 
+    # get focal length
+    def get_focal_length(self):
+        """get focal length.
+        \return focal length."""
+
+        return self.__focal_length
+
+    # set camera parameters
+    def set_camera_param(self, _othercam):
+        """set camera parameters.
+        deep copy the camera parameters.
+        \param[in] _othercam other camera."""
+
+        # deep copy
+        self.__eye_pos      = _othercam.get_eye_pos(). copy()
+        self.__view_dir     = _othercam.get_view_dir().copy()
+        self.__up_dir       = _othercam.get_up_dir().  copy()
+        self.__fovy_rad     = _othercam.get_fovy_rad()
+        self.__aspect_ratio = _othercam.get_aspect_ratio()
+        self.__z_near       = _othercam.get_z_near()
+        self.__z_far        = _othercam.get_z_far()
+        self.__projection   = _othercam.get_projection()
+        self.__focal_length = _othercam.get_focal_length()
+
+
 # OpenGL camera
 class GLCamera(Camera):
     """OpenGL camera
