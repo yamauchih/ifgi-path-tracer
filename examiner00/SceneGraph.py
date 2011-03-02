@@ -247,9 +247,6 @@ class SceneGraph(object):
         SceneGraphTraverseStrategyIF
         """
         print '# SceneGraph'
-        # DELETEME
-        # print '# SceneGraph::__camera'
-        # self.__camera.print_obj()
         if self.__root_node == None:
             print 'no __root_node'
             return
@@ -395,6 +392,7 @@ class SceneGraphNode(object):
             print indent + '# # __children = ' + str(len(self.__children))
 
 
+# camera
 class CameraNode(SceneGraphNode):
     """camera node.
     """
@@ -407,9 +405,9 @@ class CameraNode(SceneGraphNode):
         super(CameraNode, self).__init__(_node_name)
         self.__ifgi_camera = Camera.IFGICamera()
 
-    # is this __primitive node?
+    # is this primitive node?
     def is_primitive_node(self):
-        """is this __primitive node?
+        """is this primitive node?
         camera is not a drawable primitive.
         \return False"""
 
@@ -427,6 +425,42 @@ class CameraNode(SceneGraphNode):
     def get_camera(self):
         """get the camera."""
         return self.__ifgi_camera
+
+
+# image film node
+class ImageFilmNode(SceneGraphNode):
+    """image film (framebuffer) node.
+    """
+
+    # constructor
+    def __init__(self, _node_name):
+        """constructor.
+        \param[in] _node_name node name.
+        """
+        super(ImageFilmNode, self).__init__(_node_name)
+        self.__imagefilm = Film.ImageFilm()
+
+
+    # is this a primitive node?
+    def is_primitive_node(self):
+        """is this primitive node?
+        camera is not a drawable primitive.
+        \return False"""
+
+        return True
+
+    # has this node bbox
+    def has_node_bbox(self):
+        """Does this node have a bounding box?
+
+        \return False. camera does not have own bbox.
+        """
+        return False
+
+    # get camera
+    def get_imagefilm(self):
+        """get the image film."""
+        return self.__imagefilm
 
 
 
@@ -449,8 +483,6 @@ def create_one_trimeh_scenegraph(_objfname):
     tmesh = ConvReader2Primitive.conv_objreader_trimesh(objreader)
     if tmesh.is_valid() == False:
         raise StandardError, ('TriMesh is not valid.')
-
-    # DELETEME print 'DEBUG:BBOX = ' + str(tmesh.get_bbox())
 
     # create scenegraph
     sg = SceneGraph()

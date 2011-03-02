@@ -1,15 +1,20 @@
 TODO list
 
-- GLCameraNode has the GLCamera and it is used in Examiner
-- Show camera parameter from scenegraph viewer (infodialog)
+- Fix the viewport
 
-clean up
+- ImageFilm as Primitive (draw()able in the screen)
+  - resizable.
+  - when set to the camera, resize.
 
-- Add Framebuffer node (choose buffer and draw)
+- Add ImageFilm Node (choose buffer and draw)
   attach framebuffer node to camera node
   framebffers are shared between IFGICamera and GLCamera
    - RGBA frame buffer (32bit)
    - Z buffer          (32bit)
+
+Add GLImageFilmNode
+  -  drawa()ble node in the screen.
+
 
 - Shoot rays
    - Intersection routine with a triangle and its test.

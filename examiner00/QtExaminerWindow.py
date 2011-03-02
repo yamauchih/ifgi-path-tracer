@@ -40,7 +40,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
         self.setCentralWidget(widget)
 
         # currently onle one widget is in the window
-        self.__examiner_widget = QtExaminerWidget.QtExaminerWidget()
+        self.__examiner_widget = QtExaminerWidget.QtExaminerWidget(self)
 
         vbox = QtGui.QVBoxLayout()
         vbox.setMargin(5)

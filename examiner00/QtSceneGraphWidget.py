@@ -664,7 +664,6 @@ class SceneGraphNodeTreeItem(object):
     # colomnCount
     def columnCount(self):
         """colomnCount
-
         \return always 4. ['Node', 'Type', 'Status', 'Mode']"""
 
         return 4

@@ -3,7 +3,7 @@
 """QtExtWidget
 \file
 \brief Qt extented widget set for QtWidgetIO
-\module QtWidgetIO
+\see QtWidgetIO
 """
 
 from PyQt4 import Qt, QtCore, QtGui

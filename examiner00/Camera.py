@@ -139,21 +139,6 @@ class Camera(object):
 
         return [ex, ey, self.__view_dir]
 
-    # for debug
-    def print_obj(self):
-        """print this object for debug. (public)"""
-        cname = self.get_classname()
-        print '#' + cname + '::eye_pos = '  + str(self.__eye_pos)
-        print '#' + cname + '::view_dir = ' + str(self.__view_dir)
-        print '#' + cname + '::up_dir = '   + str(self.__up_dir)
-        print '#' + cname + '::fovy_rad = ' + str(self.__fovy_rad)
-        print '#' + cname + '::aspect_ratio = ' + str(self.__aspect_ratio)
-        print '#' + cname + '::z_near = '   + str(self.__z_near)
-        print '#' + cname + '::z_far = '    + str(self.__z_far)
-        print '#' + cname + '::projection = ' + str(self.__projection)
-        print '#' + cname + '::focal_length = ' + str(self.__focal_length)
-
-
     # get focal length
     def get_focal_length(self):
         """get focal length.
@@ -177,6 +162,40 @@ class Camera(object):
         self.__z_far        = _othercam.get_z_far()
         self.__projection   = _othercam.get_projection()
         self.__focal_length = _othercam.get_focal_length()
+
+    # for debug
+    def print_obj(self):
+        """print this object for debug."""
+        cname = self.get_classname()
+        print '#' + cname + '::eye_pos = '  + str(self.__eye_pos)
+        print '#' + cname + '::view_dir = ' + str(self.__view_dir)
+        print '#' + cname + '::up_dir = '   + str(self.__up_dir)
+        print '#' + cname + '::fovy_rad = ' + str(self.__fovy_rad)
+        print '#' + cname + '::aspect_ratio = ' + str(self.__aspect_ratio)
+        print '#' + cname + '::z_near = '   + str(self.__z_near)
+        print '#' + cname + '::z_far = '    + str(self.__z_far)
+        print '#' + cname + '::projection = ' + str(self.__projection)
+        print '#' + cname + '::focal_length = ' + str(self.__focal_length)
+
+    # get html info
+    def get_html_info(self):
+        """get camera information as html format.
+        \return camera information in html string."""
+
+        ret_s = '<h2>Camera information</h2>\n'                       +\
+            '<ul>\n'                                                  +\
+            '  <li><b>Class name:</b> ' + self.get_classname() + '\n' +\
+            '  <li>eye_pos: '      + str(self.__eye_pos)       + '\n' +\
+            '  <li>view_dir: '     + str(self.__view_dir)      + '\n' +\
+            '  <li>up_dir: '       + str(self.__up_dir)        + '\n' +\
+            '  <li>fovy_rad: '     + str(self.__fovy_rad)      + '\n' +\
+            '  <li>aspect_ratio: ' + str(self.__aspect_ratio)  + '\n' +\
+            '  <li>z_near: '       + str(self.__z_near)        + '\n' +\
+            '  <li>z_far: '        + str(self.__z_far)         + '\n' +\
+            '  <li>projection = '  + str(self.__projection)    + '\n' +\
+            '  <li>focal_length: ' + str(self.__focal_length)  + '\n' +\
+            '</ul>\n'
+        return ret_s
 
 
 # OpenGL camera

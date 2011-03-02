@@ -441,8 +441,6 @@ class GLCameraNode(GLSceneGraphNode):
             '  <li><b>Drawmode:</b> '   + self.get_drawmode_str() + '\n' +\
             '</ul>\n'
 
-        # print 'DEBUG: get_info_html_GLCameraNode\n' + ret_s
-
         return ret_s
 
 
@@ -452,7 +450,8 @@ class GLCameraNode(GLSceneGraphNode):
         Usually, this should be overrided.
         \return base GL node info.
         """
-        ret_s = self.get_info_html_GLCameraNode()
+        ret_s = self.get_info_html_GLCameraNode() +\
+            self.__gl_camera.get_html_info()
 
         return ret_s
 

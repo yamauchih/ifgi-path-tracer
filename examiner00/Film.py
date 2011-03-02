@@ -44,8 +44,8 @@ class ImageFilm(object):
     # constructor
     def __init__(self, _xres, _yres, _zres, _buffername):
         """constructor.
-        \param[in] _xres  x resolution.
-        \param[in] _yres  y resolution.
+        \param[in] _xres x resolution.
+        \param[in] _yres y resolution.
         \param[in] _zres z resolution.
         \param[in] _buffername buffer name (RGBA, Z, ...)
         """

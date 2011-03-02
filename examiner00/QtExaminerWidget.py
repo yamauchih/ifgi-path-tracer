@@ -32,7 +32,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     """Scene examiner
     """
 
-    def __init__(self, _parent=None):
+    def __init__(self, _parent):
         """constructor (public).
         \param[in] parent parent widget.
         """
@@ -167,6 +167,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     # view -- all
     def view_all(self):
+        """view all the scene."""
         cam_basis = self.__gl_camera.get_coordinate_system()
         eyepos = self.__scene_cog
         if (self.__gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
@@ -394,8 +395,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                 # remember this point
                 self.__lastpoint_2d = QtUtil.QPoint2numpy(_event.pos())
                 self.__lastpoint_3d = ifgimath.mapToSphere(self.__lastpoint_2d,
-                                                        self.glWidth(),
-                                                        self.glHeight())
+                                                           self.glWidth(),
+                                                           self.glHeight())
 
                 self.__is_rotating = True
                 # DELETEME
