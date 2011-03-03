@@ -23,6 +23,8 @@ import SceneGraph
 import GLSceneGraph
 import QtSceneGraphDialog
 
+import ifgi.render
+
 # examiner window
 class QtExaminerWindow(QtGui.QMainWindow):
     """Qt geometry examiner window."""
@@ -199,7 +201,8 @@ class QtExaminerWindow(QtGui.QMainWindow):
     # Process--IFGI ptrace
     def menu_process_ifgi_ptrace(self):
         """Process--IFGI ptrace."""
-        self.statusBar().showMessage('NIN: Process--IFGI ptrace invoked')
+        self.statusBar().showMessage('Process--IFGI ptrace invoked')
+        ifgi.render.ssovrt.ssovrt()
 
     # Help--about
     def menu_help_about(self):
