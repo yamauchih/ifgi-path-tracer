@@ -85,13 +85,14 @@ class TestPrimitive(unittest.TestCase):
         for x in xrange(0, imgsize[0], 1):
             for y in xrange(0, imgsize[1], 1):
                 origin = numpy.array([ x, y, 0])
-                dir    = numpy.array([ 0, 0, 1])
+                dir    = numpy.array([ 0, 0, -1])
                 min_t  = 0.1
                 max_t  = 100
                 r = Ray.Ray(origin, dir, min_t, max_t)
                 if tri.ray_intersect(r) == True:
-                    print 'DEBUG: Hit'
-                    resimg.putpixel(x, y, red)
+                    print origin, 'Hit'
+
+                    resimg.putpixel((x, y), red)
 
         resimg.save("tri_ray_intersect.png")
 
