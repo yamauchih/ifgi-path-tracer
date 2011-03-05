@@ -3,8 +3,6 @@
 \file
 \brief test for python const.
 """
-
-
 import const
 
 # This works well

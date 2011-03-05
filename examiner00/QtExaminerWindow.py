@@ -18,10 +18,8 @@ from PyQt4  import QtCore, QtGui, QtOpenGL
 from OpenGL import GL
 from OpenGL import GLU
 
-import QtExaminerWidget
-import SceneGraph
-import GLSceneGraph
-import QtSceneGraphDialog
+from ifgi.scene import SceneGraph
+import QtExaminerWidget, QtSceneGraphDialog, GLSceneGraph
 
 import ifgi.render
 

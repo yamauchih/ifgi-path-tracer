@@ -6,5 +6,5 @@
 # ifgi/scene
 #      scene elements (Ray, Primitive (triangle mesh), ...)
 #
-print 'imported ifgi/scene'
-
+#print 'imported ifgi/scene'
+import Camera

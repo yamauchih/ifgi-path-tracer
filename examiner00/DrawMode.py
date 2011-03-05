@@ -6,7 +6,7 @@
 
 import math
 import numpy
-import enum
+from ifgi.base import enum
 
 #
 # Projection Mode

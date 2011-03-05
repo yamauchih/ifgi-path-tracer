@@ -6,5 +6,5 @@
 # This is core package of the ifgi path tracer.
 #
 #
-print 'imported ifgi'
+# print 'imported ifgi'
 

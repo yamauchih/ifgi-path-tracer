@@ -16,10 +16,9 @@ from PyQt4  import QtCore, QtGui, QtOpenGL
 from OpenGL import GL
 from OpenGL import GLU
 
+from ifgi.base  import enum, ifgimath
+from ifgi.scene import Camera
 
-import enum
-import ifgimath
-import Camera
 import QtUtil
 
 

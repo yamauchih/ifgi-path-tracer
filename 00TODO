@@ -1,5 +1,8 @@
 TODO list
 
+- Reorganize the files
+- Add Makefile for clean
+
 - Fix the viewport
 
 - ImageFilm as Primitive (draw()able in the screen)

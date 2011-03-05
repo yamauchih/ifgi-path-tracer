@@ -6,6 +6,7 @@
 """
 
 import unittest
+
 import ObjReader
 import Primitive
 import ConvReader2Primitive
@@ -16,7 +17,7 @@ class TestConvReader2Primitive(unittest.TestCase):
     def test_converter_0(self):
         """"test converter 0"""
         objreader = ObjReader.ObjReader()
-        objreader.read('../sampledata/one_tri.obj')
+        objreader.read('../../sampledata/one_tri.obj')
 
         tmesh = ConvReader2Primitive.conv_objreader_trimesh(objreader)
 

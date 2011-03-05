@@ -4,13 +4,11 @@
 \file
 \brief OpenGL scene graph module"""
 
-from OpenGL import GL
-from OpenGL import GLU
+from OpenGL import GL, GLU
+from ifgi.scene import Camera, SceneGraph
 
-import Camera
-import DrawMode
-import SceneGraph
-import GLUtil
+import DrawMode, GLUtil
+
 
 # OpenGL scene graph
 class GLSceneGraph(SceneGraph.SceneGraph):

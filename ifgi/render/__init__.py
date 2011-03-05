@@ -6,6 +6,7 @@
 # ifgi/render
 #      rendering core routine
 #
+#print 'imported ifgi/render/ssovrt'
 import ssovrt
-print 'imported ifgi/render/ssovrt'
+
 

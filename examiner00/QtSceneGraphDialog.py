@@ -7,13 +7,11 @@
 \brief scene graph inspector dialog pyqt implementtaion"""
 
 import sys
-import QtSceneGraphWidget
-import SceneGraph
-import GLSceneGraph
-import Primitive
 
 from PyQt4 import QtCore, QtGui
+from ifgi.scene import SceneGraph, Primitive
 
+import QtSceneGraphWidget, GLSceneGraph
 
 # QtSceneGraphDialog
 class QtSceneGraphDialog(QtGui.QDialog):

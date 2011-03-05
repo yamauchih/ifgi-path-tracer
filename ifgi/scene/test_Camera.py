@@ -3,7 +3,8 @@
 """test IFGI Camera"""
 
 import unittest
-import Camera
+from ifgi.base  import enum
+from ifgi.scene import Camera
 
 class TestCamera(unittest.TestCase):
     """test: camera"""
