@@ -1,27 +1,33 @@
 #!/usr/bin/env python
-#
 # Ray
-#
 
-"""IFGI Ray"""
+"""IFGI Ray
+\file
+\brief a ray
+"""
 
-import math
-import numpy
+#import math
+#import numpy
 
-#
 # Ray class
-#
 class Ray(object):
-    """a ray"""
+    """a Ray
+    """
 
     # default constructor
-    def __init__(self, _origin, _dir):
+    def __init__(self, _origin, _dir, _min_t, _max_t):
         """default constructor.
         \param[in] _origin ray origin
         \param[in] _dir    ray direction
+        \param[in] _min_t ray minimal distance (less than this
+        distance doesn't intersect)
+        \param[in] _max_t ray maximal distance (more than this
+        distance doesn't intersect)
         """
-        self.origin = _origin
-        self.dir    = _dir
+        self.__origin = _origin
+        self.__dir    = _dir
+        self.__min_t  = _min_t
+        self.__max_t  = _max_t
 
     # class name
     def get_classname(self):
@@ -29,6 +35,34 @@ class Ray(object):
         \return class name
         """
         return 'Ray'
+
+    # get origin
+    def get_origin(self):
+        """get the ray origin.
+        \return ray origin.
+        """
+        return self.__origin
+
+    # get ray dir
+    def get_dir(self):
+        """get the ray direction vector.
+        \return ray dir.
+        """
+        return self.__dir
+
+    # get min distance
+    def get_min_t(self):
+        """get minimal ray distance.
+        \return ray min_t.
+        """
+        return self.__min_t
+
+    # get ray dir
+    def get_max_t(self):
+        """get maximal ray distance.
+        \return ray max_t.
+        """
+        return self.__max_t
 
 #
 # main test

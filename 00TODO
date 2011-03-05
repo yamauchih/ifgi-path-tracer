@@ -1,7 +1,7 @@
 TODO list
 
-- Reorganize the files
-- Add Makefile for clean
+- test triangle ray intersection
+  Test failed. no ray intersection found.
 
 - Fix the viewport
 

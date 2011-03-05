@@ -5,10 +5,13 @@
 
 """test IFGI Primitive module"""
 
+from PIL import Image           # image
+
 import unittest
 import numpy
 import random
 import Primitive
+import Ray
 
 class TestPrimitive(unittest.TestCase):
     """test suit for Primitive."""
@@ -28,9 +31,9 @@ class TestPrimitive(unittest.TestCase):
             bbox.insert_point(ipos)
 
         for i in xrange(2):
-            assert(minp[i]     <= bbox.min[i])
-            assert(bbox.min[i] <= bbox.max[i])
-            assert(bbox.max[i] <= maxp[i])
+            assert(minp[i]     <= bbox.get_min()[i])
+            assert(bbox.get_min()[i] <= bbox.get_max()[i])
+            assert(bbox.get_max()[i] <= maxp[i])
 
     # test primitive: one triangle
     def test_primitive_one_tri(self):
@@ -61,6 +64,38 @@ class TestPrimitive(unittest.TestCase):
         bbox.insert_point(numpy.array([-1.0, 0.0, 0.0]))
         bbox.insert_point(numpy.array([ 1.0, 1.0, 0.0]))
         assert(tmesh.get_bbox().equal(bbox))
+
+    # test primitive: triangle ray intersection
+    def test_primitive_tri_ray_intersection(self):
+        """test primitive: ray-triangle intesection"""
+
+        # create a triangle
+        p0 = numpy.array([  1.0,  1.0, -10.0])
+        p1 = numpy.array([ 80.0,  1.0, -10.0])
+        p2 = numpy.array([ 40.0, 80.0, -10.0])
+
+        tri = Primitive.Triangle()
+        tri.set_vertex(p0, p1, p2)
+
+        imgsize = (100, 100)
+        white = (255, 255, 255)
+        red   = (255,   0,   0)
+        resimg = Image.new("RGBA", imgsize, white)
+
+        for x in xrange(0, imgsize[0], 1):
+            for y in xrange(0, imgsize[1], 1):
+                origin = numpy.array([ x, y, 0])
+                dir    = numpy.array([ 0, 0, 1])
+                min_t  = 0.1
+                max_t  = 100
+                r = Ray.Ray(origin, dir, min_t, max_t)
+                if tri.ray_intersect(r) == True:
+                    print 'DEBUG: Hit'
+                    resimg.putpixel(x, y, red)
+
+        resimg.save("tri_ray_intersect.png")
+
+
 
 #
 # main test
