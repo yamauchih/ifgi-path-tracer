@@ -1,5 +1,5 @@
 #
-# Makefile for examiner00
+# Makefile for ifgi
 # Copyright (C) 2010-2011 Yamauchi, Hitoshi
 #
 
@@ -14,8 +14,8 @@ include $(IFGI_ROOT)/tool/Premake.mk
 #----------------------------------------------------------------------
 # each Makefile define
 #----------------------------------------------------------------------
-# no subdir here.
-SUBDIR :=
+# sub directories
+SUBDIR := base render scene
 
 
 #----------------------------------------------------------------------

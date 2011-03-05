@@ -1,10 +1,10 @@
 #
-# Makefile for examiner00
+# Makefile for ifgi/scene
 # Copyright (C) 2010-2011 Yamauchi, Hitoshi
 #
 
 # root directory of ifgi-path-tracer
-IFGI_ROOT := ..
+IFGI_ROOT := ../..
 
 #
 # common setup/defines
@@ -14,8 +14,8 @@ include $(IFGI_ROOT)/tool/Premake.mk
 #----------------------------------------------------------------------
 # each Makefile define
 #----------------------------------------------------------------------
-# no subdir here.
-SUBDIR :=
+# sub directories
+SUBDIR := 
 
 
 #----------------------------------------------------------------------

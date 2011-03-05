@@ -14,3 +14,11 @@
        At this directory, type: source setup.sh
 
    Then, each module test should work.
+
+3. misc
+
+   Makefile
+     - clean
+            clean up .pyc file, documentation
+     - check
+            run unit test

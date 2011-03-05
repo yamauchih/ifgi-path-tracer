@@ -317,7 +317,8 @@ class SceneGraphNode(object):
     def is_primitive_node(self):
         """is this __primitive node?
         otherwise this should be a group node (has __children).
-        \return True when this node is __primitive node."""
+        \return True when this node is __primitive node.
+        """
 
         if self.__primitive == None:
             return False

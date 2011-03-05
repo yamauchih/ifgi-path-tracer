@@ -26,7 +26,8 @@ class Ray(object):
     # class name
     def get_classname(self):
         """get class name
-        \return class name"""
+        \return class name
+        """
         return 'Ray'
 
 #
