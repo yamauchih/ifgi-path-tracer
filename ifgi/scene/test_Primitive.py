@@ -12,7 +12,47 @@ import numpy
 import random
 import Primitive
 import Ray
+import cProfile
+import pstats
 
+# test primitive: triangle ray intersection
+def primitive_tri_ray_intersection_sub():
+    """primitive: ray-triangle intesection subroutine"""
+
+    iw = 50
+    ih = 50
+    imgsize = (iw, ih)
+    # create a triangle
+    xoff = iw/10
+    yoff = iw/10
+    p0 = numpy.array([xoff,           yoff, -10.0])
+    p1 = numpy.array([iw - xoff,      yoff, -10.0])
+    p2 = numpy.array([iw/2,      ih - yoff, -10.0])
+
+    tri = Primitive.Triangle()
+    tri.set_vertex(p0, p1, p2)
+
+    white   = (255, 255, 255)
+    red     = (255,   0,   0)
+    resimg = Image.new("RGBA", imgsize, white)
+
+    for x in xrange(0, imgsize[0], 1):
+        for y in xrange(0, imgsize[1], 1):
+            origin = numpy.array([ x, y, 0])
+            dir    = numpy.array([ 0, 0, -1])
+            min_t  = 0.1
+            max_t  = 100
+            r = Ray.Ray(origin, dir, min_t, max_t)
+            if tri.ray_intersect(r) == True:
+                # print origin, 'Hit'
+
+                resimg.putpixel((x, imgsize[1]-y), red)
+
+    resimg.save("res_ray_tri_intersect.png")
+    print 'Saved ... res_ray_tri_intersect.png'
+
+
+# test primitives
 class TestPrimitive(unittest.TestCase):
     """test suit for Primitive."""
     # test bbox
@@ -65,38 +105,19 @@ class TestPrimitive(unittest.TestCase):
         bbox.insert_point(numpy.array([ 1.0, 1.0, 0.0]))
         assert(tmesh.get_bbox().equal(bbox))
 
-    # test primitive: triangle ray intersection
-    def test_primitive_tri_ray_intersection(self):
-        """test primitive: ray-triangle intesection"""
 
-        # create a triangle
-        p0 = numpy.array([  1.0,  1.0, -10.0])
-        p1 = numpy.array([ 80.0,  1.0, -10.0])
-        p2 = numpy.array([ 40.0, 80.0, -10.0])
+    # primitive: ray-triangle intesection
+    def test_primitive_tri_ray_intersection_sub(self):
+        """primitive: ray-triangle intesection"""
 
-        tri = Primitive.Triangle()
-        tri.set_vertex(p0, p1, p2)
+        primitive_tri_ray_intersection_sub()
 
-        imgsize = (100, 100)
-        white = (255, 255, 255)
-        red   = (255,   0,   0)
-        resimg = Image.new("RGBA", imgsize, white)
-
-        for x in xrange(0, imgsize[0], 1):
-            for y in xrange(0, imgsize[1], 1):
-                origin = numpy.array([ x, y, 0])
-                dir    = numpy.array([ 0, 0, -1])
-                min_t  = 0.1
-                max_t  = 100
-                r = Ray.Ray(origin, dir, min_t, max_t)
-                if tri.ray_intersect(r) == True:
-                    print origin, 'Hit'
-
-                    resimg.putpixel((x, y), red)
-
-        resimg.save("tri_ray_intersect.png")
-
-
+        #--- profile
+        # cProfile.run('primitive_tri_ray_intersection_sub()')
+        #
+        # cProfile.run('primitive_tri_ray_intersection_sub()',
+        #              'test_primitive.prof')
+        # p = pstats.Stats('test_primitive.prof')
 
 #
 # main test

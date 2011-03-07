@@ -15,7 +15,10 @@ include $(IFGI_ROOT)/tool/Premake.mk
 # each Makefile define
 #----------------------------------------------------------------------
 # sub directories
-SUBDIR := 
+SUBDIR :=
+
+# additional clean files
+ADDITIONAL_CLEAN_FILE := res_ray_tri_intersect.png test_primitive.prof
 
 
 #----------------------------------------------------------------------

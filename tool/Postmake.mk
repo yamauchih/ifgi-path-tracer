@@ -11,6 +11,9 @@
 
 # for check target
 TEST_ALL_SH_FILE := ./test_all.sh
+ifndef ADDITIONAL_CLEAN_FILE
+  ADDITIONAL_CLEAN_FILE :=
+endif
 
 
 #----------------------------------------------------------------------
@@ -21,6 +24,7 @@ all:
 
 clean:
 	rm -rfv *.pyc *~ html/
+	rm -rfv $(ADDITIONAL_CLEAN_FILE)
 	$(foreach subdir, $(SUBDIR),\
 		$(MAKE) --directory=$(subdir) clean;)
 

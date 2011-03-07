@@ -222,8 +222,8 @@ class Triangle(Primitive):
 
         # get barycentric coord b2
         s2 = numpy.cross(d, e1)
-        b2 = numpy.dot(d, s2) * inv_div
-        if ((b2 < 0.0) or (b2 > 1.0)):
+        b2 = numpy.dot(_ray.get_dir(), s2) * inv_div
+        if ((b2 < 0.0) or ((b1 + b2) > 1.0)):
             return False
 
         # get intersection point (distance t)
@@ -233,7 +233,7 @@ class Triangle(Primitive):
 
         # FIXME I need to return at least distance t
         # _hit_record.set_hit_record(b1, b2, t)
-
+        # print 'Hit: t = ' + str(t) + ', b1 = ' + str(b1) + ', b2 = ' + str(b2)
         return True
 
     # set vertex
