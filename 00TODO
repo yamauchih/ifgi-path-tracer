@@ -1,7 +1,11 @@
 TODO list
 
-- test triangle ray intersection
-  Test failed. no ray intersection found.
+- test triangle ray intersection with perspective camera
+
+- it may be faster if I use linear system solver to find the
+  ray-intersection solution.
+    numpy.linalg.det(b), but compute determinant twice is expensive.
+    numpy.linalg.solve(a,b)
 
 - Fix the viewport
 
