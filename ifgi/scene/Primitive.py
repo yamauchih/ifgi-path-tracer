@@ -124,8 +124,8 @@ class BBox(Primitive):
         """insert a bbox and grow the bbox. (public)
         \param _bbox bounding box to be inserted.
         """
-        self.insert_point(_bbox.min)
-        self.insert_point(_bbox.max)
+        self.insert_point(_bbox.get_min())
+        self.insert_point(_bbox.get_max())
 
     # get minimal point
     def get_min(self):

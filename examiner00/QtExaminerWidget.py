@@ -709,8 +709,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
         # set scene size information
         bb = self.__gl_scenegraph.get_scenegraph().get_root_node().get_bbox()
-        self.__scene_cog    = 0.5 * (bb.min + bb.max)
-        self.__scene_radius = 0.5 * numpy.linalg.norm(bb.max - bb.min)
+        self.__scene_cog    = 0.5 * (bb.get_min() + bb.get_max())
+        self.__scene_radius = 0.5 * numpy.linalg.norm(bb.get_max() - bb.get_min())
         print 'DEBUG:scene_cog: ' + str(self.__scene_cog) + ', scene_radius: '\
             + str(self.__scene_radius)
         if self.__scene_radius < 1e-6:
