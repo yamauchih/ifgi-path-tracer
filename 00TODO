@@ -1,5 +1,9 @@
 TODO list
 
+- Add test: use Camera, ray triangle intersection.
+
+- Implement update button (scenegraph camera)
+
 - test triangle ray intersection with perspective camera
 
 - it may be faster if I use linear system solver to find the
