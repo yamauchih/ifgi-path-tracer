@@ -1,10 +1,13 @@
 TODO list
 
 - Example: start up and shutdown
-
 - Add test: use Camera, ray triangle intersection.
-
 - Implement update button (scenegraph camera)
+
+- fix camera
+  - focul length is not correct
+  - add lens to screen, lens to film distance
+  - don't care lens to screen for now
 
 - test triangle ray intersection with perspective camera
 

@@ -11,6 +11,8 @@ import math
 import numpy
 from ifgi.base import enum
 
+import Film
+
 ## Projection Mode
 ProjectionMode = enum.Enum(['Perspective', 'Orthographic'])
 
@@ -355,9 +357,9 @@ class IFGICamera(Camera):
 #
 # main test
 #
-if __name__ == '__main__':
-    gl_cam   = GLCamera()
-    gl_cam.print_obj()
-
-    ifgi_cam = IFGICamera()
-    ifgi_cam.print_obj()
+# if __name__ == '__main__':
+#     gl_cam   = GLCamera()
+#     gl_cam.print_obj()
+#
+#     ifgi_cam = IFGICamera()
+#     ifgi_cam.print_obj()
