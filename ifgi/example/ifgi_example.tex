@@ -1,0 +1,120 @@
+%
+% Copyright (C) 2010-2011 Yamauchi, Hitoshi
+%
+\documentclass[12pt]{scrartcl}\usepackage{CJK}
+\usepackage{amsmath}
+\usepackage{a4wide}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{color}
+% \usepackage{hyperref} % Unfortunately, this does not work with CJK
+\graphicspath{{./fig/}}%
+%\href{URL}{text}
+
+\title{ifgi: examples}
+
+\date{\today}
+
+\author{Yamauchi, Hitoshi\\
+Nichiyou kenkyu aikouka (A Sunday Researcher)\\
+Berlin, Germany}
+\sloppy
+\begin{document}
+\begin{CJK*}[dnp]{JIS}{min}
+
+% \twocolumn[
+% ]
+\maketitle
+%\tableofcontents
+
+\def\vec#1{\mbox{\boldmath {$#1$}} }
+
+\begin{abstract}
+ifgi tracer example.
+\end{abstract}
+
+\section{Introduction}
+
+Here is the ifgi examples. This renderer is supposed to use as in a
+library, but also a standalone example will be provided (in the future
+(FIXME)).
+
+The list of examples is:
+\begin{enumerate}
+ \item \verb|test_ifgi_init_shutdown.py| Initialize and shutdown the
+ ifgi.
+
+ \item \verb|test_ifgi_config.py|
+       How to configurate the ifgi. (NIN)
+
+ \item \verb|test_ifgi_simple_render.py|
+       How to render a scene. (NIN)
+
+ \item \verb|test_ifgi_camera.py|
+       How to manipurate a camera. (NIN)
+
+ \item \verb|test_ifgi_geom_trimesh_add.py|
+       How to add/remove triangle mesh geometry. (NIN)
+
+ \item \verb|test_ifgi_material_add.py|
+       How to add/remove material. (NIN)
+
+ \item \verb|test_ifgi_material_change.py|
+       How to change material. (NIN)
+
+ \item \verb|test_ifgi_texture.py|
+       How to handle texture. (NIN)
+\end{enumerate}
+
+
+\section{Initialize and shutdown}
+
+\verb|test_ifgi_init_shutdown.py|
+
+\section{Configure the system}
+
+\verb|test_ifgi_config.py|
+
+\section{Simple renderer}
+
+\verb|test_ifgi_simple_render.py|
+
+\section{Camera}
+
+\verb|test_ifgi_camera.py|
+
+\section{Geometry}
+
+\subsection{geometry creation and removal}
+\verb|test_ifgi_geom_trimesh_add.py|
+
+\subsection{geometry update}
+
+\section{Material}
+
+\subsection{material creation and removal}
+
+\subsection{material update}
+
+\verb|test_ifgi_material_add.py|
+
+ \verb|test_ifgi_material_change.py|
+
+\subsection{texture mapping}
+ \verb|test_ifgi_texture.py|
+
+
+\section*{Acknowledgements}
+
+Thanks to
+Carsten,
+Daniel (L)
+Daniel (S),
+Leo,
+Matthias,
+Sehera,
+(in alphabetical order) to answer all my stupid questions about pbrt
+rendering book.
+
+\end{CJK*}
+\end{document}

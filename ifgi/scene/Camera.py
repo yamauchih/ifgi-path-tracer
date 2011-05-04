@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#
+# Copyright (C) 2010-2011 Yamauchi, Hitoshi
+#
 
 """Camera module
 \file
@@ -21,7 +24,7 @@ class Camera(object):
 
     # default constructor
     def __init__(self):
-        """default constructor (public)"""
+        """default constructor"""
         self.__eye_pos      = numpy.array([0, 0,  5])
         self.__view_dir     = numpy.array([0, 0, -1])
         self.__up_dir       = numpy.array([0, 1,  0])

@@ -18,8 +18,5 @@ def ssovrt(_scenegraph):
     \param[in] _scenegraph
     """
 
-    
-
-
     print 'NIN: Single sample orthogonal viewing ray tracer'
 

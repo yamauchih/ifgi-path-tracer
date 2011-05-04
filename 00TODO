@@ -1,5 +1,7 @@
 TODO list
 
+- Example: start up and shutdown
+
 - Add test: use Camera, ray triangle intersection.
 
 - Implement update button (scenegraph camera)
