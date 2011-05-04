@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 #
-# math utility
+# Copyright (C) 2010-2011 Yamauchi, Hitoshi
 #
+# math utility
+"""
+\file
+\brief ifgi math utility"""
+
 
 import math
 import numpy
