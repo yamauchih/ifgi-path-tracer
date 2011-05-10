@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+#
+# Copyright (C) 2010-2011 Yamauchi, Hitoshi
+#
+# For set up the environment to run, see test_all.sh
+#
 
 """test IFGI Camera"""
 

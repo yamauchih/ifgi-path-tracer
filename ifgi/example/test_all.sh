@@ -13,9 +13,17 @@ export PYTHONPATH=`pwd`
 echo "export PYTHONPATH=${PYTHONPATH}"
 cd ${CURDIR}
 
-# test all
-for i in test_*.py
-do
-    echo "running $i"
-    python $i
-done
+if [ $# -eq 0 ]; then
+    # if not specified a test, test all
+    for i in test_*.py
+    do
+        echo "running all: $i"
+        python $i
+    done
+else
+    for i in $*
+    do
+        echo "running arg: $i"
+        python $i
+    done
+fi

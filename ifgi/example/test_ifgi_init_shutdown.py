@@ -11,23 +11,39 @@
 \brief initialize and shutdown ifgi renderer
 """
 
+import unittest
 from ifgi.ptracer.IfgiSys import IfgiSys
 
-# get ifgi system
-ifgi_inst = IfgiSys()
 
-assert(ifgi_inst.state() == "stop")
-assert(ifgi_inst.start() == True)
+class TestIfgiStartShutdown(unittest.TestCase):
+    """test: ifgi sysyem start and shutdown"""
 
-assert(ifgi_inst.state() == "up")
-assert(ifgi_inst.stop()  == True)
+    def test_start_shutdown(self):
+        """start and shutdown ifgi system"""
 
-assert(ifgi_inst.state() == "stop")
-assert(ifgi_inst.start() == True)
+        ifgi_inst = IfgiSys()
 
-assert(ifgi_inst.state() == "up")
-assert(ifgi_inst.shutdown() == True)
+        assert(ifgi_inst.state() == "stop")
+        assert(ifgi_inst.start() == True)
 
-assert(ifgi_inst.state() == "down")
+        assert(ifgi_inst.state() == "up")
+        assert(ifgi_inst.stop()  == True)
+
+        assert(ifgi_inst.state() == "stop")
+        assert(ifgi_inst.start() == True)
+
+        assert(ifgi_inst.state() == "up")
+        assert(ifgi_inst.shutdown() == True)
+
+        assert(ifgi_inst.state() == "down")
+
+
+#
+# main test
+#
+suit0   = unittest.TestLoader().loadTestsFromTestCase(TestIfgiStartShutdown)
+alltest = unittest.TestSuite([suit0])
+unittest.TextTestRunner(verbosity=2).run(alltest)
+
 
 
