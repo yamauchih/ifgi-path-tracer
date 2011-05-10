@@ -11,9 +11,23 @@
 \brief initialize and shutdown ifgi renderer
 """
 
-import ifgi.ptracer.ifgi
+from ifgi.ptracer.IfgiSys import IfgiSys
 
 # get ifgi system
-ifgi_inst = ifgi.ptracer.ifgi.get_ifgi()
+ifgi_inst = IfgiSys()
+
+assert(ifgi_inst.state() == "stop")
+assert(ifgi_inst.start() == True)
+
+assert(ifgi_inst.state() == "up")
+assert(ifgi_inst.stop()  == True)
+
+assert(ifgi_inst.state() == "stop")
+assert(ifgi_inst.start() == True)
+
+assert(ifgi_inst.state() == "up")
+assert(ifgi_inst.shutdown() == True)
+
+assert(ifgi_inst.state() == "down")
 
 
