@@ -12,10 +12,11 @@
 """
 
 import unittest
-from ifgi.ptracer.IfgiSys  import IfgiSys
-from ifgi.scene.SceneGraph import SceneGraph, SceneGraphNode, CameraNode
+import numpy
 
-
+# package import: specify a directory and file.
+from ifgi.ptracer import IfgiSys
+from ifgi.scene   import SceneGraph, Primitive
 
 class TestIfgiRender(unittest.TestCase):
     """test: ifgi render test. This is a big example for development"""
@@ -23,7 +24,7 @@ class TestIfgiRender(unittest.TestCase):
     def test_render(self):
         """test rendering"""
         # get ifgi system
-        ifgi_inst = IfgiSys()
+        ifgi_inst = IfgiSys.IfgiSys()
         ifgi_stat = ifgi_inst.start()
         assert(ifgi_stat == True)
 
@@ -44,14 +45,14 @@ class TestIfgiRender(unittest.TestCase):
         print 'creating a scene'
 
         # create scenegraph
-        self.__scenegraph = SceneGraph()
+        self.__scenegraph = SceneGraph.SceneGraph()
         assert(self.__scenegraph.get_root_node() == None)
 
         # create scenegraph's root node
-        rootsg = SceneGraphNode('rootsg')
+        rootsg = SceneGraph.SceneGraphNode('rootsg')
 
         # add a camera
-        child0 = CameraNode('main_cam')
+        child0 = SceneGraph.CameraNode('main_cam')
         rootsg.append_child(child0)
 
         self.__scenegraph.set_root_node(rootsg)
@@ -59,8 +60,47 @@ class TestIfgiRender(unittest.TestCase):
 
         assert(self.__scenegraph.is_valid())
 
+        # added a mesh group
+        meshgroup_node = SceneGraph.SceneGraphNode('meshgroup_0')
+        rootsg.append_child(meshgroup_node)
+
+        # create a triangle mesh and attch to the trimesh node
+        trimesh = self.__get_one_triangle_trimesh()
+        trimesh_node = SceneGraph.SceneGraphNode('trimesh_0')
+        trimesh_node.set_primitive(trimesh)
+        meshgroup_node.append_child(trimesh_node)
+
+
+
+    # get one triangle trimesh
+    # TODO: move to a test
+    def __get_one_triangle_trimesh(self):
+        """create one triangle trimesh"""
+
+        trimesh = Primitive.TriMesh()
+        # create a triangle
+        vertex_list       = []
+        face_idx_list     = []
+        texcoord_list     = []
+        texcoord_idx_list = []
+        normal_list       = []
+        normal_idx_list   = []
 
         # add a triangle
+        vertex_list.append(numpy.array([ 1.0, 0.0, 0.0]))
+        vertex_list.append(numpy.array([ 0.0, 1.0, 0.0]))
+        vertex_list.append(numpy.array([-1.0, 0.0, 0.0]))
+        face_idx_list.append(numpy.array([0, 1, 2]))
+
+        trimesh.set_data(vertex_list,
+                         face_idx_list,
+                         texcoord_list,
+                         texcoord_idx_list,
+                         normal_list,
+                         normal_idx_list
+                         )
+        return trimesh
+
 
 
     # set a perspective camera, look at the triangle
