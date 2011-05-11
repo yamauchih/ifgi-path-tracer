@@ -16,7 +16,7 @@ import numpy
 
 # package import: specify a directory and file.
 from ifgi.ptracer import IfgiSys
-from ifgi.scene   import SceneGraph, Primitive
+from ifgi.scene   import SceneGraph, Primitive, Film
 
 class TestIfgiRender(unittest.TestCase):
     """test: ifgi render test. This is a big example for development"""
@@ -28,9 +28,12 @@ class TestIfgiRender(unittest.TestCase):
         ifgi_stat = ifgi_inst.start()
         assert(ifgi_stat == True)
 
+        # members
+        self.__scenegraph = None
+
+        # run the test
         self.__create_scene()
         self.__set_camera_paramneter()
-        self.__set_framebuffer()
         self.__render_frame()
         self.__save_frame()
 
@@ -71,7 +74,6 @@ class TestIfgiRender(unittest.TestCase):
         meshgroup_node.append_child(trimesh_node)
 
 
-
     # get one triangle trimesh
     # TODO: move to a test
     def __get_one_triangle_trimesh(self):
@@ -102,16 +104,19 @@ class TestIfgiRender(unittest.TestCase):
         return trimesh
 
 
-
     # set a perspective camera, look at the triangle
     def __set_camera_paramneter(self):
+        cur_cam = self.__scenegraph.get_current_camera()
+        assert(cur_cam != None)
+        eye_pos    = numpy.array([ 0.0, 0.0,  5.0])
+        lookat_pos = numpy.array([ 0.0, 0.0, -1.0])
+        cur_cam.set_eye_lookat_pos(eye_pos, lookat_pos)
+        cur_cam.set_up_dir(numpy.array([ 0.0, 1.0, 0.0]))
 
-        assert(False)
+        # added RGBA buffer to the current camera.
+        cur_cam.set_film('RGBA', Film.ImageFilm(128, 128, 4, 'RGBA'))
+        cur_cam.print_obj()
 
-
-    # set a framebuffer to the camera
-    def __set_framebuffer(self):
-        assert(False)
 
     # render a frame
     def __render_frame(self):

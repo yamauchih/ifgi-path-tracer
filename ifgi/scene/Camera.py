@@ -35,6 +35,7 @@ class Camera(object):
         self.__z_near       = 0.1
         self.__z_far        = 1000
         self.__projection   = ProjectionMode.Perspective
+        # target distance = |eye_pos - lookat_point|
         self.__target_dist  = 1.0
         self.__focal_length = 1.0
         self.__lens_screen_dist = 1.0
@@ -45,6 +46,9 @@ class Camera(object):
         self.__ex    = numpy.array([1, 0,  0])
         # y direction base vector
         self.__ey    = numpy.array([0, 1,  0])
+
+        # films: framebuffer
+        self.__film = {}
 
         self.__compute_screen_parameter()
 
@@ -109,6 +113,20 @@ class Camera(object):
         """set view direction. (public)
         \return view direction (normalized)."""
         self.__view_dir = _view_dir
+        self.__compute_screen_parameter()
+
+    # set eye pos and lookat position
+    def set_eye_lookat_pos(self, _eye_pos, _lookat_pos):
+        """set lookat position.
+        \param[in] _eye_pos    eye position
+        \param[in] _lookat_pos lookat position
+        """
+        self.__eye_pos  = _eye_pos
+        lookat_vec      = _lookat_pos - _eye_pos
+        dist = numpy.linalg.norm(lookat_vec)
+        assert(dist > 0)
+        self.__target_dist = dist
+        self.__view_dir = lookat_vec / dist
         self.__compute_screen_parameter()
 
     # get up direction
@@ -245,6 +263,20 @@ class Camera(object):
         r = Ray.Ray(self.__eye_pos, vdir, self.__z_near, self.__z_far)
         return r
 
+    # set a film
+    def set_film(self, _film_name, _film):
+        """set a film.
+        \param[in] _film_name the film name
+        \param[in] _film       film instance
+        """
+        self.__film[_film_name] = _film
+
+    # get a film
+    def get_film(self, _film_name):
+        """get film.
+        \return film, exception if no _film_name exists."""
+        return self.__film[_film_name]
+
     # set camera parameters
     def set_camera_param(self, _othercam):
         """set camera parameters.
@@ -290,7 +322,7 @@ class Camera(object):
         print '#' + cname + '::LB_corner = ' + str(self.__LB_corner)
         print '#' + cname + '::ex = '      + str(self.__ex)
         print '#' + cname + '::ey = '      + str(self.__ey)
-
+        print '#' + cname + '::film = '    + str(self.__film)
 
     # get html info
     def get_html_info(self):
@@ -315,8 +347,9 @@ class Camera(object):
             '  <li>lens to film distance: ' +\
             str(self.__lens_film_dist)  + '\n' +\
             '  <li>Left bottom corner: ' + str(self.__LB_corner)  + '\n' +\
-            '  <li>ex (film x dir): ' + str(self.__ex)  + '\n' +\
-            '  <li>ey (film y dir): ' + str(self.__ey)  + '\n' +\
+            '  <li>ex (film x dir): ' + str(self.__ex)   + '\n' +\
+            '  <li>ey (film y dir): ' + str(self.__ey)   + '\n' +\
+            '  <li>ey (films): '      + str(self.__film) + '\n' +\
             '</ul>\n'
         return ret_s
 

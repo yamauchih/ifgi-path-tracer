@@ -1,11 +1,6 @@
 TODO list 2011-5-10(Tue)
 
-- Example: How to render a scene
-   - create a scene
-      - add a triangle
-   - set camera
-   - use perspective camera
-   - have a framebuffer
+- Example: test_ifgi_render.py How to render a scene
    - render a scene
    - create a scene update to load an obj file
    - remove one object and render it

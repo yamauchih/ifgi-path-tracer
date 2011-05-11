@@ -59,10 +59,10 @@ class ImageFilm(object):
 
         self.__buffername = _buffername
 
-        # allocate buffer
-        self.__framebuffer = zeros(self.__x_resolution,
-                                   self.__y_resolution,
-                                   self.__z_resolution)
+        # allocate buffer: zeros((shepe_touple), type, ...)
+        self.__framebuffer = numpy.zeros((self.__x_resolution,
+                                          self.__y_resolution,
+                                          self.__z_resolution))
 
     # class name
     def get_classname(self):
@@ -78,7 +78,12 @@ class ImageFilm(object):
         """
         return self.__buffername
 
+    # human readable string
+    def __str__(self):
 
+        return '[name: %s, resolution: (%d %d %d)]' \
+            % (self.__buffername,  self.__x_resolution, \
+                   self.__y_resolution, self.__z_resolution)
 
 
 #
