@@ -64,6 +64,13 @@ class Ray(object):
         """
         return self.__max_t
 
+    # string representation
+    def __str__(self):
+        return 'orig: '+ str(self.__origin) + ' dir: ' + str(self.__dir) +\
+            ' range: [' + str(self.__min_t)  + ' ' + str(self.__max_t) + ']'
+
+
+
 #
 # main test
 #

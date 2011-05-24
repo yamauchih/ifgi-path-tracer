@@ -17,6 +17,7 @@ import numpy
 # package import: specify a directory and file.
 from ifgi.ptracer import IfgiSys
 from ifgi.scene   import SceneGraph, Primitive, Film
+from ifgi.base    import Sampler
 
 class TestIfgiRender(unittest.TestCase):
     """test: ifgi render test. This is a big example for development"""
@@ -27,6 +28,9 @@ class TestIfgiRender(unittest.TestCase):
         ifgi_inst = IfgiSys.IfgiSys()
         ifgi_stat = ifgi_inst.start()
         assert(ifgi_stat == True)
+
+        self._image_xsize = 128
+        self._image_ysize = 128
 
         # members
         self.__scenegraph = None
@@ -114,17 +118,53 @@ class TestIfgiRender(unittest.TestCase):
         cur_cam.set_up_dir(numpy.array([ 0.0, 1.0, 0.0]))
 
         # added RGBA buffer to the current camera.
-        cur_cam.set_film('RGBA', Film.ImageFilm(128, 128, 4, 'RGBA'))
+        cur_cam.set_film('RGBA', Film.ImageFilm(self._image_xsize,\
+                                                    self._image_ysize, 4, 'RGBA'))
         cur_cam.print_obj()
+
+
+    # ray trimesh intersection test
+    # def __compute_color(self, _pixel_x, _pixel_y, _ray):
+
+    #     # FIXME: super slow
+    #     cur_cam = self.__scenegraph.get_current_camera()
+    #     film = cur_cam.get_film('RGBA')
+
+    #     for tri in trimesh:
+    #         if tri.ray_intersect(_ray) == True:
+    #             # print 'Hit'
+    #             film.putpixel((x, imgsize[1]-y), red)
 
 
     # render a frame
     def __render_frame(self):
-        assert(False)
+        srs = Sampler.StratifiedRegularSampler()
+        srs.compute_sample(0, self._image_xsize - 1, 0, self._image_ysize - 1)
+
+        assert(self._image_xsize > 0)
+        assert(self._image_ysize > 0)
+
+        inv_xsz = 1.0/self._image_xsize
+        inv_ysz = 1.0/self._image_ysize
+        cur_cam = self.__scenegraph.get_current_camera()
+
+        for x in xrange(0, self._image_xsize, 1):
+            for y in xrange(0, self._image_ysize, 1):
+                # get normalized coordinate
+                nx = srs.get_sample_x(x,y) * inv_xsz
+                ny = srs.get_sample_y(x,y) * inv_ysz
+                eye_ray = cur_cam.get_ray(nx, ny)
+                # print eye_ray
+                # print nx, ny
+                # self.__compute_color(x, y, eye_ray)
+
 
     # save the result
     def __save_frame(self):
         assert(False)
+        # fname = 'test_ifgi_render.png'
+        # resimg.save(fname)
+        # print 'Saved ... ' + fname
 
 
 #

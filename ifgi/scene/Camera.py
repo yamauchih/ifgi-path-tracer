@@ -11,7 +11,7 @@ import math
 import numpy
 from ifgi.base import enum
 
-import Film
+import Film, Ray
 
 ## Projection Mode
 ProjectionMode = enum.Enum(['Perspective', 'Orthographic'])

@@ -2,6 +2,11 @@ TODO list 2011-5-10(Tue)
 
 - Example: test_ifgi_render.py How to render a scene
    - render a scene
+      - test_ifgi_render.py:__compute_color()
+      - iterate triangles
+      - intersection test
+      - put the color to RGBA
+      - save the image
    - create a scene update to load an obj file
    - remove one object and render it
 
