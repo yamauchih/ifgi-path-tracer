@@ -199,7 +199,9 @@ class Triangle(Primitive):
         """compute ray intersection. interface method.
         \param[in]  _ray a ray
         \param[out] _hit_record hit information record
-        \return true when intersect, false otherwise
+        \return (is_hit, distance) is_hit is True when intersect,
+        false otherwise. When false distance has no meaning (but the
+        value is 0).
         """
         assert(self.__vertex != None)
 
@@ -211,30 +213,29 @@ class Triangle(Primitive):
         s1 = numpy.cross(_ray.get_dir(), e2)
         div = numpy.dot(s1, e1)
         if div == 0.0:
-            return False
+            return (False, 0)
         inv_div = 1.0/div
 
         # get barycentric coord b1
         d = _ray.get_origin() - self.__vertex[0]
         b1 = numpy.dot(d, s1) * inv_div
         if ((b1 < 0.0) or (b1 > 1.0)):
-            return False
+            return (False, 0)
 
         # get barycentric coord b2
         s2 = numpy.cross(d, e1)
         b2 = numpy.dot(_ray.get_dir(), s2) * inv_div
         if ((b2 < 0.0) or ((b1 + b2) > 1.0)):
-            return False
+            return (False, 0)
 
         # get intersection point (distance t)
         t = numpy.dot(e2, s2) * inv_div
         if ((t < _ray.get_min_t()) or (t > _ray.get_max_t())):
-            return False
+            return (False, 0)
 
-        # FIXME I need to return at least distance t
         # _hit_record.set_hit_record(b1, b2, t)
         # print 'Hit: t = ' + str(t) + ', b1 = ' + str(b1) + ', b2 = ' + str(b2)
-        return True
+        return (True, t)
 
     # set vertex
     def set_vertex(self, _v0, _v1, _v2):
@@ -293,15 +294,6 @@ class TriMesh(Primitive):
         """
         return False
 
-    # compute ray intersection
-    def ray_intersect(self, _ray):
-        """compute ray intersection. interface method. (public)
-        \param[in] _ray a ray
-        """
-        raise StandardError, ('Can not intersect ray directory. Refine first.')
-        return None
-
-
     # set data
     def set_data(self, _vlist, _fidxlist, _tclist, _tcidxlist, _nlist, _nidxlist):
         """set data (public).
@@ -344,8 +336,24 @@ class TriMesh(Primitive):
         """compute ray intersection. (public).
         \param[in] _ray a ray
         """
-        assert 0, "NIN."
-        return None
+        # NIN: bounding box test?
+        mindist = sys.float_info.max
+        hittri = None
+        for fi in self.face_idx_list:
+            tri = Triangle()
+            tri.set_vertex(self.vertex_list[fi[0]],
+                           self.vertex_list[fi[1]],
+                           self.vertex_list[fi[2]])
+            # FIXME: need nearest hit
+            is_hit, dist = tri.ray_intersect(_ray)
+            if is_hit:
+                if mindist > dist:
+                    mindist = dist
+                    hittri = tri
+
+            if hittri != None:
+                print 'DEBUG: HERE Hit and dist = ' + str(dist)
+
 
 #
 # main test

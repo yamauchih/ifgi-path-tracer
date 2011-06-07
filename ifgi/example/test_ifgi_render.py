@@ -32,6 +32,9 @@ class TestIfgiRender(unittest.TestCase):
         self._image_xsize = 128
         self._image_ysize = 128
 
+        # FIXME: trimesh should be retrieved by scene (or aggregate)
+        self.__fixme_trimesh = None
+
         # members
         self.__scenegraph = None
 
@@ -72,9 +75,9 @@ class TestIfgiRender(unittest.TestCase):
         rootsg.append_child(meshgroup_node)
 
         # create a triangle mesh and attch to the trimesh node
-        trimesh = self.__get_one_triangle_trimesh()
+        self.__fixme_trimesh = self.__get_one_triangle_trimesh()
         trimesh_node = SceneGraph.SceneGraphNode('trimesh_0')
-        trimesh_node.set_primitive(trimesh)
+        trimesh_node.set_primitive(self.__fixme_trimesh)
         meshgroup_node.append_child(trimesh_node)
 
 
@@ -118,23 +121,20 @@ class TestIfgiRender(unittest.TestCase):
         cur_cam.set_up_dir(numpy.array([ 0.0, 1.0, 0.0]))
 
         # added RGBA buffer to the current camera.
-        cur_cam.set_film('RGBA', Film.ImageFilm(self._image_xsize,\
-                                                    self._image_ysize, 4, 'RGBA'))
+        imgsz = (self._image_xsize, self._image_ysize, 4)
+        cur_cam.set_film('RGBA', Film.ImageFilm(imgsz, 'RGBA'))
         cur_cam.print_obj()
 
 
     # ray trimesh intersection test
-    # def __compute_color(self, _pixel_x, _pixel_y, _ray):
+    def __compute_color(self, _pixel_x, _pixel_y, _ray):
+        # FIXME: super slow
+        cur_cam = self.__scenegraph.get_current_camera()
+        film = cur_cam.get_film('RGBA')
 
-    #     # FIXME: super slow
-    #     cur_cam = self.__scenegraph.get_current_camera()
-    #     film = cur_cam.get_film('RGBA')
-
-    #     for tri in trimesh:
-    #         if tri.ray_intersect(_ray) == True:
-    #             # print 'Hit'
-    #             film.putpixel((x, imgsize[1]-y), red)
-
+        if self.__fixme_trimesh.ray_intersect(_ray):
+            print 'Hit'
+            film.put_color((x, imgsize[1]-y), redary)
 
     # render a frame
     def __render_frame(self):
@@ -156,15 +156,18 @@ class TestIfgiRender(unittest.TestCase):
                 eye_ray = cur_cam.get_ray(nx, ny)
                 # print eye_ray
                 # print nx, ny
-                # self.__compute_color(x, y, eye_ray)
+                self.__compute_color(x, y, eye_ray)
 
 
     # save the result
     def __save_frame(self):
-        assert(False)
-        # fname = 'test_ifgi_render.png'
-        # resimg.save(fname)
-        # print 'Saved ... ' + fname
+        cur_cam = self.__scenegraph.get_current_camera()
+        assert(cur_cam != None)
+        film = cur_cam.get_film('RGBA')
+        assert(film != None)
+        fname = 'test_ifgi_render.png'
+        film.save_file(fname)
+        print 'Saved ... ' + fname
 
 
 #

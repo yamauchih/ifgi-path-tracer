@@ -1,4 +1,6 @@
-TODO list 2011-5-10(Tue)
+TODO list 2011-6-7(Tue)
+
+Added ImageFilm put_color, get_color, fill_color, save_file.
 
 - Example: test_ifgi_render.py How to render a scene
    - render a scene

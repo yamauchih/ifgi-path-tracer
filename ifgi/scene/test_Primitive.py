@@ -43,7 +43,8 @@ def primitive_tri_ray_intersection_sub():
             min_t  = 0.1
             max_t  = 100
             r = Ray.Ray(origin, dir, min_t, max_t)
-            if tri.ray_intersect(r) == True:
+            is_hit, dist = tri.ray_intersect(r)
+            if is_hit == True:
                 # print origin, 'Hit'
 
                 resimg.putpixel((x, imgsize[1]-y), red)

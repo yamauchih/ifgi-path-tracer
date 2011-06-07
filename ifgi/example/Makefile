@@ -15,7 +15,12 @@ include $(IFGI_ROOT)/tool/Premake.mk
 # each Makefile define
 #----------------------------------------------------------------------
 # sub directories
-SUBDIR := 
+SUBDIR :=
+
+# additional clean files
+ADDITIONAL_CLEAN_FILE := 		\
+	test_ifgi_render.png 		\
+
 
 
 #----------------------------------------------------------------------

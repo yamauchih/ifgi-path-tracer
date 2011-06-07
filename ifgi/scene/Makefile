@@ -18,7 +18,10 @@ include $(IFGI_ROOT)/tool/Premake.mk
 SUBDIR :=
 
 # additional clean files
-ADDITIONAL_CLEAN_FILE := res_ray_tri_intersect.png test_primitive.prof
+ADDITIONAL_CLEAN_FILE := 		\
+	res_ray_tri_intersect.png 	\
+	test_primitive.prof 		\
+	test_film_result.png
 
 
 #----------------------------------------------------------------------

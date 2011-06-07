@@ -18,8 +18,23 @@ class TestFilm(unittest.TestCase):
     # test bbox
     def test_imagefilm(self):
         """test for ImageFilm"""
-        f = Film.ImageFilm(128, 128, 4, 'RGBA')
+        f = Film.ImageFilm((128, 128, 4), 'RGBA')
         assert(str(f) == '[name: RGBA, resolution: (128 128 4)]')
+
+        res = f.get_resolution()
+        assert(res == (128, 128, 4))
+
+        # fill white
+        res = f.fill_color(numpy.array([1,1,1,1]))
+
+        # draw a line
+        red = numpy.array([1, 0, 0, 1])
+        for i in xrange(10, 100, 1):
+            f.put_color((i, i), red)
+            assert((f.get_color((i, i)) == red).all())
+
+        # save a file
+        f.save_file('test_film_result.png')
 
 #
 # main test
