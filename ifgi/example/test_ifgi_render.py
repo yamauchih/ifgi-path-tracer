@@ -22,6 +22,9 @@ from ifgi.base    import Sampler
 class TestIfgiRender(unittest.TestCase):
     """test: ifgi render test. This is a big example for development"""
 
+    FIXME_REDARY = numpy.array([1, 0, 0, 1])
+
+
     def test_render(self):
         """test rendering"""
         # get ifgi system
@@ -133,8 +136,7 @@ class TestIfgiRender(unittest.TestCase):
         film = cur_cam.get_film('RGBA')
 
         if self.__fixme_trimesh.ray_intersect(_ray):
-            print 'Hit'
-            film.put_color((x, imgsize[1]-y), redary)
+            film.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
 
     # render a frame
     def __render_frame(self):

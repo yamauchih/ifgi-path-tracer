@@ -1,14 +1,9 @@
-TODO list 2011-6-7(Tue)
-
-Added ImageFilm put_color, get_color, fill_color, save_file.
+TODO list 2011-6-9(Thu)
 
 - Example: test_ifgi_render.py How to render a scene
    - render a scene
-      - test_ifgi_render.py:__compute_color()
-      - iterate triangles
-      - intersection test
-      - put the color to RGBA
-      - save the image
+      - define a light
+      - add a lambert shader?
    - create a scene update to load an obj file
    - remove one object and render it
 

@@ -353,7 +353,9 @@ class TriMesh(Primitive):
 
             if hittri != None:
                 print 'DEBUG: HERE Hit and dist = ' + str(dist)
+                return True
 
+            return False
 
 #
 # main test
