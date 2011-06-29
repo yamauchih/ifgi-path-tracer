@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 #
+# Copyright 2011 (C) Yamauchi, Hitoshi
+#
+#
 # test for Primitive module
 #
 

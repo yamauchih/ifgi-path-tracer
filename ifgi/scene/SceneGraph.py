@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#
+# Copyright 2011 (C) Yamauchi, Hitoshi
+#
 
 """Scene graph
 \file
@@ -162,14 +165,17 @@ class SceneGraph(object):
     """Scene graph
 
     This has
-    - __root_node
+    - __cur_camera   current camera
+    - __root_node    for all the geometry
+    - __light_group  for non physical lights (point lights)
     """
 
     # default constructor
     def __init__(self):
         """default constructor"""
-        self.__cur_camera = None
-        self.__root_node  = None
+        self.__cur_camera  = None
+        self.__root_node   = None
+        self.__light_group = None
 
     # set the root node
     def set_root_node(self, _root_node):
@@ -199,6 +205,26 @@ class SceneGraph(object):
         """
         return self.__cur_camera
 
+
+    # set the light group
+    def set_light_group(self, _light_group):
+        """set the light group
+
+        This light group is unique and global. If another light group
+        is set, the last one is gone. Temporary solution while
+        developing.
+
+        \param[in] _light_group global light group
+        """
+        self.__light_group = _light_group
+
+    # get the light group
+    def get_light_group(self):
+        """get the light group
+        \return light group of this scenegraph
+        """
+        return self.__root_node
+
     # is valid scenegraph
     def is_valid(self):
         """test this scenegrapgh validity
@@ -210,7 +236,6 @@ class SceneGraph(object):
             return False
 
         return True
-
 
     # travertse the scenegraph. subroutine of traverse_sgnode
     def __traverse_sgnode_sub(self, _cur_node, _level, _strategy):

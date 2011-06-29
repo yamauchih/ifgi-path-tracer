@@ -1,9 +1,9 @@
-TODO list 2011-6-9(Thu)
+TODO list 2011-6-29(Wed)
 
 - Example: test_ifgi_render.py How to render a scene
    - render a scene
-      - define a light
-      - add a lambert shader?
+      - lookup light group
+      - add a lambert material
    - create a scene update to load an obj file
    - remove one object and render it
 

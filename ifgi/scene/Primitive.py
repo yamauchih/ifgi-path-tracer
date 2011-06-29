@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-
+#
+# Copyright 2010-2011 (C) Yamauchi, Hitoshi
+#
 """IFGI Primitive
 \file
 \brief scene element primitives
@@ -356,6 +358,15 @@ class TriMesh(Primitive):
                 return True
 
             return False
+
+
+
+
+
+
+
+
+
 
 #
 # main test

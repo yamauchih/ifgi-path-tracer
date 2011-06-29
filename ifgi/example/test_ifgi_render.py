@@ -16,7 +16,7 @@ import numpy
 
 # package import: specify a directory and file.
 from ifgi.ptracer import IfgiSys
-from ifgi.scene   import SceneGraph, Primitive, Film
+from ifgi.scene   import SceneGraph, Primitive, Film, Light
 from ifgi.base    import Sampler
 
 class TestIfgiRender(unittest.TestCase):
@@ -82,6 +82,16 @@ class TestIfgiRender(unittest.TestCase):
         trimesh_node = SceneGraph.SceneGraphNode('trimesh_0')
         trimesh_node.set_primitive(self.__fixme_trimesh)
         meshgroup_node.append_child(trimesh_node)
+
+        # create a light and set lightgroup
+        light_pos       = numpy.array([3.0, 3.0, 3.0])
+        light_intensity = numpy.array([1.0, 1.0, 1.0])
+        pl = Light.PointLight('light0', light_pos, light_intensity)
+        lg = Light.LightGroup('lightgroup0')
+        lg.add_light(pl)
+
+        # add (global) lightgroup to the scenegraph
+        self.__scenegraph.set_light_group(lg)
 
 
     # get one triangle trimesh

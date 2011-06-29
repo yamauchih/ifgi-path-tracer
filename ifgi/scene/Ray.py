@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#
+# Copyright 2011 (C) Yamauchi, Hitoshi
+#
 # Ray
 
 """IFGI Ray
