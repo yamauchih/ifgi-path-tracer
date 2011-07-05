@@ -1,11 +1,13 @@
-TODO list 2011-6-29(Wed)
+TODO list 2011-7-5(Tue)
 
 - Example: test_ifgi_render.py How to render a scene
+   - Add orthormal basis (at the hit point)
    - render a scene
-      - lookup light group
       - add a lambert material
+      - lookup light group
    - create a scene update to load an obj file
    - remove one object and render it
+   - depth buffer
 
 - Add test: use Camera, ray triangle intersection.
 - Implement update button (scenegraph camera)

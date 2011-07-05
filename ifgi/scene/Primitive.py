@@ -12,6 +12,7 @@ import math
 import numpy
 
 import Ray
+import HitRecord
 
 # Primitive class: interface
 class Primitive(object):
@@ -52,6 +53,7 @@ class Primitive(object):
     def ray_intersect(self, _ray):
         """compute ray intersection. interface method. (public)
         \param[in] _ray a ray
+        \return None (A HitRecord)
         """
         assert 0, "ray_intersect must be implemented in a derived class."
         return None
@@ -91,6 +93,7 @@ class BBox(Primitive):
     def ray_intersect(self, _ray):
         """compute ray intersection. interface.
         \param[in] _ray a ray
+        \return None (A HitRecord)
         """
         assert 0, "NIN."
         return None
@@ -200,10 +203,8 @@ class Triangle(Primitive):
     def ray_intersect(self, _ray):
         """compute ray intersection. interface method.
         \param[in]  _ray a ray
-        \param[out] _hit_record hit information record
-        \return (is_hit, distance) is_hit is True when intersect,
-        false otherwise. When false distance has no meaning (but the
-        value is 0).
+        \return a HitRecord. None when not hit.
+        \
         """
         assert(self.__vertex != None)
 
@@ -215,29 +216,30 @@ class Triangle(Primitive):
         s1 = numpy.cross(_ray.get_dir(), e2)
         div = numpy.dot(s1, e1)
         if div == 0.0:
-            return (False, 0)
+            return None
         inv_div = 1.0/div
 
         # get barycentric coord b1
         d = _ray.get_origin() - self.__vertex[0]
         b1 = numpy.dot(d, s1) * inv_div
         if ((b1 < 0.0) or (b1 > 1.0)):
-            return (False, 0)
+            return None
 
         # get barycentric coord b2
         s2 = numpy.cross(d, e1)
         b2 = numpy.dot(_ray.get_dir(), s2) * inv_div
         if ((b2 < 0.0) or ((b1 + b2) > 1.0)):
-            return (False, 0)
+            return None
 
         # get intersection point (distance t)
         t = numpy.dot(e2, s2) * inv_div
         if ((t < _ray.get_min_t()) or (t > _ray.get_max_t())):
-            return (False, 0)
+            return None
 
-        # _hit_record.set_hit_record(b1, b2, t)
         # print 'Hit: t = ' + str(t) + ', b1 = ' + str(b1) + ', b2 = ' + str(b2)
-        return (True, t)
+        hr = HitRecord.HitRecord()
+        hr.dist = t
+        return hr
 
     # set vertex
     def set_vertex(self, _v0, _v1, _v2):
@@ -337,28 +339,33 @@ class TriMesh(Primitive):
     def ray_intersect(self, _ray):
         """compute ray intersection. (public).
         \param[in] _ray a ray
+        \return a HitRecord. None if no hit.
         """
         # NIN: bounding box test?
-        mindist = sys.float_info.max
-        hittri = None
+
+        trimesh_hr = HitRecord.HitRecord()
+
+        # following init is make sure only (done in the HitRecord.__init__())
+        trimesh_hr.dist = sys.float_info.max
+        trimesh_hr.hit_primitive = None
+
         for fi in self.face_idx_list:
             tri = Triangle()
             tri.set_vertex(self.vertex_list[fi[0]],
                            self.vertex_list[fi[1]],
                            self.vertex_list[fi[2]])
             # FIXME: need nearest hit
-            is_hit, dist = tri.ray_intersect(_ray)
-            if is_hit:
-                if mindist > dist:
-                    mindist = dist
-                    hittri = tri
+            hr = tri.ray_intersect(_ray)
+            if hr != None:
+                if trimesh_hr.dist > hr.dist:
+                    trimesh_hr.dist = hr.dist
+                    trimesh_hr.hit_primitive = tri
 
-            if hittri != None:
-                print 'DEBUG: HERE Hit and dist = ' + str(dist)
-                return True
+        if trimesh_hr.hit_primitive != None:
+            print 'DEBUG: HERE Hit and dist = ' + str(trimesh_hr.dist)
+            return trimesh_hr
 
-            return False
-
+        return None
 
 
 

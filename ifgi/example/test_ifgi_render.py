@@ -147,6 +147,9 @@ class TestIfgiRender(unittest.TestCase):
 
         if self.__fixme_trimesh.ray_intersect(_ray):
             film.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
+            # self.__get_all_light_radiance()
+
+
 
     # render a frame
     def __render_frame(self):

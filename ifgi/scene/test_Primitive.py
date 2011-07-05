@@ -46,10 +46,9 @@ def primitive_tri_ray_intersection_sub():
             min_t  = 0.1
             max_t  = 100
             r = Ray.Ray(origin, dir, min_t, max_t)
-            is_hit, dist = tri.ray_intersect(r)
-            if is_hit == True:
+            hit_record = tri.ray_intersect(r)
+            if hit_record != None:
                 # print origin, 'Hit'
-
                 resimg.putpixel((x, imgsize[1]-y), red)
 
     resimg.save("res_ray_tri_intersect.png")
