@@ -1,7 +1,6 @@
-TODO list 2011-7-5(Tue)
+TODO list 2011-7-12(Tue)
 
 - Example: test_ifgi_render.py How to render a scene
-   - Add orthormal basis (at the hit point)
    - render a scene
       - add a lambert material
       - lookup light group

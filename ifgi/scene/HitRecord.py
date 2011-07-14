@@ -11,6 +11,8 @@
 """
 
 import sys
+from ifgi.base import OrthonomalBasis
+
 
 # HitRecord
 class HitRecord(object):
@@ -24,6 +26,8 @@ class HitRecord(object):
         self.dist = sys.float_info.max
         self.intersect_pos = None
         self.hit_primitive = None
+        # w component is normal direction of hit point
+        self.hit_basis     = None
 
     # class name
     def get_classname(self):
@@ -36,7 +40,8 @@ class HitRecord(object):
     # string representation
     def __str__(self):
         return 'HitRecord: dist: '+ str(self.dist) +\
-            ', pos: ' + str(self.intersect_pos)
+            ', pos: ' + str(self.intersect_pos) +\
+            ', basis: ' + str(self.hit_basis)
 
 
 

@@ -13,6 +13,7 @@ import numpy
 
 import Ray
 import HitRecord
+from ifgi.base import OrthonomalBasis
 
 # Primitive class: interface
 class Primitive(object):
@@ -239,6 +240,9 @@ class Triangle(Primitive):
         # print 'Hit: t = ' + str(t) + ', b1 = ' + str(b1) + ', b2 = ' + str(b2)
         hr = HitRecord.HitRecord()
         hr.dist = t
+        hr.hit_primitive = self
+        hr.hit_basis = OrthonomalBasis.OrthonomalBasis()
+        hr.hit_basis.init_from_uv(e1, e2) # set normal
         return hr
 
     # set vertex
@@ -360,9 +364,9 @@ class TriMesh(Primitive):
                 if trimesh_hr.dist > hr.dist:
                     trimesh_hr.dist = hr.dist
                     trimesh_hr.hit_primitive = tri
+                    trimesh_hr.hit_basis = hr.hit_basis
 
         if trimesh_hr.hit_primitive != None:
-            print 'DEBUG: HERE Hit and dist = ' + str(trimesh_hr.dist)
             return trimesh_hr
 
         return None

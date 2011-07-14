@@ -145,9 +145,10 @@ class TestIfgiRender(unittest.TestCase):
         cur_cam = self.__scenegraph.get_current_camera()
         film = cur_cam.get_film('RGBA')
 
-        if self.__fixme_trimesh.ray_intersect(_ray):
+        hr = self.__fixme_trimesh.ray_intersect(_ray)
+        if hr != None:
             film.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
-            # self.__get_all_light_radiance()
+            # self.__get_all_light_radiance() HEREHERE
 
 
 
