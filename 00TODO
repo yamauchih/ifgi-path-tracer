@@ -1,4 +1,12 @@
-TODO list 2011-7-12(Tue)
+TODO list 2011-7-15(Fri)
+
+Add primitive to get_bsdf
+
+material の項を読んで bsdf をどう評価するか見る．しかし最初は
+lambertian のみ．
+
+bsdf->
+material
 
 - Example: test_ifgi_render.py How to render a scene
    - render a scene

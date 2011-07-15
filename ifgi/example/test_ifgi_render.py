@@ -44,6 +44,12 @@ class TestIfgiRender(unittest.TestCase):
         # run the test
         self.__create_scene()
         self.__set_camera_paramneter()
+
+        if self.__scenegraph.get_light_group() == None:
+            print 'No light group in the scene.'
+        if len(self.__scenegraph.get_light_group().get_dict()) == 0:
+            raise StandardError, ('No light in the scene.')
+
         self.__render_frame()
         self.__save_frame()
 
@@ -147,8 +153,19 @@ class TestIfgiRender(unittest.TestCase):
 
         hr = self.__fixme_trimesh.ray_intersect(_ray)
         if hr != None:
+            # Hit point visualization
             film.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
-            # self.__get_all_light_radiance() HEREHERE
+            # HEREHERE
+            self.__get_all_light_radiance(hr)
+
+
+    # see the lights
+    def __get_all_light_radiance(self, _hit_record):
+        light_group = self.__scenegraph.get_light_group()
+        bsdf_mat = hr.hit_primitive.get_bsdf()
+        for light in light_group.get_dict().values():
+            print 'light = ', light.get_light_name()
+
 
 
 

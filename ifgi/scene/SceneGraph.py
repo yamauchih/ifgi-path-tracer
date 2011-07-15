@@ -223,7 +223,7 @@ class SceneGraph(object):
         """get the light group
         \return light group of this scenegraph
         """
-        return self.__root_node
+        return self.__light_group
 
     # is valid scenegraph
     def is_valid(self):
