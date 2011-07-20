@@ -1,14 +1,9 @@
 * Task ifgi path tracer 2011-7-20(Wed)
 
-Added numpy_util, conversion function: numpy.array <-> string
-Added group (tab) to the QtSimpleTabDialog and test.
-Added Camera configuration GUI creation (WIP).
-
-
 ** TODO Add Camera parameter control GUI
-*** TODO parameter iterator of Camera
-**** get_keys (list), and get value dict, get parameter type dict
-*** TODO create parameter control from this iterator
+*** DONE parameter iterator of Camera
+**** DONE get_keys (list), and get value dict, get parameter type dict
+*** DONE create parameter control from this iterator
 *** TODO set the parameter values
 
 ** TODO Add primitive to get_bsdf

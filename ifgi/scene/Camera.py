@@ -7,7 +7,7 @@
 \file
 \brief camera"""
 
-import math
+import math, copy
 import numpy
 from ifgi.base import enum
 
@@ -352,6 +352,69 @@ class Camera(object):
             '  <li>ey (films): '      + str(self.__film) + '\n' +\
             '</ul>\n'
         return ret_s
+
+    def get_param_key(self):
+        """get camera parameter key list.
+        For ordered access.
+        \return ordered parameter key list
+        """
+        param_list = [
+            'eye_pos',
+            'view_dir',
+            'up_dir',
+            'fovy_rad',
+            'aspect_ratio',
+            'z_near',
+            'z_far',
+            'projection',
+            'target_dist',
+            'focal_length',
+            'lens_screen_dist',
+            'lens_film_dist'
+            ]
+        return param_list
+
+    def get_value_dict(self):
+        """get camera parameter value dictionary.
+        \return parameter key, value dictionary
+        """
+        new_cam = copy.deepcopy(self)
+        value_dict = {
+            'eye_pos':          new_cam.get_eye_pos().copy(),
+            'view_dir':         new_cam.get_view_dir().copy(),
+            'up_dir':           new_cam.get_up_dir().copy(),
+            'fovy_rad':         new_cam.get_fovy_rad(),
+            'aspect_ratio':     new_cam.get_aspect_ratio(),
+            'z_near':           new_cam.get_z_near(),
+            'z_far':            new_cam.get_z_far(),
+            'projection':       new_cam.get_projection(),
+            'target_dist':      new_cam.get_target_distance(),
+            'focal_length':     new_cam.get_focal_length(),
+            'lens_screen_dist': new_cam.get_lens_to_screen_distance(),
+            'lens_film_dist':   new_cam.get_lens_to_film_distance()
+            }
+        return value_dict
+
+    def get_typename_dict(self):
+        """get camera parameter type dictionary.
+        \return parameter key, typename dictionary
+        """
+        typename_dict = {
+            'eye_pos':          'vector3',
+            'view_dir':         'vector3',
+            'up_dir':           'vector3',
+            'fovy_rad':         'float',
+            'aspect_ratio':     'float',
+            'z_near':           'float',
+            'z_far':            'float',
+            'projection':       'enum',
+            'target_dist':      'float',
+            'focal_length':     'float',
+            'lens_screen_dist': 'float',
+            'lens_film_dist':   'float'
+            }
+        return typename_dict
+
 
 
 # OpenGL camera

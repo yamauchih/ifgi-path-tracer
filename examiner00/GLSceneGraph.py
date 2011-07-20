@@ -490,23 +490,28 @@ class GLCameraNode(GLSceneGraphNode):
 
         cam_group = _tab_dialog.add_group('Camera')
 
-        cam_group.add(QtWidgetIO.QtLineEditWIO(),
-                      'EyePosition',
-                      numpy_util.array2str(self.__gl_camera.get_eye_pos()),
-                      {'LABEL': 'EyePosition'})
+        keylist  = self.__gl_camera.get_param_key()
+        valdict  = self.__gl_camera.get_value_dict()
+        typedict = self.__gl_camera.get_typename_dict()
 
-        # FIXME HEREHERE
-        numpy_util.array2str(self.__gl_camera.get_view_dir())
-        numpy_util.array2str(self.__gl_camera.get_up_dir())
-        str(self.__gl_camera.get_fovy_rad())
-        str(self.__gl_camera.get_aspect_ratio())
-        str(self.__gl_camera.get_z_near())
-        str(self.__gl_camera.get_z_far())
-        str(self.__gl_camera.get_projection())
-        str(self.__gl_camera.get_target_distance())
-        str(self.__gl_camera.get_focal_length())
-        str(self.__gl_camera.get_lens_to_screen_distance())
-        str(self.__gl_camera.get_lens_to_film_distance())
+        for key in keylist:
+            typename = typedict[key]
+            if typename == 'vector3':
+                cam_group.add(QtWidgetIO.QtLineEditWIO(),
+                              key,
+                              numpy_util.array2str(valdict[key]),
+                              {'LABEL': key})
+            elif typename == 'float':
+                cam_group.add(QtWidgetIO.QtLineEditWIO(),
+                              key,
+                              str(valdict[key]),
+                              {'LABEL': key})
+            elif typename == 'enum':
+                if key == 'projection':
+                    pass
+                    # FIXME NIN. choise pulldown menu
+            else:
+                raise StandardError('unknown typename for camera parameter.')
 
         return True
 
