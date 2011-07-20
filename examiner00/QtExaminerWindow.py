@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#
+# Copyright (C) 2010-2011 Yamauchi, Hitoshi
+#
 """Examiner Window Application
 
 \file

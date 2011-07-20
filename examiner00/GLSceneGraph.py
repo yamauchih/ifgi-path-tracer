@@ -1,11 +1,17 @@
 #!/usr/bin/env python
+#
+# Copyright (C) 2010-2011 Yamauchi, Hitoshi
+#
 
 """GLSceneGraph module
 \file
 \brief OpenGL scene graph module"""
 
 from OpenGL import GL, GLU
+from PyQt4  import QtCore, QtGui
+from ifgi.base  import numpy_util
 from ifgi.scene import Camera, SceneGraph
+import QtWidgetIO
 
 import DrawMode, GLUtil
 
@@ -303,6 +309,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         # 'GLSceneGraphNode.get_drawmode_list() must be implemented ' +
         # 'in derived class. classname = ' + self.get_classname())
 
+
     # get info of this node
     def get_info_html_GLSceneGraphNode(self):
         """get GLSceneGraphNode base info html text.
@@ -332,6 +339,26 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
 
         return ret_s
 
+
+    def create_config_dialog(self, _tab_dialog):
+        """Create configuration dialog.
+        The configuration dialog is QtSimpleTabDialog.
+
+        Design decision: Only this method in the GLSceneGraph depends
+        on Qt. I could make this independent from the Qt by a domain
+        specific GUI creation language and pass it as a string. But,
+        that would be a small scripting language. The advantage of
+        PyQt is the GUI creation scripting language. Making another
+        language is not necessary. Therefore, I think this dependency
+        is fine.
+
+        \param[in] _tab_dialog a QtSimpleTabDialog
+        \return True when there are some configuration. False when no
+        configuration is needed for this node.
+        """
+        QtCore.qWarning('GLSceneGraphNode.create_config_dialog() is empty. ' +
+                        'No configuration for this GLSceneGraphNode.')
+        return False
 
 
     # print this obj for debug
@@ -452,6 +479,36 @@ class GLCameraNode(GLSceneGraphNode):
             self.__gl_camera.get_html_info()
 
         return ret_s
+
+    def create_config_dialog(self, _tab_dialog):
+        """Create configuration dialog for GLCameraNode.
+        The configuration dialog is QtSimpleTabDialog.
+
+        \param[in] _tab_dialog a QtSimpleTabDialog
+        \return True since this node is configurable.
+        """
+
+        cam_group = _tab_dialog.add_group('Camera')
+
+        cam_group.add(QtWidgetIO.QtLineEditWIO(),
+                      'EyePosition',
+                      numpy_util.array2str(self.__gl_camera.get_eye_pos()),
+                      {'LABEL': 'EyePosition'})
+
+        # FIXME HEREHERE
+        numpy_util.array2str(self.__gl_camera.get_view_dir())
+        numpy_util.array2str(self.__gl_camera.get_up_dir())
+        str(self.__gl_camera.get_fovy_rad())
+        str(self.__gl_camera.get_aspect_ratio())
+        str(self.__gl_camera.get_z_near())
+        str(self.__gl_camera.get_z_far())
+        str(self.__gl_camera.get_projection())
+        str(self.__gl_camera.get_target_distance())
+        str(self.__gl_camera.get_focal_length())
+        str(self.__gl_camera.get_lens_to_screen_distance())
+        str(self.__gl_camera.get_lens_to_film_distance())
+
+        return True
 
 
 

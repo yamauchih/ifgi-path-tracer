@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#
+# Copyright (C) 2010-2011 Yamauchi, Hitoshi
+#
 
 """QtSimpleTabDialog
 
@@ -15,7 +18,7 @@ import QtWidgetIO
 # QtSimpleTabDialog
 class QtSimpleTabDialog(QtGui.QDialog):
     """QtSimpleTabDialog
-    Simple (one) tab widget dialog
+    Simple (= one) tab widget dialog, but many tabs in the tab widget
     Most of the user interaction will be done via this dialog.
     """
 
@@ -28,7 +31,13 @@ class QtSimpleTabDialog(QtGui.QDialog):
         self.setMinimumWidth(0);
 
         # main widget: tab
-        self.__tab_widget = QtGui.QTabWidget(self);
+        self.__tab_widget     = QtGui.QTabWidget(self);
+
+        # frame map: groupname -> Qframe (has a QtGroupFrame)
+        self.__frame_map      = {}
+
+        # group frame map: groupname -> QtGroupframe (has QIOWIdgets)
+        self.__groupframe_map = {}
 
         # buttons: Apply, Update, OK, Close
         self.__apply_btn  = QtGui.QPushButton('Apply');
@@ -112,19 +121,60 @@ class QtSimpleTabDialog(QtGui.QDialog):
         super(QtSimpleTabDialog, self).closeEvent(_close_event)
 
 
-    def test_addtab(self, _tabname):
-        """test add a tab"""
+    def add_group(self, _group_name):
+        """Add a group. This means creating a new tab and called it a group.
+        The added group members will be contained in a new tab.
+        The group is accessed by frame with the group name.
+
+        Internal Widget/Layout hierarchy is:
+        + newTab
+          +-- QFrame
+              +-- QHBoxLayout
+                  +-- QtGroupFrame
+
+        \param[in] _group_name a group name to be added.
+        \return the added groupframe
+        """
+        if self.__frame_map.has_key(_group_name) == True:
+            raise StandardError(_group_name + ' has been added.')
+
         frame     = QtGui.QFrame()
         boxlayout = QtGui.QHBoxLayout(frame)
         boxlayout.addSpacing(10)
         frame.setLayout(boxlayout)
 
-        groupframe = QtGroupFrame.QtGroupFrame(frame, _tabname);
+        groupframe = QtGroupFrame.QtGroupFrame(frame, _group_name);
         boxlayout.addWidget(groupframe);
 
-        opt = {'LABEL': 'Hello'}
-        groupframe.add(QtWidgetIO.QtLineEditWIO(), 'myLineEdit', 'HelloWorld', opt)
-        self.__tab_widget.addTab(frame, _tabname)
+        self.__tab_widget.addTab(frame, _group_name)
+
+        self.__frame_map[_group_name]      = frame
+        self.__groupframe_map[_group_name] = groupframe
+
+        return groupframe
+
+
+    def remove_group(self, _group_name):
+        """Remove a group. This means removing the tab associated
+        with _group_name.
+        \param[in] _group_name a group name to be removed.
+        """
+        if self.__frame_map.has_key(_group_name) == False:
+            raise StandardError('no such group [' + _group_name + '].')
+
+        self.__tab_widget.removeTab(
+            self.__tab_widget.indexOf(self.__frame_map[_group_name]))
+        del self.__frame_map[_group_name]
+        del self.__groupframe_map[_group_name]
+
+
+    def get_groupframe(self, _group_name):
+        """Get a groupframe.
+        \param[in] _group_name key of group frame.
+        \return a QtGroupFrame associated with _group_name. None when
+        no _group_name found.
+        """
+        return self.__groupframe_map.get(_group_name, None)
 
 
 # test when called directly
@@ -134,8 +184,14 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
 
     tab_dialog = QtSimpleTabDialog()
-    tab_dialog.test_addtab('testtab1')
-    tab_dialog.test_addtab('testtab2')
+
+    gf0 = tab_dialog.add_group('testtab0')
+    opt0 = {'LABEL': 'Hello'}
+    gf0.add(QtWidgetIO.QtLineEditWIO(), 'myLineEdit', 'HelloWorld0', opt0)
+
+    gf1 = tab_dialog.add_group('testtab1')
+    opt1 = {'LABEL': 'This is for tab1.'}
+    gf1.add(QtWidgetIO.QtLineEditWIO(), 'myLineEdit', 'HelloWorld1', opt1)
 
     tab_dialog.open()
     s = raw_input('Push return to finish: ')

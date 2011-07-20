@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#
+# Copyright (C) 2010-2011 Yamauchi, Hitoshi
+#
 
 """QtSceneGraphWidget
 \file
@@ -7,10 +10,7 @@
 """
 
 from PyQt4 import Qt, QtCore, QtGui
-import GLSceneGraph
-import DrawMode
-import QtUtil
-import QtInfoDialog
+import GLSceneGraph, DrawMode, QtUtil, QtInfoDialog, QtSimpleTabDialog
 
 # QtSceneGraphView
 class QtSceneGraphViewWidget(QtGui.QTreeView):
@@ -113,16 +113,28 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         return self.__model
 
     # show config dialog
-    def show_config_dialog(self, _glsgnode):
-        """show config dialog for _glsgnode.
-        \param[in] _glsgnode gl scenegraph node to configure"""
+    def show_config_dialog(self):
+        """show config dialog for the current node.
+        The current node is stored in self.__cur_tree_item.get_node()
+        """
         print 'DEBUG: show config dialog'
+        assert(self.__cur_tree_item != None)
+        assert(self.__cur_tree_item.get_node() != None)
+
+        config_dialog = QtSimpleTabDialog.QtSimpleTabDialog(self)
+        config_dialog.setWindowModality(QtCore.Qt.NonModal)
+
+        # create a configuration dialog depends on the each node.
+        # When return false, the node is not configurable.
+        if self.__cur_tree_item.get_node().create_config_dialog(config_dialog) == True:
+            config_dialog.open()
+
 
     # show node info
-    def show_nodeinfo_dialog(self, _glsgnode):
-        """show information dialog for _glsgnode.
-        \param[in] _glsgnode gl scenegraph node"""
-
+    def show_nodeinfo_dialog(self):
+        """show information dialog for the current node.
+        The current node is stored in self.__cur_tree_item.get_node().
+        """
         print 'DEBUG: show info dialog'
         # Note: if QtSceneGraphDialog is modal, then these ifo dialog
         # is also modal, even with show().
@@ -535,6 +547,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
                 def mode_closure(this, drawmode_bitmap):
                     return (lambda: this.__popupmenu_set_drawmode(drawmode_bitmap))
 
+                # set drawmode_bitmap to the closure (keeping this drawmode_bitmap)
                 modclosure = mode_closure(self, dmi.get_bitmap())
                 drawmode_act = QtGui.QAction(dmi.get_name(), self,
                                              statusTip="DrawMode: " + dmi.get_name(),

@@ -1,5 +1,8 @@
 #!/bin/sh
 #
+# Copyright (C) 2010-2011 Yamauchi, Hitoshi
+#
+#
 # run all test
 
 set -e

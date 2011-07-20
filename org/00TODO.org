@@ -1,0 +1,126 @@
+* Task ifgi path tracer 2011-7-20(Wed)
+
+Added numpy_util, conversion function: numpy.array <-> string
+Added group (tab) to the QtSimpleTabDialog and test.
+Added Camera configuration GUI creation (WIP).
+
+
+** TODO Add Camera parameter control GUI
+*** TODO parameter iterator of Camera
+**** get_keys (list), and get value dict, get parameter type dict
+*** TODO create parameter control from this iterator
+*** TODO set the parameter values
+
+** TODO Add primitive to get_bsdf
+
+** TODO material の項を読んで bsdf をどう評価するか見る．しかし最初は
+   lambertian のみ．
+
+** TODO bsdf->material
+
+** TODO Example: test_ifgi_render.py How to render a scene
+
+*** render a scene
+*** add a lambert material
+**** lookup light group
+*** create a scene update to load an obj file
+*** remove one object and render it
+*** depth buffer
+
+** TODO Add test: use Camera, ray triangle intersection.
+** TODO Implement update button (scenegraph camera)
+
+** TODO fix camera
+*** TODO focul length is not correct
+*** TODO add lens to screen, lens to film distance
+*** TODO don't care lens to screen for now
+*** TODO z near and far should be adjusted by viewall
+
+
+
+** TODO test triangle ray intersection with perspective camera
+
+*** it may be faster if I use linear system solver to find the
+    ray-intersection solution.
+    numpy.linalg.det(b), but compute determinant twice is expensive.
+    numpy.linalg.solve(a,b)
+
+*** Fix the viewport
+
+*** ImageFilm as Primitive (draw()able in the screen)
+**** resizable.
+**** when set to the camera, resize.
+
+** Add ImageFilm Node (choose buffer and draw)
+   attach framebuffer node to camera node
+   framebffers are shared between IFGICamera and GLCamera
+*** RGBA frame buffer (32bit)
+*** Z buffer          (32bit)
+
+Add GLImageFilmNode
+
+** drawa()ble node in the screen.
+
+
+** Shoot rays
+*** Intersection routine with a triangle and its test.
+
+** Add some QtWidgetIO
+*** Color button
+*** GLNode has the configuration script to set up the config.
+
+** Scenegraph dialog
+   updateGL() is not called when node status changed. Need observer
+   implementation. will be later.
+
+** Picking
+
+** Doxypy-ization
+   Ray.py
+   SceneGraph.py
+   actionmode.py
+   const.py
+   enum.py
+   ifgimath.py
+   test_Camera.py
+   test_ConvReader2Primitive.py
+   test_DrawMode.py
+   test_ObjReader.py
+   test_Primitive.py
+   test_QtUtil.py
+   test_SceneGraph.py
+   test_const.py
+   test_ifgimath.py
+
+
+** Menu Render -- Render GL
+*** Render IFGI
+
+** Scene
+*** Primitive
+*** 一つしか object を持てない
+
+** Camera: lookat を入れる．view direction は normalized
+
+** ObjLoader
+   Scene に object を入れる
+
+** OffLoader
+
+** GLNode
+   Scene の要素を参照して draw する (update は v0 では考えない)
+
+--
+Code guideline
+
+- method name
+  foo_bar_baz()
+
+---
+
+Later TODO
+
+- Texture (need texture coordinate load, store data structure,
+  more mesh)
+
+- OpenMeshPrimitive, GLOpenMeshViewNode
