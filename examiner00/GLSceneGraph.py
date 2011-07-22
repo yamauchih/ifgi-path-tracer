@@ -496,7 +496,7 @@ class GLCameraNode(GLSceneGraphNode):
 
         for key in keylist:
             typename = typedict[key]
-            if typename == 'vector3':
+            if typename == 'float_3':
                 cam_group.add(QtWidgetIO.QtLineEditWIO(),
                               key,
                               numpy_util.array2str(valdict[key]),
@@ -506,10 +506,12 @@ class GLCameraNode(GLSceneGraphNode):
                               key,
                               str(valdict[key]),
                               {'LABEL': key})
-            elif typename == 'enum':
-                if key == 'projection':
-                    pass
-                    # FIXME NIN. choise pulldown menu
+            elif typename == 'enum_ProjectionMode':
+                itemlist = Camera.ProjectionMode[:]
+                cam_group.add(QtWidgetIO.QtComboBoxWIO(),
+                              key,
+                              str(valdict[key]),
+                              {'LABEL': key, 'ITEMS': itemlist})
             else:
                 raise StandardError('unknown typename for camera parameter.')
 

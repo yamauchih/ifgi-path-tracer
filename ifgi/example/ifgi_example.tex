@@ -75,6 +75,19 @@ The list of examples is:
 
 \verb|test_ifgi_config.py|
 
+\section{Type name}
+
+There are following type names are used, mainly for communicating with
+GUI.
+\begin{itemize}
+ \item enum_enumname: enum type, enumname is the enum name. E.g.,
+       enum_ProjectionMode has enitries: 'Perspective' and
+       'Orthographic'. see Camera.py.
+ \item float: single number.
+ \item float_n: n array number. E.g., float_3 is numpy.array([x, y, z]),
+       float_4 is numpy.array([x, y, z, w])
+\end{itemize}
+
 \section{Simple renderer}
 
 \verb|test_ifgi_simple_render.py|

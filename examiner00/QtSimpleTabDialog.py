@@ -188,6 +188,8 @@ if __name__ == '__main__':
     gf0 = tab_dialog.add_group('testtab0')
     opt0 = {'LABEL': 'Hello'}
     gf0.add(QtWidgetIO.QtLineEditWIO(), 'myLineEdit', 'HelloWorld0', opt0)
+    gf0.add(QtWidgetIO.QtComboBoxWIO(), 'myCombobox', 'Green',
+            {'LABEL': 'ComboBoxExample', 'ITEMS': ['Red', 'Green', 'Blue']})
 
     gf1 = tab_dialog.add_group('testtab1')
     opt1 = {'LABEL': 'This is for tab1.'}

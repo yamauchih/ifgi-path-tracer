@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 #
-# simple enum
+# Copyright (C) 2010-2011 Yamauchi, Hitoshi
 #
 #
-class Enum(set):
-    """Enum emulation class"""
+class Enum(list):
+    """Enum emulation class.
+    This is a list. set is more efficient, but it does not keep the
+    initialization order."""
     def __getattr__(self, _name):
         if _name in self:
             return _name

@@ -1,10 +1,13 @@
-* Task ifgi path tracer 2011-7-20(Wed)
+* Task ifgi path tracer 2011-7-22(Fri)
 
 ** TODO Add Camera parameter control GUI
 *** DONE parameter iterator of Camera
 **** DONE get_keys (list), and get value dict, get parameter type dict
+**** DONE typename update: vector3 -> float_3, enum -> enum_enumname
 *** DONE create parameter control from this iterator
+*** DONE Add combobox widget, combobox QtWidgetIOIF
 *** TODO set the parameter values
+
 
 ** TODO Add primitive to get_bsdf
 
@@ -30,8 +33,6 @@
 *** TODO add lens to screen, lens to film distance
 *** TODO don't care lens to screen for now
 *** TODO z near and far should be adjusted by viewall
-
-
 
 ** TODO test triangle ray intersection with perspective camera
 

@@ -92,7 +92,7 @@ class Camera(object):
     # get eye position
     def get_eye_pos(self):
         """get eye position. (public)
-        \return eye position vector3"""
+        \return eye position float_3"""
         return self.__eye_pos
 
     # set eye position
@@ -138,7 +138,7 @@ class Camera(object):
     # set up direction
     def set_up_dir(self, _up_dir):
         """set up direction. (public)
-        \return up direction vector."""
+        \return up direction float_3."""
         self.__up_dir = _up_dir
         self.__compute_screen_parameter()
 
@@ -400,14 +400,14 @@ class Camera(object):
         \return parameter key, typename dictionary
         """
         typename_dict = {
-            'eye_pos':          'vector3',
-            'view_dir':         'vector3',
-            'up_dir':           'vector3',
+            'eye_pos':          'float_3',
+            'view_dir':         'float_3',
+            'up_dir':           'float_3',
             'fovy_rad':         'float',
             'aspect_ratio':     'float',
             'z_near':           'float',
             'z_far':            'float',
-            'projection':       'enum',
+            'projection':       'enum_ProjectionMode',
             'target_dist':      'float',
             'focal_length':     'float',
             'lens_screen_dist': 'float',
