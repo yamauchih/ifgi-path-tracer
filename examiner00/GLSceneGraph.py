@@ -253,6 +253,26 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         dmstr = DrawMode.get_drawmode_string(self.get_drawmode())
         return dmstr
 
+
+    #------------------------------------------------------------
+    # configurable
+    #------------------------------------------------------------
+
+    def set_config_dict(self, _config_dict):
+        """set configuration dictionary. (configSetData)
+        \param[in] _config_dict configuration dictionary
+        """
+        raise StandardError('not reimplemented')
+
+    def get_config_dict(self):
+        """get configuration dictionary. (configGetData)
+        \return configuration dictionary
+        """
+        raise StandardError('not reimplemented')
+
+
+    #------------------------------------------------------------
+
     # print glnode info. Indentation is according to the depth level
     def print_glnodeinfo(self, _level):
         """print glnode info. Indentation is according to the depth level
@@ -360,7 +380,6 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
                         'No configuration for this GLSceneGraphNode.')
         return False
 
-
     # print this obj for debug
     def print_obj(self):
         """print this obj for debug"""
@@ -392,9 +411,12 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         if self.__is_debug == True:
             print _dbgmes
 
-# OpenGL Camera node
-class GLCameraNode(GLSceneGraphNode):
+
+class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
     """OpenGL camera node.
+
+    This is a scene graph node. also QtWidgetIOObserver, means Qt GUI
+    can change this state.
     """
 
     # default constructor
@@ -491,7 +513,7 @@ class GLCameraNode(GLSceneGraphNode):
         cam_group = _tab_dialog.add_group('Camera')
 
         keylist  = self.__gl_camera.get_param_key()
-        valdict  = self.__gl_camera.get_value_dict()
+        valdict  = self.__gl_camera.get_config_dict()
         typedict = self.__gl_camera.get_typename_dict()
 
         for key in keylist:
@@ -515,7 +537,35 @@ class GLCameraNode(GLSceneGraphNode):
             else:
                 raise StandardError('unknown typename for camera parameter.')
 
+        _tab_dialog.set_button_observer(self)
+
         return True
+
+
+    def update(self, _arg):
+        """Implementation of QtWidgetIOObserverIF.update().
+        """
+        print 'GLCameraNode: I observe ' + _arg
+
+
+    #------------------------------------------------------------
+    # configurable
+    #------------------------------------------------------------
+
+    def set_config_dict(self, _config_dict):
+        """set configuration dictionary. (configSetData)
+        \param[in] _config_dict configuration dictionary
+        """
+        self.__gl_camera.set_config_dict(config_dict)
+
+    def get_config_dict(self):
+        """get configuration dictionary. (configGetData)
+        \return configuration dictionary
+        """
+        return self.__gl_camera.get_config_dict()
+
+
+
 
 
 

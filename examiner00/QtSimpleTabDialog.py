@@ -61,6 +61,13 @@ class QtSimpleTabDialog(QtGui.QDialog):
         self.__button_box.addButton(self.__close_btn,
                                     QtGui.QDialogButtonBox.RejectRole)
 
+        # button observer
+        self.__button_observer  = None
+
+        # associated configurable object (e.g., a scnegraph node) with
+        # group name
+        self.__assoc_configuable_obj = {}
+
         # connect signals
         self.__apply_btn. pressed.connect(self.slot_apply)
         self.__update_btn.pressed.connect(self.slot_updated)
@@ -74,33 +81,85 @@ class QtSimpleTabDialog(QtGui.QDialog):
         self.__layout.addWidget(self.__tab_widget)
         self.__layout.addWidget(self.__button_box)
 
-
         self.setLayout(self.__layout);
         self.resize(420,512);
 
 
+    def get_groupframe_map_keys(self):
+        """get groupgrame map keys.
+        \return groupframe map key list.
+        """
+        return self.__groupframe_map.keys()
+
+
+    # def get_dict(self):
+    #     """get QtWidgetIO's dictionary.
+    #     \return all tabs QtWidgetIO key value dictinary.
+    #     """
+    #     for grp_key in self.__groupframe_map.keys():
+    #         gfm = self.__groupframe_map[grp_key]
+    #         # print grp_key, gfm.get_dict()
+
+
+    def set_dict(self, _groupname, _iowidget_key, _value):
+        raise StandardError('NIN')
+
+
+    def get_value(self, _groupname, _iowidget_key):
+        raise StandardError('NIN')
+
+
+    def set_button_observer(self, _qtwidgetio_observer):
+        """set button observer.
+        This replaces former set observer with _qtwidgetio_observer.
+        \param[in] _qtwidgetio_observer iowidget observer.
+        """
+        self.__button_observer = _qtwidgetio_observer
+
+
     # slot_apply
     def slot_apply(self):
-        """slot apply.
+        """slot apply. Set the GUI value to the mode data.
         called when apply button is pushed."""
         print 'DEBUG: slot_apply'
+        for grp in self.__groupframe_map.keys():
+            # set all the parameters if associated object found.
+            if self.__assoc_configuable_obj[grp] != None:
+                self.__assoc_configuable_obj[grp].set_config_dict(
+                    self.__groupframe_map[grp].get_dict())
+            else:
+                print 'DEBUG: no configuable object found.'
+
+        if self.__button_observer != None:
+            self.__button_observer.update('ApplyButton')
+
 
     # slot_updated
     def slot_updated(self):
-        """slot updated.
+        """slot updated. Set the model data to GUI.
         called when updated button is pushed."""
-        print 'DEBUG: slot_updated'
+        print 'DEBUG: slot_updated.'
+        print 'NIN Updated'
+
+        if self.__button_observer != None:
+            self.__button_observer.update('UpdateButton')
 
     # slot_ok
     def slot_ok(self):
         """slot ok.
-        called when ok button is pushed."""
+        Called when ok button is pushed.
+        Apply and close the window."""
+        if self.__button_observer != None:
+            self.__button_observer.update('OKButton')
         self.accept()
 
     # slot_closed
     def slot_closed(self):
         """slot closed.
-        called when close button is pushed."""
+        Called when close button is pushed.
+        Apply and close the window."""
+        if self.__button_observer != None:
+            self.__button_observer.update('CloseButton')
         self.reject()
 
 
@@ -150,8 +209,25 @@ class QtSimpleTabDialog(QtGui.QDialog):
 
         self.__frame_map[_group_name]      = frame
         self.__groupframe_map[_group_name] = groupframe
+        self.__assoc_configuable_obj[_group_name] = None
 
         return groupframe
+
+
+    def set_associated_configuable_object(self, _groupname, _configuable):
+        """set associated configurable object.
+
+        A configurable object must have two methods:
+        set_config_dict(), get_config_dict().
+        We look up this object by the group name.
+        \param[in] _groupname   group name, must exists
+        \param[in] _configuable configurable object associated with
+        _groupname
+        """
+        if (not (_groupname in self.__assoc_configuable_obj.keys())):
+            raise StandardError('no such group [' + _groupname + '] found.')
+
+        self.__assoc_configuable_obj[_groupname] = _configuable
 
 
     def remove_group(self, _group_name):
@@ -166,6 +242,7 @@ class QtSimpleTabDialog(QtGui.QDialog):
             self.__tab_widget.indexOf(self.__frame_map[_group_name]))
         del self.__frame_map[_group_name]
         del self.__groupframe_map[_group_name]
+        del self.__assoc_configuable_obj[_groupname]
 
 
     def get_groupframe(self, _group_name):
@@ -195,6 +272,20 @@ if __name__ == '__main__':
     opt1 = {'LABEL': 'This is for tab1.'}
     gf1.add(QtWidgetIO.QtLineEditWIO(), 'myLineEdit', 'HelloWorld1', opt1)
 
+    # simple observer example
+    class MyObserver(QtWidgetIO.QtWidgetIOObserverIF):
+        def __init__(self):
+            self.__pushd_num = {'ApplyButton': 0, 'UpdateButton': 0,
+                                'OKButton': 0,    'CloseButton': 0  }
+
+        def update(self, _arg):
+            num = self.__pushd_num[_arg] + 1
+            print 'I observe [' + _arg + '] button is ' + str(num) + ' times pushed.'
+            self.__pushd_num[_arg] = num
+
+    tab_dialog.set_button_observer(MyObserver())
+
+    # show time
     tab_dialog.open()
     s = raw_input('Push return to finish: ')
     sys.exit()

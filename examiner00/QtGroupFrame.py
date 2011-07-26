@@ -55,12 +55,16 @@ class QtGroupFrame(QtGui.QScrollArea):
         super(QtGroupFrame, self).widget().setBackgroundRole(
             QtGui.QPalette.Window)
 
+        # widget map
+        self.__widgets = {}
+
+
     # add a QWidgetIO
     def add(self, _qwidgetio, _id, _value, _dict_opt):
         # d_initValues[_id] = _value
 
         # Widget hierarchy
-        #  QGroupFrame(= self) +-- QGroupBox(= self.__group_box)
+        #  QtGroupFrame(= self) +-- QGroupBox(= self.__group_box)
         widget = _qwidgetio.create(_id, _value,
                                    self.__group_box,
                                    _id + ':' + _value)
@@ -135,8 +139,55 @@ class QtGroupFrame(QtGui.QScrollArea):
         self.__group_box.updateGeometry()
 
         assert(_qwidgetio.get_widget() != None)
-        # d_widgets[_id] = _qwidgetio;
 
+        # record the map
+        self.__widgets[_id] = _qwidgetio;
+
+
+    def get_widget_dict_key(self):
+        """get QtWidgetIO widget dictionary's key().
+        \return key list
+        """
+        return self.__widgets.keys()
+
+    def get_widget(self, _widget_id):
+        """get QtWidgetIO widget by widget_id.
+        \return QIOWIdget
+        """
+        return self.__widgets[_id]
+
+    def set_value(self, _widget_id, _value):
+        """set widget_id widget value.
+        \param[in] _widget_id widget id.
+        \param[in] _value      value of widget_id widget.
+        """
+        if (not (_widget_id in self.__widgets)):
+            raise StandardError('no such _widget_id [' + _widget_id + '] widget.')
+
+        self.__widgets[_id].set_value(_value)
+
+    def get_value(self, _widget_id):
+        """get widget_id widget value.
+        \param[in] _widget_id widget id.
+        \return widget_id widget value.
+        """
+        if (not (_widget_id in self.__widgets)):
+            raise StandardError('no such _widget_id [' + _widget_id + '] widget.')
+
+        return self.__widgets[_id].get_value()
+
+
+    def get_dict(self):
+        """get all registered QtIOWidget {key, value} as a dict.
+        \return all registered widget key values.
+        """
+        ret_dict = {}
+        for w in self.__widgets:
+            key = self.__widgets[w].get_key()
+            val = self.__widgets[w].get_value()
+            ret_dict[key] = val
+
+        return ret_dict
 
 
 

@@ -54,7 +54,7 @@ class Camera(object):
 
         # print 'called Camara.__init__()'
 
-    # compute screen parameters
+
     def __compute_screen_parameter(self):
         """compute screen parameters.
         __LB_corner, __ex, __ey  are computed.
@@ -89,33 +89,32 @@ class Camera(object):
         self.__ey = 2.0 * halfheight * self.__ey
 
 
-    # get eye position
-    def get_eye_pos(self):
-        """get eye position. (public)
-        \return eye position float_3"""
-        return self.__eye_pos
-
-    # set eye position
     def set_eye_pos(self, _eye_pos):
-        """set eye position. (public)
+        """set eye position.
         \param[in] _eye_pos eye position"""
         self.__eye_pos = _eye_pos
         self.__compute_screen_parameter()
 
-    # get view direction
-    def get_view_dir(self):
-        """get view direction. (public)
-        \return view direction"""
-        return self.__view_dir
 
-    # set view direction
+    def get_eye_pos(self):
+        """get eye position.
+        \return eye position float_3"""
+        return self.__eye_pos
+
+
     def set_view_dir(self, _view_dir):
-        """set view direction. (public)
+        """set view direction.
         \return view direction (normalized)."""
         self.__view_dir = _view_dir
         self.__compute_screen_parameter()
 
-    # set eye pos and lookat position
+
+    def get_view_dir(self):
+        """get view direction.
+        \return view direction"""
+        return self.__view_dir
+
+
     def set_eye_lookat_pos(self, _eye_pos, _lookat_pos):
         """set lookat position.
         \param[in] _eye_pos    eye position
@@ -129,46 +128,69 @@ class Camera(object):
         self.__view_dir = lookat_vec / dist
         self.__compute_screen_parameter()
 
-    # get up direction
-    def get_up_dir(self):
-        """get up direction. (public)
-        \return up direction"""
-        return self.__up_dir
 
-    # set up direction
     def set_up_dir(self, _up_dir):
-        """set up direction. (public)
+        """set up direction.
         \return up direction float_3."""
         self.__up_dir = _up_dir
         self.__compute_screen_parameter()
 
-    # get fovy as radian
+    def get_up_dir(self):
+        """get up direction.
+        \return up direction"""
+        return self.__up_dir
+
+
+    def set_fovy_rad(self, _fovy_rad):
+        """set fovy as radian.
+        \param[in] _fovy_rad field of view in radian."""
+        self.__fovy_rad = _fovy_rad
+
+
     def get_fovy_rad(self):
-        """get fovy as radian. (public)
+        """get fovy as radian.
         \return field of view Y. (radian)"""
         return self.__fovy_rad
 
-    # get aspect ratio
+
+    def set_aspect_ratio(self, _aspect_ratio):
+        """set aspect ratio.
+        \param[in] _aspect_ratio aspect ratio. """
+        self.__aspect_ratio = _aspect_ratio
+
+
     def get_aspect_ratio(self):
-        """get aspect ratio. (public)
+        """get aspect ratio.
         \return aspect ratio."""
         return self.__aspect_ratio
 
-    # get z near plane distance
+
+    def set_z_near(self, _z_near):
+        """set z near plane distance.
+        \param[in] _z_near z near plane distance."""
+        self.__z_near = _z_near
+
+
     def get_z_near(self):
-        """get z near plane distance. (public)
+        """get z near plane distance.
         \return z near plane distance."""
         return self.__z_near
 
-    # get z far plane distance
+
+    def set_z_far(self, _z_far):
+        """set z far plane distance.
+        \param[in] _z_far z far plane distance."""
+        return self.__z_far
+
+
     def get_z_far(self):
-        """get z far plane distance. (public)
+        """get z far plane distance.
         \return z far plane distance."""
         return self.__z_far
 
-    # get class name
+
     def get_classname(self):
-        """get class name. (public)
+        """get class name.
         This must be reimplemented in the inherited class.
         \return None"""
         assert 0, "get_classname must be implemented in a derived class."
@@ -176,13 +198,13 @@ class Camera(object):
 
     # get projection mode
     def get_projection(self):
-        """get projection mode. (public)
+        """get projection mode.
         \return projection mode ('Perspective', 'Orthographic')"""
         return self.__projection
 
     # get gluLookAt() parameters
     def get_lookat(self, _eye_type):
-        """get gluLookAt() parameters. (public)
+        """get gluLookAt() parameters.
         \param[in] _eye_type eye position for stereo {EyeCenter,
         EyeLeft, EyeRight}, NIN Not implemented now."""
         assert(_eye_type == EyePosition.EyeCenter)
@@ -194,7 +216,7 @@ class Camera(object):
 
     # Get the camera coordinate system as OpenGL (left hand)
     def get_coordinate_system(self):
-        """Get the camera coordinate system as OpenGL (public)
+        """Get the camera coordinate system as OpenGL
 
         Get orthonrmal basis for camera coordinate system {_ex,_ey,_ez}.
         \return [ex, ey, ez]  [right, up, viewingDriection()] system.
@@ -374,27 +396,6 @@ class Camera(object):
             ]
         return param_list
 
-    def get_value_dict(self):
-        """get camera parameter value dictionary.
-        \return parameter key, value dictionary
-        """
-        new_cam = copy.deepcopy(self)
-        value_dict = {
-            'eye_pos':          new_cam.get_eye_pos().copy(),
-            'view_dir':         new_cam.get_view_dir().copy(),
-            'up_dir':           new_cam.get_up_dir().copy(),
-            'fovy_rad':         new_cam.get_fovy_rad(),
-            'aspect_ratio':     new_cam.get_aspect_ratio(),
-            'z_near':           new_cam.get_z_near(),
-            'z_far':            new_cam.get_z_far(),
-            'projection':       new_cam.get_projection(),
-            'target_dist':      new_cam.get_target_distance(),
-            'focal_length':     new_cam.get_focal_length(),
-            'lens_screen_dist': new_cam.get_lens_to_screen_distance(),
-            'lens_film_dist':   new_cam.get_lens_to_film_distance()
-            }
-        return value_dict
-
     def get_typename_dict(self):
         """get camera parameter type dictionary.
         \return parameter key, typename dictionary
@@ -415,6 +416,71 @@ class Camera(object):
             }
         return typename_dict
 
+    #  ------------------------------------------------------------
+    #  configurable
+    #  ------------------------------------------------------------
+
+    def set_config_dict(self, _config):
+        """set camera parameter configuration dictionary.
+        This is configurable.
+        \param[in] _config configuration dictionary.
+        """
+        if 'eye_pos' in _config:
+            self.set_eye_pos(numpy_util.str2array(_config['eye_pos']))
+
+        if 'view_dir' in _config:
+            self.set_view_dir(numpy_util.str2array(_config['view_dir']))
+
+        if 'up_dir' in _config:
+            self.set_up_dir(numpy_util.str2array(_config['up_dir']))
+
+        if 'fovy_rad' in _config:
+            self.set_fovy_rad(float(_config['fovy_rad']))
+
+        if 'aspect_ratio' in _config:
+            self.set_aspect_ratio(float(_config['aspect_ratio']))
+
+        if 'z_near' in _config:
+            self.set_z_near(float(_config['z_near']))
+
+        if 'z_far' in _config:
+            self.set_z_far(float(_config['z_far']))
+
+
+        # NIN HEREHERE
+        # value_dict = {
+        #     'projection':       new_cam.get_projection(),
+        #     'target_dist':      new_cam.get_target_distance(),
+        #     'focal_length':     new_cam.get_focal_length(),
+        #     'lens_screen_dist': new_cam.get_lens_to_screen_distance(),
+        #     'lens_film_dist':   new_cam.get_lens_to_film_distance()
+        #     }
+
+
+
+    def get_config_dict(self):
+        """get camera parameter configurarion dictionary.
+        This is configuable.
+        \return parameter key, value dictionary
+        """
+        new_cam = copy.deepcopy(self)
+        value_dict = {
+            'eye_pos':          new_cam.get_eye_pos().copy(),
+            'view_dir':         new_cam.get_view_dir().copy(),
+            'up_dir':           new_cam.get_up_dir().copy(),
+            'fovy_rad':         new_cam.get_fovy_rad(),
+            'aspect_ratio':     new_cam.get_aspect_ratio(),
+            'z_near':           new_cam.get_z_near(),
+            'z_far':            new_cam.get_z_far(),
+            'projection':       new_cam.get_projection(),
+            'target_dist':      new_cam.get_target_distance(),
+            'focal_length':     new_cam.get_focal_length(),
+            'lens_screen_dist': new_cam.get_lens_to_screen_distance(),
+            'lens_film_dist':   new_cam.get_lens_to_film_distance()
+            }
+        return value_dict
+
+
 
 
 # OpenGL camera
@@ -423,12 +489,12 @@ class GLCamera(Camera):
     """
     # default constructor
     def __init__(self):
-        """default constructor. (public)"""
+        """default constructor."""
         super(GLCamera, self).__init__()
 
     # get class name
     def get_classname(self):
-        """get class name. (public)
+        """get class name.
         \return 'GLCamera'
         """
         return 'GLCamera'
@@ -441,12 +507,12 @@ class IFGICamera(Camera):
 
     # default constructor
     def __init__(self):
-        """default constructor. (public)"""
+        """default constructor."""
         super(IFGICamera, self).__init__()
 
     # class name
     def get_classname(self):
-        """get class name. (public)
+        """get class name.
         \return 'IFGICamera'"""
         return 'IFGICamera'
 

@@ -7,6 +7,8 @@
 *** DONE create parameter control from this iterator
 *** DONE Add combobox widget, combobox QtWidgetIOIF
 *** TODO set the parameter values
+**** TODO complete Camera set_config_data
+**** TODO Implement observer
 
 
 ** TODO Add primitive to get_bsdf

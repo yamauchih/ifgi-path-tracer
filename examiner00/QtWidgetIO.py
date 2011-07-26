@@ -14,9 +14,12 @@ QtExtWidget.py
 from PyQt4 import Qt, QtCore, QtGui
 import QtExtWidget
 
-# QtWidgetIOIF
+#----------------------------------------------------------------------
+
 class QtWidgetIOIF(QtCore.QObject):
     """QtWidgetIOIF
+
+    \ingroup qtwidgetio
 
     QtWidgetIO interface.
     This provides a uniform interface of widget input/output.
@@ -52,6 +55,12 @@ class QtWidgetIOIF(QtCore.QObject):
         """
         raise StandardError ('Internal Error! must implemented in derived class.')
 
+    def get_key(self):
+        """get this widget's key (id).
+        \return the key ID of this widget.
+        """
+        raise StandardError ('Internal Error! must implemented in derived class.')
+
     # set value
     def set_value(self, _value):
         """set value to this widget.
@@ -73,6 +82,31 @@ class QtWidgetIOIF(QtCore.QObject):
         """
         raise StandardError ('Internal Error! must implemented in derived class.')
 
+
+#----------------------------------------------------------------------
+
+class QtWidgetIOObserverIF(object):
+    """QtWidgetIOObserverIF widget observer interface.
+
+    \ingroup qtwidgetio
+
+    Interface for a class that observes a QtWidgetIOIF instance.
+    The method update() changes the QtWidgetIOIF instance state.
+    """
+
+    def __init__(self):
+        """constructor
+        """
+        pass
+
+    def update(self, _arg):
+        """interface method.
+        \param[in] _arg a general argument
+        """
+        raise StandardError('This method must be reimplemented.')
+
+
+#----------------------------------------------------------------------
 
 # NIN class QtColorButton(QtWidgetIOIF)
 # NIN class QtFileButton(QtWidgetIOIF)
@@ -101,6 +135,7 @@ class QtLineEditWIO(QtWidgetIOIF):
     def __init__(self):
         """constructor"""
         self.__extwidget = None
+        self.__keyid = ''
 
 
     # create a io widget
@@ -111,8 +146,9 @@ class QtLineEditWIO(QtWidgetIOIF):
         \param[in] _parent parent Qt widget
         \param[in] _widget_name widget name
         """
-        self.__extwidget = QtExtWidget.QtExtTextLine('MyLabel', _parent,
+        self.__extwidget = QtExtWidget.QtExtTextLine(_id, _parent,
                                                      QtCore.Qt.Horizontal)
+        self.__keyid = _id
         return self.__extwidget
 
 
@@ -124,6 +160,12 @@ class QtLineEditWIO(QtWidgetIOIF):
         """
         if 'LABEL' in _dict_opt:
             self.__extwidget.set_label(_dict_opt['LABEL'])
+
+    def get_key(self):
+        """get this widget's key (id).
+        \return the key ID of this widget.
+        """
+        return self.__keyid
 
     # set value
     def set_value(self, _value):
@@ -157,6 +199,8 @@ class QtLineEditWIO(QtWidgetIOIF):
 # NIN class QtRadioButton(QtWidgetIOIF)
 # NIN class QtCheckBox(QtWidgetIOIF)
 
+#----------------------------------------------------------------------
+
 class QtComboBoxWIO(QtWidgetIOIF):
     """Combobox that has QtWidgetIOIF interface.
     \ingroup qtwidget
@@ -177,14 +221,16 @@ class QtComboBoxWIO(QtWidgetIOIF):
 
     # create a io widget
     def create(self, _id, _value, _parent, _widget_name):
+
         """create this IO widget.
         \param[in] _id     widget id
         \param[in] _value  widget default value
         \param[in] _parent parent Qt widget
         \param[in] _widget_name widget name
         """
-        self.__extwidget = QtExtWidget.QtExtComboBox('MyCombobox', _parent,
+        self.__extwidget = QtExtWidget.QtExtComboBox(_id, _parent,
                                                      QtCore.Qt.Horizontal)
+        self.__keyid = _id
         return self.__extwidget
 
 
@@ -205,6 +251,13 @@ class QtComboBoxWIO(QtWidgetIOIF):
 
         if 'SIZELIMIT' in _dict_opt:
             self.__extwidget.set_sizelimit(_dict_opt['SIZELIMIT'])
+
+
+    def get_key(self):
+        """get this widget's key (id).
+        \return the key ID of this widget.
+        """
+        return self.__keyid
 
     # set value
     def set_value(self, _value):

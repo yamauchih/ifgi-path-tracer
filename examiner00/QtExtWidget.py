@@ -97,7 +97,7 @@ class QtExtTextLine(QtGui.QWidget):
         res = self.__text.text();
         if res.isEmpty():
             return ''
-        return ret;
+        return res
 
     # set value
     def set_value(self, _text):
