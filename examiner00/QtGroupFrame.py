@@ -177,6 +177,18 @@ class QtGroupFrame(QtGui.QScrollArea):
         return self.__widgets[_id].get_value()
 
 
+    def set_dict(self, _dict):
+        """set all values in the _dict when the key is registered as
+        a QtWidgetIO.
+
+        \param[in] _dict widget's key and value dict.
+        """
+        for key in _dict:
+            if key in self.__widgets:
+                self.__widgets[key].set_value(_dict[key])
+
+
+
     def get_dict(self):
         """get all registered QtIOWidget {key, value} as a dict.
         \return all registered widget key values.
@@ -188,6 +200,7 @@ class QtGroupFrame(QtGui.QScrollArea):
             ret_dict[key] = val
 
         return ret_dict
+
 
 
 

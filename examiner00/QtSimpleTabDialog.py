@@ -117,18 +117,37 @@ class QtSimpleTabDialog(QtGui.QDialog):
         self.__button_observer = _qtwidgetio_observer
 
 
-    # slot_apply
-    def slot_apply(self):
-        """slot apply. Set the GUI value to the mode data.
-        called when apply button is pushed."""
-        print 'DEBUG: slot_apply'
+    def __apply_assoc_config_obj_from_gui(self):
+        """apply associated (also registered) configurable objects from
+        each group frames. The associated objects state will change.
+        """
         for grp in self.__groupframe_map.keys():
             # set all the parameters if associated object found.
             if self.__assoc_configuable_obj[grp] != None:
                 self.__assoc_configuable_obj[grp].set_config_dict(
                     self.__groupframe_map[grp].get_dict())
             else:
-                print 'DEBUG: no configuable object found.'
+                print 'DEBUG: no configuable object for [' + grp + '] found.'
+
+    def __update_assoc_config_obj_to_gui(self):
+        """update GUI by associated (also registered) configurable
+        objects data. The GUI is updated. No change the associated
+        objects.
+        """
+        for grp in self.__groupframe_map.keys():
+            if self.__assoc_configuable_obj[grp] != None:
+                dict = self.__assoc_configuable_obj[grp].get_config_dict()
+                self.__groupframe_map[grp].set_dict(dict)
+            else:
+                print 'DEBUG: no configuable object for [' + grp + '] found.'
+
+
+    # slot_apply
+    def slot_apply(self):
+        """slot apply. Set the GUI value to the mode data.
+        called when apply button is pushed."""
+        print 'DEBUG: slot_apply'
+        self.__apply_assoc_config_obj_from_gui()
 
         if self.__button_observer != None:
             self.__button_observer.update('ApplyButton')
@@ -139,7 +158,7 @@ class QtSimpleTabDialog(QtGui.QDialog):
         """slot updated. Set the model data to GUI.
         called when updated button is pushed."""
         print 'DEBUG: slot_updated.'
-        print 'NIN Updated'
+        self.__update_assoc_config_obj_to_gui()
 
         if self.__button_observer != None:
             self.__button_observer.update('UpdateButton')
@@ -149,6 +168,8 @@ class QtSimpleTabDialog(QtGui.QDialog):
         """slot ok.
         Called when ok button is pushed.
         Apply and close the window."""
+        self.__apply_assoc_config_obj_from_gui()
+
         if self.__button_observer != None:
             self.__button_observer.update('OKButton')
         self.accept()
@@ -157,7 +178,7 @@ class QtSimpleTabDialog(QtGui.QDialog):
     def slot_closed(self):
         """slot closed.
         Called when close button is pushed.
-        Apply and close the window."""
+        Changes are canceled and close the window."""
         if self.__button_observer != None:
             self.__button_observer.update('CloseButton')
         self.reject()
@@ -272,18 +293,59 @@ if __name__ == '__main__':
     opt1 = {'LABEL': 'This is for tab1.'}
     gf1.add(QtWidgetIO.QtLineEditWIO(), 'myLineEdit', 'HelloWorld1', opt1)
 
-    # simple observer example
-    class MyObserver(QtWidgetIO.QtWidgetIOObserverIF):
+    # communication example.
+    #   - as an Observer (QtWidgetIOObserverIF)
+    #   - as an configurable object (has members: set_config_dict(), get_config_dict()
+    #
+    # MyConfigurableObserver has both properties.
+    #
+    #
+    # As an observer:
+    #
+    #   When one of QtSimpleTabDialog's buttons is pushded, this
+    #   object can observe it. Typical use case is you first derive a
+    #   class from this QtWidgetIOObserverIF, and set sef to the
+    #   dialog.
+    #
+    # As an configurable object:
+    #
+    #   One of QtSimpleTabDialog's buttons is pushded, then
+    #   set_config_dict/get_config_dict is called associated object
+    #   with the group name. and get a dictionary that contains
+    #   QtWidgetIO {key, value}s.
+    #
+    #
+    class MyConfigurableObserver(QtWidgetIO.QtWidgetIOObserverIF):
         def __init__(self):
             self.__pushd_num = {'ApplyButton': 0, 'UpdateButton': 0,
                                 'OKButton': 0,    'CloseButton': 0  }
 
         def update(self, _arg):
+            """Button observer example method"""
             num = self.__pushd_num[_arg] + 1
             print 'I observe [' + _arg + '] button is ' + str(num) + ' times pushed.'
             self.__pushd_num[_arg] = num
 
-    tab_dialog.set_button_observer(MyObserver())
+        def set_config_dict(self, _dict):
+            """configurable example: OK. Apply."""
+            print 'Set to testtab0. myLineEdit: ' + _dict['myLineEdit'] +\
+                ', myCombobox: ' + _dict['myCombobox']
+
+        def get_config_dict(self):
+            """configurable example: Update."""
+            ret = {'myLineEdit': 'Updated text', 'myCombobox': 'Blue' }
+            print 'Update to Updated text and Blue!'
+            return ret
+
+    mco = MyConfigurableObserver()
+
+    tab_dialog.set_button_observer(mco)
+
+    # communication 2. configable object
+    #
+    # You can set a configuable object to associated group.
+    # This is associated with testtab0.
+    tab_dialog.set_associated_configuable_object('testtab0', mco)
 
     # show time
     tab_dialog.open()

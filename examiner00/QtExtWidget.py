@@ -164,8 +164,8 @@ class QtExtComboBox(QtGui.QFrame):
         #   connect(m_combo, SIGNAL(activated(int)), this, SIGNAL(activated(int)));
         # the difference is only the object: m_combo.activated -> this.activated
         self.__combo.activated.connect(self.activated)
-        self.__combo.activated.connect(self.slotActivatedWithText)
-        self.__combo.textChanged.connect(self.slotActivatedWithText)
+        self.__combo.activated.connect(self.slotActivatedWithIndex)
+        self.__combo.textChanged.connect(self.slotActivatedWithIndex)
 
 
         self.__max_line = 5
@@ -297,8 +297,9 @@ class QtExtComboBox(QtGui.QFrame):
 
     #----------------------------------------------------------------------
 
-    def slotActivatedWithText(self, _text):
+    def slotActivatedWithIndex(self, _text):
         """slotActivated with text argument.
         """
-        self.activated.emit(_text)
+        print 'slotActivatedWithIndex: ' + str(_text)
+        # self.activated.emit(_text)
 
