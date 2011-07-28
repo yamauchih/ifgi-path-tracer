@@ -21,7 +21,7 @@ class TestCamera(unittest.TestCase):
         mat = glcam.get_coordinate_system()
         # print mat
         print glcam.get_param_key()
-        print glcam.get_value_dict()
+        print glcam.get_config_dict()
 
 #
 # main test

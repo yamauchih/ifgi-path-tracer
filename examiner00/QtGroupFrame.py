@@ -198,6 +198,7 @@ class QtGroupFrame(QtGui.QScrollArea):
             key = self.__widgets[w].get_key()
             val = self.__widgets[w].get_value()
             ret_dict[key] = val
+            # print 'QtGroupFrame.get_dict: ', key, val
 
         return ret_dict
 

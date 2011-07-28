@@ -9,7 +9,7 @@
 
 import math, copy
 import numpy
-from ifgi.base import enum
+from ifgi.base import enum, numpy_util
 
 import Film, Ray
 
@@ -426,13 +426,26 @@ class Camera(object):
         \param[in] _config configuration dictionary.
         """
         if 'eye_pos' in _config:
-            self.set_eye_pos(numpy_util.str2array(_config['eye_pos']))
+            # Note: _config['eye_pos'] is QString, conevrt to str
+            ep = numpy_util.str2array(str(_config['eye_pos']))
+            print ep
+            if len(ep) != 3:
+                raise StandardError('eye_pos must be a float_3.')
+            self.set_eye_pos(ep)
 
         if 'view_dir' in _config:
-            self.set_view_dir(numpy_util.str2array(_config['view_dir']))
+            vd = numpy_util.str2array(str(_config['view_dir']))
+            print vd
+            if len(vd) != 3:
+                raise StandardError('view_dir must be a float_3.')
+            self.set_view_dir(vd)
 
         if 'up_dir' in _config:
-            self.set_up_dir(numpy_util.str2array(_config['up_dir']))
+            ud = numpy_util.str2array(str(_config['up_dir']))
+            print ud
+            if len(ud) != 3:
+                raise StandardError('up_dir must be a float_3.')
+            self.set_up_dir(ud)
 
         if 'fovy_rad' in _config:
             self.set_fovy_rad(float(_config['fovy_rad']))

@@ -538,6 +538,7 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
                 raise StandardError('unknown typename for camera parameter.')
 
         _tab_dialog.set_button_observer(self)
+        _tab_dialog.set_associated_configuable_object('Camera', self)
 
         return True
 
@@ -556,7 +557,7 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
         """set configuration dictionary. (configSetData)
         \param[in] _config_dict configuration dictionary
         """
-        self.__gl_camera.set_config_dict(config_dict)
+        self.__gl_camera.set_config_dict(_config_dict)
 
     def get_config_dict(self):
         """get configuration dictionary. (configGetData)

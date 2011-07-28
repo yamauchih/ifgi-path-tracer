@@ -1,4 +1,4 @@
-* Task ifgi path tracer 2011-7-22(Fri)
+* Task ifgi path tracer 2011-7-27(Wed)
 
 ** TODO Add Camera parameter control GUI
 *** DONE parameter iterator of Camera
@@ -7,9 +7,11 @@
 *** DONE create parameter control from this iterator
 *** DONE Add combobox widget, combobox QtWidgetIOIF
 *** TODO set the parameter values
-**** TODO complete Camera set_config_data
-**** TODO Implement observer
-
+**** DONE Implement observer
+**** TODO complete Camera set_config_data/get_config_data,
+     QtExaminerWindow.py:202 node status change
+     Check what is emit does in Qt.
+     also update the window to see the effect.
 
 ** TODO Add primitive to get_bsdf
 

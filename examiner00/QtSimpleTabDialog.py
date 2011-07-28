@@ -124,8 +124,9 @@ class QtSimpleTabDialog(QtGui.QDialog):
         for grp in self.__groupframe_map.keys():
             # set all the parameters if associated object found.
             if self.__assoc_configuable_obj[grp] != None:
-                self.__assoc_configuable_obj[grp].set_config_dict(
-                    self.__groupframe_map[grp].get_dict())
+                grp_dict = self.__groupframe_map[grp].get_dict()
+                # print grp_dict
+                self.__assoc_configuable_obj[grp].set_config_dict(grp_dict)
             else:
                 print 'DEBUG: no configuable object for [' + grp + '] found.'
 

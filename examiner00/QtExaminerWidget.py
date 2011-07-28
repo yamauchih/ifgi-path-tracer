@@ -354,6 +354,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         mitem.setChecked(True)
         self.__global_drawmode = _drawmode_bitmap
 
+        self.updateGL()
+
 
     # mouse press event
     #   - right: popup menu

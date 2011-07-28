@@ -195,6 +195,15 @@ class QtExaminerWindow(QtGui.QMainWindow):
         self.__sgdialog = QtSceneGraphDialog.QtSceneGraphDialog()
         self.__sgdialog.update_scenegraph(glsg)
 
+        # signals scene graph dialog and examiner
+        self.__sgdialog.closed.connect(slot_scenegraph_status);
+
+        # access to the scenegraph widget
+        # HEREHERE FIXME 2011-7-28(Thu)
+        # sg_widget = self.__sgdialog.get_scenegraph_view_widget()
+        # sg_widget.node_changed.connect(slot_node_changed);
+        # sg_widget.key_pressed.connect(slot_key_pressed);
+
         self.__sgdialog.show()
 
 
@@ -368,6 +377,22 @@ class QtExaminerWindow(QtGui.QMainWindow):
         # attach the GLSceneGraph to Examiner to see
         self.__examiner_widget.attach_gl_scenegraph(glsg)
         self.__examiner_widget.view_all()
+
+    def slot_scenegraph_status(self):
+        """called when scenegraph status change (e.g., closed)
+        """
+        print 'slot_scenegraph_status() called'
+
+
+    def slot_node_changed(self, _rootnode, _node):
+        """called when node status changed.
+        \param[in] _rootnode scenegrpah root node
+        \param[in] _node     changed node
+        """
+        print 'slot_node_changed() called'
+
+    def slot_key_pressed(self, _rootnode, _node):
+
 
 
 # get default option list
