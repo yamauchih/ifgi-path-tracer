@@ -30,6 +30,11 @@ import ifgi.render
 class QtExaminerWindow(QtGui.QMainWindow):
     """Qt geometry examiner window."""
 
+    # signal for ScneGraph node changed. Mainly used from
+    # QtSceneGraphDialog
+    node_changed_signal = pyqtSignal(object)
+
+
     # constructor
     def __init__(self, parent=None):
         """constructor"""
@@ -196,7 +201,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
         self.__sgdialog.update_scenegraph(glsg)
 
         # signals scene graph dialog and examiner
-        self.__sgdialog.closed.connect(slot_scenegraph_status);
+        self.__sgdialog.signal_closed.connect(self.slot_scenegraph_status);
 
         # access to the scenegraph widget
         # HEREHERE FIXME 2011-7-28(Thu)
@@ -390,8 +395,10 @@ class QtExaminerWindow(QtGui.QMainWindow):
         \param[in] _node     changed node
         """
         print 'slot_node_changed() called'
+        self.__examiner_widget.updateGL()
 
     def slot_key_pressed(self, _rootnode, _node):
+        print 'slot_key_pressed() called'
 
 
 

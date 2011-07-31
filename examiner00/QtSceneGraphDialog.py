@@ -21,6 +21,9 @@ class QtSceneGraphDialog(QtGui.QDialog):
     """QtSceneGraphDialog
     SceneGraph viewer dialog"""
 
+    # signal definition
+    signal_closed = QtCore.pyqtSignal(object)
+
     def __init__(self, parent=None):
         """constructor"""
 
@@ -48,7 +51,7 @@ class QtSceneGraphDialog(QtGui.QDialog):
     # a signal emitted when dialog is closed
     def closed(self):
         """a signal emitted when dialog is closed"""
-
+        self.signal_closed.emit('')
         print 'called QtSceneGraphWidget::closed() '
 
 

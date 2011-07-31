@@ -537,7 +537,9 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
             else:
                 raise StandardError('unknown typename for camera parameter.')
 
+        # call self.update() when button is pushed (_arg is button type)
         _tab_dialog.set_button_observer(self)
+        # call set_config_dict(dict) when apply button is pushed.
         _tab_dialog.set_associated_configuable_object('Camera', self)
 
         return True
