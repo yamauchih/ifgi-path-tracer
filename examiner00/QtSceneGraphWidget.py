@@ -22,6 +22,23 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
       - Ctrl+I       show node information dialog
       - Ctrl+M       execute a command (copy, paste)
       - Return       return key pressed (popup context menu)
+
+    Node update communication:
+      - NodeDialog (= QtSimpleTabDialog) has a node/nodes.
+          - emit update(_node)
+          - NodeDialog is a listener of the node.
+      - QtSceneGraphWidget
+          - connect NodeDialog::update() to QtSceneGraphWidget::slotUpdateByDialog()
+          - slotUpdateByDialog(_node)
+             - emit nodeChanged(_rootNode, _node)
+          - itemPopupCallback()
+             - emit nodeChanged(_rootNode, _node) when draw mode and etc. changed
+          - statusPopupCallback()
+             - emit nodeChanged(_rootNode, _node) when draw mode and etc. changed
+
+      - QtExaminerWidget
+          - connect QtSceneGraphWidget::nodeChanged() to
+            QtExaminerWidget.slotNodeChanged()
     """
     #NIN Keys
     # - Ctrl+Insert  copy  scene node config
