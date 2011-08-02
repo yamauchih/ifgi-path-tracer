@@ -12,15 +12,27 @@
 import sys
 from PyQt4 import QtCore, QtGui
 
-import QtGroupFrame
-import QtWidgetIO
+import QtGroupFrame, QtWidgetIO
+import NodeListener
 
 # QtSimpleTabDialog
 class QtSimpleTabDialog(QtGui.QDialog):
     """QtSimpleTabDialog
     Simple (= one) tab widget dialog, but many tabs in the tab widget
     Most of the user interaction will be done via this dialog.
+
+    This may be also a NodeListener. (But this has a Listener.)
     """
+
+    #------------------------------------------------------------
+    # signal: class static
+    #------------------------------------------------------------
+
+    # signal update node... connected to
+    # QtSceneGraphWidget::slot_node_changed(object)
+    # the pyqtSignal's arg is any python object here.
+    signal_update      = QtCore.pyqtSignal(object)
+
 
     def __init__(self, parent=None):
         """constructor"""
@@ -84,6 +96,8 @@ class QtSimpleTabDialog(QtGui.QDialog):
         self.setLayout(self.__layout);
         self.resize(420,512);
 
+        self.__node_listener = None
+
 
     def get_groupframe_map_keys(self):
         """get groupgrame map keys.
@@ -115,6 +129,16 @@ class QtSimpleTabDialog(QtGui.QDialog):
         \param[in] _qtwidgetio_observer iowidget observer.
         """
         self.__button_observer = _qtwidgetio_observer
+
+    def set_subject_node(self, _node_subject):
+        """set subject node to this listener.
+        \param[in] _node_subject.
+        """
+        assert(_node_subject != None)
+        self.__node_listener = \
+            NodeListener.NodeListener('QtSimpleTabDialog::nodelistener',
+                                      _node_subject,
+                                      self)
 
 
     def __apply_assoc_config_obj_from_gui(self):

@@ -32,7 +32,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
 
     # signal for ScneGraph node changed. Mainly used from
     # QtSceneGraphDialog
-    node_changed_signal = pyqtSignal(object)
+    node_changed_signal = QtCore.pyqtSignal(object)
 
 
     # constructor

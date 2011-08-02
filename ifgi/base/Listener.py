@@ -10,7 +10,7 @@
 
 
 class Listener(object):
-    """Observer pattern's Observer/Listener"""
+    """Observer/Listener pattern's Observer/Listener"""
 
     def __init__(self, _name, _subject):
         """constructor.
@@ -19,6 +19,11 @@ class Listener(object):
         """
         self.__name = _name
         _subject.register(self)
+
+    def set_name(self, _name):
+        """set the listener's name
+        \param[in] _name new listener's name."""
+        self.__name = _name
 
     def get_name(self):
         """get the listener's name
@@ -33,11 +38,23 @@ class Listener(object):
 
 
 class Subject(object):
-    """Observer patteren's subject.
+    """Observer/Listener patteren's subject.
     """
-    def __init__(self):
-        """constructor"""
+    def __init__(self, _name):
+        """constructor
+        \param[in] _name subject name"""
+        self.__name = _name
         self.__listeners = []
+
+    def set_subject_name(self, _name):
+        """set the subject's name
+        \param[in] _name new subject's name."""
+        self.__name = _name
+
+    def get_subject_name(self):
+        """get subject name.
+        \return subject name"""
+        return self.__name
 
     def register(self, _listener):
         """register the listener.
@@ -56,3 +73,7 @@ class Subject(object):
         for listener in self.__listeners:
             listener.update(_event)
 
+    def clear_listener(self):
+        """unregister all the listeners.
+        """
+        self.__listeners = []

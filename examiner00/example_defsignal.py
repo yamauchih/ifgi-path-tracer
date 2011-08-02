@@ -4,7 +4,7 @@ from PyQt4.QtGui  import *
 class MyWidget(QWidget):
 
     # user defined signal
-    pyqt_signal = pyqtSignal(object)
+    signal_pyqt = QtCore.pyqtSignal(object)
 
     def __init__(self, parent=None):
         super(MyWidget, self).__init__(parent)
@@ -16,11 +16,11 @@ class MyWidget(QWidget):
         self.setLayout(layout)
 
         self.ok_button.clicked.connect(self.slot1)
-        self.pyqt_signal.connect(self.slot2)
+        self.signal_pyqt.connect(self.slot2)
 
     def slot1(self):
         print 'slot1'
-        self.pyqt_signal.emit([1, 2, 3])
+        self.signal_pyqt.emit([1, 2, 3])
 
     def slot2(self, arg):
         print "slot2 arg = %s" % arg

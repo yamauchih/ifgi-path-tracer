@@ -9,7 +9,7 @@
 
 from OpenGL import GL, GLU
 from PyQt4  import QtCore, QtGui
-from ifgi.base  import numpy_util
+from ifgi.base  import numpy_util, Listener
 from ifgi.scene import Camera, SceneGraph
 import QtWidgetIO
 
@@ -184,7 +184,11 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
     This has either
       - children
       - primitive
-    These are exclusive."""
+    These are exclusive.
+
+    This has an Subject (Observer/Listener pattern).
+    How node states change propagates, \see QtSceneGraphWidget
+    """
 
     # default constructor
     def __init__(self, _nodename):
@@ -196,6 +200,8 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         self.__is_active = True
         # can not have the same name method and member variable
         self.__drawmode  = DrawMode.DrawModeList.DM_GlobalMode
+        self.__observer_subject = Listener.Subject('SceneGraphNode')
+
 
     # get classname (shown in the SceneGraph viewer as node Type)
     def get_classname(self):
@@ -252,6 +258,16 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
 
         dmstr = DrawMode.get_drawmode_string(self.get_drawmode())
         return dmstr
+
+    #------------------------------------------------------------
+    # Observer/Listener
+    #------------------------------------------------------------
+
+    def get_subject(self):
+        """get Listener's Subject for node state change.
+        \return node subject
+        """
+        return self.__observer_subject
 
 
     #------------------------------------------------------------
@@ -448,6 +464,9 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
         self.__ifgi_camera_ref = _sg_camnode.get_camera()
         self.__gl_camera.set_camera_param(self.__ifgi_camera_ref)
 
+        # updated subject name (Observer/Listener)
+        self.get_subject().set_subject_name('GLCameraNode')
+
 
     # get classname (shown in the SceneGraph viewer as node Type)
     def get_classname(self):
@@ -542,6 +561,10 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
         # call set_config_dict(dict) when apply button is pushed.
         _tab_dialog.set_associated_configuable_object('Camera', self)
 
+        # set node as a subject. This subject notify dialog when node
+        # status is changed.
+        _tab_dialog.set_subject_node(self.get_subject())
+
         return True
 
 
@@ -560,6 +583,7 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
         \param[in] _config_dict configuration dictionary
         """
         self.__gl_camera.set_config_dict(_config_dict)
+        self.get_subject().notify_listeners(['ConfigChanged'])
 
     def get_config_dict(self):
         """get configuration dictionary. (configGetData)

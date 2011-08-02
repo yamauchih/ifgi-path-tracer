@@ -48,7 +48,8 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
     #------------------------------------------------------------
     # signal: class static
     #------------------------------------------------------------
-    __signal_key_pressed = QtCore.pyqtSignal()
+    # signal key pressed
+    signal_key_pressed = QtCore.pyqtSignal()
 
 
     # constructor
@@ -144,6 +145,11 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         # create a configuration dialog depends on the each node.
         # When return false, the node is not configurable.
         if self.__cur_tree_item.get_node().create_config_dialog(config_dialog) == True:
+            # connect node dialog to scenegraph widget.slot_node_changed()
+            # first disconnect all signal -> slots. doesn't work
+            # config_dialog.signal_update.disconnect()
+            # second connect
+            config_dialog.signal_update.connect(self.slot_node_changed)
             config_dialog.open()
 
 
@@ -298,7 +304,7 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         if (self.__cur_tree_item != None):
             cur_selected_node = self.__cur_tree_item.get_node()
 
-        # NIN __signal_key_pressed.emit(self.scenegraph_root,
+        # NIN signal_key_pressed.emit(self.scenegraph_root,
         #                               cur_selected_node, _qkeyev)
 
 
@@ -407,6 +413,13 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         \param[in] _qmidx expanded item model index"""
 
         print 'slot expanded'
+
+    def slot_node_changed(self, _event):
+        """slot node changed
+        \param[in] _event node change event"""
+
+        print 'slot node changed', _event, 'NIN I need to tell this to Examiner'
+
 
 
     #------------------------------------------------------------

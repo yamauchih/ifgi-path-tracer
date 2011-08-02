@@ -32,12 +32,12 @@ class TestListener(unittest.TestCase):
     def test_listener(self):
         """test listener."""
 
-        subject = Listener.Subject()
+        subject = Listener.Subject('IamaSubject')
 
-        listener_0 = MyListener("<listener A>", subject)
-        listener_1 = MyListener("<listener B>", subject)
+        listener_0 = MyListener('<listener A>', subject)
+        listener_1 = MyListener('<listener B>', subject)
         # subject has two listeners/observers
-        subject.notify_listeners("<event 1>")
+        subject.notify_listeners('<event 1>')
         # output:
         #     <listener A> received event <event 1>
         #     <listener B> received event <event 1>

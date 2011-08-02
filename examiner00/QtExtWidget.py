@@ -104,6 +104,8 @@ class QtExtTextLine(QtGui.QWidget):
         """set value of this ext wiegdt.
         \param[in] _text text to set"""
         self.__text.clear()
+        print _text
+        # FIXME sometimes numpy array comes 2011-8-3(Wed)
         self.__text.setText(_text)
 
     # slot changed
