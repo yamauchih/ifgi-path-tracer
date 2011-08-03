@@ -537,15 +537,10 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
 
         for key in keylist:
             typename = typedict[key]
-            if typename == 'float_3':
+            if((typename == 'float_3') or (typename == 'float')):
                 cam_group.add(QtWidgetIO.QtLineEditWIO(),
                               key,
-                              numpy_util.array2str(valdict[key]),
-                              {'LABEL': key})
-            elif typename == 'float':
-                cam_group.add(QtWidgetIO.QtLineEditWIO(),
-                              key,
-                              str(valdict[key]),
+                              valdict[key],
                               {'LABEL': key})
             elif typename == 'enum_ProjectionMode':
                 itemlist = Camera.ProjectionMode[:]

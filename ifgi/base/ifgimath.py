@@ -13,12 +13,12 @@ import numpy
 
 #----------------------------------------------------------------------
 # normalize vector
-# def normalize_vec(_v):
-#   EPSILON = 0.001
+def normalize_vec(_v):
+  EPSILON = 0.001
 
-#   v_len = numpy.linalg.norm(_v)
-#   assert(v_len > EPSILON)
-#   return _v / v_len
+  v_len = numpy.linalg.norm(_v)
+  assert(v_len > EPSILON)
+  return _v / v_len
 
 
 #----------------------------------------------------------------------

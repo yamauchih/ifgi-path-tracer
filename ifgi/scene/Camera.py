@@ -9,7 +9,7 @@
 
 import math, copy
 import numpy
-from ifgi.base import enum, numpy_util
+from ifgi.base import enum, numpy_util, ifgimath
 
 import Film, Ray
 
@@ -105,7 +105,7 @@ class Camera(object):
     def set_view_dir(self, _view_dir):
         """set view direction.
         \return view direction (normalized)."""
-        self.__view_dir = _view_dir
+        self.__view_dir = ifgimath.normalize_vec(_view_dir)
         self.__compute_screen_parameter()
 
 
@@ -132,7 +132,7 @@ class Camera(object):
     def set_up_dir(self, _up_dir):
         """set up direction.
         \return up direction float_3."""
-        self.__up_dir = _up_dir
+        self.__up_dir = ifgimath.normalize_vec(_up_dir)
         self.__compute_screen_parameter()
 
     def get_up_dir(self):
@@ -438,6 +438,7 @@ class Camera(object):
             print vd
             if len(vd) != 3:
                 raise StandardError('view_dir must be a float_3.')
+            
             self.set_view_dir(vd)
 
         if 'up_dir' in _config:
@@ -478,18 +479,18 @@ class Camera(object):
         """
         new_cam = copy.deepcopy(self)
         value_dict = {
-            'eye_pos':          new_cam.get_eye_pos().copy(),
-            'view_dir':         new_cam.get_view_dir().copy(),
-            'up_dir':           new_cam.get_up_dir().copy(),
-            'fovy_rad':         new_cam.get_fovy_rad(),
-            'aspect_ratio':     new_cam.get_aspect_ratio(),
-            'z_near':           new_cam.get_z_near(),
-            'z_far':            new_cam.get_z_far(),
-            'projection':       new_cam.get_projection(),
-            'target_dist':      new_cam.get_target_distance(),
-            'focal_length':     new_cam.get_focal_length(),
-            'lens_screen_dist': new_cam.get_lens_to_screen_distance(),
-            'lens_film_dist':   new_cam.get_lens_to_film_distance()
+            'eye_pos':          numpy_util.array2str(new_cam.get_eye_pos()),
+            'view_dir':         numpy_util.array2str(new_cam.get_view_dir()),
+            'up_dir':           numpy_util.array2str(new_cam.get_up_dir()),
+            'fovy_rad':         str(new_cam.get_fovy_rad()),
+            'aspect_ratio':     str(new_cam.get_aspect_ratio()),
+            'z_near':           str(new_cam.get_z_near()),
+            'z_far':            str(new_cam.get_z_far()),
+            'projection':       str(new_cam.get_projection()),
+            'target_dist':      str(new_cam.get_target_distance()),
+            'focal_length':     str(new_cam.get_focal_length()),
+            'lens_screen_dist': str(new_cam.get_lens_to_screen_distance()),
+            'lens_film_dist':   str(new_cam.get_lens_to_film_distance())
             }
         return value_dict
 

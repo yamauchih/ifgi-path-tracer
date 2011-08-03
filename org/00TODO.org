@@ -9,12 +9,9 @@
 **** TODO Implement observer
 *** TODO set the parameter values
 **** TODO complete Camera set_config_data/get_config_data
-**** TODO fix push Update QtExtWidget.py:108
 **** DONE listener NodeDialog
 **** TODO listener QtSceneGraphWidget
 **** TODO listener QtExaminerWidget
-
-
 
 ** TODO Add primitive to get_bsdf
 
