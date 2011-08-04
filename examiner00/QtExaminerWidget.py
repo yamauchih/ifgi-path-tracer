@@ -115,20 +115,11 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """reimplemented: paint (public).
         """
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
-
-        GL.glLoadIdentity()
-
-        [ep, at, up] = self.__gl_camera.get_lookat(Camera.EyePosition.EyeCenter)
-        # print 'DEBUG: ep = ' + str(ep)
-        # print 'DEBUG: at = ' + str(at)
-        # print 'DEBUG: up = ' + str(up)
-        GLU.gluLookAt(ep[0], ep[1], ep[2],
-                      at[0], at[1], at[2],
-                      up[0], up[1], up[2])
+        self.__gl_frustum(Camera.EyePosition.EyeCenter)
+        self.__glu_lookat(Camera.EyePosition.EyeCenter)
 
         # own computer gluLookAt matrix test
         # self.test_gluLookAt_matrix()
-
         self.draw_scene()
 
     # resize
@@ -730,7 +721,57 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         \return attached gl scenegraph, may None."""
         return self.__gl_scenegraph
 
-    # test getLookAtMatrix routine
+
+    #----------------------------------------------------------------------
+    # camera related OpenGL utility functions
+    #----------------------------------------------------------------------
+
+    def __glu_lookat(self, _eyeposition):
+        """gluLookat call with setup.
+        \param[in] _eyeposition stereo eye position
+        """
+        [ep, at, up] = self.__gl_camera.get_lookat(_eyeposition)
+
+        GL.glMatrixMode(GL.GL_MODELVIEW)
+        GL.glLoadIdentity()
+
+        # print 'DEBUG: ep = ' + str(ep)
+        # print 'DEBUG: at = ' + str(at)
+        # print 'DEBUG: up = ' + str(up)
+        GLU.gluLookAt(ep[0], ep[1], ep[2],
+                      at[0], at[1], at[2],
+                      up[0], up[1], up[2])
+
+        # opengl matrix access
+        # glmat = GL.glGetDoublev(GL.GL_MODELVIEW_MATRIX)
+
+
+    def __gl_frustum(self, _eyeposition):
+        """call glFrustum to setup the projection matrix.
+        \param[in] _eyeposition stereo eye position
+        """
+        [left, right, top, bottom] = self.__gl_camera.query_frustum(_eyeposition)
+        z_near = self.__gl_camera.get_z_near()
+        z_far  = self.__gl_camera.get_z_far()
+
+        GL.glMatrixMode(GL.GL_PROJECTION)
+        GL.glLoadIdentity()
+
+        if (self.__gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
+            print 'Projection: z_far = ',  z_far
+            GL.glFrustum(left, right, bottom, top, z_near, z_far)
+        else:
+            GL.glOrtho(left, right, bottom, top, z_near, z_far)
+
+        # glmat[_position][Projection] = GL.glGetDoublev(GL.GL_PROJECTION_MATRIX)
+
+        GL.glMatrixMode(GL.GL_MODELVIEW);
+
+
+    #----------------------------------------------------------------------
+    # test
+    #----------------------------------------------------------------------
+
     def test_gluLookAt_matrix(self):
         """test getLookAtMatrix routine.
 

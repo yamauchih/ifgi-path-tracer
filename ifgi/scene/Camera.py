@@ -324,6 +324,53 @@ class Camera(object):
         \return film, exception if no _film_name exists."""
         return self.__film[_film_name]
 
+
+    def query_frustum(self, _eyeposition):
+        """query glFrustum parameter to this camera.
+        \return [left, right, bottom, top]
+        """
+        left   = 0.0
+        right  = 0.0
+        top    = 0.0
+        bottom = 0.0
+
+        # FIXME
+        NIN_eye_separation = 1.0
+
+        if(self.__projection == ProjectionMode.Perspective):
+            half_fovy_rad = self.__fovy_rad * 0.5 # cf. Paul Bourke, 3D Stereo ...
+            wd2  = self.__z_near * math.tan(half_fovy_rad)
+            ndfl = self.__z_near / self.__focal_length
+
+            if(_eyeposition == EyePosition.EyeCenter):
+                left  = - self.__aspect_ratio * wd2
+                right = - left
+                top   =   wd2
+                bottom= - wd2
+            elif(_eyeposition == EyePosition.EyeLeft):
+                left  = - self.__aspect_ratio * wd2 + 0.5 * NIN_eye_separation * ndfl
+                right =   self.__aspect_ratio * wd2 + 0.5 * NIN_eye_separation * ndfl;
+                top   =   wd2
+                bottom= - wd2
+            elif(_eyeposition == EyePosition.EyeRight):
+                left  = -self.__aspect_ratio * wd2 -0.5 * NIN_eye_separation * ndfl;
+                right =  self.__aspect_ratio * wd2 - 0.5 * NIN_eye_separation * ndfl;
+                top   =  wd2;
+                bottom= -wd2;
+        else:
+            # NIN __ortho_width FIXME
+            self.__ortho_width = 1.0
+            wd2   = self.__ortho_width * 0.5;
+            left  = -self.__aspect_ratio * wd2;
+            right = -left;
+            top   =  wd2;
+            bottom= -wd2;
+
+        return [left, right, top, bottom]
+
+
+
+
     # set camera parameters
     def set_camera_param(self, _othercam):
         """set camera parameters.

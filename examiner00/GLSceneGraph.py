@@ -563,12 +563,10 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
 
         return True
 
-
     def update(self, _arg):
         """Implementation of QtWidgetIOObserverIF.update().
         """
         print 'GLCameraNode: I observe ' + _arg
-
 
     #------------------------------------------------------------
     # configurable
@@ -586,7 +584,6 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
         \return configuration dictionary
         """
         return self.__gl_camera.get_config_dict()
-
 
 
 
