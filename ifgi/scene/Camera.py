@@ -55,6 +55,14 @@ class Camera(object):
         # print 'called Camara.__init__()'
 
 
+    def get_classname(self):
+        """get class name.
+        This must be reimplemented in the inherited class.
+        \return None"""
+        assert 0, "get_classname must be implemented in a derived class."
+        return None
+
+
     def __compute_screen_parameter(self):
         """compute screen parameters.
         __LB_corner, __ex, __ey  are computed.
@@ -180,7 +188,7 @@ class Camera(object):
     def set_z_far(self, _z_far):
         """set z far plane distance.
         \param[in] _z_far z far plane distance."""
-        return self.__z_far
+        self.__z_far = _z_far
 
 
     def get_z_far(self):
@@ -189,18 +197,15 @@ class Camera(object):
         return self.__z_far
 
 
-    def get_classname(self):
-        """get class name.
-        This must be reimplemented in the inherited class.
-        \return None"""
-        assert 0, "get_classname must be implemented in a derived class."
-        return None
-
-    # get projection mode
     def get_projection(self):
         """get projection mode.
         \return projection mode ('Perspective', 'Orthographic')"""
         return self.__projection
+
+    def set_projection(self, _projection):
+        """set projection mode.
+        \param[in] _projection projection mode"""
+        self.__projection = _projection
 
     # get gluLookAt() parameters
     def get_lookat(self, _eye_type):
@@ -242,6 +247,12 @@ class Camera(object):
 
         return self.__target_dist
 
+
+    def set_target_distance(self, _target_dist):
+        """set target (lookat point) distance.
+        \param[in] _target_dist target distance."""
+        self.__target_dist = _target_dist
+
     # get lens to screen distance
     def get_lens_to_screen_distance(self):
         """get lens to screen distance.
@@ -256,20 +267,34 @@ class Camera(object):
 
         return self.__focal_length
 
-    # get lens to screen distance
+    def set_focal_length(self, _focal_len):
+        """set focal length.
+        \param[in] _focal_len focal length."""
+        self.__focal_length = _focal_len
+
     def get_lens_to_screen_distance(self):
         """get get lens to screen distance.
         \return lens to screen distance."""
 
         return self.__lens_screen_dist
 
+
+    def set_lens_to_screen_distance(self, _l2s_dist):
+        """set get lens to screen distance.
+        \param[in] _l2s_dist lens to screen distance."""
+        self.__lens_screen_dist = _l2s_dist
+
     # get lens to film distance
     def get_lens_to_film_distance(self):
-        """get get lens to fim distance.
+        """get lens to fim distance.
         \return lens to screen distance."""
-
         # NIN
         return self.__lens_film_dist
+
+    def set_lens_to_film_distance(self, _l2f_dist):
+        """set lens to fim distance.
+        \param[in] lens to film distance."""
+        self.__lens_film_dist = _l2f_dist
 
     # get ray
     def get_ray(self, _dx, _dy):
@@ -438,7 +463,7 @@ class Camera(object):
             print vd
             if len(vd) != 3:
                 raise StandardError('view_dir must be a float_3.')
-            
+
             self.set_view_dir(vd)
 
         if 'up_dir' in _config:
@@ -456,20 +481,26 @@ class Camera(object):
 
         if 'z_near' in _config:
             self.set_z_near(float(_config['z_near']))
+            print 'DEBUG: set z_near', float(_config['z_near'])
 
         if 'z_far' in _config:
             self.set_z_far(float(_config['z_far']))
+            print 'DEBUG: set z_far', float(_config['z_far'])
 
+        if 'projection' in _config:
+            self.set_projection(str(_config['projection']))
 
-        # NIN HEREHERE
-        # value_dict = {
-        #     'projection':       new_cam.get_projection(),
-        #     'target_dist':      new_cam.get_target_distance(),
-        #     'focal_length':     new_cam.get_focal_length(),
-        #     'lens_screen_dist': new_cam.get_lens_to_screen_distance(),
-        #     'lens_film_dist':   new_cam.get_lens_to_film_distance()
-        #     }
+        if 'target_dist' in _config:
+            self.set_target_distance(float(_config['target_dist']))
 
+        if 'focal_length' in _config:
+            self.set_focal_length(float(_config['focal_length']))
+
+        if 'lens_screen_dist' in _config:
+            self.set_lens_to_screen_distance(float(_config['lens_screen_dist']))
+
+        if 'lens_film_dist' in _config:
+            self.set_lens_to_film_distance(float(_config['lens_film_dist']))
 
 
     def get_config_dict(self):

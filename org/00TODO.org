@@ -9,9 +9,11 @@
 **** TODO Implement observer
 *** TODO set the parameter values
 **** TODO complete Camera set_config_data/get_config_data
-**** DONE listener NodeDialog
-**** TODO listener QtSceneGraphWidget
-**** TODO listener QtExaminerWidget
+**** DONE listener NodeDialog, QtSceneGraphWidget, QtExaminerWidget
+
+** TODO Bug: Camera, fovy_ray, z_near, z_far change no effect
+
+
 
 ** TODO Add primitive to get_bsdf
 

@@ -197,17 +197,16 @@ class QtExaminerWindow(QtGui.QMainWindow):
         glsg = self.__examiner_widget.peek_gl_scenegraph()
 
         # import gl scenegraph to dialog -> treeview widget -> model/view
-        self.__sgdialog = QtSceneGraphDialog.QtSceneGraphDialog()
+        self.__sgdialog = QtSceneGraphDialog.QtSceneGraphDialog(self)
         self.__sgdialog.update_scenegraph(glsg)
 
         # signals scene graph dialog and examiner
         self.__sgdialog.signal_closed.connect(self.slot_scenegraph_status);
 
-        # access to the scenegraph widget
-        # HEREHERE FIXME 2011-7-28(Thu)
-        # sg_widget = self.__sgdialog.get_scenegraph_view_widget()
-        # sg_widget.node_changed.connect(slot_node_changed);
-        # sg_widget.key_pressed.connect(slot_key_pressed);
+        # connect scenegraph view widget to examiner.
+        sg_view_w = self.__sgdialog.get_scenegraph_view_widget()
+        sg_view_w.signal_node_changed.connect(self.slot_node_changed_by_sgview)
+        sg_view_w.signal_key_pressed. connect(self.slot_key_pressed)
 
         self.__sgdialog.show()
 
@@ -389,12 +388,14 @@ class QtExaminerWindow(QtGui.QMainWindow):
         print 'slot_scenegraph_status() called'
 
 
-    def slot_node_changed(self, _rootnode, _node):
-        """called when node status changed.
-        \param[in] _rootnode scenegrpah root node
-        \param[in] _node     changed node
+    def slot_node_changed_by_sgview(self, _event, _root_node, _node):
+        """a slot for node changed by scenegraph view widget
+        called when node status changed.
+        \param[in] _event     event type
+        \param[in] _root_node scenegrpah root node
+        \param[in] _node      updated scenegraph node
         """
-        print 'slot_node_changed() called'
+        print 'slot_node_changed_by_sgview() called'
         self.__examiner_widget.updateGL()
 
     def slot_key_pressed(self, _rootnode, _node):

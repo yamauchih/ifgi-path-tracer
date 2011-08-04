@@ -29,9 +29,12 @@ class QtSimpleTabDialog(QtGui.QDialog):
     #------------------------------------------------------------
 
     # signal update node... connected to
-    # QtSceneGraphWidget::slot_node_changed(object)
+    # QtSceneGraphWidget::slot_node_changed_by_dialog(object)
     # the pyqtSignal's arg is any python object here.
-    signal_update      = QtCore.pyqtSignal(object)
+    # \param[in] object event object
+    # \param[in] object updated scenegraph node
+    # \see NodeListener
+    signal_update      = QtCore.pyqtSignal(object, object)
 
 
     def __init__(self, parent=None):
@@ -130,14 +133,15 @@ class QtSimpleTabDialog(QtGui.QDialog):
         """
         self.__button_observer = _qtwidgetio_observer
 
-    def set_subject_node(self, _node_subject):
+    def set_subject_node(self, _node):
         """set subject node to this listener.
-        \param[in] _node_subject.
+        \param[in] _node a scenegraph node to be listened.
         """
-        assert(_node_subject != None)
+        assert(_node != None)
+        assert(_node.get_subject() != None)
         self.__node_listener = \
             NodeListener.NodeListener('QtSimpleTabDialog::nodelistener',
-                                      _node_subject,
+                                      _node,
                                       self)
 
 

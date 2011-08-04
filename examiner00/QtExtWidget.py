@@ -122,14 +122,13 @@ class QtExtTextLine(QtGui.QWidget):
     #         emit self.returnPressed(res)
 
 
-    #--- signals
-
     def textChanged(self, _text):
-        print 'textChanged signal'
+        # print 'textChanged signal'
+        pass
 
     def returnPressed(self, _text):
-        print 'returnPressed signal'
-
+        # print 'returnPressed signal'
+        pass
 
 #----------------------------------------------------------------------
 

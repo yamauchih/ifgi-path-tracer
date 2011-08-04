@@ -556,9 +556,10 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
         # call set_config_dict(dict) when apply button is pushed.
         _tab_dialog.set_associated_configuable_object('Camera', self)
 
-        # set node as a subject. This subject notify dialog when node
+        # set node (which has get_subject() attribute to get the
+        # Listener's subject. This subject notify dialog when node
         # status is changed.
-        _tab_dialog.set_subject_node(self.get_subject())
+        _tab_dialog.set_subject_node(self)
 
         return True
 

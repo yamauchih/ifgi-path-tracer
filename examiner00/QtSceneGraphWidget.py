@@ -28,17 +28,22 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
           - emit update(_node)
           - NodeDialog is a listener of the node.
       - QtSceneGraphWidget
-          - connect NodeDialog::update() to QtSceneGraphWidget::slotUpdateByDialog()
-          - slotUpdateByDialog(_node)
-             - emit nodeChanged(_rootNode, _node)
+          - connect NodeListener::update(_event) to
+          QtSceneGraphWidget::slot_node_changed_by_dialog(_event, _root_node, _node)
+          - slot_node_changed_by_dialog(_event, _root_node, _node)
+             - emit signal_node_changed(_event, _rootNode, _node)
           - itemPopupCallback()
-             - emit nodeChanged(_rootNode, _node) when draw mode and etc. changed
+             - emit signal_node_changed(_event, _root_node, _updated_node)
+               when draw mode and etc. changed
           - statusPopupCallback()
-             - emit nodeChanged(_rootNode, _node) when draw mode and etc. changed
+             - emit signal_node_changed(_event, _root_node, _updated_node)
+               when draw mode and etc. changed
 
       - QtExaminerWidget
-          - connect QtSceneGraphWidget::nodeChanged() to
-            QtExaminerWidget.slotNodeChanged()
+          - connect QtSceneGraphWidget::signal_node_changed(
+                 _event, _root_node, _updated_node) to
+            QtExaminerWidget.slot_node_changed_by_dialog(
+                 _event, _root_node, _updated_node)
     """
     #NIN Keys
     # - Ctrl+Insert  copy  scene node config
@@ -49,16 +54,21 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
     # signal: class static
     #------------------------------------------------------------
     # signal key pressed
-    signal_key_pressed = QtCore.pyqtSignal()
+    # \param[in]
+    signal_key_pressed = QtCore.pyqtSignal(object)
+    # signal node changed
+    # \param[in] object event object
+    # \param[in] object updated node object
+    signal_node_changed = QtCore.pyqtSignal(object, object, object)
 
 
     # constructor
-    def __init__(self, parent=None):
+    def __init__(self, _parent):
         """constructor
 
         \param[in] _parent parent Qt widget"""
 
-        super(QtSceneGraphViewWidget, self).__init__(parent)
+        super(QtSceneGraphViewWidget, self).__init__(_parent)
 
         # self.setObjectName(_name);
         # for showing the root as a collapsed sign ([+] or [-])
@@ -109,7 +119,8 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         tiroot = SceneGraphNodeTreeItem(_gl_scenegraph.get_gl_root_node(),
                                         self.__model.get_scenegraph_model_root())
         # create tree item tree from the GLSceneGraph
-        self.__copy_glsg_to_treeitem_sub(_gl_scenegraph.get_gl_root_node(), tiroot, 0)
+        self.__copy_glsg_to_treeitem_sub(_gl_scenegraph.get_gl_root_node(),
+                                         tiroot, 0)
         self.__model.update_tree(tiroot)
 
         # unselect the current item
@@ -139,17 +150,18 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         assert(self.__cur_tree_item != None)
         assert(self.__cur_tree_item.get_node() != None)
 
-        config_dialog = QtSimpleTabDialog.QtSimpleTabDialog(self)
+        # better not set the parents
+        config_dialog = QtSimpleTabDialog.QtSimpleTabDialog()
         config_dialog.setWindowModality(QtCore.Qt.NonModal)
 
         # create a configuration dialog depends on the each node.
         # When return false, the node is not configurable.
         if self.__cur_tree_item.get_node().create_config_dialog(config_dialog) == True:
-            # connect node dialog to scenegraph widget.slot_node_changed()
+            # connect node dialog to scenegraph widget.slot_node_changed_by_dialog()
             # first disconnect all signal -> slots. doesn't work
             # config_dialog.signal_update.disconnect()
             # second connect
-            config_dialog.signal_update.connect(self.slot_node_changed)
+            config_dialog.signal_update.connect(self.slot_node_changed_by_dialog)
             config_dialog.open()
 
 
@@ -414,11 +426,17 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
         print 'slot expanded'
 
-    def slot_node_changed(self, _event):
+    def slot_node_changed_by_dialog(self, _event, _updated_node):
         """slot node changed
-        \param[in] _event node change event"""
+        \param[in] _event node change event
+        \param[in] _updated_node updated scenegraph node
+        """
 
-        print 'slot node changed', _event, 'NIN I need to tell this to Examiner'
+        print 'slot node changed', _event, 'signal goes to examiner'
+        self.signal_node_changed.emit(_event,
+                                      self.__gl_scenegraph.get_gl_root_node(),
+                                      _updated_node)
+
 
 
 

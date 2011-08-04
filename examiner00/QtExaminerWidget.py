@@ -184,6 +184,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         self.__gl_camera.set_eye_pos(eyepos)
 
         # Ortho mode d_camera.orthoWidth(2.0*d_radius);
+        self.updateGL()
 
 
     # translate the camera

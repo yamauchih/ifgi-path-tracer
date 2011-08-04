@@ -24,10 +24,10 @@ class QtSceneGraphDialog(QtGui.QDialog):
     # signal definition
     signal_closed = QtCore.pyqtSignal(object)
 
-    def __init__(self, parent=None):
+    def __init__(self, _parent):
         """constructor"""
 
-        super(QtSceneGraphDialog, self).__init__(parent)
+        super(QtSceneGraphDialog, self).__init__(_parent)
 
         # scenegraph treeview widget
         self.__sg_view_widget = QtSceneGraphWidget.QtSceneGraphViewWidget(self);
