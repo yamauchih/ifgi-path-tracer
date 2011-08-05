@@ -30,7 +30,8 @@ class QtSceneGraphDialog(QtGui.QDialog):
         super(QtSceneGraphDialog, self).__init__(_parent)
 
         # scenegraph treeview widget
-        self.__sg_view_widget = QtSceneGraphWidget.QtSceneGraphViewWidget(self);
+        self.__sg_view_widget = \
+            QtSceneGraphWidget.QtSceneGraphViewWidget(self, self);
 
         self.__layout = QtGui.QVBoxLayout();
         self.__layout.setObjectName('SceneGraph viewer, dialog layout');
@@ -51,8 +52,8 @@ class QtSceneGraphDialog(QtGui.QDialog):
     # a signal emitted when dialog is closed
     def closed(self):
         """a signal emitted when dialog is closed"""
-        self.signal_closed.emit('')
-        print 'called QtSceneGraphWidget::closed() '
+        self.signal_closed.emit('QtSceneGraphDialog.closed')
+        # print 'called QtSceneGraphWidget::closed() '
 
 
     # Clear current view and import GL scenegraph.

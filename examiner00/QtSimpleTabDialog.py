@@ -218,7 +218,8 @@ class QtSimpleTabDialog(QtGui.QDialog):
     def closed(self):
         """a signal emitted when dialog is closed"""
 
-        print 'called QtSimpleTabDialog::closed() '
+        # print 'called QtSimpleTabDialog::closed() '
+        pass
 
     # emits close(), override Dialog's closeEvent
     def closeEvent(self, _close_event):

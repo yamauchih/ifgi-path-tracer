@@ -173,8 +173,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
             eyepos = eyepos = (2.0 * self.__scene_radius) * cam_basis[2]
 
         self.__gl_camera.set_eye_pos(eyepos)
+        self.__gl_camera.set_ortho_width(2.0 * self.__scene_radius)
 
-        # Ortho mode d_camera.orthoWidth(2.0*d_radius);
         self.updateGL()
 
 
@@ -758,7 +758,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         GL.glLoadIdentity()
 
         if (self.__gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
-            print 'Projection: z_far = ',  z_far
+            # print 'Projection: z_far = ',  z_far
             GL.glFrustum(left, right, bottom, top, z_near, z_far)
         else:
             GL.glOrtho(left, right, bottom, top, z_near, z_far)

@@ -40,6 +40,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
         """constructor"""
         super(QtExaminerWindow, self).__init__()
         self.__examiner_widget = None
+        self.__sgdialog = None
 
     # create widgets and window
     def create_window(self):
@@ -71,6 +72,16 @@ class QtExaminerWindow(QtGui.QMainWindow):
         #         menu.addAction(self.copyAct)
         #         menu.addAction(self.pasteAct)
         #         menu.exec_(event.globalPos())
+
+
+    def cleanup_subwindow(self):
+        """clear sub dialogs
+        """
+        if(self.__sgdialog != None):
+            self.__sgdialog.close()
+            del self.__sgdialog
+            self.__sgdialog = None
+
 
 
     # init application after window is created.
@@ -346,6 +357,8 @@ class QtExaminerWindow(QtGui.QMainWindow):
         """file new command.
         create empty scenegraph and set it to examiner widget.
         """
+        self.cleanup_subwindow()
+
         # create an empty scenegraph
         sg = SceneGraph.create_empty_scenegraph()
 
@@ -362,7 +375,11 @@ class QtExaminerWindow(QtGui.QMainWindow):
 
     # load file command
     def com_file_load(self, _infilename):
-        """load file command."""
+        """load file command.
+        \param[in] _infilename input filename
+        """
+        self.cleanup_subwindow()
+
         if (_infilename == None) or (_infilename == ''):
             raise StandardError, ('com_file_load: empty filename')
 
@@ -401,6 +418,17 @@ class QtExaminerWindow(QtGui.QMainWindow):
     def slot_key_pressed(self, _rootnode, _node):
         print 'slot_key_pressed() called'
 
+
+    def closed(self):
+        """a signal emitted when dialog is closed"""
+        # print 'called QtExaminerWindow::closed() '
+        pass
+
+    def closeEvent(self, _close_event):
+        """this dialog close event"""
+        self.cleanup_subwindow()
+        self.closed()
+        super(QtExaminerWindow, self).closeEvent(_close_event)
 
 
 # get default option list

@@ -50,6 +50,8 @@ class Camera(object):
         # films: framebuffer
         self.__film = {}
 
+        self.__ortho_width = 1.0
+
         self.__compute_screen_parameter()
 
         # print 'called Camara.__init__()'
@@ -188,6 +190,7 @@ class Camera(object):
     def set_z_far(self, _z_far):
         """set z far plane distance.
         \param[in] _z_far z far plane distance."""
+        # print 'set_z_far: ', _z_far
         self.__z_far = _z_far
 
 
@@ -324,6 +327,16 @@ class Camera(object):
         \return film, exception if no _film_name exists."""
         return self.__film[_film_name]
 
+    def set_ortho_width(self, _ortho_width):
+        """set orthogonal projection width.
+        \param[in] _ortho_width orthogonal projection width size."""
+        self.__ortho_width = _ortho_width
+
+    def get_ortho_width(self):
+        """get orthogonal projection width.
+        \return _ortho_width"""
+        return self.__ortho_width
+
 
     def query_frustum(self, _eyeposition):
         """query glFrustum parameter to this camera.
@@ -358,8 +371,6 @@ class Camera(object):
                 top   =  wd2;
                 bottom= -wd2;
         else:
-            # NIN __ortho_width FIXME
-            self.__ortho_width = 1.0
             wd2   = self.__ortho_width * 0.5;
             left  = -self.__aspect_ratio * wd2;
             right = -left;

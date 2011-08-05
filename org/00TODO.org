@@ -1,20 +1,48 @@
-* Task ifgi path tracer 2011-8-1(Mon)
+* Task ifgi path tracer 2011-8-5(Fri)
 
-** TODO Add Camera parameter control GUI
+** DONE Add Camera parameter control GUI
 *** DONE parameter iterator of Camera
 **** DONE get_keys (list), and get value dict, get parameter type dict
 **** DONE typename update: vector3 -> float_3, enum -> enum_enumname
 *** DONE create parameter control from this iterator
 *** DONE Add combobox widget, combobox QtWidgetIOIF
 **** DONE Implement observer
+**** DONE complete Camera set_config_data/get_config_data
 *** DONE set the parameter values
 **** DONE listener NodeDialog, QtSceneGraphWidget, QtExaminerWidget
-**** TODO complete Camera set_config_data/get_config_data
-** TODO Bug: Camera, fovy_ray, z_near, z_far change no effect
 
 
+** TODO view all to see the cornel box: change the z_near and z_far
+
+Examner widget self.__scene_cog と self.__scene_radius を set している部分を探す
+それを以下の関数でおきかえる
+
+void QtExaminerWidget::setScenePos(const base::Vec3f& _cog, float _radius) {
+    d_cog = _cog;
+    d_radius = _radius;
+
+    d_camera.lock();
+    d_camera.lookAt(_cog);
+    d_camera.orthoWidth(2.0*d_radius);
+    ここで clipping plane が変化する
+    d_camera.setClippingPanes(0.01*_radius, 500.0*_radius);
+    d_camera.focalLength(_radius);
+    d_camera.unlock();
+    updateGL();
+}
+
+void QtExaminerWidget::setSceneSize(float _radius) {
+    d_radius = _radius;
+    d_camera.lock();
+    d_camera.orthoWidth(2.0*d_radius);
+    ここで clipping plane が変化する
+    d_camera.setClippingPanes(0.01*_radius, 10.0*_radius);
+    d_camera.focalLength(_radius);
+    d_camera.unlock();
+}
 
 ** TODO Add primitive to get_bsdf
+
 
 ** TODO material の項を読んで bsdf をどう評価するか見る．しかし最初は
    lambertian のみ．

@@ -63,12 +63,14 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
 
     # constructor
-    def __init__(self, _parent):
+    def __init__(self, _parent, _qt_scenegraph_dialog):
         """constructor
 
         \param[in] _parent parent Qt widget"""
 
         super(QtSceneGraphViewWidget, self).__init__(_parent)
+
+        self.__sg_dialog = _qt_scenegraph_dialog
 
         # self.setObjectName(_name);
         # for showing the root as a collapsed sign ([+] or [-])
@@ -152,6 +154,8 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
         # better not set the parents
         config_dialog = QtSimpleTabDialog.QtSimpleTabDialog()
+        self.__sg_dialog.signal_closed.connect(config_dialog.slot_closed)
+
         config_dialog.setWindowModality(QtCore.Qt.NonModal)
 
         # create a configuration dialog depends on the each node.
