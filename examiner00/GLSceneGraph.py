@@ -52,7 +52,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
                                self.__gl_root_node,
                                0)
 
-        self.__print_sgnode_sub(self.__gl_root_node, 0)
+        # self.__print_sgnode_sub(self.__gl_root_node, 0)
 
     # get generic scene graph.
     def get_scenegraph(self):
@@ -139,20 +139,20 @@ class GLSceneGraph(SceneGraph.SceneGraph):
 
         if _cur_sgnode.is_primitive_node() == True:
             # create primitive node and set the primitive
-            print 'DEBUG: Create primitive and set'
+            # print 'DEBUG: Create primitive and set'
             gl_prim_node = new_gl_scenegraph_primitive_node(
                 _cur_sgnode.get_primitive())
-            print 'DEBUG: Created: ' + gl_prim_node.get_classname()
+            # print 'DEBUG: Created: ' + gl_prim_node.get_classname()
             _cur_glnode.set_primitive(gl_prim_node)
 
         else:
-            print 'DEBUG: Go to children'
+            # print 'DEBUG: Go to children'
             for ch_sgnode in _cur_sgnode.get_children():
                 # create and refer the sg node
 
                 # handle special nodes first: camara
                 if (type(ch_sgnode) == SceneGraph.CameraNode):
-                    print 'DEBUG: Camera Detected.'
+                    # print 'DEBUG: Camera Detected.'
                     ch_gl_camera_node = GLCameraNode(ch_sgnode)
                     _cur_glnode.append_child(ch_gl_camera_node)
                     self.set_current_gl_camera(ch_gl_camera_node.get_gl_camera())
@@ -858,7 +858,7 @@ def new_gl_scenegraph_primitive_node(_primitive):
         raise StandardError, ('Null primitive.')
 
     if _primitive.get_classname() == 'TriMesh':
-        print 'DEBUG: created Trimesh Primitive'
+        # print 'DEBUG: created Trimesh Primitive'
         tmeshnode = GLTriMeshNode('testTriMesh')
         tmeshnode.set_primitive(_primitive)
         return tmeshnode

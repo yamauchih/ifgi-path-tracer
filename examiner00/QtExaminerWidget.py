@@ -162,20 +162,73 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     def view_all(self):
         """view all the scene."""
         cam_basis = self.__gl_camera.get_coordinate_system()
-        eyepos = self.__scene_cog
+        eyepos = self.get_scene_cog()
         if (self.__gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
             halfrad = 0.5 * self.__gl_camera.get_fovy_rad()
-            dist    = self.__scene_radius/math.tan(halfrad)
+            dist    = self.get_scene_radius()/math.tan(halfrad)
             mag     = 1.2       # slack
             dist    = mag * max(dist, dist/self.__gl_camera.get_aspect_ratio())
             eyepos = eyepos - dist * cam_basis[2]
         else:
-            eyepos = eyepos = (2.0 * self.__scene_radius) * cam_basis[2]
+            eyepos = eyepos = (2.0 * self.get_scene_radius()) * cam_basis[2]
 
         self.__gl_camera.set_eye_pos(eyepos)
-        self.__gl_camera.set_ortho_width(2.0 * self.__scene_radius)
+        self.__gl_camera.set_ortho_width(2.0 * self.get_scene_radius())
 
         self.updateGL()
+
+
+    def set_scene_cog_radius(self, _cog_pos, _radius):
+        """set scene (cog) position and radius.
+        Affect to the z_near and z_far plane.
+        \param[in] _cog_pos scene center of gravity position
+        \param[in] _radius  scene radius.
+        """
+        self.__scene_cog    = _cog_pos
+        self.__scene_radius = _radius
+        self.__update_clipping_plane()
+        self.updateGL()
+
+
+    def set_radius(self, _radius):
+        """set scene radius. (only set the radius change)
+        Affect to the z_near and z_far plane.
+        \param[in] _radius  scene radius.
+        """
+        self.__scene_radius = _radius
+        self.__update_clipping_plane()
+        self.updateGL()
+
+
+    def __update_clipping_plane(self):
+        """update the clipping plane according to the scene cog,
+        radius, and camera eye position.
+        """
+        # This is huristic. e.g. slack_factor is a magic number.
+        slack_factor = 10.0
+        dist = numpy.linalg.norm(self.get_scene_cog() - self.__gl_camera.get_eye_pos())
+
+        z_near = dist - (slack_factor * self.get_scene_radius())
+        if(z_near < 0.01):
+            z_near = 0.01
+
+        z_far = dist + slack_factor * self.get_scene_radius()
+        self.__gl_camera.set_z_near(z_near)
+        self.__gl_camera.set_z_far(z_far)
+        self.__gl_camera.set_focal_length(self.get_scene_radius())
+        self.__gl_camera.set_ortho_width(2.0 * self.get_scene_radius())
+
+
+    def get_scene_cog(self):
+        """get scene center of gravity
+        \return scene center opf gravity"""
+        return self.__scene_cog
+
+
+    def get_scene_radius(self):
+        """get scene radius. The center is scene_cog.
+        \return scene radius"""
+        return self.__scene_radius
 
 
     # translate the camera
@@ -205,7 +258,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         cam_basis = self.__gl_camera.get_coordinate_system()
         rotation = numpy.identity(4)
 
-        eyepos = self.__gl_camera.get_eye_pos() - self.__scene_cog
+        eyepos = self.__gl_camera.get_eye_pos() - self.get_scene_cog()
         # Here z is '-', since OpenGL is left hand side coordinates.
         # print 'mat:'      + str(rotation)
         # print 'CamBasis:' + str(cam_basis)
@@ -217,7 +270,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                                         cam_basis[2] * _pn_axis[2]);
 
         # make 4d vector for homogeneous coordinate
-        eyepos = ifgimath.transformPoint(rmat, eyepos) + self.__scene_cog
+        eyepos = ifgimath.transformPoint(rmat, eyepos) + self.get_scene_cog()
 
 
         # self.__gl_camera.lock();
@@ -311,7 +364,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
             self.create_popup_menu_drawmode()
 
         else:
-            print 'DEBUG: reuse popup menu'
+            # print 'DEBUG: reuse popup menu'
+            pass
 
         return self.__popupmenu
 
@@ -458,7 +512,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         elif (self.__action_mode == ActionMode.ExamineMode):
             if (self.__gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
                 # wheel only return +-120
-                zmove = - (float(_event.delta()) / 120.0) * 0.2 * self.__scene_radius
+                zmove = - (float(_event.delta()) / 120.0) * 0.2 * self.get_scene_radius()
                 self.translate([0.0, 0.0, zmove])
             else:
                 print 'NIN: wheel movement with Orthographic projectionmode'
@@ -488,8 +542,8 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """
         # move in z direction
         if (self.__gl_camera.get_projection() == Camera.ProjectionMode.Perspective):
-            zmove = self.__scene_radius * ((_newPoint2D[1] - self.__lastpoint_2d[1])
-                                           * 3.0 / float(self.glHeight()))
+            zmove = self.get_scene_radius() * ((_newPoint2D[1] - self.__lastpoint_2d[1])
+                                               * 3.0 / float(self.glHeight()))
             self.translate(numpy.array([0, 0, zmove]))
         elif (self.__gl_camera.get_projection() == Camera.ProjectionMode.Orthographic):
             print 'NIN: examineModeMoveZdir: in Orthographic projection'
@@ -507,9 +561,9 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
         \param[in] _newPoint2D mouse position on screen
         """
-        value_x = (self.__scene_radius * (_newPoint2D[0] - self.__lastpoint_2d[0]) *
+        value_x = (self.get_scene_radius() * (_newPoint2D[0] - self.__lastpoint_2d[0]) *
                    2.0 / float(self.glWidth()))
-        value_y = (self.__scene_radius * (_newPoint2D[1] - self.__lastpoint_2d[1]) *
+        value_y = (self.get_scene_radius() * (_newPoint2D[1] - self.__lastpoint_2d[1]) *
                    2.0 / float(self.glHeight()))
         self.translate(numpy.array([value_x, -value_y, 0.0]));
 
@@ -697,7 +751,6 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         self.set_current_gl_camera(self.__gl_scenegraph.get_current_gl_camera())
 
         # get draw mode information
-        print 'DEBUG: collect draw mode from the GLSceneGraph'
         self.__drawmode_list = self.__gl_scenegraph.collect_drawmode_list()
         # if self.__drawmode_list != None:
             # print 'DEBUG: found draw mode in the scene'
@@ -706,13 +759,18 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
         # set scene size information
         bb = self.__gl_scenegraph.get_scenegraph().get_root_node().get_bbox()
-        self.__scene_cog    = 0.5 * (bb.get_min() + bb.get_max())
-        self.__scene_radius = 0.5 * numpy.linalg.norm(bb.get_max() - bb.get_min())
-        print 'DEBUG:scene_cog: ' + str(self.__scene_cog) + ', scene_radius: '\
-            + str(self.__scene_radius)
-        if self.__scene_radius < 1e-6:
+        cog    = 0.5 * (bb.get_min() + bb.get_max())
+
+        # bb.get_max() - bb.get_min() overflows when no objects.
+        # Warning: overflow encountered in subtract
+        radius = 0.5 * numpy.linalg.norm(bb.get_max() - bb.get_min())
+        self.set_scene_cog_radius(cog, radius)
+
+        # print 'DEBUG:scene_cog: ' + str(self.get_scene_cog()) + ', scene_radius: '\
+        #     + str(self.get_scene_radius())
+        if self.get_scene_radius() < 1e-6:
             # nothing seems in there
-            self.__scene_radius = 1.0
+            self.set_scene_radius(1.0)
             print 'DEBUG:empty scene: adjust radius = 1.0'
 
     # peek gl scenegraph

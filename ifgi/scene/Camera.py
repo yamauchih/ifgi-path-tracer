@@ -539,11 +539,11 @@ class Camera(object):
 
         if 'z_near' in _config:
             self.set_z_near(float(_config['z_near']))
-            print 'DEBUG: set z_near', float(_config['z_near'])
+            # print 'DEBUG: set z_near', float(_config['z_near'])
 
         if 'z_far' in _config:
             self.set_z_far(float(_config['z_far']))
-            print 'DEBUG: set z_far', float(_config['z_far'])
+            # print 'DEBUG: set z_far', float(_config['z_far'])
 
         if 'projection' in _config:
             self.set_projection(str(_config['projection']))

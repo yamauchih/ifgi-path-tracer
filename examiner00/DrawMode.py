@@ -202,10 +202,10 @@ class DrawModeList(object):
         or-ed and updated."""
 
         if _other_drawmode == None:
-            print 'DrawModeList: No draw mode list'
+            # print 'DrawModeList: No draw mode list'
             return
 
-        print 'DrawModeList: Found draw mode list'
+        # print 'DrawModeList: Found draw mode list'
         for mi in _other_drawmode.get_mode_item_list():
             if (not self.find_drawmode(mi)):
                 self.add_drawmode(mi)
