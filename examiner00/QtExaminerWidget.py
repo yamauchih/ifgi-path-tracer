@@ -34,9 +34,10 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     """Scene examiner
     """
 
-    def __init__(self, _parent):
+    def __init__(self, _parent, _status_bar):
         """constructor (public).
-        \param[in] parent parent widget.
+        \param[in] _parent parent widget.
+        \param[in] _status_bar    status bar
         """
         QtOpenGL.QGLWidget.__init__(self, _parent)
 
@@ -72,6 +73,20 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         # window info
         self.__width  = 1
         self.__height = 1
+
+        # animation
+        self.__timer = QtCore.QTimer(self)
+        self.__timer.timeout.connect(self.slot_animation)
+        self.__last_rotation_axis  = numpy.array([1.0, 2.0, 3.0])
+        self.__last_rotation_angle_rad = 10.0 * math.pi / 180.0
+        self.__anim_frame_count = 0
+        self.__timer_clock = QtCore.QTime()
+        self.__timer_clock.start() # start() once, rests are restart(), in paintGL.
+        self.__timer_record_list = [100,100,100,100,100,100,100,100] # len() == 8
+        self.__timer_record_list_idx = 0
+
+        # qt widgets
+        self.__status_bar = _status_bar
 
         # some debug facility
         self.__is_debug = False
@@ -114,6 +129,10 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     def paintGL(self):
         """reimplemented: paint (public).
         """
+
+        # measure the time of paint GL
+        self.__timer_clock.restart()
+
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         self.__gl_frustum(Camera.EyePosition.EyeCenter)
         self.__glu_lookat(Camera.EyePosition.EyeCenter)
@@ -121,6 +140,15 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         # own computer gluLookAt matrix test
         # self.test_gluLookAt_matrix()
         self.draw_scene()
+
+        # record the time
+        self.__timer_record_list[self.__timer_record_list_idx] = \
+            self.__timer_clock.elapsed()
+        self.__timer_record_list_idx = self.__timer_record_list_idx + 1
+        if(self.__timer_record_list_idx >= len(self.__timer_record_list)):
+            self.__timer_record_list_idx = 0
+        assert(len(self.__timer_record_list) == 8)
+
 
     # resize
     def resizeGL(self, _width, _height):
@@ -248,11 +276,11 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
 
     # rotate the camera with an axis
-    def rotate_camera(self, _angle, _pn_axis):
+    def rotate_camera(self, _pn_axis, _angle_rad):
         """rotate the camera with an axis.
 
-        \param[in] _angle   degree
-        \param[in] _pn_axis rotate axis
+        \param[in] _pn_axis   rotate axis
+        \param[in] _angle_rad angle by radian
         """
 
         cam_basis = self.__gl_camera.get_coordinate_system()
@@ -264,10 +292,10 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         # print 'CamBasis:' + str(cam_basis)
         # print 'pn_axis:'  + str(_pn_axis)
 
-        rmat = ifgimath.getRotationMat(-_angle,
-                                        cam_basis[0] * _pn_axis[0] +
-                                        cam_basis[1] * _pn_axis[1] -
-                                        cam_basis[2] * _pn_axis[2]);
+        rmat = ifgimath.getRotationMat(cam_basis[0] * _pn_axis[0] +
+                                       cam_basis[1] * _pn_axis[1] -
+                                       cam_basis[2] * _pn_axis[2],
+                                       -_angle_rad);
 
         # make 4d vector for homogeneous coordinate
         eyepos = ifgimath.transformPoint(rmat, eyepos) + self.get_scene_cog()
@@ -413,6 +441,9 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
           - left:  camera move
           """
 
+        # stop the animation. until mouse relase.
+        self.__timer.stop()
+
         # press right button: popup menu
         if (_event.buttons() & QtCore.Qt.RightButton):
             #      // lazy update of menu
@@ -482,6 +513,74 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
             #       notify(arg)
             #       ioProcessDetachRequests()
+
+
+    def mouseReleaseEvent(self, _event):
+        """mouse release event.
+        """
+        # 2011-8-8(Mon) HEREHERE
+        pass
+        # if (_event->button() != Qt::RightButton ||
+        #     (d_actionMode == PickingMode && !d_popupEnabled) )
+        # {
+
+        #     switch ( d_actionMode )
+        #     {
+        #     case PickingMode: { // give event to application
+        #         emit signalMouseEvent(_event);
+        #         // same for SceneGraph
+        #         SceneGraph::ObservableActor_Event arg(ArgumentType::MouseReleased);
+        #         arg.x=_event->x();
+        #         arg.y=_event->y();
+        #         buttonState(_event,arg.button,arg.stateBefore,arg.stateAfter);
+
+        #         notify(arg); ioProcessDetachRequests();
+        #     }
+        #         break;
+
+        #     case LassoMode: { // give event to built-in lasso
+        #         d_lasso->slotDrawLasso(_event);
+        #     }
+        #         break;
+
+        #     case QuestionMode: { // give event to application
+        #         emit signalMouseEventIdentify(_event);
+        #         // same for SceneGraph
+        #         SceneGraph::ObservableActor_Event arg(ArgumentType::MouseMoved);
+        #         arg.x=_event->x();
+        #         arg.y=_event->y();
+        #         buttonState(_event,arg.button,arg.stateBefore,arg.stateAfter);
+
+        #         notify(arg); ioProcessDetachRequests();
+        #     }
+        #         break;
+
+        #     case ExamineMode: {
+        #         d_lastPoint_hitSphere = false;
+
+        #         // sync
+        #         emit signalSetView(&d_camera); // send signal at end of mouse dragging
+
+        #         // continue rotation ?
+        #         if ( d_isRotating &&
+        #              (_event->button() == Qt::LeftButton) &&
+        #              (!(_event->buttons() & Qt::MidButton)) &&
+        #              (d_lastMoveTime.elapsed() < 10) && d_animation)
+        #         {
+        #             d_timer->start(0);
+        #         }
+        #         else {
+        #             SceneGraph::ObservableActor_Event arg(ArgumentType::ViewChanged);
+        #             notify(arg); ioProcessDetachRequests();
+        #         }
+        #     }
+        #         break;
+        #     }
+        # }
+
+        # d_isRotating = false;
+
+
 
 
     # mouse wheel event
@@ -619,10 +718,12 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                 rot_axis  = numpy.cross(self.__lastpoint_3d, newPoint3D)
                 cos_angle = numpy.inner(self.__lastpoint_3d, newPoint3D)
                 if (math.fabs(cos_angle) < 1.0):
-                    angle = math.acos(cos_angle); # radian
-                    angle *= 2.0; # inventor rotation
+                    angle_rad = math.acos(cos_angle); # radian
+                    angle_rad *= 2.0; # inventor rotation
 
-                self.rotate_camera(angle, rot_axis)
+                self.rotate_camera(rot_axis, angle_rad)
+                self.__last_rotation_axis      = rot_axis
+                self.__last_rotation_angle_rad = angle_rad
 
 
     # mouse move event
@@ -824,6 +925,38 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         # glmat[_position][Projection] = GL.glGetDoublev(GL.GL_PROJECTION_MATRIX)
 
         GL.glMatrixMode(GL.GL_MODELVIEW);
+
+
+    def get_millsec_per_frame(self):
+        """get millisecond per frame by averaging several (currently
+        8) time samples.
+        """
+        return reduce(lambda x, y: x+y, self.__timer_record_list)
+
+
+    def slot_animation(self):
+        """slot animation
+        self.__timer fires signal timeout(). It is connected to here."""
+        # stop animation if the widget has been hidden
+        if (not self.isVisible()):
+            self.__timer.stop()
+            return
+
+        # makeCurrent()?
+        self.rotate_camera(self.__last_rotation_axis, self.__last_rotation_angle_rad);
+        self.updateGL();
+
+        # currently no lock mechanism for displaylist implemented.
+        # if it is implemented, only do it no lock case
+        # if(!isUpdateLocked()):
+
+        if (self.__anim_frame_count == 10):
+            assert(self.__status_bar != None);
+            s = "%.3f fps" % self.get_millsec_per_frame()
+            self.__status_bar.showMessage(s, 2000) # show it for 2000 msec
+            self.__anim_frame_count = 0
+        else:
+            self.__anim_frame_count += 1
 
 
     #----------------------------------------------------------------------

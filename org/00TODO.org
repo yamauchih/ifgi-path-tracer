@@ -11,6 +11,7 @@
 *** DONE set the parameter values
 **** DONE listener NodeDialog, QtSceneGraphWidget, QtExaminerWidget
 
+** TODO animation mode.
 ** TODO Bug
 
 ** TODO Add primitive to get_bsdf

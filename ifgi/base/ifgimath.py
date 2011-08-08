@@ -23,14 +23,13 @@ def normalize_vec(_v):
 
 #----------------------------------------------------------------------
 # get a rotation matrix (taken from Mesa3.1)
-def getRotationMat(_angle, _rot_axis):
+def getRotationMat(_rot_axis, _angle_rad):
   """get a rotation matrix (taken from Mesa3.1)
   original function contributed by Erich Boleyn (erich@uruk.org)
 
-  \param[in] _angle radian
   \param[in] _rot_axis rotation axis
+  \param[in] _angle_rad radian
   """
-
 
   x = _rot_axis[0]
   y = _rot_axis[1]
@@ -40,8 +39,8 @@ def getRotationMat(_angle, _rot_axis):
   if (mag == 0):
       raise StandardError, ('Zero axis: ' + str(_rot_axis))
 
-  s = math.sin(_angle);
-  c = math.cos(_angle);
+  s = math.sin(_angle_rad);
+  c = math.cos(_angle_rad);
 
   x /= mag;
   y /= mag;
