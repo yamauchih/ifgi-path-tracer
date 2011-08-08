@@ -84,7 +84,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         self.__timer_clock.start() # start() once, rests are restart(), in paintGL.
         self.__timer_record_list = [100,100,100,100,100,100,100,100] # len() == 8
         self.__timer_record_list_idx = 0
-        self.__is_animation_on = True
+        self.__is_animation_on = False
         self.__last_move_time  = QtCore.QTime()
         self.__last_move_time.start()
 
@@ -317,12 +317,47 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     # popup/context menu implementation
     #----------------------------------------------------------------------
 
-    # popup -- function -- bgcolor implementation
-    def popup_function_bgcolor(self):
+    def __popup_func_bgcolor(self):
+        """popup -- function -- bgcolor implementation"""
         print 'NIN: bgcolor implementation'
 
-    # popup -- function -- preference implementation
-    def popup_function_preference(self):
+    def __popup_func_snapshot(self):
+        """popup -- function -- snapshot
+        """
+        print 'NIN: snapshot implementation'
+
+    def __popup_func_set_snapshot_name(self):
+        """popup -- function -- set snapshot name
+        """
+        print 'NIN: set snapshot name implementation'
+
+    def __popup_func_snapshot_saves_view(self):
+        """popup -- function -- snapshot saves view
+        """
+        print 'NIN: set snapshot saves view implementation'
+
+    def __popup_func_copy_view(self):
+        """popup -- function -- copy view
+        """
+        print 'NIN: set copy view implementation'
+
+    def __popup_func_paste_view(self):
+        """popup -- function -- paste view
+        """
+        print 'NIN: set paste view implementation'
+
+    def __popup_func_paste_effect_size(self):
+        """popup -- function -- paste/drop effect size
+        """
+        print 'NIN: set paste/drop effect implementation'
+
+    def __popup_func_animation(self):
+        """popup -- function -- animation toggle implementation
+        """
+        self.__is_animation_on = self.__popup_func_animation_act.isChecked()
+
+    def __popup_func_preference(self):
+        """popup -- function -- preference implementation"""
         print 'NIN: preference implementation'
 
     #----------------------------------------------------------------------
@@ -334,12 +369,56 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """create popup menu: function submenu.
         """
         assert(self.__popupmenu != None)
-        self.popup_function_menu = self.__popupmenu.addMenu('Function')
-        self.popup_function_bgcolor_act = \
+        self.__popup_func_menu = self.__popupmenu.addMenu('Function')
+        self.__popup_func_bgcolor_act = \
             QtGui.QAction("Backgroundcolor", self,
                           statusTip="Set background color",
-                          triggered=self.popup_function_bgcolor)
-        self.popup_function_menu.addAction(self.popup_function_bgcolor_act)
+                          triggered=self.__popup_func_bgcolor)
+        self.__popup_func_menu.addAction(self.__popup_func_bgcolor_act)
+        self.__popup_func_menu.addSeparator()
+
+        self.__popup_func_snapshot_act = \
+            QtGui.QAction("Snapshot", self,
+                          statusTip="save a snapshot image",
+                          triggered=self.__popup_func_snapshot)
+        self.__popup_func_menu.addAction(self.__popup_func_snapshot_act)
+        self.__popup_func_set_snapshot_name_act = \
+            QtGui.QAction("Set snapshot name", self,
+                          statusTip="set a snapshot name",
+                          triggered=self.__popup_func_set_snapshot_name)
+        self.__popup_func_menu.addAction(self.__popup_func_set_snapshot_name_act)
+        self.__popup_func_set_snapshot_saves_view_act = \
+            QtGui.QAction("Snapshot saves view", self,
+                          checkable=True,
+                          statusTip="when took a snapshot, save a view",
+                          triggered=self.__popup_func_snapshot_saves_view)
+        self.__popup_func_menu.addAction(self.__popup_func_set_snapshot_saves_view_act)
+        self.__popup_func_menu.addSeparator()
+
+        self.__popup_func_copy_view_act = \
+            QtGui.QAction("Copy view", self,
+                          statusTip="copy a view to clipboard",
+                          triggered=self.__popup_func_copy_view)
+        self.__popup_func_menu.addAction(self.__popup_func_copy_view_act)
+        self.__popup_func_paste_view_act = \
+            QtGui.QAction("Paste view", self,
+                          statusTip="paste a view from the clipboard",
+                          triggered=self.__popup_func_paste_view)
+        self.__popup_func_menu.addAction(self.__popup_func_paste_view_act)
+        self.__popup_func_paste_effect_size_act = \
+            QtGui.QAction("Paste/drop effect size", self,
+                          statusTip="when paste the view, also change the window size",
+                          triggered=self.__popup_func_paste_effect_size)
+        self.__popup_func_menu.addAction(self.__popup_func_paste_effect_size_act)
+        self.__popup_func_menu.addSeparator()
+
+        self.__popup_func_animation_act = \
+            QtGui.QAction("Animation", self,
+                          checkable=True,
+                          statusTip="Animation on/off flag",
+                          triggered=self.__popup_func_animation)
+        self.__popup_func_menu.addAction(self.__popup_func_animation_act)
+
 
     # create popup menu: draw mode
     def create_popup_menu_drawmode(self):
@@ -387,7 +466,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
             popup_preference_act = \
                 QtGui.QAction("Preference", self,
                               statusTip="Popup preference dialog",
-                              triggered=self.popup_function_preference)
+                              triggered=self.__popup_func_preference)
             self.__popupmenu.addAction(popup_preference_act)
             self.__popupmenu.addSeparator()
 
