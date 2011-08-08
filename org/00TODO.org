@@ -11,11 +11,11 @@
 *** DONE set the parameter values
 **** DONE listener NodeDialog, QtSceneGraphWidget, QtExaminerWidget
 
-** TODO animation mode.
+** TODO animation mode. examiner menu animatio on/off
+
 ** TODO Bug
 
 ** TODO Add primitive to get_bsdf
-
 
 ** TODO material の項を読んで bsdf をどう評価するか見る．しかし最初は
    lambertian のみ．

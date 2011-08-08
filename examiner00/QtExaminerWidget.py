@@ -26,7 +26,7 @@ import QtUtil
 
 
 ## QtExaminer's action mode
-ActionMode = enum.Enum(['ExamineMode', 'PickingMode'])
+ActionMode = enum.Enum(['ExamineMode', 'PickingMode', 'LassoMode'])
 
 
 # Scene examiner
@@ -84,6 +84,9 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         self.__timer_clock.start() # start() once, rests are restart(), in paintGL.
         self.__timer_record_list = [100,100,100,100,100,100,100,100] # len() == 8
         self.__timer_record_list_idx = 0
+        self.__is_animation_on = True
+        self.__last_move_time  = QtCore.QTime()
+        self.__last_move_time.start()
 
         # qt widgets
         self.__status_bar = _status_bar
@@ -518,68 +521,36 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     def mouseReleaseEvent(self, _event):
         """mouse release event.
         """
-        # 2011-8-8(Mon) HEREHERE
-        pass
-        # if (_event->button() != Qt::RightButton ||
-        #     (d_actionMode == PickingMode && !d_popupEnabled) )
-        # {
+        if(_event.button() != QtCore.Qt.RightButton):
+            if(self.__action_mode == ActionMode.PickingMode):
+                # self.__signal_mouse_event.emit(_event)
+                # sg_arg = [_event.x(), _event.y()]
+                # send event to the scenegraph listener with mouse position (sg_arg)
+                # notify the event to the listener.
+                pass
+            elif(self.__action_mode == ActionMode.LassoMode):
+                # self.__lasso.slot_draw_lasso(_event)
+                pass
+            # elif(self.__action_mode == Actionmode.QuestionMode):
+            #     pass
+            elif(self.__action_mode == ActionMode.ExamineMode):
+                # mouse drag is ended.
+                # emit set view signal?
 
-        #     switch ( d_actionMode )
-        #     {
-        #     case PickingMode: { // give event to application
-        #         emit signalMouseEvent(_event);
-        #         // same for SceneGraph
-        #         SceneGraph::ObservableActor_Event arg(ArgumentType::MouseReleased);
-        #         arg.x=_event->x();
-        #         arg.y=_event->y();
-        #         buttonState(_event,arg.button,arg.stateBefore,arg.stateAfter);
+                # continue the rotation?
+                # rotating && left button released && animation
+                if((self.__is_rotating == True) and
+                   (_event.button() == QtCore.Qt.LeftButton) and
+                   (_event.button() != QtCore.Qt.MidButton)  and
+                   (self.__last_move_time.elapsed() < 10)    and
+                   (self.__is_animation_on == True)):
+                    # fire the rotation frame signal
+                    self.__timer.start(0)
+                else:
+                    # NIN: send view changed event to the scenegraph
+                    pass
 
-        #         notify(arg); ioProcessDetachRequests();
-        #     }
-        #         break;
-
-        #     case LassoMode: { // give event to built-in lasso
-        #         d_lasso->slotDrawLasso(_event);
-        #     }
-        #         break;
-
-        #     case QuestionMode: { // give event to application
-        #         emit signalMouseEventIdentify(_event);
-        #         // same for SceneGraph
-        #         SceneGraph::ObservableActor_Event arg(ArgumentType::MouseMoved);
-        #         arg.x=_event->x();
-        #         arg.y=_event->y();
-        #         buttonState(_event,arg.button,arg.stateBefore,arg.stateAfter);
-
-        #         notify(arg); ioProcessDetachRequests();
-        #     }
-        #         break;
-
-        #     case ExamineMode: {
-        #         d_lastPoint_hitSphere = false;
-
-        #         // sync
-        #         emit signalSetView(&d_camera); // send signal at end of mouse dragging
-
-        #         // continue rotation ?
-        #         if ( d_isRotating &&
-        #              (_event->button() == Qt::LeftButton) &&
-        #              (!(_event->buttons() & Qt::MidButton)) &&
-        #              (d_lastMoveTime.elapsed() < 10) && d_animation)
-        #         {
-        #             d_timer->start(0);
-        #         }
-        #         else {
-        #             SceneGraph::ObservableActor_Event arg(ArgumentType::ViewChanged);
-        #             notify(arg); ioProcessDetachRequests();
-        #         }
-        #     }
-        #         break;
-        #     }
-        # }
-
-        # d_isRotating = false;
-
+        self.__is_rotating = False
 
 
 
@@ -768,7 +739,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                 self.__lastpoint_3d = newPoint3D;
 
             self.updateGL();
-            # d_lastMoveTime.restart();
+            self.__last_move_time.restart();
 
             # DELETEME
             # print 'DEBUG: mouse press at ' + str(self.__lastpoint_2d) +\
@@ -952,7 +923,12 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
         if (self.__anim_frame_count == 10):
             assert(self.__status_bar != None);
-            s = "%.3f fps" % self.get_millsec_per_frame()
+            sec_per_frame = self.get_millsec_per_frame() * 0.001
+            if(sec_per_frame == 0):
+                s = '> 1000 fps'
+            else:
+                s = "%.3f fps" % (1.0/sec_per_frame)
+
             self.__status_bar.showMessage(s, 2000) # show it for 2000 msec
             self.__anim_frame_count = 0
         else:
