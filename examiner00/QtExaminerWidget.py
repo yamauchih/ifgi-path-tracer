@@ -82,7 +82,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         self.__anim_frame_count = 0
         self.__timer_clock = QtCore.QTime()
         self.__timer_clock.start() # start() once, rests are restart(), in paintGL.
-        self.__timer_record_list = [100,100,100,100,100,100,100,100] # len() == 8
+        self.__timer_record_list = [1,1,1,1,1,1,1,1] # len() == 8
         self.__timer_record_list_idx = 0
         self.__is_animation_on = False
         self.__last_move_time  = QtCore.QTime()
@@ -147,6 +147,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         # record the time
         self.__timer_record_list[self.__timer_record_list_idx] = \
             self.__timer_clock.elapsed()
+        # print 'DEBUG: timer ', self.__timer_record_list
         self.__timer_record_list_idx = self.__timer_record_list_idx + 1
         if(self.__timer_record_list_idx >= len(self.__timer_record_list)):
             self.__timer_record_list_idx = 0
@@ -981,7 +982,10 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """get millisecond per frame by averaging several (currently
         8) time samples.
         """
-        return reduce(lambda x, y: x+y, self.__timer_record_list)
+        sum = reduce(lambda x, y: x+y, self.__timer_record_list)
+        n   = len(self.__timer_record_list)
+        assert(n > 0)
+        return sum / n
 
 
     def slot_animation(self):

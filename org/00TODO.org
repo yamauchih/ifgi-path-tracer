@@ -11,7 +11,7 @@
 *** DONE set the parameter values
 **** DONE listener NodeDialog, QtSceneGraphWidget, QtExaminerWidget
 
-** TODO animation mode. examiner menu animatio on/off
+** DONE animation mode. examiner menu animatio on/off
 
 ** TODO Bug
 
