@@ -13,6 +13,11 @@
 
 ** DONE animation mode. examiner menu animatio on/off
 
+** TODO Implement texture class
+   *** TextureIF
+   *** ConstantColorTexture
+   *** ImageTexture
+
 ** TODO Bug
 
 ** TODO Add primitive to get_bsdf
@@ -59,7 +64,7 @@
 *** RGBA frame buffer (32bit)
 *** Z buffer          (32bit)
 
-Add GLImageFilmNode
+** Add GLImageFilmNode
 
 ** drawa()ble node in the screen.
 
@@ -71,29 +76,7 @@ Add GLImageFilmNode
 *** Color button
 *** GLNode has the configuration script to set up the config.
 
-** Scenegraph dialog
-   updateGL() is not called when node status changed. Need observer
-   implementation. will be later.
-
 ** Picking
-
-** Doxypy-ization
-   Ray.py
-   SceneGraph.py
-   actionmode.py
-   const.py
-   enum.py
-   ifgimath.py
-   test_Camera.py
-   test_ConvReader2Primitive.py
-   test_DrawMode.py
-   test_ObjReader.py
-   test_Primitive.py
-   test_QtUtil.py
-   test_SceneGraph.py
-   test_const.py
-   test_ifgimath.py
-
 
 ** Menu Render -- Render GL
 *** Render IFGI
@@ -121,8 +104,5 @@ Code guideline
 ---
 
 Later TODO
-
-- Texture (need texture coordinate load, store data structure,
-  more mesh)
 
 - OpenMeshPrimitive, GLOpenMeshViewNode
