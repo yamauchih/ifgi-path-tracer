@@ -468,6 +468,20 @@ class ImageFilmNode(SceneGraphNode):
         return self.__imagefilm
 
 
+def load_one_trimesh_from_objfile(_objfname):
+    """load a trimesh from an obj file.
+    \param[in] _objfname obj filename
+    \return a Trimesh
+    """
+
+    objreader = ObjReader.ObjReader()
+    objreader.read(_objfname)
+    tmesh = ConvReader2Primitive.conv_objreader_trimesh(objreader)
+    if tmesh.is_valid() == False:
+        raise StandardError, ('TriMesh [' + _objfname + '] is not valid.')
+
+    return tmesh
+
 
 # temporal: create trimesh scenegraph from obj filename for test
 def create_one_trimeh_scenegraph(_objfname):
@@ -483,11 +497,15 @@ def create_one_trimeh_scenegraph(_objfname):
     """
 
     # create a trimesh
-    objreader = ObjReader.ObjReader()
-    objreader.read(_objfname)
-    tmesh = ConvReader2Primitive.conv_objreader_trimesh(objreader)
-    if tmesh.is_valid() == False:
-        raise StandardError, ('TriMesh is not valid.')
+    tmesh = load_one_trimesh_from_objfile(_objfname)
+    assert(tmesh.is_valid() == True)
+
+    # DELETEME
+    # objreader = ObjReader.ObjReader()
+    # objreader.read(_objfname)
+    # tmesh = ConvReader2Primitive.conv_objreader_trimesh(objreader)
+    # if tmesh.is_valid() == False:
+    #     raise StandardError, ('TriMesh is not valid.')
 
     # create scenegraph
     sg = SceneGraph()

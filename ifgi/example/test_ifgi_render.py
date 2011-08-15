@@ -16,7 +16,7 @@ import numpy
 
 # package import: specify a directory and file.
 from ifgi.ptracer import IfgiSys
-from ifgi.scene   import SceneGraph, Primitive, Film, Light
+from ifgi.scene   import SceneGraph, Primitive, Film, Light, test_scene_util
 from ifgi.base    import Sampler
 
 class TestIfgiRender(unittest.TestCase):
@@ -78,51 +78,31 @@ class TestIfgiRender(unittest.TestCase):
         meshgroup_node = SceneGraph.SceneGraphNode('meshgroup_0')
         rootsg.append_child(meshgroup_node)
 
-        # create a triangle mesh and attch to the trimesh node
-        self.__fixme_trimesh = self.__get_one_triangle_trimesh()
+        # create a triangle mesh and attach to the trimesh node
+        objfname = '../../sampledata/cornel_box.obj'
+        self.__trimesh = SceneGraph.load_one_trimesh_from_objfile(objfname)
         trimesh_node = SceneGraph.SceneGraphNode('trimesh_0')
-        trimesh_node.set_primitive(self.__fixme_trimesh)
+        trimesh_node.set_primitive(self.__trimesh)
+
+        # TODO: when attach create (removable) acceleration structure
+        # Idea: create an aggregate node, that has a method
+        # set_primitive, it creates acceleration structure, for
+        # instance.
+
         meshgroup_node.append_child(trimesh_node)
-
-
-    # get one triangle trimesh
-    # TODO: move to a test
-    def __get_one_triangle_trimesh(self):
-        """create one triangle trimesh"""
-
-        trimesh = Primitive.TriMesh()
-        # create a triangle
-        vertex_list       = []
-        face_idx_list     = []
-        texcoord_list     = []
-        texcoord_idx_list = []
-        normal_list       = []
-        normal_idx_list   = []
-
-        # add a triangle
-        vertex_list.append(numpy.array([ 1.0, 0.0, 0.0]))
-        vertex_list.append(numpy.array([ 0.0, 1.0, 0.0]))
-        vertex_list.append(numpy.array([-1.0, 0.0, 0.0]))
-        face_idx_list.append(numpy.array([0, 1, 2]))
-
-        trimesh.set_data(vertex_list,
-                         face_idx_list,
-                         texcoord_list,
-                         texcoord_idx_list,
-                         normal_list,
-                         normal_idx_list
-                         )
-        return trimesh
 
 
     # set a perspective camera, look at the triangle
     def __set_camera_paramneter(self):
         cur_cam = self.__scenegraph.get_current_camera()
         assert(cur_cam != None)
-        eye_pos    = numpy.array([ 0.0, 0.0,  5.0])
-        lookat_pos = numpy.array([ 0.0, 0.0, -1.0])
+        eye_pos    = numpy.array([280.0, 280.0, -2000.0])
+        # FIXME: sync the GL camera parameter.
+        lookat_pos = numpy.array([ 0.0, 0.0, 1.0])
         cur_cam.set_eye_lookat_pos(eye_pos, lookat_pos)
         cur_cam.set_up_dir(numpy.array([ 0.0, 1.0, 0.0]))
+        cur_cam.set_z_near(0.01)
+        cur_cam.set_z_far(5000.0)
 
         # added RGBA buffer to the current camera.
         imgsz = (self._image_xsize, self._image_ysize, 4)
@@ -136,7 +116,7 @@ class TestIfgiRender(unittest.TestCase):
         cur_cam = self.__scenegraph.get_current_camera()
         film = cur_cam.get_film('RGBA')
 
-        hr = self.__fixme_trimesh.ray_intersect(_ray)
+        hr = self.__trimesh.ray_intersect(_ray)
         if hr != None:
             # Hit point visualization
             film.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)

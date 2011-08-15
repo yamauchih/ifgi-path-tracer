@@ -374,11 +374,6 @@ class TriMesh(Primitive):
 
 
 
-
-
-
-
-
 #
 # main test
 #
