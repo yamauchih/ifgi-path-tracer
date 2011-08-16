@@ -96,11 +96,18 @@ class TestIfgiRender(unittest.TestCase):
     def __set_camera_paramneter(self):
         cur_cam = self.__scenegraph.get_current_camera()
         assert(cur_cam != None)
-        eye_pos    = numpy.array([280.0, 280.0, -2000.0])
-        # FIXME: sync the GL camera parameter.
-        lookat_pos = numpy.array([ 0.0, 0.0, 1.0])
-        cur_cam.set_eye_lookat_pos(eye_pos, lookat_pos)
-        cur_cam.set_up_dir(numpy.array([ 0.0, 1.0, 0.0]))
+        # cornel box official camera parameter
+        # Position	278 273 -800
+        # Direction	0 0 1
+        # Up direction	0 1 0
+        # Focal length	0.035
+        # Width, height	0.025 0.025
+        eye_pos    = numpy.array([278.0, 273.0, -800.0])
+        view_dir   = numpy.array([ 0.0, 0.0, 1.0])
+        up_dir     = numpy.array([ 0.0, 1.0, 0.0])
+        cur_cam.set_eye_pos(eye_pos)
+        cur_cam.set_view_dir(view_dir)
+        cur_cam.set_up_dir(up_dir)
         cur_cam.set_z_near(0.01)
         cur_cam.set_z_far(5000.0)
 
