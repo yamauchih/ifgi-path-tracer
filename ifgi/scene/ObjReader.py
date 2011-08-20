@@ -129,16 +129,19 @@ class ObjReader(object):
         Just check the first line has 'v '"""
 
         with open(_objfname) as infile:
-            line = ''
             while 1:
-                line = string.strip(infile.readline())
-                if (line[0] != '#'): # skip comment
+                line  = infile.readline()
+                if (line == ''):
+                    raise StandardError, ('unexpected EOF')
+                _line = string.strip(line)
+                if ((_line != '') and (_line[0] != '#')):
+                    # if !comment and !blank line, break and check the file
                     break
 
-            if (len(line) < 2):
+            if (len(_line) < 2):
                 raise StandardError, ('first line is too short, maybe not obj file.')
 
-            if not (line[0] == 'v' and line[1] == ' '):
+            if not (_line[0] == 'v' and _line[1] == ' '):
                 raise StandardError, ("line does not start with 'v '")
 
             # maybe this is obj file

@@ -2,7 +2,6 @@
 #
 # Copyright 2011 (C) Yamauchi, Hitoshi
 #
-#
 # test for ObjReader
 #
 

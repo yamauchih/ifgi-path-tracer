@@ -46,7 +46,7 @@ class ExtObjReader(object):
 
     - material name
       material reference. The following faces are assigned to this material.
-
+      def_material must be exist before refering the material.
     """
 
     # public: ------------------------------------------------------------
@@ -54,16 +54,25 @@ class ExtObjReader(object):
     # default constructor
     def __init__(self):
         """default constructor"""
-        self.__curline           = 0
+        self.__curline     = 0
 
-        # public member
-        self.material_list     = []
-        self.vertex_list       = []
-        self.face_idx_list     = []
-        self.texcoord_list     = []
-        self.texcoord_idx_list = []
-        self.normal_list       = []
-        self.normal_idx_list   = []
+        # current material
+        self.__curmaterial = -1
+
+        # material
+        self.material_def_list = []
+        #    material name -> index of material_def_list
+        self.material_name_idx_dict = {}
+
+        # geometry
+        self.vertex_list            = []
+        self.face_idx_list          = []
+        #    face's material index
+        self.face_material_idx_list = []
+        self.texcoord_list          = []
+        self.texcoord_idx_list      = []
+        self.normal_list            = []
+        self.normal_idx_list        = []
 
 
     # read file
@@ -115,15 +124,20 @@ class ExtObjReader(object):
         """dump the internal data."""
         # self.__curline = 0
 
+        print '--- material definition'
+        for m in self.material_def_list:
+            print 'def_material:', m
+
         print '--- Vertex coord'
         for i in self.vertex_list:
             print 'v ',
             print i
 
         print '--- Face'
-        for i in self.face_idx_list:
-            print 'f ',
-            print i
+        assert(len(self.face_idx_list) == len(self.face_material_idx_list))
+        for idx in xrange(1, len(self.face_idx_list)):
+            print 'f ', self.face_idx_list[idx],\
+                ' matidx = ', self.face_material_idx_list[idx]
 
         print '--- Texcoord'
         for i in self.texcoord_list:
@@ -149,21 +163,58 @@ class ExtObjReader(object):
         Just check the first line has 'v '"""
 
         with open(_objfname) as infile:
-            line = ''
             while 1:
-                line = string.strip(infile.readline())
-                if (line[0] != '#'): # skip comment
+                line  = infile.readline()
+                print line
+                if (line == ''):
+                    raise StandardError, ('unexpected EOF')
+                _line = string.strip(line)
+                if ((_line != '') and (_line[0] != '#')):
+                    # if !comment and !blank line, break and check the file
                     break
 
-            if (len(line) < 2):
-                raise StandardError, ('first line is too short, maybe not obj file.')
+            if (len(_line) < 2):
+                raise StandardError, ('first line [' + line + '] is too short, '
+                                      'maybe not obj file.')
 
-            sline = line.split()
+            sline = _line.split()
             if not (sline[0] == 'v' or sline[0] == 'def_material'):
                 raise StandardError, ("file line does not start with 'v ' " +
                                       "or 'def_material'")
+            # maybe this is extended obj file
 
-            # maybe this is obj file
+    def __is_valid_material(self, mat):
+        """check the material.
+        \param[in] mat
+        \return True when material is valid.
+        """
+        necessary_key = ['material_name', 'material_type']
+        is_success = True
+        for k in necessary_key:
+            if(not k in mat):
+                print 'invalid material: missing necessary key [' + k + ']'
+                is_success = False
+
+        return is_success
+
+
+
+    def __append_material(self, _new_mat):
+        """append new matrial.
+        \param[in] _new_mat new material to append.
+        """
+        # check the material
+        if (not self.__is_valid_material(_new_mat)):
+            raise StandardError, ('invalid material.')
+
+        if(_new_mat['material_name'] in self.material_name_idx_dict):
+            raise StandardError, ('duplicate material [' + _new_mat['material_name']
+                                  + '].')
+
+        new_mat_idx = len(self.material_def_list)
+        self.material_def_list.append(_new_mat)
+        self.material_name_idx_dict[_new_mat['material_name']] = new_mat_idx
+
 
 
     def __parse_line(self, _infile):
@@ -242,6 +293,19 @@ class ExtObjReader(object):
                 # normal index exists
                 self.normal_idx_list.append(map((lambda x: int(x[2])-1), splitteddat))
 
+            # set material index to this face
+            assert((self.__curmaterial >= 0) and
+                   (self.__curmaterial < len(self.material_def_list)))
+            self.face_material_idx_list.append(self.__curmaterial)
+
+        elif (objcom == 'material'):
+            # update current material
+            mat_name = sline[1]
+            if(not mat_name in self.material_name_idx_dict):
+                raise StandardError, ('unknown material [' + mat_name + '].')
+            self.__curmaterial = self.material_name_idx_dict[mat_name]
+            # print 'material [', mat_name, '], idx: ', self.__curmaterial
+
         elif (objcom == 'def_material'):
             # expect '{' in the same line. This line should be 'def_material {'.
             if (sline[1] != '{'):
@@ -298,7 +362,9 @@ class ExtObjReader(object):
                 # whole string of [start + len(' = ') (== 3):] is the key
                 mat_dict[sline[0]] = _line[sep_start + 3:]
 
-        print 'material info: ', mat_dict
+        # print 'material info: ', mat_dict
+        self.__append_material(mat_dict)
+
         return read_line_count
 
 

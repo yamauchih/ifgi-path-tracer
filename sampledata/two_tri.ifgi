@@ -1,0 +1,36 @@
+#
+# two triangle with material information
+# Yamauchi, Hitoshi
+#
+
+#
+# matreial definition
+#
+def_material {
+    material_name = 1st_tri_mat
+    material_type = lambert
+    diffuse_color = 1.0 0.0 0.0
+}
+def_material {
+    material_name = 2nd_tri_mat
+    material_type = lambert
+    diffuse_color = 0.0 1.0 0.0
+}
+#
+# geometry
+#
+v  1.0 0.0    0.0
+v  0.0 1.7321 0.0
+v -1.0 0.0    0.0
+v  1.0 -0.3    0.0
+v  0.0 -1.7321 0.0
+v -1.0 -0.3    0.0
+
+#
+# faces
+#
+material 1st_tri_mat
+f 1 2 3
+material 2nd_tri_mat
+f 4 5 6
+
