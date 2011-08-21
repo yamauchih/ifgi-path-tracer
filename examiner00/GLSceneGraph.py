@@ -11,20 +11,21 @@ from OpenGL import GL, GLU
 from PyQt4  import QtCore, QtGui
 from ifgi.base  import numpy_util, Listener
 from ifgi.scene import Camera, SceneGraph
+import math, numpy
 import QtWidgetIO
 
 import DrawMode, GLUtil
 
+# ----------------------------------------------------------------------
 
-# OpenGL scene graph
 class GLSceneGraph(SceneGraph.SceneGraph):
     """OpenGL scene graph
     This has
-      - current GLCamera
       - GLroot_node
+      - GLCamera node
+      - GLLight  node
+      - GLSceneGraph node (group)
     """
-
-    # public: ------------------------------------------------------------
 
     # default constructor
     def __init__(self):
@@ -150,12 +151,14 @@ class GLSceneGraph(SceneGraph.SceneGraph):
             for ch_sgnode in _cur_sgnode.get_children():
                 # create and refer the sg node
 
-                # handle special nodes first: camara
+                # handle special nodes first: camara, lights
                 if (type(ch_sgnode) == SceneGraph.CameraNode):
                     # print 'DEBUG: Camera Detected.'
                     ch_gl_camera_node = GLCameraNode(ch_sgnode)
                     _cur_glnode.append_child(ch_gl_camera_node)
                     self.set_current_gl_camera(ch_gl_camera_node.get_gl_camera())
+                    ch_gl_light_node = GLLightNode('gl_light_node')
+                    _cur_glnode.append_child(ch_gl_light_node)
 
                 else:
                     ch_glnode = GLSceneGraphNode(ch_sgnode.get_nodename())
@@ -176,8 +179,8 @@ class GLSceneGraph(SceneGraph.SceneGraph):
                 self.__print_sgnode_sub(chnode, _level + 1)
 
 
+# ----------------------------------------------------------------------
 
-# OpenGL scene graph node (BaseNode/GroupNode)
 class GLSceneGraphNode(SceneGraph.SceneGraphNode):
     """OpenGL scene graph node. BaseNode/GroupNode.
 
@@ -202,6 +205,18 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         self.__drawmode  = DrawMode.DrawModeList.DM_GlobalMode
         self.__observer_subject = Listener.Subject('SceneGraphNode')
 
+
+    def gl_enable_disable(self, _gl_function_name, _is_enable):
+        """glEnable/glDisable function for the inherited nodes
+
+        \param[in] _gl_function_name function name. ex. GL_LIGHTING
+        \param[in] _is_enable GLBoolean (GL_TRUE, GL_FALSE)
+        """
+
+        if (_is_enable == GL.GL_TRUE):
+            GL.glEnable(_gl_function_name)
+        else:
+            GL.glDisable(_gl_function_name)
 
     # get classname (shown in the SceneGraph viewer as node Type)
     def get_classname(self):
@@ -427,6 +442,7 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         if self.__is_debug == True:
             print _dbgmes
 
+# ----------------------------------------------------------------------
 
 class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
     """OpenGL camera node.
@@ -468,34 +484,37 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
         self.get_subject().set_subject_name('GLCameraNode')
 
 
-    # get classname (shown in the SceneGraph viewer as node Type)
-    def get_classname(self):
-        """get classname (shown in the SceneGraph viewer as node Type)
-        \return class name"""
-
-        return 'GLCameraNode'
-
-    # get gl camera
     def get_gl_camera(self):
         """get gl camera of this node.
         \return gl camera."""
         return self.__gl_camera
 
+
+    def get_classname(self):
+        """get classname (shown in the SceneGraph viewer as node Type)
+        Inherited from GLSceneGraphNode
+        \return class name"""
+
+        return 'GLCameraNode'
+
     # draw by mode
     def draw(self, _global_mode):
         """draw by mode. Camera ignore this.
+        Inherited from GLSceneGraphNode
         """
         pass
 
     # get draw mode of this GLCameraNode
     def get_drawmode_list(self):
         """get draw mode of GLCameraNode. Camera has no draw mode.
+        Inherited from GLSceneGraphNode
         \return None"""
         return None
 
     # get info of this node
     def get_info_html_GLCameraNode(self):
         """get GLCameraNode base info html text.
+        Inherited from GLSceneGraphNode
         \return base GL node info."""
 
         ret_s = '<h2>GLCameraNode information</h2>\n' +\
@@ -513,6 +532,7 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
     # get info of this node
     def get_info_html(self):
         """Get information html text.
+        Inherited from GLSceneGraphNode
         Usually, this should be overrided.
         \return base GL node info.
         """
@@ -524,6 +544,7 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
     def create_config_dialog(self, _tab_dialog):
         """Create configuration dialog for GLCameraNode.
         The configuration dialog is QtSimpleTabDialog.
+        Inherited from GLSceneGraphNode
 
         \param[in] _tab_dialog a QtSimpleTabDialog
         \return True since this node is configurable.
@@ -586,10 +607,177 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
         return self.__gl_camera.get_config_dict()
 
 
+# ----------------------------------------------------------------------
+
+class GLLightParameter(object):
+    """OpenGL light parameter used in GLLightNode.
+    This is not a scenegraph node.
+    """
+
+    def __init__(self,  _is_on, _light_id_num, _amb, _dif, _spec, _pos):
+        """default constructor for OpenGL light.
+        Point light only.
+        The parameters are all public.
+        \param[in] _is_on boolean when true the light is on
+        \param[in] _light_id_num light id index number. must be [0,7]
+        \param[in] _amp          ambient light intensity
+        \param[in] _dif          diffuse light intensity
+        \param[in] _spec         specular light intensity
+        \param[in] _pos          light position (float 4)
+        """
+        # call base class constructor to fill the members
+        super(GLLightParameter, self).__init__()
+
+        # OpenGL light ID (GL_LIGHT0, ..., GL_LIGHT7)
+        assert((_light_id_num >= 0) and (_light_id_num < 8))
+        self.__gl_light_sym_list = [GL.GL_LIGHT0, GL.GL_LIGHT1, GL.GL_LIGHT2,
+                                    GL.GL_LIGHT3, GL.GL_LIGHT4, GL.GL_LIGHT5,
+                                    GL.GL_LIGHT6, GL.GL_LIGHT7 ]
+
+        self.gl_light_id = self.__gl_light_sym_list[_light_id_num]
+        self.is_light_on = _is_on
+        self.ambient  = _amb
+        self.diffuse  = _dif
+        self.specular = _spec
+        self.position = _pos
 
 
+# ----------------------------------------------------------------------
 
-# OpenGL TriMeshNode
+class GLLightNode(GLSceneGraphNode):
+    """OpenGL Light node.
+    This is OpenGL only. These are default lights for OpenGL.
+    This node has max 8 lights (OpenGL lights), 3 are on at default.
+    """
+
+    def __init__(self, _nodename):
+        """default constructor.
+        \param[in] _nodename this node name."""
+        # call base class constructor to fill the members
+        super(GLLightNode, self).__init__(_nodename)
+        self.__drawmode_list = DrawMode.DrawModeList()
+        # basic draw mode only
+        # FIXME?
+        # self.__drawmode_list.add_basic_drawmode()
+
+
+        # light default parameter (same as the Mathematica light)
+        sqrt3 = math.sqrt(3.0)
+        on_off = [True, True, True, True, False, False, False, False]
+        amb_intensity     = numpy.array([0.1, 0.1, 0.1, 1.0]) # all the same
+        diffuse_intensity = [
+            numpy.array([0.8, 0.5, 0.5, 1.0]), # 0
+            numpy.array([0.5, 0.8, 0.5, 1.0]), # 1
+            numpy.array([0.5, 0.5, 0.8, 1.0]), # 2
+            numpy.array([0.5, 0.5, 0.5, 1.0]), # 3
+            numpy.array([0.5, 0.5, 0.5, 1.0]), # 4
+            numpy.array([0.5, 0.5, 0.5, 1.0]), # 5
+            numpy.array([0.5, 0.5, 0.5, 1.0]), # 6
+            numpy.array([0.5, 0.5, 0.5, 1.0]) ] # 7
+        specular_intensity = numpy.array([0.8, 0.8, 0.8, 1.0]) # all the same
+        pos = [
+            numpy.array([ 0.0,  2.0,    0.0, 0.0]), # 0
+            numpy.array([-2.0,  1.0, -sqrt3, 0.0]), # 1
+            numpy.array([ 2.0, -1.0, -sqrt3, 0.0]), # 2
+            numpy.array([ 0.0, -1.0,  sqrt3, 0.0]), # 3
+            numpy.array([ 0.0,  0.0,    0.0, 0.0]), # 4
+            numpy.array([ 0.0,  0.0,    0.0, 0.0]), # 5
+            numpy.array([ 0.0,  0.0,    0.0, 0.0]), # 6
+            numpy.array([ 0.0,  0.0,    0.0, 0.0]) ] # 7
+
+        # create 8 OpenGL lights
+        self.__light_list = []
+        for i in range(0, 8):
+            lp = GLLightParameter(on_off[i],
+                                  i,
+                                  amb_intensity,
+                                  diffuse_intensity[i],
+                                  specular_intensity,
+                                  pos[i])
+            self.__light_list.append(lp)
+
+        # light status (for all GL lights)
+        # push state
+        self.__pushed_light_node_lighting_state = GL.GL_TRUE
+        # node state
+        self.__is_light_node_lighting_on = GL.GL_TRUE
+
+
+    def get_classname(self):
+        """get classname
+        Inherited from GLSceneGraphNode
+        \return class name string"""
+
+        return 'GLLightNode'
+
+
+    def draw(self, _global_drawmode):
+        """draw the lights.
+        If node is deactivated, draw nothing.
+        \param[in] _global_drawmode drawmode list ignored in this node."""
+
+        if (not self.is_node_active()):
+            # node is deactivated, not call draw anymore
+            return
+
+        # push the current GL lighting state
+        self.__pushed_light_node_lighting_state = GL.glIsEnabled(GL.GL_LIGHTING)
+
+        # set node state to GL
+        self.gl_enable_disable(GL.GL_LIGHTING, self.__is_light_node_lighting_on)
+
+        # set parameter for each light
+        for li in self.__light_list:
+            if (li.is_light_on == True):
+                GL.glEnable(li.gl_light_id)
+                GL.glLightfv(li.gl_light_id, GL.GL_AMBIENT,  li.ambient)
+                GL.glLightfv(li.gl_light_id, GL.GL_DIFFUSE,  li.diffuse)
+                GL.glLightfv(li.gl_light_id, GL.GL_SPECULAR, li.specular)
+                GL.glLightfv(li.gl_light_id, GL.GL_POSITION, li.position)
+            else:
+                GL.glDisable(li.gl_light_id)
+
+
+        # pop the current GL state
+        self.gl_enable_disable(GL.GL_LIGHTING, self.__pushed_light_node_lighting_state)
+
+
+    def get_drawmode_list(self):
+        """get draw mode list.
+        GL Light Node shows the light position and color with a box if specified.
+        Inherited from GLSceneGraphNode
+        \return node drawmode (default DrawMode.DrawModeList.DM_GlobalMode)
+        """
+        return self.__drawmode_list
+
+
+    def __draw_points(self):
+        """draw light with points"""
+        # NIN
+        pass
+
+    def __draw_wireframe(self):
+        """draw light with wireframe"""
+        # NIN
+        GL.glShadeModel(GL.GL_FLAT)
+
+
+    def __draw_solid_basecolor(self):
+        """draw light with solid_basecolor"""
+        # NIN
+        GL.glDisable(GL.GL_LIGHTING)
+        GL.glShadeModel(GL.GL_FLAT)
+        GL.glBegin(GL.GL_TRIANGLES)
+        vp = self.get_primitive().vertex_list
+        for face in self.get_primitive().face_idx_list:
+            GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
+            GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
+            GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
+        GL.glEnd()
+
+
+# ----------------------------------------------------------------------
+
 class GLTriMeshNode(GLSceneGraphNode):
     """OpenGL TriMeshNode
 
@@ -601,7 +789,7 @@ class GLTriMeshNode(GLSceneGraphNode):
         \param[in] _nodename this node name."""
         # call base class constructor to fill the members
         super(GLTriMeshNode, self).__init__(_nodename)
-        self.__local_drawmode = 0
+        # DELETEME self.__local_drawmode = 0
         self.__drawmode_list = DrawMode.DrawModeList()
         # basic draw mode only
         self.__drawmode_list.add_basic_drawmode()
@@ -702,24 +890,10 @@ class GLTriMeshNode(GLSceneGraphNode):
 
         GL.glColor4fv(self.__current_color4f)
         GL.glShadeModel(self.__shade_model)
-        self.__gl_enable_disable(GL.GL_LIGHTING,   self.__is_enabled_lighting)
-        self.__gl_enable_disable(GL.GL_DEPTH_TEST, self.__is_enabled_depthtest)
-        self.__gl_enable_disable(GL.GL_POLYGON_OFFSET_FILL,
-                                 self.__is_enabled_offsetfill)
-
-    # glEnable/glDisable function
-    def __gl_enable_disable(self, _gl_function_name, _is_enable):
-        """glEnable/glDisable function
-
-        \param[in] _gl_function_name function name. ex. GL_LIGHTING
-        \param[in] _is_enable GLBoolean (GL_TRUE, GL_FALSE)
-        """
-
-        if (_is_enable == GL.GL_TRUE):
-            GL.glEnable(_gl_function_name)
-        else:
-            GL.glDisable(_gl_function_name)
-
+        self.gl_enable_disable(GL.GL_LIGHTING,   self.__is_enabled_lighting)
+        self.gl_enable_disable(GL.GL_DEPTH_TEST, self.__is_enabled_depthtest)
+        self.gl_enable_disable(GL.GL_POLYGON_OFFSET_FILL,
+                               self.__is_enabled_offsetfill)
 
     # draw bbox
     def __draw_bbox(self):
@@ -844,7 +1018,8 @@ class GLTriMeshNode(GLSceneGraphNode):
         print 'NIN: __draw_solid_texture'
 
 
-# OpenGL scenegraph node factory
+# ----------------------------------------------------------------------
+
 def new_gl_scenegraph_primitive_node(_primitive):
     """OpenGL scenegraph node factory
 
@@ -867,7 +1042,8 @@ def new_gl_scenegraph_primitive_node(_primitive):
         return None
 
 
-# collect all drawmode in the scenegraph
+# ----------------------------------------------------------------------
+
 class GLSGTCollectDrawmodeStrategy(SceneGraph.SceneGraphTraverseStrategyIF):
     """collect all drawmode_list in the scenegraph"""
 
@@ -917,6 +1093,8 @@ class GLSGTCollectDrawmodeStrategy(SceneGraph.SceneGraphTraverseStrategyIF):
         """get the drawmode list.
         \return collected drawmode list."""
         return self.__drawmodelist
+
+# ----------------------------------------------------------------------
 
 #
 # main test

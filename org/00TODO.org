@@ -1,4 +1,4 @@
-* Task ifgi path tracer 2011-8-7(Sun)
+* Task ifgi path tracer 2011-8-21(Sun)
 
 ** DONE Add Camera parameter control GUI
 *** DONE parameter iterator of Camera
@@ -14,8 +14,13 @@
 ** DONE animation mode. examiner menu animatio on/off
 
 ** TODO implement material
+*** TODO add GL light node, config, info, trimesh refers light
+*** TODO add GL materal node
+*** TODO append obj file function.
+    append under mesh group with material node + trimesh node
 *** TODO define material class
 *** TODO material parser (ExtObjReader, extension of obj file reader)
+
 
 
 ** TODO Implement texture class
