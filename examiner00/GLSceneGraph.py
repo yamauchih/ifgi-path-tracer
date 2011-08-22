@@ -657,9 +657,7 @@ class GLLightNode(GLSceneGraphNode):
         super(GLLightNode, self).__init__(_nodename)
         self.__drawmode_list = DrawMode.DrawModeList()
         # basic draw mode only
-        # FIXME?
-        # self.__drawmode_list.add_basic_drawmode()
-
+        self.__drawmode_list.add_basic_drawmode()
 
         # light default parameter (same as the Mathematica light)
         sqrt3 = math.sqrt(3.0)
@@ -776,6 +774,115 @@ class GLLightNode(GLSceneGraphNode):
         GL.glEnd()
 
 
+    # get info of this node
+    def get_info_html(self):
+        """Get information html text.
+        Inherited from GLSceneGraphNode
+        \return base GL node info + GLLightNode info
+        """
+        light_desc = '<h2>GLLightNode information</h2>\n' +\
+            '<ul>\n' +\
+            '  <li><b>Lighting:</b> ' + str(self.__is_light_node_lighting_on) + '\n' +\
+            '</ul>\n'
+
+        for lidx in range(0, 8):
+            # for each light information
+            li = self.__light_list[lidx]
+            light_desc = light_desc +\
+                '<h3>GL_LIGHT' +  str(lidx) + '</h3>\n'
+            if li.is_light_on == False:
+                light_desc = light_desc +\
+                    '<ul>\n' +\
+                    '  <li><b>Light:</b> off\n' +\
+                    '</ul>\n'
+            else:
+                light_desc = light_desc +\
+                    '<ul>\n' +\
+                    '  <li><b>Light:</b>    on\n' +\
+                    '  <li><b>ambient:</b>  '     +\
+                    numpy_util.array2str(li.ambient)  + '\n' +\
+                    '  <li><b>diffuse:</b>  '     +\
+                    numpy_util.array2str(li.diffuse)  + '\n' +\
+                    '  <li><b>specular:</b> '     +\
+                    numpy_util.array2str(li.specular) + '\n' +\
+                    '  <li><b>position:</b> '     +\
+                    numpy_util.array2str(li.position) + '\n' +\
+                    '</ul>\n'
+
+        ret_s = self.get_info_html_GLSceneGraphNode() + light_desc
+
+        return ret_s
+
+    def create_config_dialog(self, _tab_dialog):
+        """Create configuration dialog for GLLightNode.
+        The configuration dialog is QtSimpleTabDialog.
+        Inherited from GLSceneGraphNode
+
+        \param[in] _tab_dialog a QtSimpleTabDialog
+        \return True since this node is configurable.
+        """
+
+        cam_group = _tab_dialog.add_group('Light')
+
+        # keylist  = self.__gl_camera.get_param_key()
+        # valdict  = self.__gl_camera.get_config_dict()
+        # typedict = self.__gl_camera.get_typename_dict()
+
+        # for key in keylist:
+        #     typename = typedict[key]
+        #     if((typename == 'float_3') or (typename == 'float')):
+        #         cam_group.add(QtWidgetIO.QtLineEditWIO(),
+        #                       key,
+        #                       valdict[key],
+        #                       {'LABEL': key})
+        #     elif typename == 'enum_ProjectionMode':
+        #         itemlist = Camera.ProjectionMode[:]
+        #         cam_group.add(QtWidgetIO.QtComboBoxWIO(),
+        #                       key,
+        #                       str(valdict[key]),
+        #                       {'LABEL': key, 'ITEMS': itemlist})
+        #     else:
+        #         raise StandardError('unknown typename for camera parameter.')
+
+        # # call self.update() when button is pushed (_arg is button type)
+        # _tab_dialog.set_button_observer(self)
+        # # call set_config_dict(dict) when apply button is pushed.
+        # _tab_dialog.set_associated_configuable_object('Camera', self)
+
+        # # set node (which has get_subject() attribute to get the
+        # # Listener's subject. This subject notify dialog when node
+        # # status is changed.
+        # _tab_dialog.set_subject_node(self)
+        # NIN 
+
+        return False
+
+    def update(self, _arg):
+        """Implementation of QtWidgetIOObserverIF.update().
+        """
+        print 'GLLightNode: I observe ' + _arg
+
+    #------------------------------------------------------------
+    # configurable
+    #------------------------------------------------------------
+
+    def set_config_dict(self, _config_dict):
+        """set configuration dictionary. (configSetData)
+        \param[in] _config_dict configuration dictionary
+        """
+        # self.__gl_camera.set_config_dict(_config_dict)
+        # self.get_subject().notify_listeners(['ConfigChanged'])
+        pass
+
+    def get_config_dict(self):
+        """get configuration dictionary. (configGetData)
+        \return configuration dictionary
+        """
+        # return self.__gl_camera.get_config_dict()
+        return None
+
+
+
 # ----------------------------------------------------------------------
 
 class GLTriMeshNode(GLSceneGraphNode):
@@ -801,6 +908,13 @@ class GLTriMeshNode(GLSceneGraphNode):
         self.__is_enabled_lighting  = GL.GL_TRUE
         self.__is_enabled_depthtest = GL.GL_TRUE
         self.__is_enabled_offset    = GL.GL_FALSE
+
+        # lighting for points, wireframe, flat shading, Gouraud, texture
+        self.__is_enabled_light_points  = GL.GL_FALSE
+        self.__is_enabled_light_lines   = GL.GL_FALSE
+        self.__is_enabled_light_flat    = GL.GL_TRUE
+        self.__is_enabled_light_gouraud = GL.GL_TRUE
+        self.__is_enabled_light_texture = GL.GL_TRUE
 
 
     # get classname
@@ -843,24 +957,31 @@ class GLTriMeshNode(GLSceneGraphNode):
             self.__draw_bbox()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Points) != 0):
+            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_points)
             self.__draw_points()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Wireframe) != 0):
+            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_lines)
             self.__draw_wireframe()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Hiddenline) != 0):
+            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_lines)
             self.__draw_hiddenline()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Basecolor) != 0):
+            self.gl_enable_disable(GL.GL_LIGHTING, GL.GL_FALSE) # always light off
             self.__draw_solid_basecolor()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Flat) != 0):
+            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_flat)
             self.__draw_flat_shading()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Gouraud) != 0):
+            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_gouraud)
             self.__draw_solid_gouraud()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Texture) != 0):
+            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_texture)
             self.__draw_solid_texture()
 
         # pop the current GL state
@@ -908,7 +1029,6 @@ class GLTriMeshNode(GLSceneGraphNode):
     # draw points
     def __draw_points(self):
         """draw points"""
-
         # no light mode NIN: self.gl_light_mode & POINTS
         GL.glDisable(GL.GL_LIGHTING)
         GL.glBegin(GL.GL_POINTS)

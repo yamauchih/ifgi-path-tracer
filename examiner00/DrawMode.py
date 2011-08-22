@@ -133,7 +133,6 @@ class DrawModeList(object):
         """find draw mode. (public)
         \param[in] _drawmode_name draw mode name
         \return a DrawModeItem if found, otherwise None."""
-
         if (_drawmode_name in self.__mode_item_map):
             return self.__mode_item_map[_drawmode_name]
         else:
@@ -207,7 +206,7 @@ class DrawModeList(object):
 
         # print 'DrawModeList: Found draw mode list'
         for mi in _other_drawmode.get_mode_item_list():
-            if (not self.find_drawmode(mi)):
+            if (self.find_drawmode(mi.get_name()) == None):
                 self.add_drawmode(mi)
 
     # print draw mode list for debug

@@ -1,4 +1,4 @@
-* Task ifgi path tracer 2011-8-21(Sun)
+* Task ifgi path tracer 2011-8-22(Mon)
 
 ** DONE Add Camera parameter control GUI
 *** DONE parameter iterator of Camera
@@ -20,6 +20,10 @@
     append under mesh group with material node + trimesh node
 *** TODO define material class
 *** TODO material parser (ExtObjReader, extension of obj file reader)
+
+** TODO implement ifgi parser
+*** TODO ifgi parser has no compatibility with obj file,
+    but it can load the obj file. Add ifgi parser header, version, and magic.
 
 
 
