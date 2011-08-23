@@ -108,7 +108,12 @@ class QtWidgetIOObserverIF(object):
 
 #----------------------------------------------------------------------
 
-# NIN class QtColorButton(QtWidgetIOIF)
+# HEREHERE
+# class QtColorButton(QtWidgetIOIF):
+
+
+#----------------------------------------------------------------------
+
 # NIN class QtFileButton(QtWidgetIOIF)
 
 

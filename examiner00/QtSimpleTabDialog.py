@@ -319,10 +319,13 @@ if __name__ == '__main__':
     gf0.add(QtWidgetIO.QtLineEditWIO(), 'myLineEdit', 'HelloWorld0', opt0)
     gf0.add(QtWidgetIO.QtComboBoxWIO(), 'myCombobox', 'Green',
             {'LABEL': 'ComboBoxExample', 'ITEMS': ['Red', 'Green', 'Blue']})
+    gf0.add(QtWidgetIO.QtToggleButton(), 'myTogglebutton', False,
+            {'LABEL': 'Toggle button example'})
 
     gf1 = tab_dialog.add_group('testtab1')
     opt1 = {'LABEL': 'This is for tab1.'}
     gf1.add(QtWidgetIO.QtLineEditWIO(), 'myLineEdit', 'HelloWorld1', opt1)
+
 
     # communication example.
     #   - as an Observer (QtWidgetIOObserverIF)

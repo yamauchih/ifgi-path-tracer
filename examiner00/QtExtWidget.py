@@ -131,7 +131,121 @@ class QtExtTextLine(QtGui.QWidget):
         pass
 
 
-#----------------------------------------------------------------------
+# ----------------------------------------------------------------------
+
+class QtExtColorButton(QtGui.QFrame):
+    """QtExtColorButton
+    \ingroup qtextwidget_container
+    Qt extended color button widget for QtWidgetIO
+    """
+
+    # signal value changed
+    signal_value_change = QtCore.pyqtSignal(object)
+
+
+    def __init__(self, _color, _parent, _name):
+        """constructor
+
+        \param[in] _color  initial color
+        \param[in] _parent parent widget
+        \param[in] _name   widget name
+        """
+        super(QtExtColorButton, self).__init__(_parent)
+        self.setObjectName(_name)
+
+        self.__color  = _color   # QColor
+
+        self.__hbox = QtGui.QHBoxLayout(self)
+        self.__hbox.setSizeConstraint(QtGui.QLayout.SetMinimumSize);
+        # hbox->setSizeConstraint(QLayout::SetFixedSize);
+
+        self.__label = QtGui.QLabel(self)
+        self.__label.setObjectName(_name + '.valueLabel')
+        # for expand minimumSize(), all direction 1 pixel
+        self.__label.setMargin(1)
+	# give minimumSize to this
+        self.__label.setMinimumSize(self.__label.sizeHint())
+
+        self.__button = QtGui.QPushButton(self) # "Browse ...",this
+        self.__button.setObjectName(_name + '.browse')
+        # same as label
+        self.__button.setContentsMargins(1, 1, 1, 1)
+        self.__button.setMinimumSize(self.__button.sizeHint())
+
+        hspacing = 10
+        self.__hbox.addWidget(self.__label)
+        # self.__button.setMinimumSize(Qt.QSize(100, FEAT_HIGHT))
+        # self.__button.setMaximumSize(Qt.QSize(100, FEAT_HIGHT))
+        self.__hbox.addWidget(self.__button)
+        self.__hbox.addSpacing(hspacing)
+        self.__hbox.addStretch(10)
+
+        self.set_color(_color)
+        self.__button.clicked.connect(self.__choose_color)
+
+        self.setToolTip('push to select a color');
+
+
+    def set_label(self, _label):
+        """Sets the widget's label.
+
+        \param[in] _label widget's label.
+        """
+        self.__label.setText(_label)
+
+
+    def set_color(self, _col):
+        """Sets the current color.
+
+        \param[in] _col color
+        """
+        self.__color = _col
+
+        qicon = self.__button.icon()
+
+        # get correct pixmap size. Assume less than 128x128.
+        extent = 128
+
+        if(not qicon.pixmap(extent).isNull()):
+            pm = QtGui.QPixmap(qicon.pixmap(extent))
+            pm.fill(_col)
+            qicon.addPixmap(pm)
+            self.__button.setIcon(qicon)
+        else:
+            pm = QtGui.QPixmap(self.__button.width() - 4, self.__button.height() - 4);
+            pm.fill(_col)
+            qicon.addPixmap(pm)
+            self.__button.setIcon(pm)
+            self.__button.setIconSize(QGui.QSize(
+                self.__button.width() - 4 , self.__button.height() - 4))
+
+
+    def get_color(self):
+        """get current color.
+
+        \return current color
+        """
+        return self.__color
+
+
+    def slotSetValue(self, _color):
+        """a slot. same as set_color().
+        """
+        self.set_color(_color)
+
+
+    def __choose_color():
+        """choose a RGBA color by the color dialog
+        """
+        rgba = QColorDialog.getColor(self.__color, self, \
+                                         'QtExtColorButton choose color',\
+                                         QtGui.QColorDialog.ShowAlphaChannel)
+        if(rgba.isValid()):
+            self.set_color(rgba)
+            self.signal_value_changed.emit(rgba)
+
+
+# ----------------------------------------------------------------------
 
 class QtExtToggleButton(QtGui.QWidget):
     """QtExtToggleButton
@@ -158,7 +272,7 @@ class QtExtToggleButton(QtGui.QWidget):
         # connect signal
         self.__checkbox.stateChanged.connect(self.slotUpdate)
 
-        # Qt.Qt.Horizontal orientation only
+        # QtCore.Qt.Horizontal orientation only
         self.__layout = QtGui.QHBoxLayout(self)
         self.__layout.addWidget(self.__checkbox)
         self.__layout.activate();
@@ -176,7 +290,7 @@ class QtExtToggleButton(QtGui.QWidget):
         \return value of this widget IO, text.
         """
         res = self.__checkbox.checkState();
-        if(res == Qt.Checked):
+        if(res == QtCore.Qt.Checked):
             return True
 
         # Qt.Unchecked or Qt.PartiallyChecked
@@ -368,3 +482,4 @@ class QtExtComboBox(QtGui.QFrame):
         print 'slotActivatedWithIndex: ' + str(_text)
         # self.activated.emit(_text)
 
+# ----------------------------------------------------------------------
