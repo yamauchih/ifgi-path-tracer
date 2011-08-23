@@ -529,7 +529,6 @@ class GLCameraNode(GLSceneGraphNode, QtWidgetIO.QtWidgetIOObserverIF):
         return ret_s
 
 
-    # get info of this node
     def get_info_html(self):
         """Get information html text.
         Inherited from GLSceneGraphNode
@@ -782,8 +781,8 @@ class GLLightNode(GLSceneGraphNode):
         """
         light_desc = '<h2>GLLightNode information</h2>\n' +\
             '<ul>\n' +\
-            '  <li><b>Lighting:</b> ' + str(self.__is_light_node_lighting_on) + '\n' +\
-            '</ul>\n'
+            '  <li><b>Lighting:</b> ' + str(self.__is_light_node_lighting_on)\
+            + '\n' + '</ul>\n'
 
         for lidx in range(0, 8):
             # for each light information
@@ -822,7 +821,19 @@ class GLLightNode(GLSceneGraphNode):
         \return True since this node is configurable.
         """
 
-        cam_group = _tab_dialog.add_group('Light')
+        light_root_group = _tab_dialog.add_group('GLLightNode')
+
+        lighting_on = False
+        if self.__is_light_node_lighting_on == GL.GL_TRUE:
+            lighting_on = True
+
+        light_root_group.add(QtWidgetIO.QtToggleButton(),
+                             'light_enable',
+                             lighting_on,
+                             {'LABEL': 'GLLightNode: lighting on'})
+
+        # NIN
+        # for each light
 
         # keylist  = self.__gl_camera.get_param_key()
         # valdict  = self.__gl_camera.get_config_dict()
@@ -849,13 +860,12 @@ class GLLightNode(GLSceneGraphNode):
         # # call set_config_dict(dict) when apply button is pushed.
         # _tab_dialog.set_associated_configuable_object('Camera', self)
 
-        # # set node (which has get_subject() attribute to get the
-        # # Listener's subject. This subject notify dialog when node
-        # # status is changed.
-        # _tab_dialog.set_subject_node(self)
-        # NIN 
+        # set node (which has get_subject() attribute to get the
+        # Listener's subject. This subject notify dialog when node
+        # status is changed.
+        _tab_dialog.set_subject_node(self)
 
-        return False
+        return True
 
     def update(self, _arg):
         """Implementation of QtWidgetIOObserverIF.update().
@@ -879,7 +889,7 @@ class GLLightNode(GLSceneGraphNode):
         \return configuration dictionary
         """
         # return self.__gl_camera.get_config_dict()
-        return None
+        return {'foo': 'bar'}
 
 
 

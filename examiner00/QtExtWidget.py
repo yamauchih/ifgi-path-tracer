@@ -130,6 +130,72 @@ class QtExtTextLine(QtGui.QWidget):
         # print 'returnPressed signal'
         pass
 
+
+#----------------------------------------------------------------------
+
+class QtExtToggleButton(QtGui.QWidget):
+    """QtExtToggleButton
+    \ingroup qtextwidget_container
+    Qt extended toggle button (one check box) widget for QtWidgetIO
+
+    The widget structure is: [x] LABEL
+    """
+
+    # constructor
+    def __init__(self, _label, _parent):
+        """constructor
+
+        \param[in] _label  text label
+        \param[in] _parent parent Qt widget
+        """
+
+        super(QtExtToggleButton, self).__init__(_parent)
+
+        self.__checkbox = QtGui.QCheckBox(_parent);
+        self.__checkbox.setObjectName(_label);
+        self.__checkbox.setChecked(False);
+
+        # connect signal
+        self.__checkbox.stateChanged.connect(self.slotUpdate)
+
+        # Qt.Qt.Horizontal orientation only
+        self.__layout = QtGui.QHBoxLayout(self)
+        self.__layout.addWidget(self.__checkbox)
+        self.__layout.activate();
+        self.setLayout(self.__layout);
+
+
+    def set_label(self, _label):
+        """set the widget's label
+        \param[in] _label label text"""
+        self.__checkbox.setText(_label)
+        self.__checkbox.setMinimumSize(self.__checkbox.sizeHint())
+
+    def get_value(self):
+        """returns the currently entered Text
+        \return value of this widget IO, text.
+        """
+        res = self.__checkbox.checkState();
+        if(res == Qt.Checked):
+            return True
+
+        # Qt.Unchecked or Qt.PartiallyChecked
+        return False
+
+    # set value
+    def set_value(self, _is_checked):
+        """set boolean value of this ext wiegdt.
+        \param[in] _is_checked true when checked"""
+        if(_is_checked == True):
+            self.__checkbox.setChecked(QtCore.Qt.Checked)
+        else:
+            self.__checkbox.setChecked(QtCore.Qt.Unchecked)
+
+    def slotUpdate(self, _check_state):
+        """slot for when state changed
+        """
+        print 'Toggele button: state = ', str(_check_state)
+
 #----------------------------------------------------------------------
 
 class QtExtComboBox(QtGui.QFrame):

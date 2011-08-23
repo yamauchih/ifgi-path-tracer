@@ -67,7 +67,7 @@ class QtGroupFrame(QtGui.QScrollArea):
         #  QtGroupFrame(= self) +-- QGroupBox(= self.__group_box)
         widget = _qwidgetio.create(_id, _value,
                                    self.__group_box,
-                                   _id + ':' + _value)
+                                   _id + ':' + str(_value))
         assert(widget != None)
         assert(_qwidgetio.get_widget() == widget)
 

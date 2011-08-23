@@ -1,5 +1,11 @@
 * Task ifgi path tracer 2011-8-22(Mon)
 
+** top5
+*** DONE QIOWidget Checkbox
+*** TODO QIOWidget ColorButton
+*** TODO GL Light node
+
+
 ** DONE Add Camera parameter control GUI
 *** DONE parameter iterator of Camera
 **** DONE get_keys (list), and get value dict, get parameter type dict
