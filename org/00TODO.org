@@ -1,4 +1,4 @@
-* Task ifgi path tracer 2011-8-22(Mon)
+* Task ifgi path tracer 2011-8-24(Wed)
 
 ** top5
 *** DONE QIOWidget Checkbox

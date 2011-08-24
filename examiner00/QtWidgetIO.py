@@ -108,8 +108,73 @@ class QtWidgetIOObserverIF(object):
 
 #----------------------------------------------------------------------
 
-# HEREHERE
-# class QtColorButton(QtWidgetIOIF):
+class QtColorButton(QtWidgetIOIF):
+    """Color button with QtWidgetIOIF interface.
+    \ingroup qtwidget
+    Supported options:
+    - LABEL: 'button label
+    """
+
+    # constructor
+    def __init__(self):
+        """constructor"""
+        self.__extwidget = None
+        self.__keyid = ''
+
+
+    def create(self, _id, _value, _parent, _widget_name):
+        """create this IO widget.
+        \param[in] _id     widget id
+        \param[in] _value  widget default value (color)
+        \param[in] _parent parent Qt widget
+        \param[in] _widget_name widget name
+        """
+        self.__extwidget = QtExtWidget.QtExtColorButton(_value, _parent, _widget_name)
+        self.__keyid = _id
+
+        # connect(w,SIGNAL(valueChangedRgba(const QRgb&)),
+        # this,SLOT(slotUpdate(const QRgb&)));
+
+        return self.__extwidget
+
+    def apply_option(self, _dict_opt):
+        """apply options to customize after the creation.
+
+        \param[in] _dict_opt options
+        """
+        if 'LABEL' in _dict_opt:
+            self.__extwidget.set_label(_dict_opt['LABEL'])
+
+
+    def get_key(self):
+        """get this widget's key (id).
+        \return the key ID of this widget.
+        """
+        return self.__keyid
+
+
+    def set_value(self, _value):
+        """set value to this widget.
+        \param[in] _value value of this widget IO (color).
+        """
+        self.__extwidget.set_color(_value)
+
+
+    def get_value(self):
+        """get this widget's value.
+        \return the value of IO widget.
+        """
+        return self.__extwidget.get_color()
+
+
+    def get_widget(self):
+        """get this widget's implementation.
+        \return the Qt widget.
+        """
+        return self.__extwidget
+
+    # slot for returnPressed() signal
+    # def slotUpdate(self, _text)
 
 
 #----------------------------------------------------------------------

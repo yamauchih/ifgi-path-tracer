@@ -321,6 +321,9 @@ if __name__ == '__main__':
             {'LABEL': 'ComboBoxExample', 'ITEMS': ['Red', 'Green', 'Blue']})
     gf0.add(QtWidgetIO.QtToggleButton(), 'myTogglebutton', False,
             {'LABEL': 'Toggle button example'})
+    gf0.add(QtWidgetIO.QtColorButton(), 'myColorbutton', QtGui.QColor(1,0,0,1),
+            {'LABEL': 'ColorButton'})
+
 
     gf1 = tab_dialog.add_group('testtab1')
     opt1 = {'LABEL': 'This is for tab1.'}
@@ -363,7 +366,9 @@ if __name__ == '__main__':
         def set_config_dict(self, _dict):
             """configurable example: OK. Apply."""
             print 'Set to testtab0. myLineEdit: ' + _dict['myLineEdit'] +\
-                ', myCombobox: ' + _dict['myCombobox']
+                ', myCombobox: ' + _dict['myCombobox'] +\
+                ', myTogglebutton: ' + str(_dict['myTogglebutton'])
+
 
         def get_config_dict(self):
             """configurable example: Update."""
@@ -371,7 +376,30 @@ if __name__ == '__main__':
             print 'Update to Updated text and Blue!'
             return ret
 
-    mco = MyConfigurableObserver()
+    # for testtab2, but empty
+    class MyConfigurableObserver2(QtWidgetIO.QtWidgetIOObserverIF):
+        def __init__(self):
+            self.__pushd_num = {'ApplyButton': 0, 'UpdateButton': 0,
+                                'OKButton': 0,    'CloseButton': 0  }
+
+        def update(self, _arg):
+            """Button observer example method"""
+            num = self.__pushd_num[_arg] + 1
+            print 'I observe [' + _arg + '] button is ' + str(num) + ' times pushed.'
+            self.__pushd_num[_arg] = num
+
+        def set_config_dict(self, _dict):
+            """configurable example: OK. Apply."""
+            print 'testtab1, no observer is implemented.'
+
+
+        def get_config_dict(self):
+            """configurable example: Update."""
+            ret = {}
+            return ret
+
+    mco  = MyConfigurableObserver()
+    mco2 = MyConfigurableObserver2()
 
     tab_dialog.set_button_observer(mco)
 
@@ -380,6 +408,7 @@ if __name__ == '__main__':
     # You can set a configuable object to associated group.
     # This is associated with testtab0.
     tab_dialog.set_associated_configuable_object('testtab0', mco)
+    tab_dialog.set_associated_configuable_object('testtab1', mco2)
 
     # show time
     tab_dialog.open()

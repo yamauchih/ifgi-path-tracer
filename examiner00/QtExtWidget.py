@@ -166,7 +166,7 @@ class QtExtColorButton(QtGui.QFrame):
 	# give minimumSize to this
         self.__label.setMinimumSize(self.__label.sizeHint())
 
-        self.__button = QtGui.QPushButton(self) # "Browse ...",this
+        self.__button = QtGui.QPushButton(self)
         self.__button.setObjectName(_name + '.browse')
         # same as label
         self.__button.setContentsMargins(1, 1, 1, 1)
@@ -215,8 +215,8 @@ class QtExtColorButton(QtGui.QFrame):
             pm = QtGui.QPixmap(self.__button.width() - 4, self.__button.height() - 4);
             pm.fill(_col)
             qicon.addPixmap(pm)
-            self.__button.setIcon(pm)
-            self.__button.setIconSize(QGui.QSize(
+            self.__button.setIcon(qicon)
+            self.__button.setIconSize(QtCore.QSize(
                 self.__button.width() - 4 , self.__button.height() - 4))
 
 
@@ -234,12 +234,12 @@ class QtExtColorButton(QtGui.QFrame):
         self.set_color(_color)
 
 
-    def __choose_color():
+    def __choose_color(self):
         """choose a RGBA color by the color dialog
         """
-        rgba = QColorDialog.getColor(self.__color, self, \
-                                         'QtExtColorButton choose color',\
-                                         QtGui.QColorDialog.ShowAlphaChannel)
+        rgba = QtGui.QColorDialog.getColor(self.__color, self, \
+                                               'QtExtColorButton choose color',\
+                                               QtGui.QColorDialog.ShowAlphaChannel)
         if(rgba.isValid()):
             self.set_color(rgba)
             self.signal_value_changed.emit(rgba)
@@ -308,7 +308,8 @@ class QtExtToggleButton(QtGui.QWidget):
     def slotUpdate(self, _check_state):
         """slot for when state changed
         """
-        print 'Toggele button: state = ', str(_check_state)
+        # print 'Toggele button: state = ', str(_check_state)
+        pass
 
 #----------------------------------------------------------------------
 
