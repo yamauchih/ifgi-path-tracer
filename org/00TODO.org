@@ -1,4 +1,4 @@
-* Task ifgi path tracer 2011-8-24(Wed)
+* Task ifgi path tracer 2011-8-27(Sat)
 
 ** top5
 *** DONE QIOWidget Checkbox
@@ -30,7 +30,7 @@
 *** TODO ifgi parser has no compatibility with obj file,
     but it can load the obj file. Add ifgi parser header, version, and magic.
 
-
+** TODO Append scene: load additional ifgi, obj file.
 
 ** TODO Implement texture class
    *** TextureIF

@@ -1,36 +1,37 @@
+# ifgi_scene 0
 #
 # two triangle with material information
-# Yamauchi, Hitoshi
+# Copyright (C) 2011 Yamauchi, Hitoshi
 #
 
 #
 # matreial definition
 #
 def_material {
-    material_name = 1st_tri_mat
-    material_type = lambert
+    mat_name = 1st_tri_mat
+    mat_type = lambert
     diffuse_color = 1.0 0.0 0.0
 }
 def_material {
-    material_name = 2nd_tri_mat
-    material_type = lambert
+    mat_name = 2nd_tri_mat
+    mat_type = lambert
     diffuse_color = 0.0 1.0 0.0
 }
 #
 # geometry
 #
-v  1.0 0.0    0.0
-v  0.0 1.7321 0.0
-v -1.0 0.0    0.0
-v  1.0 -0.3    0.0
-v  0.0 -1.7321 0.0
-v -1.0 -0.3    0.0
+def_geometry {
+    geo_name = 1st_tri
+    material = 1st_tri_mat
+    geo_file_type = obj
+    geo_file = twi_tri.one.obj
+}
+def_geometry {
+    geo_name = 1st_tri
+    material = 2nd_tri_mat
+    geo_file_type = obj
+    geo_file = twi_tri.two.obj
+}
 
-#
-# faces
-#
-material 1st_tri_mat
-f 1 2 3
-material 2nd_tri_mat
-f 4 5 6
+
 

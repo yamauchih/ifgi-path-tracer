@@ -1,0 +1,17 @@
+#
+# Cornel box. http://www.graphics.cornell.edu/online/box/data.html
+# Translated to extended obj file by Yamauchi, Hitoshi
+#
+#
+# Floor
+# white 1-4
+#
+v 552.8 0.0   0.0
+v  0.0 0.0    0.0
+v  0.0 0.0  559.2
+v 549.6 0.0 559.2
+#
+# Floor faces
+#
+f 1 2 3
+f 1 3 4
