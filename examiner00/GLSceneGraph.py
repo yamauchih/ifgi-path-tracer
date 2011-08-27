@@ -717,8 +717,9 @@ class GLLightNode(GLSceneGraphNode):
             # node is deactivated, not call draw anymore
             return
 
-        # push the current GL lighting state
-        self.__pushed_light_node_lighting_state = GL.glIsEnabled(GL.GL_LIGHTING)
+        # push the current GL lighting state.
+        # This is global effect, not for children in current implementation.
+        # self.__pushed_light_node_lighting_state = GL.glIsEnabled(GL.GL_LIGHTING)
 
         # set node state to GL
         self.gl_enable_disable(GL.GL_LIGHTING, self.__is_light_node_lighting_on)
@@ -736,7 +737,7 @@ class GLLightNode(GLSceneGraphNode):
 
 
         # pop the current GL state
-        self.gl_enable_disable(GL.GL_LIGHTING, self.__pushed_light_node_lighting_state)
+        # self.gl_enable_disable(GL.GL_LIGHTING, self.__pushed_light_node_lighting_state)
 
 
     def get_drawmode_list(self):
@@ -832,33 +833,39 @@ class GLLightNode(GLSceneGraphNode):
                              lighting_on,
                              {'LABEL': 'GLLightNode: lighting on'})
 
-        # NIN
-        # for each light
+        for lidx in range(0, 8):
+            # for each light source
+            lidxstr = str(lidx)
+            light_group_name = 'L_' + lidxstr
+            light_lidx_group = _tab_dialog.add_group(light_group_name)
+            li = self.__light_list[lidx]
+            light_lidx_group.add(QtWidgetIO.QtToggleButton(),
+                                 'light_on_' + lidxstr,
+                                 li.is_light_on,
+                                 {'LABEL': 'Light_' + lidxstr + ' on'})
+            light_lidx_group.add(QtWidgetIO.QtColorButton(),
+                                 'ambient_' + lidxstr,
+                                 li.ambient,
+                                 {'LABEL': 'Ambient'})
+            light_lidx_group.add(QtWidgetIO.QtColorButton(),
+                                 'diffuse_' + lidxstr,
+                                 li.diffuse,
+                                 {'LABEL': 'Diffuse'})
+            light_lidx_group.add(QtWidgetIO.QtColorButton(),
+                                 'specular_' + lidxstr,
+                                 li.specular,
+                                 {'LABEL': 'Specular'})
+            light_lidx_group.add(QtWidgetIO.QtLineEditWIO(),
+                                 'position_' + lidxstr,
+                                 numpy_util.array2str(li.position),
+                                 {'LABEL': 'Position'})
+            # tab is configurable: submit the tab group name
+            _tab_dialog.set_associated_configuable_object(light_group_name, self)
 
-        # keylist  = self.__gl_camera.get_param_key()
-        # valdict  = self.__gl_camera.get_config_dict()
-        # typedict = self.__gl_camera.get_typename_dict()
-
-        # for key in keylist:
-        #     typename = typedict[key]
-        #     if((typename == 'float_3') or (typename == 'float')):
-        #         cam_group.add(QtWidgetIO.QtLineEditWIO(),
-        #                       key,
-        #                       valdict[key],
-        #                       {'LABEL': key})
-        #     elif typename == 'enum_ProjectionMode':
-        #         itemlist = Camera.ProjectionMode[:]
-        #         cam_group.add(QtWidgetIO.QtComboBoxWIO(),
-        #                       key,
-        #                       str(valdict[key]),
-        #                       {'LABEL': key, 'ITEMS': itemlist})
-        #     else:
-        #         raise StandardError('unknown typename for camera parameter.')
-
-        # # call self.update() when button is pushed (_arg is button type)
-        # _tab_dialog.set_button_observer(self)
-        # # call set_config_dict(dict) when apply button is pushed.
-        # _tab_dialog.set_associated_configuable_object('Camera', self)
+        # call self.update() when button is pushed (_arg is button type)
+        _tab_dialog.set_button_observer(self)
+        # call set_config_dict(dict) when apply button is pushed.
+        _tab_dialog.set_associated_configuable_object('GLLightNode', self)
 
         # set node (which has get_subject() attribute to get the
         # Listener's subject. This subject notify dialog when node
@@ -880,15 +887,19 @@ class GLLightNode(GLSceneGraphNode):
         """set configuration dictionary. (configSetData)
         \param[in] _config_dict configuration dictionary
         """
+        # FIXME
         # self.__gl_camera.set_config_dict(_config_dict)
         # self.get_subject().notify_listeners(['ConfigChanged'])
-        pass
+        print 'Not implemented yet: set_config_dict' + str(_config_dict)
+
 
     def get_config_dict(self):
         """get configuration dictionary. (configGetData)
         \return configuration dictionary
         """
+        # FIXME
         # return self.__gl_camera.get_config_dict()
+        print 'Not implemented: get_config_dict'
         return {'foo': 'bar'}
 
 

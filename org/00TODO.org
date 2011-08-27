@@ -2,9 +2,8 @@
 
 ** top5
 *** DONE QIOWidget Checkbox
-*** TODO QIOWidget ColorButton
-*** TODO GL Light node
-*** TODO BUG QtSimpleTabDialog test error
+*** DONE QIOWidget ColorButton
+*** TODO GL Light node set_config_data/get_config_data
 
 ** DONE Add Camera parameter control GUI
 *** DONE parameter iterator of Camera
