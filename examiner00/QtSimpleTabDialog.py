@@ -9,7 +9,7 @@
 \file
 \brief simple tab dialog"""
 
-import sys
+import sys, numpy
 from PyQt4 import QtCore, QtGui
 
 import QtGroupFrame, QtWidgetIO
@@ -321,7 +321,7 @@ if __name__ == '__main__':
             {'LABEL': 'ComboBoxExample', 'ITEMS': ['Red', 'Green', 'Blue']})
     gf0.add(QtWidgetIO.QtToggleButton(), 'myTogglebutton', False,
             {'LABEL': 'Toggle button example'})
-    gf0.add(QtWidgetIO.QtColorButton(), 'myColorbutton', QtGui.QColor(1,0,0,1),
+    gf0.add(QtWidgetIO.QtColorButton(), 'myColorbutton', numpy.array([1, 0, 0, 1]),
             {'LABEL': 'ColorButton'})
 
 
@@ -367,7 +367,8 @@ if __name__ == '__main__':
             """configurable example: OK. Apply."""
             print 'Set to testtab0. myLineEdit: ' + _dict['myLineEdit'] +\
                 ', myCombobox: ' + _dict['myCombobox'] +\
-                ', myTogglebutton: ' + str(_dict['myTogglebutton'])
+                ', myTogglebutton: ' + str(_dict['myTogglebutton']) +\
+                ', myColorbutton: '  + str(_dict['myColorbutton'])
 
 
         def get_config_dict(self):

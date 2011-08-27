@@ -16,6 +16,16 @@ from PyQt4 import Qt, QtCore, QtGui
 
 #----------------------------------------------------------------------
 
+def get_qcolor_str(_qcol):
+    """get qcolor string representation
+    \param[in] _qcol a Qcolor
+    \return string"""
+    colstr = str(_qcol.red()) + ' ' + str(_qcol.green()) +\
+        ' ' + str(_qcol.blue()) + ' ' + str(_qcol.alpha())
+    return colstr
+
+#----------------------------------------------------------------------
+
 class QtExtTextLine(QtGui.QWidget):
     """QtExtTextLine
     \ingroup qtextwidget_container
@@ -185,6 +195,8 @@ class QtExtColorButton(QtGui.QFrame):
 
         self.setToolTip('push to select a color');
 
+        self.signal_value_change.connect(self.slotSetValue)
+
 
     def set_label(self, _label):
         """Sets the widget's label.
@@ -195,9 +207,9 @@ class QtExtColorButton(QtGui.QFrame):
 
 
     def set_color(self, _col):
-        """Sets the current color.
+        """Sets the current color by QColor
 
-        \param[in] _col color
+        \param[in] _col a Qcolor
         """
         self.__color = _col
 
@@ -205,12 +217,14 @@ class QtExtColorButton(QtGui.QFrame):
 
         # get correct pixmap size. Assume less than 128x128.
         extent = 128
+        qcolstr = get_qcolor_str(_col)
 
         if(not qicon.pixmap(extent).isNull()):
             pm = QtGui.QPixmap(qicon.pixmap(extent))
             pm.fill(_col)
             qicon.addPixmap(pm)
             self.__button.setIcon(qicon)
+            self.__button.setText(qcolstr)
         else:
             pm = QtGui.QPixmap(self.__button.width() - 4, self.__button.height() - 4);
             pm.fill(_col)
@@ -218,10 +232,11 @@ class QtExtColorButton(QtGui.QFrame):
             self.__button.setIcon(qicon)
             self.__button.setIconSize(QtCore.QSize(
                 self.__button.width() - 4 , self.__button.height() - 4))
+            self.__button.setText(qcolstr)
 
 
     def get_color(self):
-        """get current color.
+        """get current color as QColor
 
         \return current color
         """
@@ -231,6 +246,7 @@ class QtExtColorButton(QtGui.QFrame):
     def slotSetValue(self, _color):
         """a slot. same as set_color().
         """
+        print 'slotSetValue ', get_qcolor_str(_color)
         self.set_color(_color)
 
 
@@ -242,7 +258,7 @@ class QtExtColorButton(QtGui.QFrame):
                                                QtGui.QColorDialog.ShowAlphaChannel)
         if(rgba.isValid()):
             self.set_color(rgba)
-            self.signal_value_changed.emit(rgba)
+            self.signal_value_change.emit(rgba)
 
 
 # ----------------------------------------------------------------------

@@ -11,6 +11,7 @@ These are interface and underneath widget implementation is in
 QtExtWidget.py
 """
 
+import numpy
 from PyQt4 import Qt, QtCore, QtGui
 import QtExtWidget
 
@@ -111,6 +112,12 @@ class QtWidgetIOObserverIF(object):
 class QtColorButton(QtWidgetIOIF):
     """Color button with QtWidgetIOIF interface.
     \ingroup qtwidget
+
+    The value is float_4 and [1,1,1,1] is the normal white =
+    QColor(255, 255, 255, 255), this value can be more than that for
+    physical energy representation. But this GUI only can handle [0,1]
+    values.
+
     Supported options:
     - LABEL: 'button label
     """
@@ -125,15 +132,18 @@ class QtColorButton(QtWidgetIOIF):
     def create(self, _id, _value, _parent, _widget_name):
         """create this IO widget.
         \param[in] _id     widget id
-        \param[in] _value  widget default value (color)
+        \param[in] _value  widget default value (float_4 value, not QColor)
         \param[in] _parent parent Qt widget
         \param[in] _widget_name widget name
         """
-        self.__extwidget = QtExtWidget.QtExtColorButton(_value, _parent, _widget_name)
+        self.__extwidget = QtExtWidget.QtExtColorButton(QtGui.QColor(),
+                                                        _parent, _widget_name)
         self.__keyid = _id
 
         # connect(w,SIGNAL(valueChangedRgba(const QRgb&)),
         # this,SLOT(slotUpdate(const QRgb&)));
+
+        self.set_value(_value)
 
         return self.__extwidget
 
@@ -154,17 +164,29 @@ class QtColorButton(QtWidgetIOIF):
 
 
     def set_value(self, _value):
-        """set value to this widget.
-        \param[in] _value value of this widget IO (color).
+        """set float_4 value to this widget.
+        \param[in] _value value of this widget IO (float_4 color).
         """
-        self.__extwidget.set_color(_value)
+        # convert to QColor
+        col = 255 * _value
+        # clipping
+        blower = numpy.array([  0,   0,   0,   0])
+        bupper = numpy.array([255, 255, 255, 255])
+        col = numpy.minimum(col, bupper)
+        col = numpy.maximum(col, blower)
+
+        self.__extwidget.set_color(QtGui.QColor(int(col[0]), int(col[1]),
+                                                int(col[2]), int(col[3])))
 
 
     def get_value(self):
         """get this widget's value.
         \return the value of IO widget.
         """
-        return self.__extwidget.get_color()
+        qc = self.__extwidget.get_color()
+        val = numpy.array([float(qc.red()), float(qc.green()),
+                           float(qc.blue()), float(qc.alpha())]) / 255
+        return val
 
 
     def get_widget(self):
