@@ -6,10 +6,7 @@
 \file
 \brief ifgi scene reader (reader example)"""
 
-import math
-import numpy
-import string
-import exceptions
+import math, numpy, string, exceptions, os.path
 
 class IfgiSceneReader(object):
     """IfgiSceneReader class.
@@ -21,7 +18,7 @@ class IfgiSceneReader(object):
       - 'ifgi_scene ... ifgi scene file
       - '1          ... version number
 
-    - def_material {
+    - def material {
         mat_name = name_of_material
         mat_type = type_of_material
         diffuse_color = 1.0 1.0 1.0
@@ -29,13 +26,15 @@ class IfgiSceneReader(object):
         material_key2 = val2
       }
 
-    - def_geometry {
+    - def geometry {
         geo_name = name_of_geometry
         material = material_name
         geo_file_type = obj
         geo_file = filename
         # could be inline, but later
       }
+
+    The geometry should be read after ifgi scene file has been read.
     """
 
     # public: ------------------------------------------------------------
@@ -44,24 +43,34 @@ class IfgiSceneReader(object):
         """default constructor"""
         self.__curline     = 0
 
-        # material
-        self.material_def_list = []
+        self.__defined_type_list = ['material', 'geometry']
+
+        self.__ifgi_abspath = ''
+        self.__ifgi_dirname = ''
+
+        self.material_list = []
         #    material name -> index of material_def_list
         self.material_name_idx_dict = {}
 
         # geometry
-        self.geometry_def_list = []
+        self.geometry_list = []
         #    geometry name -> index of geometry_def_list
         self.geometry_name_idx_dict = {}
 
 
-    def read(self, _ifgi_fname):
+    def read(self, _ifgi_fname_path):
         """read a ifgi scene file.
-        \param[in] _ifgi_fname ifgi scene file name
+        \param[in] _ifgi_fname_path ifgi scene file name
         """
+        if (not os.path.isfile(_ifgi_fname_path)):
+            raise StandardError, ('no such file [' + _ifgi_fname_path + ']')
+
+        self.__ifgi_abspath = os.path.abspath(_ifgi_fname_path)
+        self.__ifgi_dirname = os.path.dirname(self.__ifgi_abspath)
+
         try:
-            self.__check_filetype(_ifgi_fname)
-            with open(_ifgi_fname) as infile:
+            self.__check_filetype(self.__ifgi_abspath)
+            with open(self.__ifgi_abspath) as infile:
                 self.__curline = 1
                 while True:
                     read_line_count = self.__parse_line(infile)
@@ -71,30 +80,40 @@ class IfgiSceneReader(object):
                         self.__curline = self.__curline + read_line_count
 
         except StandardError, extrainfo:
-            print 'fail to read [' + _ifgi_fname + ']', extrainfo
+            print 'fail to read [' + _ifgi_fname_path + ']', extrainfo
 
 
-    # dump the internal data
+    def get_dirname(self):
+        """get ifgi scenefile dirname.
+        \return ifgi scene file dirname
+        """
+        return self.__ifgi_dirname
+
+
     def dump(self):
         """dump the internal data."""
 
+        print 'file abspath [' + self.__ifgi_abspath + ']'
+        print 'dirname [' + self.__ifgi_dirname + ']'
+
         print '--- material definition'
-        for m in self.material_def_list:
+        for m in self.material_list:
             print 'def_material:', m
 
         print '--- geometry definition'
-        for g in self.geometry_def_list:
+        for g in self.geometry_list:
             print 'def_geometry:', g
+
 
     # private: ------------------------------------------------------------
 
     # check the file is ifgi scene file or not by magic
-    def __check_filetype(self, _ifgi_fname):
+    def __check_filetype(self, _ifgi_fname_path):
         """check the file is ifgi file or not.
         magic: # ifgi_scene [version number]
         if not, raise exception
         """
-        with open(_ifgi_fname) as infile:
+        with open(_ifgi_fname_path) as infile:
             line  = infile.readline()
             if (line == ''):
                 raise StandardError, ('unexpected EOF')
@@ -123,9 +142,9 @@ class IfgiSceneReader(object):
         for k in necessary_key:
             if(not k in mat):
                 print 'invalid material: missing necessary key [' + k + ']'
-                is_success = False
+                return False
 
-        return is_success
+        return True
 
 
     def __append_material(self, _new_mat):
@@ -137,12 +156,53 @@ class IfgiSceneReader(object):
             raise StandardError, ('invalid material.')
 
         if(_new_mat['mat_name'] in self.material_name_idx_dict):
-            raise StandardError, ('duplicate material [' + _new_mat['mat_name']
-                                  + '].')
+            raise StandardError, ('duplicate material [' + _new_mat['mat_name'] + '].')
 
-        new_mat_idx = len(self.material_def_list)
-        self.material_def_list.append(_new_mat)
+        new_mat_idx = len(self.material_list)
+        self.material_list.append(_new_mat)
         self.material_name_idx_dict[_new_mat['mat_name']] = new_mat_idx
+
+
+    def __is_valid_geometry(self, geo):
+        """check the geometry information.
+        \param[in] geo
+        \return True when geometry information is valid.
+        """
+        necessary_key = ['geo_name', 'material', 'geo_file_name']
+        is_success = True
+        for k in necessary_key:
+            if(not k in geo):
+                print 'invalid geometry: missing necessary key [' + k + ']'
+                return False
+
+        # material exists?
+        if (not (geo['material'] in self.material_name_idx_dict)):
+            print 'material is not defined at this point.'
+            return False
+
+        # geometry file exists?
+        geo_fpath = os.path.join(self.__ifgi_dirname, geo['geo_file_name'])
+        if (not os.path.isfile(geo_fpath)):
+            print 'file [' + geo_fpath + '] does not exist.'
+            return False
+
+        return True
+
+
+    def __append_geometry(self, _new_geo):
+        """append new geometry.
+        \param[in] _new_geo new geometry info to append.
+        """
+        # check the geometry
+        if (not self.__is_valid_geometry(_new_geo)):
+            raise StandardError, ('invalid geometry.')
+
+        if(_new_geo['geo_name'] in self.geometry_name_idx_dict):
+            raise StandardError, ('duplicate geometry [' + _new_geo['geo_name'] + '].')
+
+        new_geo_idx = len(self.geometry_list)
+        self.geometry_list.append(_new_geo)
+        self.geometry_name_idx_dict[_new_geo['geo_name']] = new_geo_idx
 
     def __parse_line(self, _infile):
         """parse a line.
@@ -171,27 +231,15 @@ class IfgiSceneReader(object):
         token = sline[0]
 
         # process one token
-        if (token == 'def_material'):
-            # expect '{' in the same line. This line should be 'def_material {'.
-            if (sline[1] != '{'):
-                raise StandardError, ('Error: def_material line should have "{"')
-            if (len(sline) != 2):
-                raise StandardError, ('Error: line should be [def_material {], ' +
-                                      _line + ', tokens = ' + str(len(sline)))
+        if (token == 'def'):
+            if (len(sline) != 3):
+                raise StandardError, ('Error: def line should be [def defined_id {], ' +
+                                      _line)
+            if ((not (sline[1] in self.__defined_type_list)) or (sline[2] != '{')):
+                raise StandardError, ('Error: def line should have defined types. ' +
+                                      str(self.__defined_type_list))
 
-            read_line_count = self.__parse_def_material_block(_infile)
-
-        elif (token == 'def_geometry'):
-            # expect '{' in the same line. This line should be 'def_geometry {'.
-            if (sline[1] != '{'):
-                raise StandardError, ('Error: def_geometry line should have "{"')
-            if (len(sline) != 2):
-                raise StandardError, ('Error: line should be [def_geometry {], ' +
-                                      _line + ', tokens = ' + str(len(sline)))
-
-            print 'NIN def_geometry'
-            # read_line_count = self.__parse_geometry_def_block(_infile)
-
+            read_line_count = self.__parse_def_block(_infile, sline[1])
         else:
             print 'Warning! unsupported entity [' + token + '] at line ' +\
                 str(self.__curline)
@@ -199,7 +247,7 @@ class IfgiSceneReader(object):
         return read_line_count
 
 
-    def __parse_def_material_block(self, _infile):
+    def __parse_def_block(self, _infile, _define_type):
         """parse a material block.
         The first line was 'def_material {'. The block should ended '}'
         The block should be one of the following:
@@ -207,17 +255,18 @@ class IfgiSceneReader(object):
            - comment line (start with # line)
            - '}'
 
-        \param[in] _infile
+        \param[in] _infile input file
+        \param[in] _define_type ['material', 'geometry']
         \return number of read lines
         """
-        mat_dict = {}
-        read_line_count = 1     # We heve already read 'def_material {' line.
+        def_dict = {}
+        read_line_count = 1 # We heve already read 'def _define_type {' line.
         while True:
             line = _infile.readline()
             read_line_count = read_line_count + 1
             if line == '':
-                raise StandardError, ('Error: unexpected EOF. material_def starts line '
-                                      + str(self.__curline))
+                raise StandardError, ('Error: unexpected EOF. def ' + _define_type +
+                                      ' starts line ' + str(self.__curline))
             _line = string.strip(line)
             if (_line[0] == '#'):   # skip comment
                 # print 'skip comment'
@@ -232,14 +281,18 @@ class IfgiSceneReader(object):
                 sline     = _line.split(' = ')
                 if (sep_start == -1):
                     raise StandardError,\
-                        ('Error: def_material block. The line should be key = value.\n'
+                        ('Error: def ' + _define_type + ' block: ' +
+                         ' The line should be key = value.\n'
                          + 'Note: separator must be [ = ] (include two spaces). line at '
                          + str(self.__curline + read_line_count) + ', line = ' + line)
                 # whole string of [start + len(' = ') (== 3):] is the key
-                mat_dict[sline[0]] = _line[sep_start + 3:]
+                def_dict[sline[0]] = _line[sep_start + 3:]
 
-        # print 'material info: ', mat_dict
-        self.__append_material(mat_dict)
+        # print 'def ', def_dict
+        if(_define_type == 'material'):
+            self.__append_material(def_dict)
+        elif(_define_type == 'geometry'):
+            self.__append_geometry(def_dict)
 
         return read_line_count
 
@@ -251,4 +304,5 @@ class IfgiSceneReader(object):
 if __name__ == '__main__':
     ifgireader = IfgiSceneReader()
     ifgireader.read('../../sampledata/cornel_box.ifgi')
-
+    ifgireader.dump()
+    

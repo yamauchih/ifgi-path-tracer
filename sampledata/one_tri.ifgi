@@ -7,7 +7,7 @@
 #
 # matreial definition
 #
-def_material {
+def material {
     mat_name = one_tri_mat
     mat_type = lambert
     diffuse_color = 1.0 0.0 0.0 1.0
@@ -15,9 +15,9 @@ def_material {
 #
 # geometry
 #
-def_geometry {
+def geometry {
     geo_name = one_tri
     material = one_tri_mat
     geo_file_type = obj
-    geo_file = one_tri.obj
+    geo_file_name = one_tri.obj
 }

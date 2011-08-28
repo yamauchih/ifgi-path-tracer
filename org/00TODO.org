@@ -27,8 +27,11 @@
 *** TODO material parser (ExtObjReader, extension of obj file reader)
 
 ** TODO implement ifgi parser
-*** TODO ifgi parser has no compatibility with obj file,
-    but it can load the obj file. Add ifgi parser header, version, and magic.
+*** TODO read material and geometry definition
+*** TODO geometry parsing and get mesh for each geometry
+*** TODO create ifgi scenegraph nodes
+*** TODO create OpenGL scenegraph nodes
+
 
 ** TODO Append scene: load additional ifgi, obj file.
 
