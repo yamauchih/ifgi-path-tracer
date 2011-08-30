@@ -45,6 +45,9 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         # cameras.
         self.__gl_camera   = Camera.GLCamera()
 
+        # background color, default: black
+        self.__bgcolor = QtGui.QColor(0, 0, 0, 255)
+
         # OpenGL scene graph
         self.__gl_scenegraph = None
 
@@ -122,8 +125,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
     def initializeGL(self):
         """initialize open GL. (public).
         """
-        bgblack = QtGui.QColor(0, 0, 0, 255)
-        self.qglClearColor(bgblack)
+        self.qglClearColor(self.__bgcolor)
         GL.glShadeModel(GL.GL_FLAT)
         GL.glEnable(GL.GL_DEPTH_TEST)
         GL.glEnable(GL.GL_CULL_FACE)
@@ -135,7 +137,6 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
         # measure the time of paint GL
         self.__timer_clock.restart()
-
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         self.__gl_frustum(Camera.EyePosition.EyeCenter)
         self.__glu_lookat(Camera.EyePosition.EyeCenter)
@@ -320,7 +321,13 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
     def __popup_func_bgcolor(self):
         """popup -- function -- bgcolor implementation"""
-        print 'NIN: bgcolor implementation'
+        res_rgba = QtGui.QColorDialog.getColor(self.__bgcolor, self, \
+                                                   'Background color color',\
+                                                   QtGui.QColorDialog.ShowAlphaChannel)
+        if(res_rgba.isValid()):
+            self.__bgcolor = res_rgba
+            self.qglClearColor(self.__bgcolor)
+
 
     def __popup_func_snapshot(self):
         """popup -- function -- snapshot
@@ -832,7 +839,7 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
         """
         # self.test_draw_one_triangle()
         if self.__gl_scenegraph != None:
-            self.__gl_scenegraph.draw(self.__global_drawmode)
+            self.__gl_scenegraph.draw_traverse(self.__global_drawmode)
         else:
             self.debug_out('No OpenGL scenegraph is set.')
 

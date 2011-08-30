@@ -15,32 +15,47 @@ import Ray
 import HitRecord
 from ifgi.base import OrthonomalBasis
 
-# Primitive class: interface
+# ----------------------------------------------------------------------
+
 class Primitive(object):
     """Primitive class: interface"""
 
-    # default constructor
-    def __init__(self):
-        """default constructor (public)"""
-        pass
 
-    # class name
+    def __init__(self):
+        """default constructor"""
+        self.__name = 'NoName'
+
+
     def get_classname(self):
-        """get class name. interface method. (public).
+        """get class name. interface method.
         \return class name
         """
         assert 0, "get_classname must be implemented in a derived class."
         return None
 
-    # get the bounding box
+
+    def set_name(self, _name):
+        """set primitive associated name.
+        \return primitive name
+        """
+        self.__name = _name
+
+
+    def get_name(self):
+        """set primitive associated name.
+        \return primitive name
+        """
+        return self.__name
+
+
     def get_bbox(self):
-        """get the bounding box. interface method. (public).
+        """get the bounding box. interface method.
         \return bounding box of this primitive.
         """
         assert 0, "get_bbox must be implemented in a derived class."
         return None
 
-    # can this primitive intersect with a ray?
+
     def can_intersect(self):
         """can this primitive intersect with a ray?
 
@@ -50,7 +65,7 @@ class Primitive(object):
         assert 0, "can_intersect must be implemented in a derived class."
         return False
 
-    # compute ray intersection
+
     def ray_intersect(self, _ray):
         """compute ray intersection. interface method. (public)
         \param[in] _ray a ray
@@ -59,38 +74,38 @@ class Primitive(object):
         assert 0, "ray_intersect must be implemented in a derived class."
         return None
 
+# ----------------------------------------------------------------------
 
-
-# BBox: axis aligned 3D bounding box
 class BBox(Primitive):
     """BBox: axis aligned 3D bounding box"""
 
-    # default constructor
+
     def __init__(self):
         """default constructor (public)."""
+        super(Primitive, self).__init__()
         self.invalidate()
 
-    # class name
+
     def get_classname(self):
         """ get class name (public).
         \return class name
         """
         return 'BBox'
 
-    # get the bounding box
+
     def get_bbox(self):
         """get the bounding box (public).
         \return self
         """
         return self
 
-    # can this primitive intersect with a ray?
+
     def can_intersect(self):
         """can bbox primitive intersect with a ray? yes.
         """
         return True
 
-    # compute ray intersection
+
     def ray_intersect(self, _ray):
         """compute ray intersection. interface.
         \param[in] _ray a ray
@@ -100,7 +115,6 @@ class BBox(Primitive):
         return None
 
 
-    # invalidate this bbox
     def invalidate(self):
         """invalidate this bbox (public)."""
         self.__min = numpy.array([sys.float_info.max,
@@ -108,7 +122,7 @@ class BBox(Primitive):
         self.__max = numpy.array([-sys.float_info.max,
                                   -sys.float_info.max, -sys.float_info.max])
 
-    # insert point, grow the bbox
+
     def insert_point(self, _newpos):
         """insert a point and grow the bbox. (public).
         \param[in] _newpos newly inserted point
@@ -125,7 +139,7 @@ class BBox(Primitive):
                 self.__max[i] = _newpos[i]
         # print 'DEBUG: ' + str(self) + ', p' + str(_newpos)
 
-    # insert bbox, grow the bbox
+
     def insert_bbox(self, _bbox):
         """insert a bbox and grow the bbox. (public)
         \param _bbox bounding box to be inserted.
@@ -133,22 +147,21 @@ class BBox(Primitive):
         self.insert_point(_bbox.get_min())
         self.insert_point(_bbox.get_max())
 
-    # get minimal point
+
     def get_min(self):
         """get minimal point (public).
         \return minimal point (numpy.array[3])
         """
         return self.__min
 
-    # get maximal point
-    # \return maximal point (numpy.array[3])
+
     def get_max(self):
         """get maximal point (public).
         \return maximal point (numpy.array[3])
         """
         return self.__max
 
-    # equal?
+
     def equal(self, _other):
         """equal? (public).
         comparison self with _other. If exact the same, return True
@@ -163,7 +176,7 @@ class BBox(Primitive):
             return True
         return False
 
-    # string representation
+
     def __str__(self):
         """string representation (public).
         \return string representation of this object.
@@ -171,36 +184,37 @@ class BBox(Primitive):
         return 'bbox[%g %g %g]-[%g %g %g]' % (self.__min[0], self.__min[1], self.__min[2],
                                               self.__max[0], self.__max[1], self.__max[2])
 
-# Triangle
+# ----------------------------------------------------------------------
+
 class Triangle(Primitive):
     """A triangle.
     """
 
-    # default constructor
     def __init__(self):
         """default constructor.
         """
+        super(Triangle, self).__init__()
         self.__vertex = None
         self.__bbox   = None
 
-    # class name
+
     def get_classname(self):
         return 'Triangle'
 
-    # get the bounding box
+
     def get_bbox(self):
         if self.__bbox == None:
             raise StandardError, ('Invalid triangle, no bounding box.')
 
         return self.__bbox
 
-    # can this primitive intersect with a ray?
+
     def can_intersect(self):
         """can a triangle intersect with a ray? Yes.
         """
         return True
 
-    # compute ray intersection
+
     def ray_intersect(self, _ray):
         """compute ray intersection. interface method.
         \param[in]  _ray a ray
@@ -245,7 +259,7 @@ class Triangle(Primitive):
         hr.hit_basis.init_from_uv(e1, e2) # set normal
         return hr
 
-    # set vertex
+
     def set_vertex(self, _v0, _v1, _v2):
         """Set triangle vertices.
         \param[in] _v0 vertex 0
@@ -255,24 +269,23 @@ class Triangle(Primitive):
         self.__vertex = [_v0, _v1, _v2]
         self.__update_bbox()
 
-    # update bbox
+
     def __update_bbox(self):
         self.__bbox = BBox()
         self.__bbox.insert_point(self.__vertex[0])
         self.__bbox.insert_point(self.__vertex[1])
         self.__bbox.insert_point(self.__vertex[2])
 
+# ----------------------------------------------------------------------
 
-
-
-# TriMesh
 class TriMesh(Primitive):
     """TriMesh: simple triangle mesh primitive
     """
 
-    # default constructor
+
     def __init__(self):
         """default constructor (public)."""
+        super(TriMesh, self).__init__()
         self.vertex_list       = []
         self.face_idx_list     = []
         self.texcoord_list     = []
@@ -281,28 +294,28 @@ class TriMesh(Primitive):
         self.normal_idx_list   = []
         self.bbox              = BBox()
 
-    # class name
+
     def get_classname(self):
         """get class name. interface method.
         \return class name
         """
         return 'TriMesh'
 
-    # get the bounding box
+
     def get_bbox(self):
         """get the bounding box. interface method.
         \return bounding box of this primitive.
         """
         return self.bbox
 
-    # can this primitive intersect with a ray?
+
     def can_intersect(self):
         """can TriMesh primitive intersect with a ray? no.
         This object needs refinement.
         """
         return False
 
-    # set data
+
     def set_data(self, _vlist, _fidxlist, _tclist, _tcidxlist, _nlist, _nidxlist):
         """set data (public).
 
@@ -322,7 +335,7 @@ class TriMesh(Primitive):
         self.normal_idx_list   = _nidxlist
         self.update_bbox()
 
-    # update bounding box according to current vertex list
+
     def update_bbox(self):
         """update bounding box according to current vertex list (public).
         """
@@ -330,7 +343,7 @@ class TriMesh(Primitive):
         for pos in self.vertex_list:
             self.bbox.insert_point(pos)
 
-    # is this valid object?
+
     def is_valid(self):
         """is this valid object? (public).
         At least len(vertex_list) > 0
@@ -339,7 +352,7 @@ class TriMesh(Primitive):
             return True
         return False
 
-    # compute ray intersection
+
     def ray_intersect(self, _ray):
         """compute ray intersection. (public).
         \param[in] _ray a ray

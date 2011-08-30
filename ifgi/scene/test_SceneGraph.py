@@ -11,8 +11,7 @@
 import unittest
 import numpy
 import random
-import SceneGraph
-import Primitive
+import SceneGraph, Primitive, Material
 
 class TestSceneGraph(unittest.TestCase):
     """test scenegraph node"""
@@ -36,6 +35,32 @@ class TestSceneGraph(unittest.TestCase):
         sg_node1.set_bbox(bbox0)
 
         assert(not sg_node0.get_bbox().equal(sg_node1.get_bbox()))
+
+
+    def test_node_creation(self):
+        """test node creation"""
+        sg = SceneGraph.create_empty_scenegraph()
+        sg_root = sg.get_root_node()
+
+        grp0 = SceneGraph.SceneGraphNode('group_test')
+        sg_root.append_child(grp0)
+
+        # primitives, but no data so far
+        prim0 = SceneGraph.PrimitiveNode('tri')
+        prim0.set_primitive(Primitive.Triangle())
+        grp0.append_child(prim0)
+
+        prim1 = SceneGraph.PrimitiveNode('trimesh')
+        prim1.set_primitive(Primitive.TriMesh())
+        grp0.append_child(prim1)
+
+        # material group
+        grp1 = SceneGraph.SceneGraphNode('materialgroup')
+        sg_root.append_child(grp1)
+
+        mat0 = SceneGraph.MaterialNode('mat0')
+        mat0.set_material(Material.Material())
+        grp1.append_child(mat0)
 
 
 #

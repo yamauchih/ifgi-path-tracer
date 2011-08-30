@@ -457,18 +457,20 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
         ti_parent = _cur_tinode
         for ch_glsgnode in _cur_glsgnode.get_children():
-            if ch_glsgnode.is_primitive_node() == True:
-                print 'DEBUG: creating tree item by a primitive'
-                # primitive node
-                ti = SceneGraphNodeTreeItem(ch_glsgnode.get_primitive(),
-                                            ti_parent)
-                ti_parent.appendChild(ti)
-            else:
-                print 'DEBUG: creating tree item by a scenegraph node'
-                # create and refer the glsg node
-                ti = SceneGraphNodeTreeItem(ch_glsgnode, ti_parent)
-                ti_parent.appendChild(ti)
-                self.__copy_glsg_to_treeitem_sub(ch_glsgnode, ti, _level + 1)
+            # DELETEME
+            # if ch_glsgnode.is_primitive_node() == True:
+            #     print 'DEBUG: creating tree item by a primitive'
+            #     # primitive node
+            #     ti = SceneGraphNodeTreeItem(ch_glsgnode,
+            #                                 ti_parent)
+            #     ti_parent.appendChild(ti)
+            # else:
+            print 'DEBUG: creating tree item by a scenegraph node',\
+                ch_glsgnode.get_classname(), ch_glsgnode.get_nodename()
+            # create and refer the glsg node
+            ti = SceneGraphNodeTreeItem(ch_glsgnode, ti_parent)
+            ti_parent.appendChild(ti)
+            self.__copy_glsg_to_treeitem_sub(ch_glsgnode, ti, _level + 1)
 
     # activate the node. might be a public method.
     def __popup_status_activate_node(self):
