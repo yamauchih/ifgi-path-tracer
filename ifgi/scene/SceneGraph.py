@@ -253,7 +253,6 @@ class SceneGraph(object):
         _strategy.apply_after_recurse(_cur_node, _level)
 
 
-    # traverse the scenegraph
     def traverse_sgnode(self, _cur_node, _strategy):
         """traverse the scenegraph
         \param[in] _cur_node current node
@@ -262,19 +261,18 @@ class SceneGraph(object):
         level = 0
         self.__traverse_sgnode_sub(_cur_node, level, _strategy)
 
-    # for debug and example of usage of SceneGraphTraverseStrategyIF
-    def print_all_obj(self):
-        """print for debug and example of usage of
+
+    def print_all_node(self):
+        """print all nodes for debug and example of usage of
         SceneGraphTraverseStrategyIF
         """
-        print '# SceneGraph'
         if self.__root_node == None:
             print 'no __root_node'
             return
         print_strategy = SGTPrintStrategy()
         self.traverse_sgnode(self.__root_node, print_strategy)
 
-    # update all bounding box recursively
+
     def update_all_bbox(self):
         """update all bounding box recursively.
         \see SGTUpdateBBoxStrategy
@@ -563,7 +561,7 @@ class PrimitiveNode(SceneGraphNode):
         \param[in] _depth node depth"""
 
         indent = '  ' * _level
-        print indent + '# SceneGraphNode:Primitive:' +\
+        print indent + '+ SceneGraphNode:Primitive:' +\
             self.__primitive.get_classname() +\
             ' ' + str(self.__primitive.get_bbox())
 

@@ -1,4 +1,4 @@
-* Task ifgi path tracer 2011-8-29(Mon)
+* Task ifgi path tracer 2011-8-31(Wed)
 
 ** top5
 *** DONE Fix QtSceneGrpahDialog
@@ -6,7 +6,7 @@
 *** DONE Trimesh Info
 *** DONE GLTrimeshNode doesnot have set primitive since it is not inherited from
     SceneGraph.PritimiveNode. Implement PrimitiveNode interface.
-*** TODO bounding box update for SceneGraph and GLScneneGraph
+*** DONE bounding box update for SceneGraph and GLScneneGraph
 *** TODO scenegraph    MaterialNode
 *** TODO GL scenegraph GLMaterialNode
 *** TODO GL Light node set_config_data/get_config_data

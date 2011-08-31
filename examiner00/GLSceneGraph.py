@@ -198,6 +198,22 @@ class GLSceneGraph(SceneGraph.SceneGraph):
                 self.__print_sgnode_sub(chnode, _level + 1)
 
 
+    def update_all_bbox(self):
+        """update all bounding box recursively.
+        \see SGTUpdateBBoxStrategy
+        """
+        # recompute gl_root_node bbox
+        self.__gl_root_node.get_bbox().invalidate()
+
+        update_bbox_strategy = SceneGraph.SGTUpdateBBoxStrategy()
+        self.traverse_sgnode(self.__gl_root_node, update_bbox_strategy)
+        # handle no children have valid bbox (e.g., empty scene)
+        if not self.__gl_root_node.get_bbox().has_volume():
+            ILog.warn('GLSceneGraphs rootnode has no volume, set [0 0 0]-[1 1 1]')
+            self.__root_node.get_bbox().insert_point(numpy.array([0,0,0]))
+            self.__root_node.get_bbox().insert_point(numpy.array([1,1,1]))
+
+
     # ------------------------------------------------------------
     # draw traverse.
     # ------------------------------------------------------------

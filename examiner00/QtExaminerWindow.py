@@ -386,11 +386,14 @@ class QtExaminerWindow(QtGui.QMainWindow):
         # got the filename, create a generic scene graph
         sg = SceneGraph.create_one_trimeh_scenegraph(_infilename)
         sg.update_all_bbox()
-        sg.print_all_obj()      # for debug, print out the scenegraph
+        sg.print_all_node()     # for debug, print out the scenegraph
 
         # attach the SceneGraph to a GLSceneGraph
         glsg = GLSceneGraph.GLSceneGraph()
         glsg.set_scenegraph(sg)
+        # FIXME
+        glsg.update_all_bbox()
+        # glsg.print_all_node()   # for debug, print out the scenegraph
 
         # debug mode on
         self.__examiner_widget.set_debug_mode(True)
