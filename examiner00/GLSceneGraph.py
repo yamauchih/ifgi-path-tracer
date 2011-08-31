@@ -121,7 +121,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         """collect all __drawmode_list list. (public)
         traverse with SceneGraphTraverseStrategyIF strategy
         \see SceneGraphTraverseStrategyIF"""
-
+        
         collect_drawmode_strategy = GLSGTCollectDrawmodeStrategy()
         self.traverse_sgnode(self.__gl_root_node, collect_drawmode_strategy)
         # print 'DEBUG: collect draw mode done.'
@@ -996,25 +996,21 @@ class GLMaterialNode(GLSceneGraphNode):
         """
         # call base class constructor to fill the members
         super(GLMaterialNode, self).__init__(_nodename)
-        # DELETEME self.__local_drawmode = 0
-        self.__drawmode_list = DrawMode.DrawModeList()
-        # basic draw mode only
-        self.__drawmode_list.add_basic_drawmode()
 
-        # OpenGL draw state
-        self.__bg_color4f      = None
-        self.__current_color4f = None
-        self.__shade_model     = GL.GL_FLAT
-        self.__is_enabled_lighting  = GL.GL_TRUE
-        self.__is_enabled_depthtest = GL.GL_TRUE
-        self.__is_enabled_offset    = GL.GL_FALSE
+        # OpenGL push state
+        self.__push_current_color = numpy.array([1.0, 1.0, 1.0, 1.0])
+        self.__current_color      = numpy.array([1.0, 1.0, 1.0, 1.0])
+        self.__push_emission      = numpy.array([0.0, 0.0, 0.0, 1.0])
+        self.__push_diffuse       = numpy.array([0.5, 0.5, 0.5, 1.0])
+        self.__push_ambient       = numpy.array([0.2, 0.2, 0.2, 1.0])
+        self.__push_specular      = numpy.array([0.2, 0.2, 0.2, 1.0])
+        self.__push_shineness     = 1.0
 
-        # lighting for points, wireframe, flat shading, Gouraud, texture
-        self.__is_enabled_light_points  = GL.GL_FALSE
-        self.__is_enabled_light_lines   = GL.GL_FALSE
-        self.__is_enabled_light_flat    = GL.GL_TRUE
-        self.__is_enabled_light_gouraud = GL.GL_TRUE
-        self.__is_enabled_light_texture = GL.GL_TRUE
+        self.__emission  = numpy.array([0.0, 0.0, 0.0, 1.0])
+        self.__diffuse   = numpy.array([0.5, 0.5, 0.5, 1.0])
+        self.__ambient   = numpy.array([0.2, 0.2, 0.2, 1.0])
+        self.__specular  = numpy.array([0.2, 0.2, 0.2, 1.0])
+        self.__shineness = 1.0
 
 
     # get classname
@@ -1028,215 +1024,305 @@ class GLMaterialNode(GLSceneGraphNode):
     # get draw mode of this GLSceneGraphNode
     def get_drawmode_list(self):
         """get draw mode list of this GLSceneGraphNode
+        \return None. Material node has no drawmode list
+        """
+        return None
 
-        \return drawmode list of this node"""
 
-        return self.__drawmode_list
+    # enter, leave, draw ----------------------------------------
 
-    # draw
+    def enter(self):
+        """enter draw. Prologue of the draw()
+        Usually set up for draw. E.g., save the OpenGL states.
+        """
+        self.__push_current_color = GL.glGetFloatv(GL.GL_CURRENT_COLOR)
+        GL.glColor4fv(self.__current_color)
+
+        # FIXME: do we need GL_BACK and GL_FRONT_AND_BACK also?
+        # then put them in an array.
+        self.__push_emission  = GL.glGetMaterialfv(GL.GL_FRONT, GL.GL_EMISSION)
+        self.__push_diffuse   = GL.glGetMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE)
+        self.__push_ambient   = GL.glGetMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT)
+        self.__push_specular  = GL.glGetMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR)
+        self.__push_shineness = GL.glGetMaterialfv(GL.GL_FRONT, GL.GL_SHININESS)
+
+        GL.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION,  self.__emission)
+        GL.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE,   self.__diffuse)
+        GL.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,   self.__ambient)
+        GL.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR,  self.__specular)
+        GL.glMaterialf (GL.GL_FRONT, GL.GL_SHININESS, self.__shineness)
+
+        # if (d_applyProperties&PointSize):
+        #     glGetFloatv(GL_POINT_SIZE,&d_bakPointSize)
+        #     glPointSize(d_pointSize)
+
+        # if (d_applyProperties&LineWidth):
+        #     glGetFloatv(GL_LINE_WIDTH,&d_bakLineWidth)
+        #     glLineWidth(d_lineWidth)
+
+
+        # if (d_applyProperties&LineStipple):
+        #     d_bakLineStippleIsEnabled=glIsEnabled(GL_LINE_STIPPLE);
+        #     glGetIntegerv(GL_LINE_STIPPLE_PATTERN,&d_bakLineStipplePattern);
+        #     glGetIntegerv(GL_LINE_STIPPLE_REPEAT,&d_bakLineStippleFactor);
+
+        #     if (d_lineStippleFactor>0):
+        #         if (!d_bakLineStippleIsEnabled):
+        #             glEnable(GL_LINE_STIPPLE);
+        #             glLineStipple(d_lineStippleFactor,d_lineStipplePattern);
+
+        # if (d_applyProperties & (LineAntialiasing | PointAntialiasing)):
+        #     if (d_lineAntialiasing || d_pointAntialiasing):
+        #         d_bakAlphaBuffer = glIsEnabled(GL_ALPHA_TEST);
+
+        # glEnable(GL_BLEND);
+        # glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        # if (d_applyProperties&LineAntialiasing):
+        #     d_bakLineAntialiasing=glIsEnabled(GL_LINE_SMOOTH);
+        #     if (d_lineAntialiasing):
+        #         glEnable(GL_LINE_SMOOTH);
+        #     else:
+        #         glDisable(GL_LINE_SMOOTH);
+
+        # if (d_applyProperties&PointAntialiasing):
+        #     d_bakPointAntialiasing=glIsEnabled(GL_POINT_SMOOTH)
+        #     if (d_pointAntialiasing):
+        #         glEnable(GL_POINT_SMOOTH);
+        #     else:
+        #         glDisable(GL_POINT_SMOOTH)
+
+        # glGetBooleanv(GL_LIGHT_MODEL_TWO_SIDE, &d_curGlLightModelTwoSide)
+        # glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE)
+
+        # # polygon mode
+        # if(d_polygonMode_FaceType != PM_FaceType_FOLLOW_OPENGL_STAT):
+        #     // push the current mode
+        #     // NOTICE:
+        #     // glGetIntegerv(GL_POLYGON_MODE, ..) did not return the correct
+        #     // paranmeter on d_pushedGLPolygonMode[0].
+        #     // So we use only d_pushedGLPolygonMode[1].
+        #     glGetIntegerv(GL_POLYGON_MODE, d_pushedGLPolygonMode);
+
+        #     GLenum polymode[2] = { GL_FRONT, GL_FILL, };
+        #     if(d_polygonMode_FaceType == PM_FaceType_FRONT):
+        #         polymode[0] = GL_FRONT;
+        #     elif(d_polygonMode_FaceType == PM_FaceType_BACK):
+        #         polymode[0] = GL_BACK;
+        #     elif(d_polygonMode_FaceType == PM_FaceType_FRONT_AND_BACK):
+        #         polymode[0] = GL_FRONT_AND_BACK;
+        #     else:
+        #         'Error! MaterialNode::enter: No such polygon mode face type. '
+	# 	'use default.'
+
+        #     if(d_polygonMode_RasterMode == PM_RasterMode_POINT):
+        #         polymode[1] = GL_POINT
+        #     elif(d_polygonMode_RasterMode == PM_RasterMode_LINE):
+        #         polymode[1] = GL_LINE
+        #     elif (d_polygonMode_RasterMode == PM_RasterMode_FILL):
+        #         polymode[1] = GL_FILL;
+        #     else:
+        #         'Error! MaterialNode::enter: No such polygon mode raster type. '
+	# 	'use default. '
+
+        #     glPolygonMode(polymode[0], polymode[1])
+
+        # // culling mode
+        # if(d_cullFaceMode != CullFaceMode_FOLLOW_OPENGL_STATE):
+        #     // push the current mode
+        #     d_pushedGLCullFaceEnable = glIsEnabled(GL_CULL_FACE)
+        #     glGetIntegerv(GL_CULL_FACE_MODE, &d_pushedGLCullFaceMode)
+
+        # if(d_cullFaceMode == CullFaceMode_Enable):
+        #     glEnable(GL_CULL_FACE);
+        # elif(d_cullFaceMode == CullFaceMode_Disable):
+        #     glDisable(GL_CULL_FACE);
+        # else:
+        #     'Error! MaterialNode::enter: No such cull face mode. '
+        #     'use default. '
+
+        # if(d_cullFaceType == CullFaceType_FRONT):
+        #     glCullFace(GL_FRONT);
+        # elif(d_cullFaceType == CullFaceType_BACK):
+        #     glCullFace(GL_BACK);
+        # elif(d_cullFaceType == CullFaceType_FRONT_AND_BACK):
+        #     glCullFace(GL_FRONT_AND_BACK);
+        # else:
+        #     'Error! MaterialNode::enter: No such cull face type. '
+
+
+
+    def leave(self):
+        """leave draw. Epilogue of the draw()
+        Usually clean up after draw. E.g., pop the OpenGL states.
+        """
+        GL.glColor4fv(self.__push_current_color)
+
+        # if (d_applyProperties&Material)
+
+        GL.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE,    self.__push_diffuse)
+        GL.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION,   self.__push_emission)
+        GL.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,    self.__push_ambient)
+        GL.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR,   self.__push_specular)
+        GL.glMaterialf (GL.GL_FRONT, GL.GL_SHININESS,  self.__push_shineness)
+
+        # if (d_applyProperties&PointSize):
+        #     glPointSize(d_bakPointSize);
+
+        # if (d_applyProperties&LineWidth):
+        #     glLineWidth(d_bakLineWidth);
+
+        # if (d_applyProperties&LineStipple):
+        #     if (d_lineStippleFactor>0):
+        #         if (!d_bakLineStippleIsEnabled):
+        #             glDisable(GL_LINE_STIPPLE);
+        #         glLineStipple(d_bakLineStippleFactor,d_bakLineStipplePattern);
+
+        # if (d_applyProperties & (LineAntialiasing | PointAntialiasing)):
+        #     if (d_lineAntialiasing || d_pointAntialiasing):
+        #         if (d_bakAlphaBuffer):
+        #             glEnable(GL_ALPHA_TEST)
+        #         else:
+        #             glDisable(GL_ALPHA_TEST)
+        #             //!! does not reconstruct AlphaFunc
+
+        # if (d_applyProperties&LineAntialiasing):
+        #     if (d_bakLineAntialiasing):
+        #         glEnable(GL_LINE_SMOOTH);
+        #     else:
+        #         glDisable(GL_LINE_SMOOTH)
+
+        # if (d_applyProperties&PointAntialiasing):
+        #     if (d_bakPointAntialiasing):
+        #         glEnable(GL_POINT_SMOOTH);
+        #     else:
+        #         glDisable(GL_POINT_SMOOTH);
+
+        # glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, d_curGlLightModelTwoSide);
+
+        # if(d_polygonMode_FaceType != PM_FaceType_FOLLOW_OPENGL_STAT):
+        #     // glGetIntegerv(GL_POLYGON_MODE, ..) did not get correct parameter.
+        #     // So, this is workaround.
+        #     // glPolygonMode(d_pushedGLPolygonMode[0], d_pushedGLPolygonMode[1]);
+        #     glPolygonMode(GL_FRONT_AND_BACK, d_pushedGLPolygonMode[1]);
+
+        # if(d_cullFaceMode != CullFaceMode_FOLLOW_OPENGL_STATE):
+        #     if(d_pushedGLCullFaceEnable == GL_TRUE):
+        #         glEnable(GL_CULL_FACE);
+        #     else:
+        #         glDisable(GL_CULL_FACE)
+        #     glCullFace(d_pushedGLCullFaceMode);
+
+        # this->checkGLError();
+
+
     def draw(self, _global_drawmode):
-        """draw the attached triangle mesh.
-        If node is deactivated, draw nothing.
+        """material node does nothing in draw.
         \param[in] _global_drawmode drawmode list (or-ed drawmode list bitmap)."""
-
-        # print 'DEBUG: primitive is ' + self.get_primitive().get_classname()
-
-        if (not self.is_node_active()):
-            # node is deactivated, not call draw anymore
-            return
-
-        # check this node's drawmode. Is it local?
-        _drawmode = self.get_drawmode();
-        if (_drawmode == DrawMode.DrawModeList.DM_GlobalMode):
-            _drawmode = _global_drawmode
-
-        # push the current GL state
-        self.__draw_push_gl_state()
-
-        if ((_drawmode & DrawMode.DrawModeList.DM_BBox) != 0):
-            self.__draw_bbox()
-
-        if ((_drawmode & DrawMode.DrawModeList.DM_Points) != 0):
-            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_points)
-            self.__draw_points()
-
-        if ((_drawmode & DrawMode.DrawModeList.DM_Wireframe) != 0):
-            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_lines)
-            self.__draw_wireframe()
-
-        if ((_drawmode & DrawMode.DrawModeList.DM_Hiddenline) != 0):
-            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_lines)
-            self.__draw_hiddenline()
-
-        if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Basecolor) != 0):
-            self.gl_enable_disable(GL.GL_LIGHTING, GL.GL_FALSE) # always light off
-            self.__draw_solid_basecolor()
-
-        if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Flat) != 0):
-            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_flat)
-            self.__draw_flat_shading()
-
-        if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Gouraud) != 0):
-            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_gouraud)
-            self.__draw_solid_gouraud()
-
-        if ((_drawmode & DrawMode.DrawModeList.DM_Solid_Texture) != 0):
-            self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_texture)
-            self.__draw_solid_texture()
-
-        # pop the current GL state
-        self.__draw_pop_gl_state()
+        pass
 
 
-    # push the gl state that draw might change
-    def __draw_push_gl_state(self):
-        """push the gl state that draw might change
+    def get_info_html(self):
+        """Get information html text.
+        Inherited from GLSceneGraphNode
+        \return GL materal node info
+        """
+        mat_info = self.get_info_html_GLSceneGraphNode() +\
+            '<h2>GLMaterialNode information</h2>\n' +\
+            '<ul>\n' +\
+            '  <li><b>FG color:</b> ' +\
+            numpy_util.array2str(self.__current_color)  + '\n' +\
+            '  <li><b>emission:</b> ' +\
+            numpy_util.array2str(self.__emission)  + '\n' +\
+            '  <li><b>diffuse:</b> ' +\
+            numpy_util.array2str(self.__diffuse)  + '\n' +\
+            '  <li><b>ambient:</b> ' +\
+            numpy_util.array2str(self.__ambient)  + '\n' +\
+            '  <li><b>specular:</b> ' +\
+            numpy_util.array2str(self.__specular)  + '\n' +\
+            '  <li><b>shineness:</b> ' +\
+            str(self.__shineness)  + '\n' +\
+            '</ul>\n'
 
-        Subroutine of draw()"""
-
-        self.__bg_color4f      = GL.glGetFloatv(GL.GL_COLOR_CLEAR_VALUE)
-
-        self.__current_color4f = GL.glGetFloatv(GL.GL_CURRENT_COLOR)
-        self.__shade_model     = GL.glGetIntegerv(GL.GL_SHADE_MODEL)
-        self.__is_enabled_lighting   = GL.glIsEnabled(GL.GL_LIGHTING)
-        self.__is_enabled_depthtest  = GL.glIsEnabled(GL.GL_DEPTH_TEST)
-        self.__is_enabled_offsetfill = GL.glIsEnabled(GL.GL_POLYGON_OFFSET_FILL)
-
-
-    # pop the gl state
-    def __draw_pop_gl_state(self):
-        """pop the gl state
-
-        Subroutine of draw()"""
-
-        GL.glColor4fv(self.__current_color4f)
-        GL.glShadeModel(self.__shade_model)
-        self.gl_enable_disable(GL.GL_LIGHTING,   self.__is_enabled_lighting)
-        self.gl_enable_disable(GL.GL_DEPTH_TEST, self.__is_enabled_depthtest)
-        self.gl_enable_disable(GL.GL_POLYGON_OFFSET_FILL,
-                               self.__is_enabled_offsetfill)
-
-    # draw bbox
-    def __draw_bbox(self):
-        """draw bbox"""
-
-        assert(self.is_primitive_node() == True)
-        # self.get_primitive().update_bbox()
-        bbox = self.get_primitive().get_bbox()
-        GLUtil.draw_axis_alighed_box(bbox.get_min(), bbox.get_max())
+        return mat_info
 
 
-    # draw points
-    def __draw_points(self):
-        """draw points"""
-        # no light mode NIN: self.gl_light_mode & POINTS
-        GL.glDisable(GL.GL_LIGHTING)
-        GL.glBegin(GL.GL_POINTS)
-        # draw all points
-        for vp in self.get_primitive().vertex_list:
-            GL.glVertex3d(vp[0], vp[1], vp[2])
-        GL.glEnd()
+    def create_config_dialog(self, _tab_dialog):
+        """Create configuration dialog for GLMaterialNode.
+        The configuration dialog is QtSimpleTabDialog.
+        Inherited from GLSceneGraphNode
 
-    # draw wireframe
-    def __draw_wireframe(self):
-        """draw wireframe"""
-        GL.glShadeModel(GL.GL_FLAT)
+        \param[in] _tab_dialog a QtSimpleTabDialog
+        \return True since this node is configurable.
+        """
 
-        # vp reference
-        vp = self.get_primitive().vertex_list
-        for face in self.get_primitive().face_idx_list:
-            GL.glBegin(GL.GL_LINE_LOOP)
-            GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
-            GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
-            GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
-            GL.glEnd()
+        mat_group = _tab_dialog.add_group('GLMaterialNode')
 
+        mat_group.add(QtWidgetIO.QtColorButton(),
+                      'fg_color',
+                      self.__current_color,
+                      {'LABEL': 'FG color'})
+        mat_group.add(QtWidgetIO.QtColorButton(),
+                      'emission',
+                      self.__emission,
+                      {'LABEL': 'emittion'})
+        mat_group.add(QtWidgetIO.QtColorButton(),
+                      'diffuse',
+                      self.__diffuse,
+                      {'LABEL': 'diffuse'})
+        mat_group.add(QtWidgetIO.QtColorButton(),
+                      'ambient',
+                      self.__ambient,
+                      {'LABEL': 'ambient'})
+        mat_group.add(QtWidgetIO.QtColorButton(),
+                      'specular',
+                      self.__specular,
+                      {'LABEL': 'specular'})
+        mat_group.add(QtWidgetIO.QtLineEditWIO(),
+                      'shiness',
+                      str(self.__shineness),
+                      {'LABEL': 'shiness'})
 
-    # draw hiddenline
-    def __draw_hiddenline(self):
-        """draw hiddenline
+        # call self.update() when button is pushed (_arg is button type)
+        _tab_dialog.set_button_observer(self)
+        # call set_config_dict(dict) when apply button is pushed.
+        _tab_dialog.set_associated_configuable_object('GLMaterialNode', self)
 
-        see OpenGL book"""
+        # set node (which has get_subject() attribute to get the
+        # Listener's subject. This subject notify dialog when node
+        # status is changed.
+        _tab_dialog.set_subject_node(self)
 
-        #
-        # step 1: draw lines
-        #
-        GL.glEnable(GL.GL_DEPTH_TEST)
-        GL.glColor4fv(self.__current_color4f)
+        return True
 
-        # --- draw lines
-        vp = self.get_primitive().vertex_list
-        for face in self.get_primitive().face_idx_list:
-            GL.glBegin(GL.GL_LINE_LOOP)
-            GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
-            GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
-            GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
-            GL.glEnd()
+    def update(self, _arg):
+        """Implementation of QtWidgetIOObserverIF.update().
+        """
+        print 'GLMaterialNode: I observe ' + _arg
 
-        #
-        # step 2: fill the polygon with bg color with slight offset
-        #
-        GL.glDisable(GL.GL_LIGHTING)
+    #------------------------------------------------------------
+    # configurable
+    #------------------------------------------------------------
 
-        # type(offset0) == 'numpy.float32'
-        offset0 = GL.glGetFloatv(GL.GL_POLYGON_OFFSET_FACTOR)
-        offset1 = GL.glGetFloatv(GL.GL_POLYGON_OFFSET_UNITS)
-
-        GL.glEnable(GL.GL_POLYGON_OFFSET_FILL)
-        GL.glPolygonOffset(1.0, 1.0)
-        GL.glColor4fv(self.__bg_color4f)
-
-        GL.glEnable(GL.GL_POLYGON_OFFSET_FILL)
-        GL.glBegin(GL.GL_TRIANGLES)
-        vp = self.get_primitive().vertex_list
-        for face in self.get_primitive().face_idx_list:
-            GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
-            GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
-            GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
-        GL.glEnd()          # GL.glBegin(GL.GL_TRIANGLES)
-
-        GL.glPolygonOffset(offset0, offset1)
+    def set_config_dict(self, _config_dict):
+        """set configuration dictionary. (configSetData)
+        \param[in] _config_dict configuration dictionary
+        """
+        # FIXME
+        # self.__gl_camera.set_config_dict(_config_dict)
+        # self.get_subject().notify_listeners(['ConfigChanged'])
+        print 'Not implemented yet: set_config_dict' + str(_config_dict)
 
 
-    # draw solid_basecolor
-    def __draw_solid_basecolor(self):
-        """draw solid_basecolor"""
-        GL.glDisable(GL.GL_LIGHTING)
-        GL.glShadeModel(GL.GL_FLAT)
+    def get_config_dict(self):
+        """get configuration dictionary. (configGetData)
+        \return configuration dictionary
+        """
+        # FIXME
+        # return self.__gl_camera.get_config_dict()
+        print 'Not implemented: get_config_dict'
+        return {'foo': 'bar'}
 
-        GL.glBegin(GL.GL_TRIANGLES)
-        vp = self.get_primitive().vertex_list
-        for face in self.get_primitive().face_idx_list:
-            GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
-            GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
-            GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
-        GL.glEnd()
-
-    # draw flat shading
-    def __draw_flat_shading(self):
-        """draw flat shading"""
-        GL.glShadeModel(GL.GL_FLAT)
-
-        GL.glBegin(GL.GL_TRIANGLES)
-        # vp reference
-        vp = self.get_primitive().vertex_list
-        for face in self.get_primitive().face_idx_list:
-            GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
-            GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
-            GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
-        GL.glEnd()
-
-    # draw solid_gouraud
-    def __draw_solid_gouraud(self):
-        """draw solid_gouraud"""
-        GL.glShadeModel(GL.GL_FLAT)
-        print 'NIN: __draw_solid_gouraud'
-
-    # draw solid_texture
-    def __draw_solid_texture(self):
-        """draw solid_texture"""
-        GL.glShadeModel(GL.GL_FLAT)
-        print 'NIN: __draw_solid_texture'
 
 
 # ----------------------------------------------------------------------
@@ -1627,12 +1713,13 @@ def new_gl_scenegraph_node(_sgnode, _material_list):
 
     if _sgnode.is_primitive_node():
         if _sgnode.get_primitive().get_classname() == 'TriMesh':
-            print 'NIN: GLMaterialNode'
-            gltmeshnode = GLTriMeshNode('testTriMesh')
+            gltmeshnode = GLTriMeshNode('trimesh')
             gltmeshnode.set_primitive(_sgnode.get_primitive())
             assert(gltmeshnode.get_primitive() != None)
-            print 'Added GLTriMeshNode'
-            return gltmeshnode
+            glmatnode = GLMaterialNode('material')
+            glmatnode.append_child(gltmeshnode)
+            print 'Added GLMaterialNode --- GLTriMeshNode'
+            return glmatnode
         else:
             print 'unsupported primitive: ' + _sgnode.get_primitive().get_classname()
             return None
