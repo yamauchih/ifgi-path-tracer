@@ -116,11 +116,22 @@ class BBox(Primitive):
 
 
     def invalidate(self):
-        """invalidate this bbox (public)."""
+        """invalidate this bbox.
+        The bbox has no volume after invalidate().
+        """
         self.__min = numpy.array([sys.float_info.max,
                                   sys.float_info.max,   sys.float_info.max])
         self.__max = numpy.array([-sys.float_info.max,
                                   -sys.float_info.max, -sys.float_info.max])
+
+
+    def has_volume(self):
+        """has this bbox volume?.
+        After invalidate(), bbox has no volume.
+        \return True when this bbox has volume.
+        """
+        # for all max > min.
+        return all(self.__max > self.__min)
 
 
     def insert_point(self, _newpos):
@@ -144,6 +155,7 @@ class BBox(Primitive):
         """insert a bbox and grow the bbox. (public)
         \param _bbox bounding box to be inserted.
         """
+        assert(_bbox.has_volume())
         self.insert_point(_bbox.get_min())
         self.insert_point(_bbox.get_max())
 

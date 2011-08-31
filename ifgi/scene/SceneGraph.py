@@ -11,21 +11,22 @@
 import copy
 
 import Camera, Primitive, ObjReader, ConvReader2Primitive, Material
+from ifgi.base.ILog import ILog
 
 
-# SceneGraph traverse strategy interfgace
+# SceneGraphTraverseStrategyIF ----------------------------------------
+
 class SceneGraphTraverseStrategyIF(object):
     """SceneGraph traverse strategy interfgace
 
     \see the example implementtaion SGTPrintStrategy
     """
 
-    # constructor
     def __init__(self):
         """constructor"""
         pass
 
-    # apply strategy to node before recurse
+
     def apply_before_recurse(self, _cur_node, _level):
         """apply strategy to node before recurse
 
@@ -34,7 +35,7 @@ class SceneGraphTraverseStrategyIF(object):
         """
         assert(false)           # you need to implement this in the inherited class
 
-    # apply strategy while visiting __children
+
     def apply_middle(self, _cur_node, _level):
         """apply strategy while visiting __children
 
@@ -43,7 +44,7 @@ class SceneGraphTraverseStrategyIF(object):
         """
         assert(false)           # you need to implement this in the inherited class
 
-    # apply strategy after visiting (when returning from the recurse)
+
     def apply_after_recurse(self, _cur_node, _level):
         """apply strategy after visiting (when returning from the recurse)
 
@@ -54,7 +55,8 @@ class SceneGraphTraverseStrategyIF(object):
 
 
 
-# Example implementation of SceneGraphTraverseStrategyIF
+# SGTPrintStrategy ----------------------------------------
+
 class SGTPrintStrategy(SceneGraphTraverseStrategyIF):
     """Example implementation of SceneGraphTraverseStrategyIF
 
@@ -98,7 +100,8 @@ class SGTPrintStrategy(SceneGraphTraverseStrategyIF):
 
 
 
-# Example implementation of SceneGraphTraverseStrategyIF
+# SGTUpdateBBoxStrategy ----------------------------------------
+
 class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
     """Example implementation of SceneGraphTraverseStrategyIF
 
@@ -145,16 +148,31 @@ class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
         \param[in]  _cur_node current visting node
         \param[in]  _level    current depth
         """
-        if _cur_node.has_node_bbox():
-            # FIXME NIN update bounding box
-            pass
-        else:
-            # This is a group node. The __children has already been
-            # updated the __bbox. Now we found the __bbox that contains
-            # all the __children __bbox.
-            for chnode in _cur_node.get_children():
-                if chnode.has_node_bbox():
+
+        if not _cur_node.has_node_bbox():
+            # I don't have bbox, therefore, I don't need to compute it
+            return
+
+        if _cur_node.is_primitive_node():
+            # I am a primitive node, I have own bbox.
+            # Note: I have own bbox means if primitive has
+            # children, and it has bbox, they doesn't affect mine,
+            # since I am a primitive.
+            return
+
+        # re-compute bbox, initialize it as invalid.
+        _cur_node.get_bbox().invalidate()
+
+        # Ask all the children about bbox. The children have already
+        # been updated own bbox. Now we found the current bbox that
+        # contains all the children's bbox.
+        # In case no childen have bbox, _cur_node.bbox stays invalid
+        for chnode in _cur_node.get_children():
+            if chnode.has_node_bbox():
+                if chnode.get_bbox().has_volume():
+                    # update my bbox
                     _cur_node.get_bbox().insert_bbox(chnode.get_bbox())
+
 
 # ----------------------------------------------------------------------
 
@@ -261,9 +279,17 @@ class SceneGraph(object):
         """update all bounding box recursively.
         \see SGTUpdateBBoxStrategy
         """
+        # recompute root bbox
+        self.__root_node.get_bbox().invalidate()
+
         update_bbox_strategy = SGTUpdateBBoxStrategy()
-        print 'NIN: update bounding box strategy'
         self.traverse_sgnode(self.__root_node, update_bbox_strategy)
+        # handle no children have valid bbox (e.g., empty scene)
+        if not self.__root_node.get_bbox().has_volume():
+            ILog.warn('Rootnode has no volume, set [0 0 0]-[1 1 1]')
+            self.__root_node.get_bbox().insert_point(numpy.array([0,0,0]))
+            self.__root_node.get_bbox().insert_point(numpy.array([1,1,1]))
+
 
 
 # ----------------------------------------------------------------------
@@ -368,10 +394,6 @@ class SceneGraphNode(object):
         """get bounding box of this node
         \return bounding box
         """
-        # check the consistency for debug
-        # if self.is_primitive_node():
-        #     assert(self.__bbox.equal(self.__primitive.get_bbox()) == True)
-
         return self.__bbox
 
 
@@ -399,15 +421,18 @@ class SceneGraphNode(object):
         \param[in] _depth node depth"""
 
         indent = '  ' * _level
-        print indent + '# # __children = ' + str(len(self.__children))
+        out_str = indent + '+ ' + self.get_classname() + ':' + self.get_nodename() + ', '
+        if self.has_node_bbox():
+            out_str += 'Bbox: '
+            if self.get_bbox().has_volume():
+                out_str += str(self.get_bbox()) + ', '
+            else:
+                out_str += 'invalid volume, '
+        else:
+            out_str += 'no bbox, '
 
-        # if self.is_primitive_node():
-        #     print indent + '# SceneGraphNode:Primitive:' +\
-        #           self.__primitive.get_classname() +\
-        #           ' ' + str(self.__primitive.get_bbox())
-        # else:
-        #     print indent + '# # __children = ' + str(len(self.__children))
-        # DELETEME
+        out_str += str(len(self.get_children())) + ' children '
+        print out_str
 
 
 # ----------------------------------------------------------------------
@@ -504,16 +529,6 @@ class PrimitiveNode(SceneGraphNode):
 
     # ----------------------------------------------------------------------
 
-    def get_bbox(self):
-        """get bounding box of this node
-        \return bounding box
-        """
-        if self.__primitive == None:
-            raise StandardError, ('No primitive set [' + + ']')
-
-        return self.__primitive.get_bbox()
-
-
     def has_node_bbox(self):
         """Does this node have a bounding box?
         Default is True.
@@ -524,9 +539,19 @@ class PrimitiveNode(SceneGraphNode):
         return True
 
 
+    def get_bbox(self):
+        """get bounding box of this node
+        \return bounding box
+        """
+        if self.__primitive == None:
+            raise StandardError, ('No primitive set [' + self.get_classname() +\
+                                      ' ' + self.get_nodename() + ']')
+        return self.__primitive.get_bbox()
+
+
     def set_bbox(self, _bbox):
-        """assign __bbox value.
-        set the __bbox object. (_bbox is cloned before set.)
+        """assign bbox value.
+        set the bbox object. (_bbox is cloned before set.)
         \param _bbox bounding box to be assigned."""
 
         self.__primitive.set_bbox(_bbox)

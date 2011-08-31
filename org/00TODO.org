@@ -4,7 +4,9 @@
 *** DONE Fix QtSceneGrpahDialog
 *** DONE Background color
 *** DONE Trimesh Info
-*** TODO bounding box update is broken
+*** DONE GLTrimeshNode doesnot have set primitive since it is not inherited from
+    SceneGraph.PritimiveNode. Implement PrimitiveNode interface.
+*** TODO bounding box update for SceneGraph and GLScneneGraph
 *** TODO scenegraph    MaterialNode
 *** TODO GL scenegraph GLMaterialNode
 *** TODO GL Light node set_config_data/get_config_data
@@ -12,8 +14,6 @@
     Scenegraph primitive node (has a primitive)
     GLScenegraph Primitive Node (but primitive node will be inherited to
     e.g. GLTrimeshNode, because GLScneGraphNode has draw() to draw the primitives)
-*** TODO GLTrimeshNode doesnot have set primitive sinve it is not inherited from
-    SceneGraph.PritimiveNode
 
 
 

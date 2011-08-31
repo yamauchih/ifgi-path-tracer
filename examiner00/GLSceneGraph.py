@@ -44,7 +44,8 @@ class GLSceneGraph(SceneGraph.SceneGraph):
 
         self.__scenegraph   = _sg
 
-        self.__gl_root_node = GLSceneGraphNode('gl_rootnode')
+        self.__gl_root_node = \
+            GLSceneGraphNode('GL:' + self.__scenegraph.get_root_node().get_nodename())
         assert(self.__scenegraph.is_valid())
 
         # create GLSceneGraph from scenegraph
@@ -129,42 +130,6 @@ class GLSceneGraph(SceneGraph.SceneGraph):
 
     # private: ------------------------------------------------------------
 
-    # DELETEME
-    # def __copy_sgnode_sub(self, _cur_sgnode, _cur_glnode, _level):
-    #     """copy scenegraph tree subroutine. (private)
-    #     \param[in] _cur_sgnode current visiting (generic) scenegraph node
-    #     \param[in] _cur_glnode current visiting OpenGL scenegraph node
-    #     \param[in] _level      current depth level"""
-
-    #     # if _cur_sgnode.is_primitive_node() == True:
-    #     #     # create primitive node and set the primitive
-    #     #     # print 'DEBUG: Create primitive and set'
-    #     #     gl_prim_node = new_gl_scenegraph_primitive_node(
-    #     #         _cur_sgnode.get_primitive())
-    #     #     # print 'DEBUG: Created: ' + gl_prim_node.get_classname()
-    #     #     _cur_glnode.set_primitive(gl_prim_node)
-
-    #     # print 'DEBUG: Go to children'
-    #     for ch_sgnode in _cur_sgnode.get_children():
-    #         # create and refer the sg node
-
-    #         # handle special nodes first: camara, lights
-    #         if (type(ch_sgnode) == SceneGraph.CameraNode):
-    #             # print 'DEBUG: Camera Detected.'
-    #             ch_gl_camera_node = GLCameraNode(ch_sgnode)
-    #             _cur_glnode.append_child(ch_gl_camera_node)
-    #             self.set_current_gl_camera(ch_gl_camera_node.get_gl_camera())
-    #             # only GLSceneGraph  has light node
-    #             ch_gl_light_node = GLLightNode('gl_light_node')
-    #             _cur_glnode.append_child(ch_gl_light_node)
-
-    #         else:
-    #             # ch_glnode = GLSceneGraphNode(ch_sgnode.get_nodename())
-    #             ch_glnode = new_gl_scenegraph_node(ch_sgnode)
-    #             _cur_glnode.append_child(ch_glnode)
-    #             self.__copy_sgnode_sub(ch_sgnode, ch_glnode, _level + 1)
-
-
     def __create_glscenegraph(self, _sg_rootnode, _gl_rootnode):
         """create GLSceneGraph from SceneGraph main routine.
         \param[in] _sg_rootnode ifgi scenegraph rootnode
@@ -172,7 +137,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         """
         # Add OpenGL scenegraph specific nodes to the GL rootnode.
         # { GLLightNode }
-        ch_gl_light_node = GLLightNode('gl_light_node')
+        ch_gl_light_node = GLLightNode('GL:light_node')
         _gl_rootnode.append_child(ch_gl_light_node)
 
         # clear material list
@@ -182,7 +147,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         for sgnode in _sg_rootnode.get_children():
             if (type(sgnode) == SceneGraph.CameraNode):
                 # handle special nodes: { CamaraNode }
-                print 'Camera is detected, speci handling.'
+                print 'Camera is detected, special handling.'
                 ch_gl_camera_node = GLCameraNode(sgnode)
                 _gl_rootnode.append_child(ch_gl_camera_node)
                 self.set_current_gl_camera(ch_gl_camera_node.get_gl_camera())
@@ -385,17 +350,29 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
 
     #------------------------------------------------------------
 
-    # print glnode info. Indentation is according to the depth level
+    # DELETEME Used?
     def print_glnodeinfo(self, _level):
         """print glnode info. Indentation is according to the depth level
 
         \param[in] _level node depth level"""
 
         indent = '  ' * _level
-        if (self.is_primitive_node()):
-            print indent + '# ' + self.get_classname() + ':Primitive'
+        out_str = indent + '+ ' + self.get_classname() + ' '
+        if self.has_node_bbox():
+            out_str += 'Bbox: '
+            if self.get_bbox().has_volume():
+                out_str += str(self.get_bbox()) + ' '
+            else:
+                out_str += 'invalid volume '
+        else:
+            out_str += 'no bbox '
 
-        print indent + '# # __children = ' + str(len(self.get_children()))
+
+        out_str += str(len(self.get_children())) + ' children '
+        print out_str
+
+
+    #------------------------------------------------------------
 
     def enter(self):
         """enter draw. Prologue of the draw()
@@ -419,29 +396,6 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         \param[in] _global_mode global draw mode
         \see DrawMode"""
 
-        # DELETEME
-        # print self.get_classname() + '::draw is called with ' +\
-        #     str(_global_mode)
-
-        # if (not self.is_node_active()):
-        #     # node is deactivated, not call draw anymore
-        #     return
-
-        # if (self.is_primitive_node()):
-        #     # __primitive: draw itself
-        #     self.get_primitive().draw(_global_mode)
-        #     # print self.get_classname() + '::draw: call __primitive draw'
-        # elif len(self.get_children()) > 0:
-        #     # no __primitive: draw __children
-        #     for ch_glnode in self.get_children():
-        #         # create and refer the sg node
-        #         ch_glnode.draw(_global_mode)
-        #         # print self.get_classname() + '::draw: call child draw'
-        # else:
-        #     self.debug_out('Node has no __primitive, no __children')
-        #     print self.get_classname() + '::draw: ' + self.get_nodename() +\
-        #         ' not a primitive and no children. empty scene?'
-
         # print 'empty draw()', self.get_classname(), self.get_nodename()
         pass
 
@@ -460,7 +414,6 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         # 'in derived class. classname = ' + self.get_classname())
 
 
-    # get info of this node
     def get_info_html_GLSceneGraphNode(self):
         """get GLSceneGraphNode base info html text.
         \return base GL node info."""
@@ -471,15 +424,24 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
             '  <li><b>Class name:</b> ' + self.get_classname()    + '\n' +\
             '  <li><b>Name:</b> '       + self.get_nodename()     + '\n' +\
             '  <li><b>Status:</b> '     + self.get_active_state() + '\n' +\
-            '  <li><b>Drawmode:</b> '   + self.get_drawmode_str() + '\n' +\
-            '</ul>\n'
+            '  <li><b>Drawmode:</b> '   + self.get_drawmode_str() + '\n'
+
+        if self.has_node_bbox():
+            ret_s += '  <li><b>bbox:</b> '
+            if self.get_bbox().has_volume():
+                ret_s += str(self.get_bbox()) + '\n'
+            else:
+                ret_s += 'invalid (no volume)' + '\n'
+        else:
+            ret_s += '  <li>no bbox\n'
+
+        ret_s += '</ul>\n'
 
         # print 'DEBUG: get_info_html_GLSceneGraphNode\n' + ret_s
 
         return ret_s
 
 
-    # get info of this node
     def get_info_html(self):
         """Get information html text.
         Usually, this should be overrided.
@@ -1308,6 +1270,9 @@ class GLTriMeshNode(GLSceneGraphNode):
 
     # ------------------------------------------------------------
     # primitive node implementation
+    # This is needed since GLTriMeshNode(SceneGraph.SceneGraphNode),
+    # instead of GLTriMeshNode(SceneGraph.PrimitiveNode)
+    # I thought this inheritance is overkill, but, is it right?
     # ------------------------------------------------------------
 
     def is_primitive_node(self):
@@ -1340,6 +1305,23 @@ class GLTriMeshNode(GLSceneGraphNode):
         \return a assigned primitive.
         """
         return self.__primitive
+
+
+    def get_bbox(self):
+        """get bounding box of this node
+        \return bounding box
+        """
+        assert(self.__primitive != None)
+        return self.__primitive.get_bbox()
+
+
+    def set_bbox(self, _bbox):
+        """assign bbox value.
+        set the bbox object. (bbox is cloned before set.)
+        \param _bbox bounding box to be assigned.
+        """
+        assert(self.__primitive != None)
+        self.__primitive.set_bbox(_bbox)
 
 
     # ----------------------------------------------------------------------
@@ -1591,11 +1573,11 @@ class GLTriMeshNode(GLSceneGraphNode):
                 str(len(tmesh.texcoord_idx_list)) + '\n'
 
         if (tmesh.normal_list == []):
-            tmesh_desc += '  <li>no texture coordinates\n'
+            tmesh_desc += '  <li>no normals\n'
         else:
             tmesh_desc += \
-                '  <li><b># of texcoords:</b>'    + str(len(tmesh.normal_list)) + '\n' +\
-                '  <li><b># of texcoord idx:</b>' + str(len(tmesh.normal_idx_list)) + '\n'
+                '  <li><b># of normals:</b>'    + str(len(tmesh.normal_list)) + '\n' +\
+                '  <li><b># of normal idx:</b>' + str(len(tmesh.normal_idx_list)) + '\n'
 
         tmesh_desc += '  <li><b>bbox:</b>' + str(tmesh.bbox) + '\n'
         tmesh_desc += '<\ul>\n'
@@ -1615,29 +1597,6 @@ class GLTriMeshNode(GLSceneGraphNode):
         return False
 
 # ----------------------------------------------------------------------
-
-# def new_gl_scenegraph_primitive_node(_primitive):
-#     """OpenGL scenegraph node factory
-
-#     Supported node:
-#       - TriMesh: triangle mesh node (GLTriMeshNode)
-
-#     \param[in] _primitive primitive name
-#     """
-
-#     if _primitive == None:
-#         raise StandardError, ('Null primitive.')
-
-#     if _primitive.get_classname() == 'TriMesh':
-#         # print 'DEBUG: created Trimesh Primitive'
-#         tmeshnode = GLTriMeshNode('testTriMesh')
-#         tmeshnode.set_primitive(_primitive)
-#         return tmeshnode
-#     else:
-#         print 'unsupported primitive: ' + _primitive.get_classname()
-#         return None
-# DELETEME
-
 
 def new_gl_scenegraph_node(_sgnode, _material_list):
     """OpenGL scenegraph node factory
@@ -1662,7 +1621,7 @@ def new_gl_scenegraph_node(_sgnode, _material_list):
             print 'unsupported primitive: ' + _sgnode.get_primitive().get_classname()
             return None
     else:
-        return GLSceneGraphNode(_sgnode.get_nodename())
+        return GLSceneGraphNode('GL:' + _sgnode.get_nodename())
 
 
 # ----------------------------------------------------------------------
