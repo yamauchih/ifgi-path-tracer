@@ -3,6 +3,7 @@
 ** top5
 *** DONE Fix QtSceneGrpahDialog
 *** DONE Background color
+*** DONE Trimesh Info
 *** TODO bounding box update is broken
 *** TODO scenegraph    MaterialNode
 *** TODO GL scenegraph GLMaterialNode
@@ -13,7 +14,7 @@
     e.g. GLTrimeshNode, because GLScneGraphNode has draw() to draw the primitives)
 *** TODO GLTrimeshNode doesnot have set primitive sinve it is not inherited from
     SceneGraph.PritimiveNode
-*** TODO Trimesh Info
+
 
 
 ** DONE Add Camera parameter control GUI

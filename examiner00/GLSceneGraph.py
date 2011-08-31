@@ -441,7 +441,8 @@ class GLSceneGraphNode(SceneGraph.SceneGraphNode):
         #     self.debug_out('Node has no __primitive, no __children')
         #     print self.get_classname() + '::draw: ' + self.get_nodename() +\
         #         ' not a primitive and no children. empty scene?'
-        print 'empty draw()', self.get_nodename()
+
+        # print 'empty draw()', self.get_classname(), self.get_nodename()
         pass
 
 
@@ -1556,6 +1557,63 @@ class GLTriMeshNode(GLSceneGraphNode):
         print 'NIN: __draw_solid_texture'
 
 
+    # ----------------------------------------------------------------------
+
+    def get_info_html(self):
+        """Get information html text.
+        Inherited from GLSceneGraphNode
+        \return base GL node info + GLTriMeshNode info
+        """
+        tmesh_desc = self.get_info_html_GLSceneGraphNode() +\
+            '<h2>GLTriMeshNoded information</h2>\n'
+
+        if self.__primitive == None:
+            tmesh_desc += 'No primitive\n'
+            return tmesh_desc
+
+        tmesh = self.__primitive
+
+        tmesh_desc += '<ul>\n'
+
+        tmesh_desc += '  <li><b>Primitive class:</b>' + tmesh.get_classname() +'\n'
+
+        tmesh_desc +=\
+            '  <li><b># of vertices:</b>' + str(len(tmesh.vertex_list)) + '\n' +\
+            '  <li><b># of faces:</b>'    + str(len(tmesh.face_idx_list)) + '\n'
+
+        if (tmesh.texcoord_list == []):
+            tmesh_desc += '  <li>no texture coordinates\n'
+        else:
+            tmesh_desc += \
+                '  <li><b># of texcoords:</b>'    +\
+                str(len(tmesh.texcoord_list)) + '\n' +\
+                '  <li><b># of texcoord idx:</b>' +\
+                str(len(tmesh.texcoord_idx_list)) + '\n'
+
+        if (tmesh.normal_list == []):
+            tmesh_desc += '  <li>no texture coordinates\n'
+        else:
+            tmesh_desc += \
+                '  <li><b># of texcoords:</b>'    + str(len(tmesh.normal_list)) + '\n' +\
+                '  <li><b># of texcoord idx:</b>' + str(len(tmesh.normal_idx_list)) + '\n'
+
+        tmesh_desc += '  <li><b>bbox:</b>' + str(tmesh.bbox) + '\n'
+        tmesh_desc += '<\ul>\n'
+
+        return tmesh_desc
+
+
+    def create_config_dialog(self, _tab_dialog):
+        """Create configuration dialog for GLTriMeshNode.
+        The configuration dialog is QtSimpleTabDialog.
+        Inherited from GLSceneGraphNode
+
+        \param[in] _tab_dialog a QtSimpleTabDialog
+        \return True since this node is configurable.
+        """
+
+        return False
+
 # ----------------------------------------------------------------------
 
 # def new_gl_scenegraph_primitive_node(_primitive):
@@ -1598,6 +1656,7 @@ def new_gl_scenegraph_node(_sgnode, _material_list):
             gltmeshnode = GLTriMeshNode('testTriMesh')
             gltmeshnode.set_primitive(_sgnode.get_primitive())
             assert(gltmeshnode.get_primitive() != None)
+            print 'Added GLTriMeshNode'
             return gltmeshnode
         else:
             print 'unsupported primitive: ' + _sgnode.get_primitive().get_classname()

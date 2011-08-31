@@ -385,7 +385,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
 
         # got the filename, create a generic scene graph
         sg = SceneGraph.create_one_trimeh_scenegraph(_infilename)
-        # FIXME NIN sg.update_all_bbox()
+        sg.update_all_bbox()
         sg.print_all_obj()      # for debug, print out the scenegraph
 
         # attach the SceneGraph to a GLSceneGraph

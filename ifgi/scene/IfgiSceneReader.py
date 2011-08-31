@@ -305,4 +305,4 @@ if __name__ == '__main__':
     ifgireader = IfgiSceneReader()
     ifgireader.read('../../sampledata/cornel_box.ifgi')
     ifgireader.dump()
-    
+
