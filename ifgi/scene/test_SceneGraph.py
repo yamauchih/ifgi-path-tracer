@@ -46,12 +46,10 @@ class TestSceneGraph(unittest.TestCase):
         sg_root.append_child(grp0)
 
         # primitives, but no data so far
-        prim0 = SceneGraph.PrimitiveNode('tri')
-        prim0.set_primitive(Primitive.Triangle())
+        prim0 = SceneGraph.PrimitiveNode('tri', Primitive.Triangle())
         grp0.append_child(prim0)
 
-        prim1 = SceneGraph.PrimitiveNode('trimesh')
-        prim1.set_primitive(Primitive.TriMesh())
+        prim1 = SceneGraph.PrimitiveNode('trimesh', Primitive.TriMesh())
         grp0.append_child(prim1)
 
         # material group
