@@ -966,10 +966,28 @@ class GLLightNode(GLSceneGraphNode):
         """set configuration dictionary. (configSetData)
         \param[in] _config_dict configuration dictionary
         """
-        # FIXME
-        # self.__gl_camera.set_config_dict(_config_dict)
-        # self.get_subject().notify_listeners(['ConfigChanged'])
-        print 'Not implemented yet: set_config_dict' + str(_config_dict)
+        # get one of the tab's config
+        if _config_dict.has_key('light_enable'):
+            # GLLightNode tab
+            if(_config_dict['light_enable'] == True):
+                self.__is_light_node_lighting_on = GL.GL_TRUE
+            else:
+                self.__is_light_node_lighting_on = GL.GL_FALSE
+        else:
+            # each light tab
+            for lidx in range(0, 8):
+                lidxstr = str(lidx)
+                if ('light_on_' + lidxstr) in _config_dict:
+                    self.__light_list[lidx].is_light_on =\
+                        _config_dict['light_on_' + lidxstr]
+                    self.__light_list[lidx].ambient  = _config_dict['ambient_' + lidxstr]
+                    self.__light_list[lidx].diffuse  = _config_dict['diffuse_' + lidxstr]
+                    self.__light_list[lidx].specular = _config_dict['specular_'+ lidxstr]
+                    self.__light_list[lidx].position =\
+                        numpy_util.str2array(_config_dict['position_' + lidxstr])
+                    break
+
+        self.get_subject().notify_listeners(['ConfigChanged'])
 
 
     def get_config_dict(self):

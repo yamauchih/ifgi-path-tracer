@@ -8,8 +8,8 @@
     SceneGraph.PritimiveNode. Implement PrimitiveNode interface.
 *** DONE bounding box update for SceneGraph and GLScneneGraph
 *** DONE GL scenegraph GLMaterialNode
-*** TODO scenegraph    MaterialNode
 *** TODO GL Light node set_config_data/get_config_data
+*** TODO scenegraph    MaterialNode
 *** TODO construct GLScneneGraph from SceneGraph
     Scenegraph primitive node (has a primitive)
     GLScenegraph Primitive Node (but primitive node will be inherited to
