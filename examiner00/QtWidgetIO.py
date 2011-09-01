@@ -154,6 +154,8 @@ class QtColorButton(QtWidgetIOIF):
         """
         if 'LABEL' in _dict_opt:
             self.__extwidget.set_label(_dict_opt['LABEL'])
+        if 'TOOLTIP' in _dict_opt:
+            self.__extwidget.setToolTip(_dict_opt['TOOLTIP'])
 
 
     def get_key(self):
@@ -252,6 +254,9 @@ class QtLineEditWIO(QtWidgetIOIF):
         """
         if 'LABEL' in _dict_opt:
             self.__extwidget.set_label(_dict_opt['LABEL'])
+        if 'TOOLTIP' in _dict_opt:
+            self.__extwidget.setToolTip(_dict_opt['TOOLTIP'])
+
 
     def get_key(self):
         """get this widget's key (id).
@@ -321,6 +326,8 @@ class QtToggleButton(QtWidgetIOIF):
         """
         if 'LABEL' in _dict_opt:
             self.__extwidget.set_label(_dict_opt['LABEL'])
+        if 'TOOLTIP' in _dict_opt:
+            self.__extwidget.setToolTip(_dict_opt['TOOLTIP'])
 
 
     def get_key(self):
@@ -419,6 +426,9 @@ class QtComboBoxWIO(QtWidgetIOIF):
 
         if 'SIZELIMIT' in _dict_opt:
             self.__extwidget.set_sizelimit(_dict_opt['SIZELIMIT'])
+
+        if 'TOOLTIP' in _dict_opt:
+            self.__extwidget.setToolTip(_dict_opt['TOOLTIP'])
 
 
     def get_key(self):

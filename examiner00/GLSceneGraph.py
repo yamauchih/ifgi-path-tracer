@@ -9,7 +9,8 @@
 
 from OpenGL import GL, GLU
 from PyQt4  import QtCore, QtGui
-from ifgi.base  import numpy_util, Listener
+from ifgi.base      import numpy_util, Listener
+from ifgi.base.ILog import ILog
 from ifgi.scene import Camera, SceneGraph
 import math, numpy, copy
 import QtWidgetIO
@@ -121,7 +122,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         """collect all __drawmode_list list. (public)
         traverse with SceneGraphTraverseStrategyIF strategy
         \see SceneGraphTraverseStrategyIF"""
-        
+
         collect_drawmode_strategy = GLSGTCollectDrawmodeStrategy()
         self.traverse_sgnode(self.__gl_root_node, collect_drawmode_strategy)
         # print 'DEBUG: collect draw mode done.'
@@ -1004,13 +1005,13 @@ class GLMaterialNode(GLSceneGraphNode):
         self.__push_diffuse       = numpy.array([0.5, 0.5, 0.5, 1.0])
         self.__push_ambient       = numpy.array([0.2, 0.2, 0.2, 1.0])
         self.__push_specular      = numpy.array([0.2, 0.2, 0.2, 1.0])
-        self.__push_shineness     = 1.0
+        self.__push_shininess     = 1.0
 
         self.__emission  = numpy.array([0.0, 0.0, 0.0, 1.0])
         self.__diffuse   = numpy.array([0.5, 0.5, 0.5, 1.0])
         self.__ambient   = numpy.array([0.2, 0.2, 0.2, 1.0])
         self.__specular  = numpy.array([0.2, 0.2, 0.2, 1.0])
-        self.__shineness = 1.0
+        self.__shininess = 1.0
 
 
     # get classname
@@ -1044,13 +1045,13 @@ class GLMaterialNode(GLSceneGraphNode):
         self.__push_diffuse   = GL.glGetMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE)
         self.__push_ambient   = GL.glGetMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT)
         self.__push_specular  = GL.glGetMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR)
-        self.__push_shineness = GL.glGetMaterialfv(GL.GL_FRONT, GL.GL_SHININESS)
+        self.__push_shininess = GL.glGetMaterialfv(GL.GL_FRONT, GL.GL_SHININESS)
 
         GL.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION,  self.__emission)
         GL.glMaterialfv(GL.GL_FRONT, GL.GL_DIFFUSE,   self.__diffuse)
         GL.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,   self.__ambient)
         GL.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR,  self.__specular)
-        GL.glMaterialf (GL.GL_FRONT, GL.GL_SHININESS, self.__shineness)
+        GL.glMaterialf (GL.GL_FRONT, GL.GL_SHININESS, self.__shininess)
 
         # if (d_applyProperties&PointSize):
         #     glGetFloatv(GL_POINT_SIZE,&d_bakPointSize)
@@ -1164,7 +1165,7 @@ class GLMaterialNode(GLSceneGraphNode):
         GL.glMaterialfv(GL.GL_FRONT, GL.GL_EMISSION,   self.__push_emission)
         GL.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT,    self.__push_ambient)
         GL.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR,   self.__push_specular)
-        GL.glMaterialf (GL.GL_FRONT, GL.GL_SHININESS,  self.__push_shineness)
+        GL.glMaterialf (GL.GL_FRONT, GL.GL_SHININESS,  self.__push_shininess)
 
         # if (d_applyProperties&PointSize):
         #     glPointSize(d_bakPointSize);
@@ -1240,8 +1241,8 @@ class GLMaterialNode(GLSceneGraphNode):
             numpy_util.array2str(self.__ambient)  + '\n' +\
             '  <li><b>specular:</b> ' +\
             numpy_util.array2str(self.__specular)  + '\n' +\
-            '  <li><b>shineness:</b> ' +\
-            str(self.__shineness)  + '\n' +\
+            '  <li><b>shininess:</b> ' +\
+            str(self.__shininess)  + '\n' +\
             '</ul>\n'
 
         return mat_info
@@ -1265,7 +1266,7 @@ class GLMaterialNode(GLSceneGraphNode):
         mat_group.add(QtWidgetIO.QtColorButton(),
                       'emission',
                       self.__emission,
-                      {'LABEL': 'emittion'})
+                      {'LABEL': 'emission'})
         mat_group.add(QtWidgetIO.QtColorButton(),
                       'diffuse',
                       self.__diffuse,
@@ -1279,9 +1280,10 @@ class GLMaterialNode(GLSceneGraphNode):
                       self.__specular,
                       {'LABEL': 'specular'})
         mat_group.add(QtWidgetIO.QtLineEditWIO(),
-                      'shiness',
-                      str(self.__shineness),
-                      {'LABEL': 'shiness'})
+                      'shininess',
+                      str(self.__shininess),
+                      {'LABEL': 'shininess',
+                       'TOOLTIP': 'shininess (power) valid range [1,128]'})
 
         # call self.update() when button is pushed (_arg is button type)
         _tab_dialog.set_button_observer(self)
@@ -1306,22 +1308,36 @@ class GLMaterialNode(GLSceneGraphNode):
 
     def set_config_dict(self, _config_dict):
         """set configuration dictionary. (configSetData)
-        \param[in] _config_dict configuration dictionary
+        \param[in] _config_dict configuration dictionary for GLMaterialNode
         """
-        # FIXME
-        # self.__gl_camera.set_config_dict(_config_dict)
-        # self.get_subject().notify_listeners(['ConfigChanged'])
-        print 'Not implemented yet: set_config_dict' + str(_config_dict)
+        self.__emission  = _config_dict['emission']
+        self.__diffuse   = _config_dict['diffuse']
+        self.__ambient   = _config_dict['ambient']
+        self.__specular  = _config_dict['specular']
+        self.__shininess = float(_config_dict['shininess'])
+
+        if self.__shininess < 0:
+            ILog.error('shininess should be >= 0. set to 0.')
+            self.__shininess = 0
+        if self.__shininess > 128:
+            ILog.error('shininess should be <= 128 0. set to 128.')
+            self.__shininess = 128
+
+        # NIN: FIXME. Update the real material not only OpenGL's material
+
+        self.get_subject().notify_listeners(['ConfigChanged'])
 
 
     def get_config_dict(self):
         """get configuration dictionary. (configGetData)
-        \return configuration dictionary
+        \return configuration dictionary of GLMaterialNode
         """
-        # FIXME
-        # return self.__gl_camera.get_config_dict()
-        print 'Not implemented: get_config_dict'
-        return {'foo': 'bar'}
+        config_dict = {'emission':  self.__emission,
+                       'diffuse':   self.__diffuse,
+                       'ambient':   self.__ambient,
+                       'specular':  self.__specular,
+                       'shininess': str(self.__shininess)} # LineEdit need str()
+        return config_dict
 
 
 

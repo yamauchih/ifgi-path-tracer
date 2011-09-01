@@ -7,7 +7,7 @@
 *** DONE GLTrimeshNode doesnot have set primitive since it is not inherited from
     SceneGraph.PritimiveNode. Implement PrimitiveNode interface.
 *** DONE bounding box update for SceneGraph and GLScneneGraph
-*** TODO GL scenegraph GLMaterialNode
+*** DONE GL scenegraph GLMaterialNode
 *** TODO scenegraph    MaterialNode
 *** TODO GL Light node set_config_data/get_config_data
 *** TODO construct GLScneneGraph from SceneGraph
