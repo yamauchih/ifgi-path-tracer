@@ -16,7 +16,7 @@ import numpy
 
 # package import: specify a directory and file.
 from ifgi.ptracer import IfgiSys
-from ifgi.scene   import SceneGraph, Primitive, Film, Light, test_scene_util
+from ifgi.scene   import SceneGraph, Primitive, Film, test_scene_util
 from ifgi.base    import Sampler
 
 class TestIfgiRender(unittest.TestCase):

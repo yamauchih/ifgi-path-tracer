@@ -66,7 +66,7 @@ class ILog(object):
         \param[in] _mes message
         """
         if(ILog.__outputlevel >= 2):
-            print('warn:  ' + _mes)
+            print('warn: ' + _mes)
 
     # info
     @staticmethod
@@ -75,7 +75,7 @@ class ILog(object):
         \param[in] _mes info message
         """
         if(ILog.__outputlevel >= 3):
-            print('info:  ' + _mes)
+            print('info: ' + _mes)
 
     # debug
     @staticmethod

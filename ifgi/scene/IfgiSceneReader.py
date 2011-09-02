@@ -7,6 +7,8 @@
 \brief ifgi scene reader (reader example)"""
 
 import math, numpy, string, exceptions, os.path
+import ConvReader2Primitive, ObjReader
+from ifgi.base.ILog import ILog
 
 class IfgiSceneReader(object):
     """IfgiSceneReader class.
@@ -30,12 +32,16 @@ class IfgiSceneReader(object):
         geo_name = name_of_geometry
         material = material_name
         geo_file_type = obj
-        geo_file = filename
+        geo_file_name = filename
         # could be inline, but later
       }
 
     The geometry should be read after ifgi scene file has been read.
     """
+
+    # supported geometry file format
+    __supported_geometry_format = ['obj']
+
 
     # public: ------------------------------------------------------------
 
@@ -60,6 +66,12 @@ class IfgiSceneReader(object):
 
     def read(self, _ifgi_fname_path):
         """read a ifgi scene file.
+
+        ifgi scene file currently not contains geometry data. It
+        contain only for the geometry file name. Therefore, the
+        geometry file is read after the ifgi scene file has been
+        parsed.
+
         \param[in] _ifgi_fname_path ifgi scene file name
         """
         if (not os.path.isfile(_ifgi_fname_path)):
@@ -80,7 +92,10 @@ class IfgiSceneReader(object):
                         self.__curline = self.__curline + read_line_count
 
         except StandardError, extrainfo:
-            print 'fail to read [' + _ifgi_fname_path + ']', extrainfo
+            ILog.error('fail to read [' + _ifgi_fname_path + '] ' + str(extrainfo))
+
+        # now read geometry files
+        self.__read_all_geometry_file()
 
 
     def get_dirname(self):
@@ -172,18 +187,22 @@ class IfgiSceneReader(object):
         is_success = True
         for k in necessary_key:
             if(not k in geo):
-                print 'invalid geometry: missing necessary key [' + k + ']'
+                ILog.error('invalid geometry: missing necessary key [' + k +\
+                               '], in the geometry block of line ' + str(self.__curline))
                 return False
 
         # material exists?
         if (not (geo['material'] in self.material_name_idx_dict)):
-            print 'material is not defined at this point.'
+            ILog.error('material ['+ geo['material'] + '] of geometry [' +\
+                           geo['geo_name'] + '] is not defined in the geometry ' +\
+                           'block of line ' + str(self.__curline))
             return False
 
         # geometry file exists?
         geo_fpath = os.path.join(self.__ifgi_dirname, geo['geo_file_name'])
         if (not os.path.isfile(geo_fpath)):
-            print 'file [' + geo_fpath + '] does not exist.'
+            ILog.error('file [' + geo_fpath + '] does not exist in the geometry ' +\
+                           'block of line ' + str(self.__curline))
             return False
 
         return True
@@ -296,13 +315,36 @@ class IfgiSceneReader(object):
 
         return read_line_count
 
+    def __read_all_geometry_file(self):
+        """read all geometry files.
+        """
+        for geoinfo in self.geometry_list:
+            self.__read_geometry_file(geoinfo)
 
+
+    def __read_geometry_file(self, _geoinfo):
+        """read single geometry file.
+        """
+        geo_ftype = _geoinfo['geo_file_type']
+        if not (geo_ftype in self.__supported_geometry_format):
+            raise StandardError, ('non supported geometry file format ['+ geo_ftype + ']')
+
+        geo_fpath = os.path.join(self.__ifgi_dirname, _geoinfo['geo_file_name'])
+        ILog.info('loading [' + geo_fpath + ']')
+
+        if (geo_ftype == 'obj'):
+            objreader = ObjReader.ObjReader()
+            objreader.read(geo_fpath)
+            # objreader.dump()
+            tmesh = ConvReader2Primitive.conv_objreader_trimesh(objreader)
+            # print tmesh.info_summary()
+            _geoinfo['TriMesh'] = tmesh
 
 #
 # main test ... test_IfgiSceneReader
 #
-if __name__ == '__main__':
-    ifgireader = IfgiSceneReader()
-    ifgireader.read('../../sampledata/cornel_box.ifgi')
-    ifgireader.dump()
+# see test_IfgiSceneReader.py
+#
+# if __name__ == '__main__':
+#     pass
 

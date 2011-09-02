@@ -18,6 +18,7 @@ def geometry {
     geo_file_type = obj
     geo_file_name = cornel_box.floor.obj
 }
+
 #
 # Light
 # light 5-8
@@ -27,6 +28,13 @@ def material {
     mat_type = lambert
     diffuse_color = 1.0 1.0 1.0 1.0
 }
+def geometry {
+    geo_name = light
+    material = light_mat
+    geo_file_type = obj
+    geo_file_name = cornel_box.light.obj
+}
+
 #
 # Ceiling
 # white 9-12
@@ -36,6 +44,13 @@ def material {
     mat_type = lambert
     diffuse_color = 1.0 1.0 1.0 1.0
 }
+def geometry {
+    geo_name = ceiling
+    material = ceiling_mat
+    geo_file_type = obj
+    geo_file_name = cornel_box.ceiling.obj
+}
+
 #
 # Back wall
 # white 13-16
@@ -45,6 +60,13 @@ def material {
     mat_type = lambert
     diffuse_color = 1.0 1.0 1.0 1.0
 }
+def geometry {
+    geo_name = backwall
+    material = backwall_mat
+    geo_file_type = obj
+    geo_file_name = cornel_box.backwall.obj
+}
+
 #
 # Right wall
 # green 17-20
@@ -54,6 +76,13 @@ def material {
     mat_type = lambert
     diffuse_color = 0.0 1.0 0.0 1.0
 }
+def geometry {
+    geo_name = rightwall
+    material = rightwall_mat
+    geo_file_type = obj
+    geo_file_name = cornel_box.rightwall.obj
+}
+
 #
 # Left wall
 # red 21-24
@@ -63,6 +92,13 @@ def material {
     mat_type = lambert
     diffuse_color = 1.0 0.0 0.0 1.0
 }
+def geometry {
+    geo_name = leftwall
+    material = leftwall_mat
+    geo_file_type = obj
+    geo_file_name = cornel_box.leftwall.obj
+}
+
 #
 # Short block
 # white 25-44
@@ -72,6 +108,13 @@ def material {
     mat_type = lambert
     diffuse_color = 1.0 1.0 1.0 1.0
 }
+def geometry {
+    geo_name = shortblock
+    material = shortblock_mat
+    geo_file_type = obj
+    geo_file_name = cornel_box.shortblock.obj
+}
+
 #
 # Tall block
 # white 45-64
@@ -80,5 +123,11 @@ def material {
     mat_name = tallblock_mat
     mat_type = lambert
     diffuse_color = 1.0 1.0 1.0 1.0
+}
+def geometry {
+    geo_name = tallblock
+    material = tallblock_mat
+    geo_file_type = obj
+    geo_file_name = cornel_box.tallblock.obj
 }
 

@@ -294,7 +294,6 @@ class TriMesh(Primitive):
     """TriMesh: simple triangle mesh primitive
     """
 
-
     def __init__(self):
         """default constructor (public)."""
         super(TriMesh, self).__init__()
@@ -346,6 +345,23 @@ class TriMesh(Primitive):
         self.normal_list       = _nlist
         self.normal_idx_list   = _nidxlist
         self.update_bbox()
+
+
+    def info_summary(self):
+        """summary information
+
+        \return summary information string
+        """
+        ret_str =\
+            '# vertices     = ' + str(len(self.vertex_list))   + '\n' +\
+            '# faces        = ' + str(len(self.face_idx_list)) + '\n' +\
+            '# texcoords    = ' + str(len(self.texcoord_list)) + '\n' +\
+            '# texcoord idx = ' + str(len(self.texcoord_idx_list)) + '\n' +\
+            '# normal       = ' + str(len(self.normal_list))   + '\n' +\
+            '# normal idx   = ' + str(len(self.normal_idx_list)) + '\n' +\
+            'bbox           = ' + str(self.get_bbox())
+
+        return ret_str
 
 
     def update_bbox(self):

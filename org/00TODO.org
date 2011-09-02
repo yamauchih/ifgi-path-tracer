@@ -9,6 +9,7 @@
 *** DONE bounding box update for SceneGraph and GLScneneGraph
 *** DONE GL scenegraph GLMaterialNode
 *** DONE GL Light node set_config_data/get_config_data
+*** TODO BUG broken test
 *** TODO scenegraph    MaterialNode
 *** TODO construct GLScneneGraph from SceneGraph
     Scenegraph primitive node (has a primitive)

@@ -6,12 +6,9 @@
 \file
 \brief simple obj reader (reader example)"""
 
-import math
-import numpy
-import string
-import exceptions
+import math, numpy, string, exceptions
 
-# ObjReader class
+
 class ObjReader(object):
     """ObjReader class. a simple reader example.
 
@@ -219,7 +216,8 @@ class ObjReader(object):
 #
 # main test ... test_ObjReader
 #
-# if __name__ == '__main__':
-#     objreader = ObjReader()
-#     objreader.read('../sampledata/one_tri.obj')
 #
+# see test_ObjReader.py
+#
+# if __name__ == '__main__':
+#     pass

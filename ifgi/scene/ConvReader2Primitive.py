@@ -8,10 +8,8 @@
 \brief file reader, then convert the read result to a primitive
 """
 
-import Primitive
-import ObjReader
+import Primitive, ObjReader
 
-# ObjReader to TriMesh converter
 def conv_objreader_trimesh(_objreader):
     """ObjReader to TriMesh converter.
     \param[in] _objreader obj file reader
@@ -29,9 +27,8 @@ def conv_objreader_trimesh(_objreader):
 
 
 #
-# main test ... test_ObjReader
+# main test ... test_
 #
 # if __name__ == '__main__':
-#     objreader = ObjReader()
-#     objreader.read('../sampledata/one_tri.obj')
+#     pass
 #
