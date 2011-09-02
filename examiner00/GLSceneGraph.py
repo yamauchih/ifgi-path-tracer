@@ -786,19 +786,19 @@ class GLLightNode(GLSceneGraphNode):
 
         return 'GLLightNode'
 
+    # enter, leave, draw ----------------------------------------
 
-    def draw(self, _global_drawmode):
-        """draw the lights.
-        If node is deactivated, draw nothing.
-        \param[in] _global_drawmode drawmode list ignored in this node."""
-
+    def enter(self):
+        """enter the GLLight node
+        Set up all the lights.
+        """
         if (not self.is_node_active()):
             # node is deactivated, not call draw anymore
             return
 
         # push the current GL lighting state.
         # This is global effect, not for children in current implementation.
-        # self.__pushed_light_node_lighting_state = GL.glIsEnabled(GL.GL_LIGHTING)
+        self.__pushed_light_node_lighting_state = GL.glIsEnabled(GL.GL_LIGHTING)
 
         # set node state to GL
         self.gl_enable_disable(GL.GL_LIGHTING, self.__is_light_node_lighting_on)
@@ -815,8 +815,27 @@ class GLLightNode(GLSceneGraphNode):
                 GL.glDisable(li.gl_light_id)
 
 
+    def leave(self):
+        """leave draw. Epilogue of the draw()
+        Usually clean up after draw. E.g., pop the OpenGL states.
+        """
+        if (not self.is_node_active()):
+            # node is deactivated, not call draw anymore
+            return
+
         # pop the current GL state
-        # self.gl_enable_disable(GL.GL_LIGHTING, self.__pushed_light_node_lighting_state)
+        self.gl_enable_disable(GL.GL_LIGHTING, self.__pushed_light_node_lighting_state)
+
+
+    def draw(self, _global_drawmode):
+        """draw the lights.
+        If node is deactivated, draw nothing.
+        \param[in] _global_drawmode drawmode list ignored in this node.
+        """
+
+        if (not self.is_node_active()):
+            # node is deactivated, not call draw anymore
+            return
 
 
     def get_drawmode_list(self):
@@ -903,9 +922,7 @@ class GLLightNode(GLSceneGraphNode):
 
         light_root_group = _tab_dialog.add_group('GLLightNode')
 
-        lighting_on = False
-        if self.__is_light_node_lighting_on == GL.GL_TRUE:
-            lighting_on = True
+        lighting_on = (True if(self.__is_light_node_lighting_on == GL.GL_TRUE) else False)
 
         light_root_group.add(QtWidgetIO.QtToggleButton(),
                              'light_enable',
@@ -969,10 +986,8 @@ class GLLightNode(GLSceneGraphNode):
         # get one of the tab's config
         if _config_dict.has_key('light_enable'):
             # GLLightNode tab
-            if(_config_dict['light_enable'] == True):
-                self.__is_light_node_lighting_on = GL.GL_TRUE
-            else:
-                self.__is_light_node_lighting_on = GL.GL_FALSE
+            self.__is_light_node_lighting_on = \
+                (GL.GL_TRUE if(_config_dict['light_enable'] == True) else GL.GL_FALSE)
         else:
             # each light tab
             for lidx in range(0, 8):
@@ -994,11 +1009,21 @@ class GLLightNode(GLSceneGraphNode):
         """get configuration dictionary. (configGetData)
         \return configuration dictionary
         """
-        # FIXME
-        # return self.__gl_camera.get_config_dict()
-        print 'Not implemented: get_config_dict'
-        return {'foo': 'bar'}
+        config_dict =\
+            { 'light_enable': (True if (self.__is_light_node_lighting_on == GL.GL_TRUE)
+                               else False) }
 
+        # for all light sources
+        for lidx in range(0, 8):
+            lidxstr = str(lidx)
+            li = self.__light_list[lidx]
+            opt['light_on_' + lidxstr] = li.is_light_on
+            opt['ambient_'  + lidxstr] = li.ambient
+            opt['diffuse_'  + lidxstr] = li.diffuse
+            opt['specular_' + lidxstr] = li.specular
+            opt['position_' + lidxstr] = numpy_util.array2str(li.position)
+
+        return opt
 
 
 # ----------------------------------------------------------------------

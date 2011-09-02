@@ -8,7 +8,7 @@
 \brief Generic scene graph.
 """
 
-import copy
+import copy, numpy
 
 import Camera, Primitive, ObjReader, ConvReader2Primitive, Material
 from ifgi.base.ILog import ILog
