@@ -10,7 +10,9 @@
 
 import copy, numpy
 
-import Camera, Primitive, ObjReader, ConvReader2Primitive, Material
+import Camera, Primitive, Material
+import ObjReader, IfgiSceneReader
+import ConvReader2Primitive
 from ifgi.base.ILog import ILog
 
 
@@ -766,6 +768,56 @@ def create_one_trimeh_scenegraph(_objfname):
     rootsg.append_child(child2)
     child2_0 = PrimitiveNode('trimesh', tmesh)
     child2.append_child(child2_0)
+
+    sg.set_root_node(rootsg)
+    sg.set_current_camera(child0.get_camera())
+
+    assert(sg.is_valid())
+
+    return sg
+
+# ----------------------------------------------------------------------
+
+def create_ifgi_scenegraph(_ifgi_scenefname):
+    """create ifgi scenegraph from ifgi scene file
+
+    SceneGraph +
+               +--+ SceneGraphNode: 'rootsg' __root_node
+                                 +--+ CameraNode: 'main_cam' __camera
+                                 +--+ SceneGraphNode: 'materialgroup'
+                                                   +--+ Material: 'mat0'
+                                                   +--+ Material: 'mat1'
+                                                      ...
+                                 +--+ SceneGraphNode: 'meshgroup'
+                                                   +--+ TriMesh: 'trimesh0'
+                                                   +--+ TriMesh: 'trimesh1'
+                                                      ...
+
+    """
+    ifgireader = IfgiSceneReader.IfgiSceneReader()
+    if(not ifgireader.read(_ifgi_scenefname)):
+        raise StandardError, ('load file [' + _ifgi_scenefname + '] failed.')
+
+    # create scenegraph
+    sg = SceneGraph()
+    assert(sg.get_root_node() == None)
+
+    # create scenegraph's root node
+    rootsg = SceneGraphNode('rootsg')
+    child0 = CameraNode('main_cam')
+    rootsg.append_child(child0)
+
+    # 'materialgroup' is a special group.
+    child1 = SceneGraphNode('materialgroup')
+    rootsg.append_child(child1)
+    # child1_0 = MaterialNode('mat_trimesh')
+    # child1_0.set_material(Material.Material())
+    # child1.append_child(child1_0)
+
+    child2 = SceneGraphNode('meshgroup')
+    rootsg.append_child(child2)
+    # child2_0 = PrimitiveNode('trimesh', tmesh)
+    # child2.append_child(child2_0)
 
     sg.set_root_node(rootsg)
     sg.set_current_camera(child0.get_camera())

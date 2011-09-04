@@ -47,7 +47,7 @@ class IfgiSceneReader(object):
 
     def __init__(self):
         """default constructor"""
-        self.__curline     = 0
+        self.__curline     = -1
 
         self.__defined_type_list = ['material', 'geometry']
 
@@ -63,6 +63,9 @@ class IfgiSceneReader(object):
         #    geometry name -> index of geometry_def_list
         self.geometry_name_idx_dict = {}
 
+        # last read status
+        self.__is_valid = False
+
 
     def read(self, _ifgi_fname_path):
         """read a ifgi scene file.
@@ -73,9 +76,17 @@ class IfgiSceneReader(object):
         parsed.
 
         \param[in] _ifgi_fname_path ifgi scene file name
+        \return True when read file succeeded
         """
+        if (self.__curline == 0):
+            raise StandardError, ('This reader is not re-entrant. ' +\
+                                      'Please create  anew one to read another file.')
+            return False
+
+        self.__curline = 0
         if (not os.path.isfile(_ifgi_fname_path)):
             raise StandardError, ('no such file [' + _ifgi_fname_path + ']')
+            return False
 
         self.__ifgi_abspath = os.path.abspath(_ifgi_fname_path)
         self.__ifgi_dirname = os.path.dirname(self.__ifgi_abspath)
@@ -93,16 +104,28 @@ class IfgiSceneReader(object):
 
         except StandardError, extrainfo:
             ILog.error('fail to read [' + _ifgi_fname_path + '] ' + str(extrainfo))
+            return False
 
         # now read geometry files
         self.__read_all_geometry_file()
-
+        self.__is_valid = True
+        return True
 
     def get_dirname(self):
         """get ifgi scenefile dirname.
         \return ifgi scene file dirname
         """
         return self.__ifgi_dirname
+
+    def is_valid(self):
+        """is valid scene data?
+        When last read succeeded, this is True.
+
+        But the scene file's semantics maight be wrong. Just the
+        parser can not find the problem of the scene file.
+
+        \return True when the last read succeeded."""
+        return self.__is_valid
 
 
     def dump(self):
@@ -135,11 +158,11 @@ class IfgiSceneReader(object):
             _line = string.strip(line)
             if (len(_line) < len('# ifgi_scene 0')):
                 # too short header
-                raise StandardError, ('the first line [' + line +
+                raise StandardError, ('the first line [' + _line +
                                       '] is not an ifgi header.')
             sline = _line.split()
             if ((len(sline) < 3) or (sline[0] != '#') or (sline[1] != 'ifgi_scene')):
-                raise StandardError, ('the first line [' + line +
+                raise StandardError, ('the first line [' + _line +
                                       '] is not an ifgi header.')
 
             if (int(sline[2]) != 0):

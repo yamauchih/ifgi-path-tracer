@@ -355,7 +355,6 @@ class QtExaminerWindow(QtGui.QMainWindow):
     # command action implementation
     #----------------------------------------------------------------------
 
-    # load file command
     def com_file_new(self):
         """file new command.
         create empty scenegraph and set it to examiner widget.
@@ -376,7 +375,6 @@ class QtExaminerWindow(QtGui.QMainWindow):
         self.__examiner_widget.attach_gl_scenegraph(glsg)
 
 
-    # load file command
     def com_file_load(self, _infilename):
         """load file command.
         \param[in] _infilename input filename
@@ -386,15 +384,23 @@ class QtExaminerWindow(QtGui.QMainWindow):
         if (_infilename == None) or (_infilename == ''):
             raise StandardError, ('com_file_load: empty filename')
 
-        # got the filename, create a generic scene graph
-        sg = SceneGraph.create_one_trimeh_scenegraph(_infilename)
+        infilename = str(_infilename) # _infilename could be QString
+
+        # check the supported file
+        (fbase, ext) = os.path.splitext(infilename)
+        if (ext == ".obj"):
+            sg = self.__load_obj_file(infilename)
+        elif (ext == ".ifgi"):
+            sg = self.__load_ifgi_file(infilename)
+        else:
+            raise StandardError, ('[' + ext + '] file is not supported.')
+
         sg.update_all_bbox()
         sg.print_all_node()     # for debug, print out the scenegraph
 
         # attach the SceneGraph to a GLSceneGraph
         glsg = GLSceneGraph.GLSceneGraph()
         glsg.set_scenegraph(sg)
-        # FIXME
         glsg.update_all_bbox()
         # glsg.print_all_node()   # for debug, print out the scenegraph
 
@@ -404,6 +410,29 @@ class QtExaminerWindow(QtGui.QMainWindow):
         # attach the GLSceneGraph to Examiner to see
         self.__examiner_widget.attach_gl_scenegraph(glsg)
         self.__examiner_widget.view_all()
+
+
+    def __load_obj_file(self, _infilepath):
+        """load a obj file and return the correcponding SceneGraph
+        \param[in] _infilepath infile path
+        \return a scenegraph of the obj file
+        """
+        return SceneGraph.create_one_trimeh_scenegraph(_infilepath)
+
+
+    def __load_ifgi_file(self, _infilepath):
+        """load a obj file and return the correcponding SceneGraph
+        \param[in] _infilepath infile path
+        \return a scenegraph of the ifgi file
+        """
+        ifgireader = IfgiSceneReader.IfgiSceneReader()
+        if(not ifgireader.read(_infilepath)):
+            raise StandardError, ('load file [' + _infilepath + '] failed.')
+
+        # NIN 2011-9-5(Mon)
+        # create SceneGraph from ifgireader
+        # create GLSceneGraph from ifgireader
+
 
     def slot_scenegraph_status(self):
         """called when scenegraph status change (e.g., closed)

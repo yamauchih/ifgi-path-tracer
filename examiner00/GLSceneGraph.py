@@ -212,7 +212,6 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         root_bbox = self.__gl_root_node.get_bbox()
         if not root_bbox.has_volume():
             # no volume, but, there may be area.
-            print root_bbox.get_rank()
             if (root_bbox.get_rank() >= 1):
                 ILog.warn('GLSceneGraphs rootnode has no volume, but length or area')
                 maxpoi = root_bbox.get_min()
@@ -1514,8 +1513,9 @@ class GLTriMeshNode(GLSceneGraphNode):
         If node is deactivated, draw nothing.
         \param[in] _global_drawmode drawmode list (or-ed drawmode list bitmap)."""
 
-        print 'DEBUG: primitive is', self.get_primitive().get_classname(), \
-            self.get_primitive().is_valid()
+        # DELETEME
+        # print 'DEBUG: primitive is', self.get_primitive().get_classname(), \
+        #     self.get_primitive().is_valid()
 
         if (not self.is_node_active()):
             # node is deactivated, not call draw anymore

@@ -9,13 +9,17 @@
 *** DONE bounding box update for SceneGraph and GLScneneGraph
 *** DONE GL scenegraph GLMaterialNode
 *** DONE GL Light node set_config_data/get_config_data
-*** TODO BUG broken test
-    can not load no volume object (e.g., one triangle)
+*** DONE BUG broken test
+    can not load no volume object (e.g., a plane, one triangle)
 *** TODO scenegraph MaterialNode
 *** TODO construct GLScneneGraph from SceneGraph
     Scenegraph primitive node (has a primitive)
     GLScenegraph Primitive Node (but primitive node will be inherited to
     e.g. GLTrimeshNode, because GLScneGraphNode has draw() to draw the primitives)
+*** TODO load ifgi file -> ifgiscenereader
+         ifgiscenereader -> SceneGraph
+         ifgiscenereader -> GLSceneGraph
+
 
 ** TODO implement ifgi parser
 *** TODO read material and geometry definition
