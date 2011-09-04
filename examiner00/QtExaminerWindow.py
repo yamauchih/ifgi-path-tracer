@@ -9,17 +9,10 @@
 \author Yamauchi, Hitoshi
 """
 
-import math
-import numpy
-import optparse
-import os
-import sys
-
-import OpenGL
+import math, numpy, optparse, os, sys, OpenGL
 
 from PyQt4  import QtCore, QtGui, QtOpenGL
-from OpenGL import GL
-from OpenGL import GLU
+from OpenGL import GL, GLU
 
 from ifgi.scene import SceneGraph
 import QtExaminerWidget, QtSceneGraphDialog, GLSceneGraph
@@ -41,6 +34,11 @@ class QtExaminerWindow(QtGui.QMainWindow):
         super(QtExaminerWindow, self).__init__()
         self.__examiner_widget = None
         self.__sgdialog = None
+
+        # menu_file_open's last selected directory|filter
+        self.__open_file_last_selected_filter = 'ifgi scene file (*.ifgi)'
+        self.__open_file_last_selected_dir = '.'
+
 
     # create widgets and window
     def create_window(self):
@@ -122,14 +120,19 @@ class QtExaminerWindow(QtGui.QMainWindow):
         options = QtGui.QFileDialog.Options()
         # if not self.native.isChecked():
         options |= QtGui.QFileDialog.DontUseNativeDialog
-        fileName = QtGui.QFileDialog.getOpenFileName(self,
-                                                     "Open a scene file",
-                                                     '', # use last selected item
-                                                     '', #
-                                                     "All Files (*);;obj Files (*.obj)",
-                                                     options)
+        (fileName, selFilter) = QtGui.QFileDialog.getOpenFileNameAndFilter(
+            self,
+            "Open a scene file",
+            self.__open_file_last_selected_dir, # default dir
+            "All files (*);;obj files (*.obj);;ifgi scene file (*.ifgi)",
+            self.__open_file_last_selected_filter, # default filter
+            options)
+
         if fileName:
+            # remember last time filter|directory selection
             print 'fileName = ' + fileName
+            self.__open_file_last_selected_dir = os.path.dirname(str(fileName))
+            self.__open_file_last_selected_filter = selFilter
         else:
             print 'canceled'
             self.statusBar().showMessage('File--Open: cancelled')

@@ -10,7 +10,8 @@
 *** DONE GL scenegraph GLMaterialNode
 *** DONE GL Light node set_config_data/get_config_data
 *** TODO BUG broken test
-*** TODO scenegraph    MaterialNode
+    can not load no volume object (e.g., one triangle)
+*** TODO scenegraph MaterialNode
 *** TODO construct GLScneneGraph from SceneGraph
     Scenegraph primitive node (has a primitive)
     GLScenegraph Primitive Node (but primitive node will be inherited to

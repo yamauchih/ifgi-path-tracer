@@ -169,7 +169,8 @@ class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
         # In case no childen have bbox, _cur_node.bbox stays invalid
         for chnode in _cur_node.get_children():
             if chnode.has_node_bbox():
-                if chnode.get_bbox().has_volume():
+                # not has_volume() check since to handle line/plane case
+                if chnode.get_bbox().get_rank() > 0:
                     # update my bbox
                     _cur_node.get_bbox().insert_bbox(chnode.get_bbox())
 

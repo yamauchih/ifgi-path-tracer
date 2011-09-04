@@ -209,10 +209,24 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         update_bbox_strategy = SceneGraph.SGTUpdateBBoxStrategy()
         self.traverse_sgnode(self.__gl_root_node, update_bbox_strategy)
         # handle no children have valid bbox (e.g., empty scene)
-        if not self.__gl_root_node.get_bbox().has_volume():
-            ILog.warn('GLSceneGraphs rootnode has no volume, set [0 0 0]-[1 1 1]')
-            self.__root_node.get_bbox().insert_point(numpy.array([0,0,0]))
-            self.__root_node.get_bbox().insert_point(numpy.array([1,1,1]))
+        root_bbox = self.__gl_root_node.get_bbox()
+        if not root_bbox.has_volume():
+            # no volume, but, there may be area.
+            print root_bbox.get_rank()
+            if (root_bbox.get_rank() >= 1):
+                ILog.warn('GLSceneGraphs rootnode has no volume, but length or area')
+                maxpoi = root_bbox.get_min()
+                tflist = root_bbox.get_min() < root_bbox.get_max()
+                for i in range(0,2):
+                    if tflist[i]:
+                        maxpoi[i] += 1 # expand this dimension
+                self.__gl_root_node.get_bbox().insert_point(root_bbox.get_min())
+                self.__gl_root_node.get_bbox().insert_point(maxpoi)
+            else:
+                ILog.warn('GLSceneGraphs rootnode has no volume, set [0,0,0]-[1,1,1]')
+                self.__gl_root_node.get_bbox().insert_point(numpy.array([0,0,0]))
+                self.__gl_root_node.get_bbox().insert_point(numpy.array([1,1,1]))
+
 
 
     # ------------------------------------------------------------

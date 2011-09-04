@@ -125,6 +125,19 @@ class BBox(Primitive):
                                   -sys.float_info.max, -sys.float_info.max])
 
 
+    def get_rank(self):
+        """get rank of this bbox.
+        The number of self.__max > self.__min satisfied axis.
+        \return True when this bbox has area.
+        """
+        tflist = self.__max > self.__min
+        rank_count = 0
+        for tf in tflist:
+            if tf:
+                rank_count += 1
+        return rank_count
+
+
     def has_volume(self):
         """has this bbox volume?.
         After invalidate(), bbox has no volume.
@@ -155,7 +168,7 @@ class BBox(Primitive):
         """insert a bbox and grow the bbox. (public)
         \param _bbox bounding box to be inserted.
         """
-        assert(_bbox.has_volume())
+        assert(_bbox.get_rank() > 0) # handle line/plane case.
         self.insert_point(_bbox.get_min())
         self.insert_point(_bbox.get_max())
 
