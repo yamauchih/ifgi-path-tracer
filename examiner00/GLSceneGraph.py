@@ -1854,6 +1854,55 @@ class GLSGTCollectDrawmodeStrategy(SceneGraph.SceneGraphTraverseStrategyIF):
 
 # ----------------------------------------------------------------------
 
+def create_gl_scenegraph(_ifgi_reader):
+    """create GL scenegraph from ifgi scene reader
+
+    SceneGraph +
+               +--+ SceneGraphNode: 'rootsg' __root_node
+                    +--+ CameraNode: 'main_cam' __camera
+                    +--+ SceneGraphNode: 'meshgroup'
+                         +--+ Material: 'mat0'
+                              +--+ TriMesh: 'trimesh0'
+                         +--+ Material: 'mat1'
+                              +--+ TriMesh: 'trimesh1'
+                         ...
+    """
+    if (not _ifgi_reader.is_valid()):
+        raise StandardError, ('invalid ifgi scene reader.')
+
+    # create scenegraph
+    glsg = GLSceneGraph()
+
+    # create scenegraph's root node
+    rootsg = SceneGraphNode('rootsg')
+    cam_node = CameraNode('main_cam')
+    rootsg.append_child(cam_node)
+
+    # 'materialgroup' is a special group.
+    mat_group_node = SceneGraphNode('materialgroup')
+    rootsg.append_child(mat_group_node)
+    for mat_dict in _ifgi_reader.material_list:
+        mat = Material.material_factory(mat_dict)
+        ch_mat_node = MaterialNode(mat_dict['mat_name'])
+        ch_mat_node.set_material(mat)
+        mat_group_node.append_child(ch_mat_node)
+
+
+    mesh_group = SceneGraphNode('meshgroup')
+    rootsg.append_child(mesh_group)
+    for geo_dict in _ifgi_reader.geometry_list:
+        ch_node = PrimitiveNode(geo_dict['geo_name'], geo_dict['TriMesh'])
+        mesh_group.append_child(ch_node)
+
+    sg.set_root_node(rootsg)
+    sg.set_current_camera(cam_node.get_camera())
+
+    assert(sg.is_valid())
+
+    return sg
+
+# ----------------------------------------------------------------------
+
 #
 # main test
 #

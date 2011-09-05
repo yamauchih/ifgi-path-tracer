@@ -1,17 +1,8 @@
-* Task ifgi path tracer 2011-9-2(Fri)
+* Task ifgi path tracer 2011-9-5(Mon)
 
 ** top5
-*** DONE Fix QtSceneGrpahDialog
-*** DONE examiner background color
-*** DONE Added trimesh Info
-*** DONE GLTrimeshNode doesnot have set primitive since it is not inherited from
-    SceneGraph.PritimiveNode. Implement PrimitiveNode interface.
-*** DONE bounding box update for SceneGraph and GLScneneGraph
-*** DONE GL scenegraph GLMaterialNode
-*** DONE GL Light node set_config_data/get_config_data
-*** DONE BUG broken test
-    can not load no volume object (e.g., a plane, one triangle)
-*** TODO scenegraph MaterialNode
+*** TODO remove GLSceneGraph.set_scenegpraph()
+    This should be GLSceneGraph.set_gl_scenegpraph()
 *** TODO construct GLScneneGraph from SceneGraph
     Scenegraph primitive node (has a primitive)
     GLScenegraph Primitive Node (but primitive node will be inherited to
@@ -19,6 +10,7 @@
 *** TODO load ifgi file -> ifgiscenereader
          ifgiscenereader -> SceneGraph
          ifgiscenereader -> GLSceneGraph
+*** TODO scenegraph MaterialNode
 
 
 ** TODO implement ifgi parser
