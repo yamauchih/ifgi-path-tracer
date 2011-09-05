@@ -37,6 +37,13 @@ class IfgiSceneReader(object):
       }
 
     The geometry should be read after ifgi scene file has been read.
+    Geometry info also has 'TriMesh' entry. This is contents of geo_file_name.
+
+    - geo_info['geo_name'] = name_of_geometry
+    - geo_info['material'] = material_name
+    - geo_info['geo_file_type'] = 'obj'
+    - geo_info['geo_file_name'] = filename
+    - geo_info['TriMesh']  = Primitive.TriMesh object
     """
 
     # supported geometry file format
@@ -78,9 +85,10 @@ class IfgiSceneReader(object):
         \param[in] _ifgi_fname_path ifgi scene file name
         \return True when read file succeeded
         """
+        self.__is_valid = False
         if (self.__curline == 0):
             raise StandardError, ('This reader is not re-entrant. ' +\
-                                      'Please create  anew one to read another file.')
+                                      'Please create a new one to read another file.')
             return False
 
         self.__curline = 0

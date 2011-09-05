@@ -244,6 +244,21 @@ class DiffuseMaterial(Material):
 
 
 
+def material_factory(_mat_dict):
+    """material factory from material information dictionary.
+    \return a material
+    """
+    mat = None
+    mat_type = _mat_dict['mat_type']
+    if(mat_type == 'lambert'):
+        diffuse_color = _mat_dict['diffuse_color']
+        tex = Texture.ConstantColorTexture(diffuse_color)
+        mat = DiffuseMaterial(tex)
+    else:
+        raise StandardError, ('Unsupported material type [' + mat_type + ']')
+
+    return mat
+
 
 #
 # main test

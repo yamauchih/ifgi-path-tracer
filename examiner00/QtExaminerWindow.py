@@ -14,7 +14,7 @@ import math, numpy, optparse, os, sys, OpenGL
 from PyQt4  import QtCore, QtGui, QtOpenGL
 from OpenGL import GL, GLU
 
-from ifgi.scene import SceneGraph
+from ifgi.scene import SceneGraph, IfgiSceneReader
 import QtExaminerWidget, QtSceneGraphDialog, GLSceneGraph
 
 import ifgi.render
@@ -389,20 +389,20 @@ class QtExaminerWindow(QtGui.QMainWindow):
         # check the supported file
         (fbase, ext) = os.path.splitext(infilename)
         if (ext == ".obj"):
-            sg = self.__load_obj_file(infilename)
+            glsg = self.__load_obj_file(infilename)
         elif (ext == ".ifgi"):
-            sg = self.__load_ifgi_file(infilename)
+            glsg = self.__load_ifgi_file(infilename)
         else:
             raise StandardError, ('[' + ext + '] file is not supported.')
 
-        sg.update_all_bbox()
-        sg.print_all_node()     # for debug, print out the scenegraph
+        # sg.update_all_bbox()
+        # sg.print_all_node()     # for debug, print out the scenegraph
 
-        # attach the SceneGraph to a GLSceneGraph
-        glsg = GLSceneGraph.GLSceneGraph()
-        glsg.set_scenegraph(sg)
-        glsg.update_all_bbox()
-        # glsg.print_all_node()   # for debug, print out the scenegraph
+        # # attach the SceneGraph to a GLSceneGraph
+        # glsg = GLSceneGraph.GLSceneGraph()
+        # glsg.set_scenegraph(sg)
+        # glsg.update_all_bbox()
+        # # glsg.print_all_node()   # for debug, print out the scenegraph
 
         # debug mode on
         self.__examiner_widget.set_debug_mode(True)
@@ -417,7 +417,17 @@ class QtExaminerWindow(QtGui.QMainWindow):
         \param[in] _infilepath infile path
         \return a scenegraph of the obj file
         """
-        return SceneGraph.create_one_trimeh_scenegraph(_infilepath)
+        sg = SceneGraph.create_one_trimeh_scenegraph(_infilepath)
+        sg.update_all_bbox()
+        sg.print_all_node()     # for debug, print out the scenegraph
+
+        # attach the SceneGraph to a GLSceneGraph
+        glsg = GLSceneGraph.GLSceneGraph()
+        glsg.set_scenegraph(sg)
+        glsg.update_all_bbox()
+        # glsg.print_all_node()   # for debug, print out the scenegraph
+
+        return glsg
 
 
     def __load_ifgi_file(self, _infilepath):
@@ -428,6 +438,16 @@ class QtExaminerWindow(QtGui.QMainWindow):
         ifgireader = IfgiSceneReader.IfgiSceneReader()
         if(not ifgireader.read(_infilepath)):
             raise StandardError, ('load file [' + _infilepath + '] failed.')
+
+        sg = SceneGraph.create_ifgi_scenegraph(ifgireader)
+        sg.update_all_bbox()
+        sg.print_all_node()     # for debug, print out the scenegraph
+
+        # attach the SceneGraph to a GLSceneGraph
+        # glsg = GLSceneGraph.GLSceneGraph()
+        # glsg.set_scenegraph(sg)
+        # glsg.update_all_bbox()
+        # glsg.print_all_node()   # for debug, print out the scenegraph
 
         # NIN 2011-9-5(Mon)
         # create SceneGraph from ifgireader

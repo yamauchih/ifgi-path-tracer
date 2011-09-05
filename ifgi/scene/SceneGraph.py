@@ -778,8 +778,8 @@ def create_one_trimeh_scenegraph(_objfname):
 
 # ----------------------------------------------------------------------
 
-def create_ifgi_scenegraph(_ifgi_scenefname):
-    """create ifgi scenegraph from ifgi scene file
+def create_ifgi_scenegraph(_ifgi_reader):
+    """create ifgi scenegraph from ifgi scene reader
 
     SceneGraph +
                +--+ SceneGraphNode: 'rootsg' __root_node
@@ -794,9 +794,8 @@ def create_ifgi_scenegraph(_ifgi_scenefname):
                                                       ...
 
     """
-    ifgireader = IfgiSceneReader.IfgiSceneReader()
-    if(not ifgireader.read(_ifgi_scenefname)):
-        raise StandardError, ('load file [' + _ifgi_scenefname + '] failed.')
+    if (not _ifgi_reader.is_valid()):
+        raise StandardError, ('invalid ifgi scene reader.')
 
     # create scenegraph
     sg = SceneGraph()
@@ -804,23 +803,27 @@ def create_ifgi_scenegraph(_ifgi_scenefname):
 
     # create scenegraph's root node
     rootsg = SceneGraphNode('rootsg')
-    child0 = CameraNode('main_cam')
-    rootsg.append_child(child0)
+    cam_node = CameraNode('main_cam')
+    rootsg.append_child(cam_node)
 
     # 'materialgroup' is a special group.
-    child1 = SceneGraphNode('materialgroup')
-    rootsg.append_child(child1)
-    # child1_0 = MaterialNode('mat_trimesh')
-    # child1_0.set_material(Material.Material())
-    # child1.append_child(child1_0)
+    mat_group_node = SceneGraphNode('materialgroup')
+    rootsg.append_child(mat_group_node)
+    for mat_dict in _ifgi_reader.material_list:
+        mat = Material.material_factory(mat_dict)
+        ch_mat_node = MaterialNode(mat_dict['mat_name'])
+        ch_mat_node.set_material(mat)
+        mat_group_node.append_child(ch_mat_node)
 
-    child2 = SceneGraphNode('meshgroup')
-    rootsg.append_child(child2)
-    # child2_0 = PrimitiveNode('trimesh', tmesh)
-    # child2.append_child(child2_0)
+
+    mesh_group = SceneGraphNode('meshgroup')
+    rootsg.append_child(mesh_group)
+    for geo_dict in _ifgi_reader.geometry_list:
+        ch_node = PrimitiveNode(geo_dict['geo_name'], geo_dict['TriMesh'])
+        mesh_group.append_child(ch_node)
 
     sg.set_root_node(rootsg)
-    sg.set_current_camera(child0.get_camera())
+    sg.set_current_camera(cam_node.get_camera())
 
     assert(sg.is_valid())
 
