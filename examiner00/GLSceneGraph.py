@@ -33,8 +33,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         self.__cur_gl_camera = None
         self.__gl_root_node  = None
         self.__scenegraph    = None
-        self.__material_list = None
-        self.__material_name_idx_dict = None
+        self.__name_material_dict = None
 
 
     def set_scenegraph(self, _sg):
@@ -143,11 +142,8 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         ch_gl_light_node = GLLightNode('GL:light_node')
         _gl_rootnode.append_child(ch_gl_light_node)
 
-        # clear material list: deep copy
-        self.__material_list = []
-        # clear material name -> index map
-        # FIXME If I don't need keep the order, I just deepcopy here.
-        self.__material_name_idx_dict = {}
+        # clear material name -> material reference
+        self.__name_material_dict = {}
 
         # handle special nodes just under the root.
         for sgnode in _sg_rootnode.get_children():
@@ -163,12 +159,10 @@ class GLSceneGraph(SceneGraph.SceneGraph):
                 print 'SceneraphNode: materialgroup is detected, special handling.'
                 for matnode in sgnode.get_children():
                     mat = matnode.get_material()
-                    idx = len(self.__material_list)
-                    self.__material_list.append(copy.deepcopy(mat))
                     # material name should be unique
-                    assert(not (mat.get_material_name() in self.__material_name_idx_dict))
-                    self.__material_name_idx_dict[mat.get_material_name()] = idx
-                print str(len(self.__material_list)) + 'materials are copied.'
+                    assert(not (mat.get_material_name() in self.__name_material_dict))
+                    self.__name_material_dict[mat.get_material_name()] = mat
+                print str(len(self.__name_material_dict)) + ' materials are referenced.'
 
         # construct GL scenegraph from the ifgi scenegraph
         self.__create_glscenegraph_sub(_sg_rootnode, _gl_rootnode, 0)
@@ -189,7 +183,7 @@ class GLSceneGraph(SceneGraph.SceneGraph):
                 print 'DEBUG: skip materialgroup.'
             else:
                 # general node
-                ch_glnode = new_gl_scenegraph_node(ch_sgnode, self.__material_list)
+                ch_glnode = new_gl_scenegraph_node(ch_sgnode, self.__name_material_dict)
                 _cur_glnode.append_child(ch_glnode)
                 print 'DEBUG: append ', ch_glnode.get_classname()
                 self.__create_glscenegraph_sub(ch_sgnode, ch_glnode, _level + 1)
@@ -1064,6 +1058,10 @@ class GLMaterialNode(GLSceneGraphNode):
         # call base class constructor to fill the members
         super(GLMaterialNode, self).__init__(_nodename)
 
+        # ifgi material (non OpenGL material)
+        self.__ifgi_mat = None
+
+
         # OpenGL push state
         self.__push_current_color = numpy.array([1.0, 1.0, 1.0, 1.0])
         self.__current_color      = numpy.array([1.0, 1.0, 1.0, 1.0])
@@ -1405,6 +1403,16 @@ class GLMaterialNode(GLSceneGraphNode):
                        'shininess': str(self.__shininess)} # LineEdit need str()
         return config_dict
 
+
+    #------------------------------------------------------------
+    # ifgi material
+    #------------------------------------------------------------
+
+    def set_material(self, _mat):
+        """set ifgi material
+        \param[in] _mat ifgi material
+        """
+        self.__ifgi_mat = _mat
 
 
 # ----------------------------------------------------------------------
@@ -1783,7 +1791,7 @@ class GLTriMeshNode(GLSceneGraphNode):
 
 # ----------------------------------------------------------------------
 
-def new_gl_scenegraph_node(_sgnode, _material_list):
+def new_gl_scenegraph_node(_sgnode, _name_mat_dict):
     """OpenGL scenegraph node factory
 
     Supported ifgi nodes:
@@ -1791,8 +1799,7 @@ def new_gl_scenegraph_node(_sgnode, _material_list):
       - Primitive.TriMesh: translated to a GLTriMeshNode
 
     \param[in] _sgnode generic scenegraph node
-    \param[in] _material_list  material list in the scene
-    \param[in] _material_name_idx_dict material name -> index ddict
+    \param[in] _name_mat_dict material name -> material reference dict
     """
 
     if _sgnode.is_primitive_node():
@@ -1804,8 +1811,12 @@ def new_gl_scenegraph_node(_sgnode, _material_list):
 
             assert(gltmeshnode.get_primitive() != None)
             assert(_sgnode.get_primitive().get_material_name() != 0)
-            glmatnode = GLMaterialNode(_sgnode.get_primitive().get_material_name())
-            # NIN FIXME glmatnode.set_material()
+            matname = _sgnode.get_primitive().get_material_name()
+            glmatnode = GLMaterialNode(matname)
+
+            # material should be in the dict
+            assert(matname in  _name_mat_dict)
+            glmatnode.set_material(_name_mat_dict[matname])
             glmatnode.append_child(gltmeshnode)
             print 'Added GLMaterialNode --- GLTriMeshNode'
             return glmatnode

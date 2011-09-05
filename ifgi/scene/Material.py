@@ -273,7 +273,7 @@ def material_factory(_mat_dict):
     if(mat_type == 'lambert'):
         diffuse_color = _mat_dict['diffuse_color']
         tex = Texture.ConstantColorTexture(diffuse_color)
-        mat = DiffuseMaterial(tex)
+        mat = DiffuseMaterial(_mat_dict['mat_name'], tex)
     else:
         raise StandardError, ('Unsupported material type [' + mat_type + ']')
 

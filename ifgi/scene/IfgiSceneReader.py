@@ -367,7 +367,9 @@ class IfgiSceneReader(object):
             objreader = ObjReader.ObjReader()
             objreader.read(geo_fpath)
             # objreader.dump()
-            tmesh = ConvReader2Primitive.conv_objreader_trimesh(objreader)
+            tmesh = ConvReader2Primitive.\
+                conv_objreader_trimesh(objreader, _geoinfo['geo_name'],
+                                       _geoinfo['material'])
             # print tmesh.info_summary()
             _geoinfo['TriMesh'] = tmesh
 

@@ -722,7 +722,9 @@ def load_one_trimesh_from_objfile(_objfname):
 
     objreader = ObjReader.ObjReader()
     objreader.read(_objfname)
-    tmesh = ConvReader2Primitive.conv_objreader_trimesh(objreader)
+
+    tmesh = ConvReader2Primitive.\
+        conv_objreader_trimesh(objreader, 'default_mesh', 'default_diffuse')
     if tmesh.is_valid() == False:
         raise StandardError, ('TriMesh [' + _objfname + '] is not valid.')
 

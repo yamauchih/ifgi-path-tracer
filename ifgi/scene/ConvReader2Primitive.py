@@ -10,12 +10,16 @@
 
 import Primitive, ObjReader
 
-def conv_objreader_trimesh(_objreader):
+def conv_objreader_trimesh(_objreader, _mesh_name, _material_name):
     """ObjReader to TriMesh converter.
     \param[in] _objreader obj file reader
+    \param[in] _mesh_name mesh name
+    \param[in] _material_name mesh's material name
     """
+    assert(_mesh_name     != None)
+    assert(_material_name != None)
 
-    tmesh = Primitive.TriMesh('default_trimesh', 'default_diffuse')
+    tmesh = Primitive.TriMesh(_mesh_name, _material_name)
     tmesh.set_data(_objreader.vertex_list,
                    _objreader.face_idx_list,
                    _objreader.texcoord_list,

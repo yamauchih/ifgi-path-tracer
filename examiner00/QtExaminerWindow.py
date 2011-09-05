@@ -395,6 +395,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
         else:
             raise StandardError, ('[' + ext + '] file is not supported.')
 
+        # DELETEME
         # sg.update_all_bbox()
         # sg.print_all_node()     # for debug, print out the scenegraph
 
@@ -425,7 +426,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
         glsg = GLSceneGraph.GLSceneGraph()
         glsg.set_scenegraph(sg)
         glsg.update_all_bbox()
-        # glsg.print_all_node()   # for debug, print out the scenegraph
+        # glsg.print_all_node()   # not work root is not set
 
         return glsg
 
@@ -444,14 +445,12 @@ class QtExaminerWindow(QtGui.QMainWindow):
         sg.print_all_node()     # for debug, print out the scenegraph
 
         # attach the SceneGraph to a GLSceneGraph
-        # glsg = GLSceneGraph.GLSceneGraph()
-        # glsg.set_scenegraph(sg)
-        # glsg.update_all_bbox()
+        glsg = GLSceneGraph.GLSceneGraph()
+        glsg.set_scenegraph(sg)
+        glsg.update_all_bbox()
         # glsg.print_all_node()   # for debug, print out the scenegraph
 
-        # NIN 2011-9-5(Mon)
-        # create SceneGraph from ifgireader
-        # create GLSceneGraph from ifgireader
+        return glsg
 
 
     def slot_scenegraph_status(self):
