@@ -1531,10 +1531,6 @@ class GLTriMeshNode(GLSceneGraphNode):
         If node is deactivated, draw nothing.
         \param[in] _global_drawmode drawmode list (or-ed drawmode list bitmap)."""
 
-        # DELETEME
-        # print 'DEBUG: primitive is', self.get_primitive().get_classname(), \
-        #     self.get_primitive().is_valid()
-
         if (not self.is_node_active()):
             # node is deactivated, not call draw anymore
             return

@@ -53,7 +53,6 @@ class QtExtTextLine(QtGui.QWidget):
         # connect signals
         self.__text.textChanged.  connect(self.slotChanged)
         self.__text.returnPressed.connect(self.slotReturnPressed)
-        # DELETEME self.__text.lostFocus.    connect(self.slotReturnPressed)
 
         hspacing = 10
         self.__orientation = _orientation

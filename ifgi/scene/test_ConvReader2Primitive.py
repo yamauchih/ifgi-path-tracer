@@ -22,7 +22,9 @@ class TestConvReader2Primitive(unittest.TestCase):
         objreader = ObjReader.ObjReader()
         objreader.read('../../sampledata/one_tri.obj')
 
-        tmesh = ConvReader2Primitive.conv_objreader_trimesh(objreader)
+        tmesh = ConvReader2Primitive.conv_objreader_trimesh(objreader,
+                                                            'default_trimesh',
+                                                            'default_diffuse')
 
         self.assertEquals(len(tmesh.vertex_list),       3) # nvertices
         self.assertEquals(len(tmesh.face_idx_list),     1) # nface

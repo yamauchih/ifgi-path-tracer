@@ -395,16 +395,6 @@ class QtExaminerWindow(QtGui.QMainWindow):
         else:
             raise StandardError, ('[' + ext + '] file is not supported.')
 
-        # DELETEME
-        # sg.update_all_bbox()
-        # sg.print_all_node()     # for debug, print out the scenegraph
-
-        # # attach the SceneGraph to a GLSceneGraph
-        # glsg = GLSceneGraph.GLSceneGraph()
-        # glsg.set_scenegraph(sg)
-        # glsg.update_all_bbox()
-        # # glsg.print_all_node()   # for debug, print out the scenegraph
-
         # debug mode on
         self.__examiner_widget.set_debug_mode(True)
 

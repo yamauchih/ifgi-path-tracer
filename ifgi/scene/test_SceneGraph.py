@@ -11,7 +11,7 @@
 import unittest
 import numpy
 import random
-import SceneGraph, Primitive, Material
+import SceneGraph, Primitive, Material, Texture
 
 class TestSceneGraph(unittest.TestCase):
     """test scenegraph node"""
@@ -49,7 +49,8 @@ class TestSceneGraph(unittest.TestCase):
         prim0 = SceneGraph.PrimitiveNode('tri', Primitive.Triangle())
         grp0.append_child(prim0)
 
-        prim1 = SceneGraph.PrimitiveNode('trimesh', Primitive.TriMesh())
+        tmesh = Primitive.TriMesh('default_trimesh', 'default_diffuse')
+        prim1 = SceneGraph.PrimitiveNode('trimesh', tmesh)
         grp0.append_child(prim1)
 
         # material group
@@ -57,7 +58,10 @@ class TestSceneGraph(unittest.TestCase):
         sg_root.append_child(grp1)
 
         mat0 = SceneGraph.MaterialNode('mat0')
-        mat0.set_material(Material.Material())
+        tex = Texture.ConstantColorTexture(numpy.array([1,0,0,1]))
+        # default_diffuse is material name for the trimesh
+        mat = Material.DiffuseMaterial(tmesh.get_material_name(), tex)
+        mat0.set_material(mat)
         grp1.append_child(mat0)
 
 

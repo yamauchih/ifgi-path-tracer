@@ -457,16 +457,9 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
         ti_parent = _cur_tinode
         for ch_glsgnode in _cur_glsgnode.get_children():
-            # DELETEME
-            # if ch_glsgnode.is_primitive_node() == True:
-            #     print 'DEBUG: creating tree item by a primitive'
-            #     # primitive node
-            #     ti = SceneGraphNodeTreeItem(ch_glsgnode,
-            #                                 ti_parent)
-            #     ti_parent.appendChild(ti)
-            # else:
-            print 'DEBUG: creating tree item by a scenegraph node',\
-                ch_glsgnode.get_classname(), ch_glsgnode.get_nodename()
+            # print 'DEBUG: creating tree item by a scenegraph node',\
+            #     ch_glsgnode.get_classname(), ch_glsgnode.get_nodename()
+
             # create and refer the glsg node
             ti = SceneGraphNodeTreeItem(ch_glsgnode, ti_parent)
             ti_parent.appendChild(ti)

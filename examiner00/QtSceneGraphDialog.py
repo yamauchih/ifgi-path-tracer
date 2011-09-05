@@ -76,24 +76,6 @@ class QtSceneGraphDialog(QtGui.QDialog):
         super(QtSceneGraphDialog, self).closeEvent(_close_event)
 
 
-# DELETEME
-# copy scenegraph tree subroutine
-# def copy_glsg_to_treeitem_sub(_cur_glsgnode, _cur_tinode, _level):
-#         """copy OpenGL scenegraph tree to tree item graph subroutine
-#         \param[in]: _cur_glsgnode current visiting OpenGL scenegraph node
-#         \param[in]: _cur_tinode   current visiting tree item node
-#         \param[in]: _level        current depth level"""
-
-#         ti_parent = _cur_tinode
-#         for ch_glsgnode in _cur_glsgnode.children:
-#             print 'DEBUG: creating tree item by ', ch_glsgnode.get_classname()
-#             # create and refer the glsg node
-#             ti = QtSceneGraphWidget.SceneGraphNodeTreeItem(ch_glsgnode, ti_parent)
-#             ti_parent.appendChild(ti)
-#             copy_glsg_to_treeitem_sub(ch_glsgnode, ti, _level + 1)
-
-
-
 # test when called directly
 if __name__ == '__main__':
     """test when called directly"""

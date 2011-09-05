@@ -570,9 +570,6 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
                                                            self.glHeight())
 
                 self.__is_rotating = True
-                # DELETEME
-                # print 'DEBUG: mouse press at ' + str(self.__lastpoint_2d) +\
-                # ', on spehere: ' + str(self.__lastpoint_3d)
 
 
             # elif (self.__action_mode == Actionmode.FlyToMode):
@@ -827,10 +824,6 @@ class QtExaminerWidget(QtOpenGL.QGLWidget):
 
             self.updateGL();
             self.__last_move_time.restart();
-
-            # DELETEME
-            # print 'DEBUG: mouse press at ' + str(self.__lastpoint_2d) +\
-            #     ', on spehere: ' + str(self.__lastpoint_3d)
 
 
     # draw the whole scene

@@ -109,8 +109,6 @@ class SGTUpdateBBoxStrategy(SceneGraphTraverseStrategyIF):
 
     pdate all the bounding box (not reset, if you need reset, use such
     strategy for that.)
-
-    FIXME 2010-11-22(Mon)
     """
     # constructor
     def __init__(self):
