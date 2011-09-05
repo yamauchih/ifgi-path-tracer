@@ -45,7 +45,8 @@ class ConstantColorTexture(Texture):
     def __init__(self, _color):
         """default constructor
 
-        \param[in] _color constant color"""
+        \param[in] _color constant color float4
+        """
         self.__color = _color
 
 

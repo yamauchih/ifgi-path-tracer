@@ -18,9 +18,13 @@ import Texture
 class Material(object):
     """Material class: interface"""
 
-    def __init__(self):
-        """default constructor"""
-        pass
+    def __init__(self, _mat_name):
+        """constructor
+
+        \param[in] _mat_name material name (this should be unique)
+        """
+
+        self.__material_name = _mat_name
 
 
     def get_classname(self):
@@ -29,6 +33,13 @@ class Material(object):
         """
         assert 0, "get_classname must be implemented in a derived class."
         return None
+
+
+    def get_material_name(self):
+        """get material name
+        \return material name (should be unique)
+        """
+        return self.__material_name
 
 
     def is_emit(self):
@@ -156,9 +167,14 @@ class Material(object):
 class DiffuseMaterial(Material):
     """Diffuse material"""
 
-    def __init__(self, _texture):
+    def __init__(self, _mat_name, _texture):
         """default constructor
-        \param[in] _texture texture image"""
+
+        \param[in] _mat_name material name
+        \param[in] _texture  texture object
+        """
+        super(DiffuseMaterial, self).__init__(_mat_name)
+
         self.__texture = _texture
 
 
@@ -174,9 +190,13 @@ class DiffuseMaterial(Material):
     #     \return true when emit light.
     #     """
     #     return False
-
-
     # def emit_radiance(self, _hit_onb, _light_out_dir, _tex_point, _tex_uv):
+
+
+    def get_texture(self):
+        """get texture
+        """
+        return self.__texture
 
 
     def ambient_response(self, _hit_onb, _incident_dir, _tex_point, _tex_uv):

@@ -23,7 +23,10 @@ class Primitive(object):
 
     def __init__(self):
         """default constructor"""
-        self.__name = 'NoName'
+        # primitive name (may None)
+        self.__name = None
+        # material name (may None)
+        self.__material_name = None
 
 
     def get_classname(self):
@@ -42,10 +45,25 @@ class Primitive(object):
 
 
     def get_name(self):
-        """set primitive associated name.
+        """get primitive associated name.
         \return primitive name
         """
         return self.__name
+
+
+
+    def set_material_name(self, _mat_name):
+        """set primitive's material name.
+        \param[in] _mat_name material name
+        """
+        self.__material_name = _mat_name
+
+
+    def get_material_name(self):
+        """get primitive's material name.
+        \return material name
+        """
+        return self.__material_name
 
 
     def get_bbox(self):
@@ -307,9 +325,12 @@ class TriMesh(Primitive):
     """TriMesh: simple triangle mesh primitive
     """
 
-    def __init__(self):
+    def __init__(self, _mash_name, _mat_name):
         """default constructor (public)."""
         super(TriMesh, self).__init__()
+        super(TriMesh, self).set_name(_mash_name)
+        super(TriMesh, self).set_material_name(_mat_name)
+
         self.vertex_list       = []
         self.face_idx_list     = []
         self.texcoord_list     = []

@@ -1,8 +1,8 @@
 * Task ifgi path tracer 2011-9-5(Mon)
 
 ** top5
-*** TODO remove GLSceneGraph.set_scenegpraph()
-    This should be GLSceneGraph.set_gl_scenegpraph()
+*** TODO update GLSceneGraph.set_scenegpraph()
+    should handle ifgireader's scenegraph
 *** TODO construct GLScneneGraph from SceneGraph
     Scenegraph primitive node (has a primitive)
     GLScenegraph Primitive Node (but primitive node will be inherited to

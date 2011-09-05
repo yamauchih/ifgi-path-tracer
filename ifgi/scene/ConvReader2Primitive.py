@@ -15,7 +15,7 @@ def conv_objreader_trimesh(_objreader):
     \param[in] _objreader obj file reader
     """
 
-    tmesh = Primitive.TriMesh()
+    tmesh = Primitive.TriMesh('default_trimesh', 'default_diffuse')
     tmesh.set_data(_objreader.vertex_list,
                    _objreader.face_idx_list,
                    _objreader.texcoord_list,

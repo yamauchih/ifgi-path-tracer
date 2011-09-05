@@ -10,7 +10,7 @@
 
 import copy, numpy
 
-import Camera, Primitive, Material
+import Camera, Primitive, Material, Texture
 import ObjReader, IfgiSceneReader
 import ConvReader2Primitive
 from ifgi.base.ILog import ILog
@@ -761,12 +761,15 @@ def create_one_trimeh_scenegraph(_objfname):
     child1 = SceneGraphNode('materialgroup')
     rootsg.append_child(child1)
     child1_0 = MaterialNode('mat_trimesh')
-    child1_0.set_material(Material.Material())
+    tex = Texture.ConstantColorTexture(numpy.array([1,0,0,1]))
+    # default_diffuse is material name for the trimesh
+    mat = Material.DiffuseMaterial(tmesh.get_material_name(), tex)
+    child1_0.set_material(mat)
     child1.append_child(child1_0)
 
     child2 = SceneGraphNode('meshgroup')
     rootsg.append_child(child2)
-    child2_0 = PrimitiveNode('trimesh', tmesh)
+    child2_0 = PrimitiveNode(tmesh.get_name(), tmesh)
     child2.append_child(child2_0)
 
     sg.set_root_node(rootsg)

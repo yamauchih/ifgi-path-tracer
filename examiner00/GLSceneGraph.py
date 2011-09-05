@@ -34,6 +34,8 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         self.__gl_root_node  = None
         self.__scenegraph    = None
         self.__material_list = None
+        self.__material_name_idx_dict = None
+
 
     def set_scenegraph(self, _sg):
         """set generic scene graph. (public)
@@ -141,8 +143,11 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         ch_gl_light_node = GLLightNode('GL:light_node')
         _gl_rootnode.append_child(ch_gl_light_node)
 
-        # clear material list
+        # clear material list: deep copy
         self.__material_list = []
+        # clear material name -> index map
+        # FIXME If I don't need keep the order, I just deepcopy here.
+        self.__material_name_idx_dict = {}
 
         # handle special nodes just under the root.
         for sgnode in _sg_rootnode.get_children():
@@ -157,7 +162,12 @@ class GLSceneGraph(SceneGraph.SceneGraph):
                 # handle special group: 'materialgroup'
                 print 'SceneraphNode: materialgroup is detected, special handling.'
                 for matnode in sgnode.get_children():
-                    self.__material_list.append(copy.deepcopy(matnode.get_material()))
+                    mat = matnode.get_material()
+                    idx = len(self.__material_list)
+                    self.__material_list.append(copy.deepcopy(mat))
+                    # material name should be unique
+                    assert(not (mat.get_material_name() in self.__material_name_idx_dict))
+                    self.__material_name_idx_dict[mat.get_material_name()] = idx
                 print str(len(self.__material_list)) + 'materials are copied.'
 
         # construct GL scenegraph from the ifgi scenegraph
@@ -1782,14 +1792,20 @@ def new_gl_scenegraph_node(_sgnode, _material_list):
 
     \param[in] _sgnode generic scenegraph node
     \param[in] _material_list  material list in the scene
+    \param[in] _material_name_idx_dict material name -> index ddict
     """
 
     if _sgnode.is_primitive_node():
         if _sgnode.get_primitive().get_classname() == 'TriMesh':
-            gltmeshnode = GLTriMeshNode('trimesh')
+            assert(_sgnode.get_primitive().get_name() != None)
+
+            gltmeshnode = GLTriMeshNode(_sgnode.get_primitive().get_name())
             gltmeshnode.set_primitive(_sgnode.get_primitive())
+
             assert(gltmeshnode.get_primitive() != None)
-            glmatnode = GLMaterialNode('material')
+            assert(_sgnode.get_primitive().get_material_name() != 0)
+            glmatnode = GLMaterialNode(_sgnode.get_primitive().get_material_name())
+            # NIN FIXME glmatnode.set_material()
             glmatnode.append_child(gltmeshnode)
             print 'Added GLMaterialNode --- GLTriMeshNode'
             return glmatnode
