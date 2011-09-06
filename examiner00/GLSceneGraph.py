@@ -1413,6 +1413,10 @@ class GLMaterialNode(GLSceneGraphNode):
         \param[in] _mat ifgi material
         """
         self.__ifgi_mat = _mat
+        preview_dict = self.__ifgi_mat.get_gl_preview_dict()
+        # print preview_dict
+        self.set_config_dict(preview_dict)
+
 
 
 # ----------------------------------------------------------------------

@@ -64,7 +64,7 @@ class ConstantColorTexture(Texture):
         \param[in] _point texture point in 3d (if solid)
         \return texture color value
         """
-        return _color
+        return self.__color
 
 
 class ImageTexture(object):

@@ -7,9 +7,8 @@
 \brief scene element material
 """
 
-import sys
-import math
-import numpy
+import sys, math, numpy
+from ifgi.base import numpy_util
 
 import Texture
 # import HitRecord
@@ -161,6 +160,32 @@ class Material(object):
         return False
 
 
+    def get_gl_preview_dict(self):
+        """get material information for OpenGL preview.
+
+        gl_preview_dict = {'emission':  float4,
+                           'diffuse':   float4,
+                           'ambient':   float4,
+                           'specular':  float4,
+                           'shininess': str(float)}
+        \return OpenGL preview data
+        """
+        gl_preview_dict = {'emission':  numpy.array([0,0,0,1]),
+                           'diffuse':   numpy.array([1.0,0.5,0.5,1.0]),
+                           'ambient':   numpy.array([0,0,0,1]),
+                           'specular':  numpy.array([0,0,0,1]),
+                           'shininess': str(1.0)}
+        return gl_preview_dict
+
+
+    def set_gl_preview_dict(self, _gl_preview_dict):
+        """set material information from OpenGL material editor.
+        \param[in] _gl_preview_dict
+        """
+        pass
+
+
+
 #----------------------------------------------------------------------
 
 
@@ -264,6 +289,38 @@ class DiffuseMaterial(Material):
 
 
 
+
+    def get_gl_preview_dict(self):
+        """get material information for OpenGL preview.
+        gl_preview_dict = {'emission':  float4,
+                           'diffuse':   float4,
+                           'ambient':   float4,
+                           'specular':  float4,
+                           'shininess': str(float)}
+        \return OpenGL preview data
+        """
+
+        diffuse_col = numpy.array([0.5, 0.5, 0.5, 1.0]),
+        if(self.__texture.get_classname() == 'ConstantColorTexture'):
+            diffuse_col = self.__texture.value(None, None)
+
+        gl_preview_dict = {'emission':  numpy.array([0,0,0,1]),
+                           'diffuse':   diffuse_col,
+                           'ambient':   numpy.array([0,0,0,1]),
+                           'specular':  numpy.array([0,0,0,1]),
+                           'shininess': str(1.0)}
+        return gl_preview_dict
+
+
+    def set_gl_preview_dict(self, _gl_preview_dict):
+        """set material information from OpenGL material editor.
+        \param[in] _gl_preview_dict
+        """
+        diffuse_col = _gl_preview_dict['diffuse']
+
+
+# ----------------------------------------------------------------------
+
 def material_factory(_mat_dict):
     """material factory from material information dictionary.
     \return a material
@@ -272,7 +329,7 @@ def material_factory(_mat_dict):
     mat_type = _mat_dict['mat_type']
     if(mat_type == 'lambert'):
         diffuse_color = _mat_dict['diffuse_color']
-        tex = Texture.ConstantColorTexture(diffuse_color)
+        tex = Texture.ConstantColorTexture(numpy_util.str2array(diffuse_color))
         mat = DiffuseMaterial(_mat_dict['mat_name'], tex)
     else:
         raise StandardError, ('Unsupported material type [' + mat_type + ']')

@@ -4,8 +4,7 @@
 *** DONE implemented ifgi parser: material def and geometry def
 *** DONE load ifgi scene file and construct ifgi scenegraph
 *** DONE implemented converter from ifgi scene graph to GL scenegraph
-
-*** TODO scenegraph MaterialNode
+*** DONE GLMaterialNode referes ifgi material
 *** TODO GLMaterialNode's FG color does not work on Solid Color mode
 
 
