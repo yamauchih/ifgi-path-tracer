@@ -10,12 +10,12 @@
 def material {
     mat_name = 1st_tri_mat
     mat_type = lambert
-    diffuse_color = 1.0 0.0 0.0
+    diffuse_color = 1.0 0.0 0.0 1.0
 }
 def material {
     mat_name = 2nd_tri_mat
     mat_type = lambert
-    diffuse_color = 0.0 1.0 0.0
+    diffuse_color = 0.0 1.0 0.0 1.0
 }
 #
 # geometry
@@ -24,13 +24,13 @@ def geometry {
     geo_name = 1st_tri
     material = 1st_tri_mat
     geo_file_type = obj
-    geo_file_name = twi_tri.one.obj
+    geo_file_name = two_tri.one.obj
 }
 def geometry {
-    geo_name = 1st_tri
+    geo_name = 2nd_tri
     material = 2nd_tri_mat
     geo_file_type = obj
-    geo_file_name = twi_tri.two.obj
+    geo_file_name = two_tri.two.obj
 }
 
 

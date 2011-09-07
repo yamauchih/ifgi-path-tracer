@@ -880,6 +880,7 @@ class GLLightNode(GLSceneGraphNode):
         # NIN
         GL.glDisable(GL.GL_LIGHTING)
         GL.glShadeModel(GL.GL_FLAT)
+        GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
         GL.glBegin(GL.GL_TRIANGLES)
         vp = self.get_primitive().vertex_list
         for face in self.get_primitive().face_idx_list:
@@ -1693,6 +1694,7 @@ class GLTriMeshNode(GLSceneGraphNode):
         """draw solid_basecolor"""
         GL.glDisable(GL.GL_LIGHTING)
         GL.glShadeModel(GL.GL_FLAT)
+        GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
 
         GL.glBegin(GL.GL_TRIANGLES)
         vp = self.get_primitive().vertex_list

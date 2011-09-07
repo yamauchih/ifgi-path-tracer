@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2010-2011 Yamauchi, Hitoshi
 #
-# Example: a big example, this should be break down while developing
+# Example 1: rendering test/example
 #
 # For set up the environment to run, see test_all.sh
 #
@@ -15,9 +15,10 @@ import unittest
 import numpy
 
 # package import: specify a directory and file.
-from ifgi.ptracer import IfgiSys
-from ifgi.scene   import SceneGraph, Primitive, Film, test_scene_util
 from ifgi.base    import Sampler
+from ifgi.ptracer import IfgiSys
+from ifgi.scene   import SceneGraph, Primitive, Film, test_scene_util, IfgiSceneReader
+
 
 class TestIfgiRender(unittest.TestCase):
     """test: ifgi render test. This is a big example for development"""
@@ -32,14 +33,21 @@ class TestIfgiRender(unittest.TestCase):
         ifgi_stat = ifgi_inst.start()
         assert(ifgi_stat == True)
 
-        self._image_xsize = 128
-        self._image_ysize = 128
+        self.__image_xsize = 128
+        self.__image_ysize = 128
 
-        # FIXME: trimesh should be retrieved by scene (or aggregate)
-        self.__fixme_trimesh = None
+        # # FIXME: trimesh should be retrieved by scene (or aggregate)
+        # DELETEME
+        # self.__fixme_trimesh = None
 
         # members
         self.__scenegraph = None
+
+        # global material list
+
+        # HEREHERE 2011-9-7(Wed)
+        # self.__scene_geo_mat = SceneGeometryMaterialContainer()
+
 
         # run the test
         self.__create_scene()
@@ -58,38 +66,23 @@ class TestIfgiRender(unittest.TestCase):
     def __create_scene(self):
         print 'creating a scene'
 
-        # create scenegraph
-        self.__scenegraph = SceneGraph.SceneGraph()
-        assert(self.__scenegraph.get_root_node() == None)
+        # create scenegraph by the ifgi scene parser
 
-        # create scenegraph's root node
-        rootsg = SceneGraph.SceneGraphNode('rootsg')
+        _infilepath = '../../sampledata/cornel_box.ifgi'
+        ifgireader = IfgiSceneReader.IfgiSceneReader()
+        if(not ifgireader.read(_infilepath)):
+            raise StandardError, ('load file [' + _infilepath + '] failed.')
 
-        # add a camera
-        child0 = SceneGraph.CameraNode('main_cam')
-        rootsg.append_child(child0)
+        sg = SceneGraph.create_ifgi_scenegraph(ifgireader)
+        sg.update_all_bbox()
 
-        self.__scenegraph.set_root_node(rootsg)
-        self.__scenegraph.set_current_camera(child0.get_camera())
 
-        assert(self.__scenegraph.is_valid())
+        # create the global material_name -> material lookup map
+        # HEREHERE 2011-9-7(Wed)
+        # self.__scene_geo_mat.append_ifgi_data(ifgirenader)
 
-        # added a mesh group
-        meshgroup_node = SceneGraph.SceneGraphNode('meshgroup_0')
-        rootsg.append_child(meshgroup_node)
-
-        # create a triangle mesh and attach to the trimesh node
-        objfname = '../../sampledata/cornel_box.obj'
-        self.__trimesh = SceneGraph.load_one_trimesh_from_objfile(objfname)
-        trimesh_node = SceneGraph.SceneGraphNode('trimesh_0')
-        trimesh_node.set_primitive(self.__trimesh)
-
-        # TODO: when attach create (removable) acceleration structure
-        # Idea: create an aggregate node, that has a method
-        # set_primitive, it creates acceleration structure, for
-        # instance.
-
-        meshgroup_node.append_child(trimesh_node)
+        # assign global material index to all primitives
+        # -- now all primitive (TriMesh) can look up the material
 
 
     # set a perspective camera, look at the triangle
@@ -112,7 +105,8 @@ class TestIfgiRender(unittest.TestCase):
         cur_cam.set_z_far(5000.0)
 
         # added RGBA buffer to the current camera.
-        imgsz = (self._image_xsize, self._image_ysize, 4)
+        imgsz = (self.__image_xsize, self.__image_ysize, 4)
+        cur_cam.set_film('Hit',  Film.ImageFilm(imgsz, 'Hit'))
         cur_cam.set_film('RGBA', Film.ImageFilm(imgsz, 'RGBA'))
         cur_cam.print_obj()
 
@@ -121,30 +115,31 @@ class TestIfgiRender(unittest.TestCase):
     def __compute_color(self, _pixel_x, _pixel_y, _ray):
         # FIXME: super slow
         cur_cam = self.__scenegraph.get_current_camera()
-        film = cur_cam.get_film('RGBA')
+        hit_buf = cur_cam.get_film('Hit')
+        col_buf = cur_cam.get_film('RGBA')
 
         hr = self.__trimesh.ray_intersect(_ray)
         if hr != None:
             # Hit point visualization
-            film.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
-            # HEREHERE 2011-8-12(Fri)
+            hit_buf.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
+            # col_buf.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
 
 
 
     # render a frame
     def __render_frame(self):
         srs = Sampler.StratifiedRegularSampler()
-        srs.compute_sample(0, self._image_xsize - 1, 0, self._image_ysize - 1)
+        srs.compute_sample(0, self.__image_xsize - 1, 0, self.__image_ysize - 1)
 
-        assert(self._image_xsize > 0)
-        assert(self._image_ysize > 0)
+        assert(self.__image_xsize > 0)
+        assert(self.__image_ysize > 0)
 
-        inv_xsz = 1.0/self._image_xsize
-        inv_ysz = 1.0/self._image_ysize
+        inv_xsz = 1.0/self.__image_xsize
+        inv_ysz = 1.0/self.__image_ysize
         cur_cam = self.__scenegraph.get_current_camera()
 
-        for x in xrange(0, self._image_xsize, 1):
-            for y in xrange(0, self._image_ysize, 1):
+        for x in xrange(0, self.__image_xsize, 1):
+            for y in xrange(0, self.__image_ysize, 1):
                 # get normalized coordinate
                 nx = srs.get_sample_x(x,y) * inv_xsz
                 ny = srs.get_sample_y(x,y) * inv_ysz

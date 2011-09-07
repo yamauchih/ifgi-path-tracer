@@ -27,7 +27,8 @@ class Primitive(object):
         self.__name = None
         # material name (may None)
         self.__material_name = None
-
+        # material global index. set when the scene is fixed.
+        self.__material_global_index = -1
 
     def get_classname(self):
         """get class name. interface method.
@@ -51,7 +52,6 @@ class Primitive(object):
         return self.__name
 
 
-
     def set_material_name(self, _mat_name):
         """set primitive's material name.
         \param[in] _mat_name material name
@@ -64,6 +64,22 @@ class Primitive(object):
         \return material name
         """
         return self.__material_name
+
+
+    def set_material_global_index(self, _mat_idx):
+        """set primitive's material global index.
+        material index is scene global index for fast material lookup.
+        \param[in] _mat_idx material index (for fast lookup)
+        """
+        self.__material_global_index = _mat_idx
+
+
+    def get_material_global_index(self):
+        """get primitive's material global index.
+        If -1, no material is indicated.
+        \return global material index
+        """
+        return self.__material_global_index
 
 
     def get_bbox(self):
@@ -433,7 +449,7 @@ class TriMesh(Primitive):
             tri.set_vertex(self.vertex_list[fi[0]],
                            self.vertex_list[fi[1]],
                            self.vertex_list[fi[2]])
-            # FIXME: need nearest hit
+
             hr = tri.ray_intersect(_ray)
             if hr != None:
                 if trimesh_hr.dist > hr.dist:

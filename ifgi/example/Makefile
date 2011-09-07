@@ -19,7 +19,7 @@ SUBDIR :=
 
 # additional clean files
 ADDITIONAL_CLEAN_FILE := 		\
-	test_ifgi_render.png 		\
+	test_ifgi_render_0.HitBuf.png	\
 
 
 

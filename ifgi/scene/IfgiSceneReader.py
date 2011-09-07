@@ -254,6 +254,12 @@ class IfgiSceneReader(object):
         self.geometry_list.append(_new_geo)
         self.geometry_name_idx_dict[_new_geo['geo_name']] = new_geo_idx
 
+        # I can not set the material global index to the primitive
+        # here, because the scene can be constructed by multiple ifgi
+        # files.  primitive -> material map should be constructed
+        # somewhere else.
+
+
     def __parse_line(self, _infile):
         """parse a line.
         Depends on the line, this might call parse_{block}.

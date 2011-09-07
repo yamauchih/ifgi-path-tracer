@@ -7,9 +7,17 @@
 *** DONE GLMaterialNode referes ifgi material
 *** DONE Implemented FG color
 
+** TODO Bug
+   複数の同じノードのメニューが更新されていない．
+
 ** TODO tracer. show constant color
+   SceneUtil.py
+   set trimesh(material index from the name)
+   lookup the material
+
 ** TODO tracer. show depth buffer
 ** TODO tracer. show in the viewer (GLImageFilmNode)
+** TODO Unified the test in one directory.
 
 
 ** TODO implement material
@@ -32,7 +40,7 @@
 *** TextureIF
 *** ImageTexture
 
-** TODO Bug
+
 
 ** TODO Add primitive to get_bsdf
 

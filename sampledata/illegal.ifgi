@@ -1,0 +1,14 @@
+# not_correct_ifgi 0
+#
+# illegal ifgi scene file for error handling test
+# Copyright (C) 2011 Yamauchi, Hitoshi
+#
+
+#
+# matreial definition
+#
+def material (
+    mat_name = one_tri_mat
+    mat_type = lambert
+    diffuse_color = 1.0 0.0 0.0 1.0
+)
