@@ -15,7 +15,7 @@
 *** TODO define material class
 *** TODO material parser (ExtObjReader, extension of obj file reader)
 
-
+** TODO Add camera information in scene file (def camera)
 ** TODO Append scene: load additional ifgi, obj file.
 
 ** TODO Implement texture class

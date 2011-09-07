@@ -1061,10 +1061,9 @@ class GLMaterialNode(GLSceneGraphNode):
         # ifgi material (non OpenGL material)
         self.__ifgi_mat = None
 
-
         # OpenGL push state
         self.__push_current_color = numpy.array([1.0, 1.0, 1.0, 1.0])
-        self.__current_color      = numpy.array([1.0, 1.0, 1.0, 1.0])
+        self.__fg_color           = numpy.array([1.0, 1.0, 1.0, 1.0])
         self.__push_emission      = numpy.array([0.0, 0.0, 0.0, 1.0])
         self.__push_diffuse       = numpy.array([0.5, 0.5, 0.5, 1.0])
         self.__push_ambient       = numpy.array([0.2, 0.2, 0.2, 1.0])
@@ -1101,7 +1100,7 @@ class GLMaterialNode(GLSceneGraphNode):
         Usually set up for draw. E.g., save the OpenGL states.
         """
         self.__push_current_color = GL.glGetFloatv(GL.GL_CURRENT_COLOR)
-        GL.glColor4fv(self.__current_color)
+        GL.glColor4fv(self.__fg_color)
 
         # FIXME: do we need GL_BACK and GL_FRONT_AND_BACK also?
         # then put them in an array.
@@ -1296,7 +1295,7 @@ class GLMaterialNode(GLSceneGraphNode):
             '<h2>GLMaterialNode information</h2>\n' +\
             '<ul>\n' +\
             '  <li><b>FG color:</b> ' +\
-            numpy_util.array2str(self.__current_color)  + '\n' +\
+            numpy_util.array2str(self.__fg_color)  + '\n' +\
             '  <li><b>emission:</b> ' +\
             numpy_util.array2str(self.__emission)  + '\n' +\
             '  <li><b>diffuse:</b> ' +\
@@ -1325,7 +1324,7 @@ class GLMaterialNode(GLSceneGraphNode):
 
         mat_group.add(QtWidgetIO.QtColorButton(),
                       'fg_color',
-                      self.__current_color,
+                      self.__fg_color,
                       {'LABEL': 'FG color'})
         mat_group.add(QtWidgetIO.QtColorButton(),
                       'emission',
@@ -1374,6 +1373,7 @@ class GLMaterialNode(GLSceneGraphNode):
         """set configuration dictionary. (configSetData)
         \param[in] _config_dict configuration dictionary for GLMaterialNode
         """
+        self.__fg_color  = _config_dict['fg_color']
         self.__emission  = _config_dict['emission']
         self.__diffuse   = _config_dict['diffuse']
         self.__ambient   = _config_dict['ambient']
@@ -1396,7 +1396,8 @@ class GLMaterialNode(GLSceneGraphNode):
         """get configuration dictionary. (configGetData)
         \return configuration dictionary of GLMaterialNode
         """
-        config_dict = {'emission':  self.__emission,
+        config_dict = {'fg_color':  self.__fg_color,
+                       'emission':  self.__emission,
                        'diffuse':   self.__diffuse,
                        'ambient':   self.__ambient,
                        'specular':  self.__specular,
@@ -1530,6 +1531,34 @@ class GLTriMeshNode(GLSceneGraphNode):
         return self.__drawmode_list
 
 
+    def enter(self):
+        """enter draw. Prologue of the draw()
+        push the gl state that draw might change
+        """
+
+        self.__bg_color4f      = GL.glGetFloatv(GL.GL_COLOR_CLEAR_VALUE)
+
+        self.__current_color4f = GL.glGetFloatv(GL.GL_CURRENT_COLOR)
+        self.__shade_model     = GL.glGetIntegerv(GL.GL_SHADE_MODEL)
+        self.__is_enabled_lighting   = GL.glIsEnabled(GL.GL_LIGHTING)
+        self.__is_enabled_depthtest  = GL.glIsEnabled(GL.GL_DEPTH_TEST)
+        self.__is_enabled_offsetfill = GL.glIsEnabled(GL.GL_POLYGON_OFFSET_FILL)
+
+
+    def leave(self):
+        """leave draw. Epilogue of the draw()
+        pop the gl state
+        """
+
+        GL.glColor4fv(self.__current_color4f)
+        GL.glShadeModel(self.__shade_model)
+        self.gl_enable_disable(GL.GL_LIGHTING,   self.__is_enabled_lighting)
+        self.gl_enable_disable(GL.GL_DEPTH_TEST, self.__is_enabled_depthtest)
+        self.gl_enable_disable(GL.GL_POLYGON_OFFSET_FILL,
+                               self.__is_enabled_offsetfill)
+
+
+
     def draw(self, _global_drawmode):
         """draw the attached triangle mesh.
         If node is deactivated, draw nothing.
@@ -1544,8 +1573,6 @@ class GLTriMeshNode(GLSceneGraphNode):
         if (_drawmode == DrawMode.DrawModeList.DM_GlobalMode):
             _drawmode = _global_drawmode
 
-        # push the current GL state
-        self.__draw_push_gl_state()
 
         if ((_drawmode & DrawMode.DrawModeList.DM_BBox) != 0):
             self.__draw_bbox()
@@ -1578,37 +1605,7 @@ class GLTriMeshNode(GLSceneGraphNode):
             self.gl_enable_disable(GL.GL_LIGHTING, self.__is_enabled_light_texture)
             self.__draw_solid_texture()
 
-        # pop the current GL state
-        self.__draw_pop_gl_state()
 
-
-    # push the gl state that draw might change
-    def __draw_push_gl_state(self):
-        """push the gl state that draw might change
-
-        Subroutine of draw()"""
-
-        self.__bg_color4f      = GL.glGetFloatv(GL.GL_COLOR_CLEAR_VALUE)
-
-        self.__current_color4f = GL.glGetFloatv(GL.GL_CURRENT_COLOR)
-        self.__shade_model     = GL.glGetIntegerv(GL.GL_SHADE_MODEL)
-        self.__is_enabled_lighting   = GL.glIsEnabled(GL.GL_LIGHTING)
-        self.__is_enabled_depthtest  = GL.glIsEnabled(GL.GL_DEPTH_TEST)
-        self.__is_enabled_offsetfill = GL.glIsEnabled(GL.GL_POLYGON_OFFSET_FILL)
-
-
-    # pop the gl state
-    def __draw_pop_gl_state(self):
-        """pop the gl state
-
-        Subroutine of draw()"""
-
-        GL.glColor4fv(self.__current_color4f)
-        GL.glShadeModel(self.__shade_model)
-        self.gl_enable_disable(GL.GL_LIGHTING,   self.__is_enabled_lighting)
-        self.gl_enable_disable(GL.GL_DEPTH_TEST, self.__is_enabled_depthtest)
-        self.gl_enable_disable(GL.GL_POLYGON_OFFSET_FILL,
-                               self.__is_enabled_offsetfill)
 
     # draw bbox
     def __draw_bbox(self):

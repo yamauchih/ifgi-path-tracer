@@ -57,6 +57,13 @@ class ConstantColorTexture(Texture):
         return 'ConstantColorTexture'
 
 
+    def set_constant_color(self, _col):
+        """set constant color.
+        \param[in] _col constant color of this texture
+        """
+        self.__color = _col
+
+
     def value(self, _uv, _point):
         """texture value.
 

@@ -7,7 +7,7 @@
 \brief scene element material
 """
 
-import sys, math, numpy
+import sys, math, numpy, copy
 from ifgi.base import numpy_util
 
 import Texture
@@ -163,14 +163,16 @@ class Material(object):
     def get_gl_preview_dict(self):
         """get material information for OpenGL preview.
 
-        gl_preview_dict = {'emission':  float4,
+        gl_preview_dict = {'fg_color':  float4,
+                           'emission':  float4,
                            'diffuse':   float4,
                            'ambient':   float4,
                            'specular':  float4,
                            'shininess': str(float)}
         \return OpenGL preview data
         """
-        gl_preview_dict = {'emission':  numpy.array([0,0,0,1]),
+        gl_preview_dict = {'fg_color':  numpy.array([1.0,0.5,0.5,1.0]),
+                           'emission':  numpy.array([0,0,0,1]),
                            'diffuse':   numpy.array([1.0,0.5,0.5,1.0]),
                            'ambient':   numpy.array([0,0,0,1]),
                            'specular':  numpy.array([0,0,0,1]),
@@ -292,19 +294,23 @@ class DiffuseMaterial(Material):
 
     def get_gl_preview_dict(self):
         """get material information for OpenGL preview.
-        gl_preview_dict = {'emission':  float4,
+        gl_preview_dict = {'fg_color':  float4,
+                           'emission':  float4,
                            'diffuse':   float4,
                            'ambient':   float4,
                            'specular':  float4,
                            'shininess': str(float)}
         \return OpenGL preview data
         """
-
+        fg_color    = numpy.array([0.5, 0.5, 0.5, 1.0]),
         diffuse_col = numpy.array([0.5, 0.5, 0.5, 1.0]),
         if(self.__texture.get_classname() == 'ConstantColorTexture'):
             diffuse_col = self.__texture.value(None, None)
+            fg_color    = copy.deepcopy(diffuse_col)
 
-        gl_preview_dict = {'emission':  numpy.array([0,0,0,1]),
+
+        gl_preview_dict = {'fg_color':  fg_color,
+                           'emission':  numpy.array([0,0,0,1]),
                            'diffuse':   diffuse_col,
                            'ambient':   numpy.array([0,0,0,1]),
                            'specular':  numpy.array([0,0,0,1]),
@@ -316,7 +322,9 @@ class DiffuseMaterial(Material):
         """set material information from OpenGL material editor.
         \param[in] _gl_preview_dict
         """
+        # fg_color    = _gl_preview_dict['fg_color']
         diffuse_col = _gl_preview_dict['diffuse']
+        self.__texture.set_constant_color(diffuse_col)
 
 
 # ----------------------------------------------------------------------
