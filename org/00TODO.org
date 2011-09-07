@@ -17,6 +17,11 @@
 
 ** TODO Add camera information in scene file (def camera)
 ** TODO Append scene: load additional ifgi, obj file.
+** TODO GLTriMeshNode
+*** TODO vertex array mode
+
+** TODO Test Gouroud shading with a mesh that has vertex normal
+
 
 ** TODO Implement texture class
 *** TextureIF

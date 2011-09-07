@@ -24,10 +24,10 @@ class ObjReader(object):
        texture coordinates
 
     - 'vn' nx ny nz
-       normal
+       vertex normal
 
     - 'f' vi/ti/ni vi/ti/ni vi/ti/ni
-       vertex_idx/texturecoord_index/normal_index
+       vertex_idx/texturecoord_index/vertex_normal_index
        assume only triangle
        """
 
@@ -41,8 +41,10 @@ class ObjReader(object):
         # public member
         self.vertex_list       = []
         self.face_idx_list     = []
+        # vertex texture (per vertex, not per face, therefore these are shared)
         self.texcoord_list     = []
         self.texcoord_idx_list = []
+        # vertex normal
         self.normal_list       = []
         self.normal_idx_list   = []
 

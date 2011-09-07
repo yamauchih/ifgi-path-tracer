@@ -1711,6 +1711,12 @@ class GLTriMeshNode(GLSceneGraphNode):
         # vp reference
         vp = self.get_primitive().vertex_list
         for face in self.get_primitive().face_idx_list:
+            # FIXME: normal is always generated, may slow for python
+            v1 = vp[face[1]] - vp[face[0]]
+            v2 = vp[face[2]] - vp[face[0]]
+            n  = numpy.cross(v1, v2)
+            n  /= numpy.linalg.norm(n)
+            GL.glNormal3fv(n)
             GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
             GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
             GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
@@ -1719,8 +1725,43 @@ class GLTriMeshNode(GLSceneGraphNode):
     # draw solid_gouraud
     def __draw_solid_gouraud(self):
         """draw solid_gouraud"""
-        GL.glShadeModel(GL.GL_FLAT)
-        print 'NIN: __draw_solid_gouraud'
+        GL.glShadeModel(GL.GL_SMOOTH)
+
+        # vp reference
+        vp = self.get_primitive().vertex_list
+        vn = self.get_primitive().normal_list
+
+        GL.glBegin(GL.GL_TRIANGLES)
+        face_count   = len(self.get_primitive().face_idx_list)
+        normal_count = len(self.get_primitive().normal_idx_list)
+
+        if ((vn != None) and (face_count != normal_count)):
+            ILog.error('This mesh has vertex normal, but they does not match ' +\
+                           'the vertex size. ' +\
+                           'Cannot render Gouraud shading without normals.')
+
+        if ((vn != None) and (face_count == normal_count)):
+            # vertex normal registered
+            for idx in xrange(0, face_count):
+                face   = self.get_primitive().face_idx_list[idx]
+                normal = self.get_primitive().normal_idx_list[idx]
+                GL.glNormal3fv(normal[0])
+                GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
+                GL.glNormal3fv(normal[1])
+                GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
+                GL.glNormal3fv(normal[2])
+                GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
+
+        else:
+            # no vertex normal
+            for face in self.get_primitive().face_idx_list:
+                GL.glVertex3d(vp[face[0]][0], vp[face[0]][1], vp[face[0]][2])
+                GL.glVertex3d(vp[face[1]][0], vp[face[1]][1], vp[face[1]][2])
+                GL.glVertex3d(vp[face[2]][0], vp[face[2]][1], vp[face[2]][2])
+
+        GL.glEnd()
+
+
 
     # draw solid_texture
     def __draw_solid_texture(self):
