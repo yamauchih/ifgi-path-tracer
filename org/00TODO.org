@@ -5,33 +5,34 @@
 *** DONE load ifgi scene file and construct ifgi scenegraph
 *** DONE implemented converter from ifgi scene graph to GL scenegraph
 *** DONE GLMaterialNode referes ifgi material
-*** TODO GLMaterialNode's FG color does not work on Solid Color mode
+*** DONE Implemented FG color
+
+** TODO tracer. show constant color
+** TODO tracer. show depth buffer
+** TODO tracer. show in the viewer (GLImageFilmNode)
 
 
 ** TODO implement material
-*** TODO add GL light node, config, info, trimesh refers light
 *** TODO append obj file function.
     append under mesh group with material node + trimesh node
 *** TODO define material class
-*** TODO material parser (ExtObjReader, extension of obj file reader)
 
 ** TODO Add camera information in scene file (def camera)
+** TODO scene exporter
+** TODO Copy/Paste camera parameter
 ** TODO Append scene: load additional ifgi, obj file.
+
 ** TODO GLTriMeshNode
 *** TODO vertex array mode
+*** TODO config dialog, config_set/get
 
 ** TODO Test Gouroud shading with a mesh that has vertex normal
 
-
 ** TODO Implement texture class
 *** TextureIF
-*** ConstantColorTexture
 *** ImageTexture
 
 ** TODO Bug
-
-** TODO GLSceneGraphNode
-*** TODO GLTriMeshNode config dialog, config_set/get
 
 ** TODO Add primitive to get_bsdf
 
