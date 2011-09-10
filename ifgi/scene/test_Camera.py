@@ -26,6 +26,7 @@ class TestCamera(unittest.TestCase):
 #
 # main test
 #
-suit0   = unittest.TestLoader().loadTestsFromTestCase(TestCamera)
-alltest = unittest.TestSuite([suit0])
-unittest.TextTestRunner(verbosity=2).run(alltest)
+if __name__ == '__main__':
+    suit0   = unittest.TestLoader().loadTestsFromTestCase(TestCamera)
+    alltest = unittest.TestSuite([suit0])
+    unittest.TextTestRunner(verbosity=2).run(alltest)
