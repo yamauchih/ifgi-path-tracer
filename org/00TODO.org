@@ -1,4 +1,4 @@
-* Task ifgi path tracer 2011-9-5(Mon)
+* Task ifgi path tracer 2011-9-9(Fri)
 
 ** top5
 *** DONE implemented ifgi parser: material def and geometry def
@@ -6,9 +6,11 @@
 *** DONE implemented converter from ifgi scene graph to GL scenegraph
 *** DONE GLMaterialNode referes ifgi material
 *** DONE Implemented FG color
-
-** TODO Bug
-   複数の同じノードのメニューが更新されていない．
+*** DONE Fixed Bug
+**** DONE scenegraph node contect menu is not updated.
+     SceneGraph node context menu should be reconstructed for each
+     node. The cache mechanism doesn't make sense, therefore, removed.
+     (Only the selected node is exactly the same, we can reuse it.)
 
 ** TODO tracer. show constant color
    SceneUtil.py
@@ -125,6 +127,8 @@ Code guideline
 
 ---
 
-Later TODO
-
-- OpenMeshPrimitive, GLOpenMeshViewNode
+** TODO Later
+*** OpenMeshPrimitive, GLOpenMeshViewNode
+*** Integration: WebGL in the chrome, Sketchup, Blender
+*** Car configuration example
+*** Marcov Chain Monte Carlo texture synthesis

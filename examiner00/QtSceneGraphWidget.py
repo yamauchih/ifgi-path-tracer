@@ -96,7 +96,11 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         # property
         self.__is_columnsize_autoadjust = True
         self.__popupmenu              = None
-        self.__drawmode_list          = None
+
+        # no need to collect global drawmode list since each node
+        # needs no global (like in the main window) draw mode list
+        # self.__drawmode_list = None
+
         self.__gl_scenegraph          = None
         self.__drawmode_bitmap2action = {} # drawmode bitmap to action dictionary
 
@@ -129,7 +133,11 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         self.__cur_tree_item = None
 
         # collect drawmode from the gl scenegraph
-        self.__drawmode_list = _gl_scenegraph.collect_drawmode_list()
+
+        # no need to collect global drawmode list since each node
+        # needs no global (like in the main window) draw mode list
+        # self.__drawmode_list = _gl_scenegraph.collect_drawmode_list()
+
         self.__gl_scenegraph = _gl_scenegraph
 
         self.adjust_columnsize_by_contents()
@@ -220,13 +228,12 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
         Show context menu with respect to _glsgnode
         \param[in] _glsgnode GL scenegraph node."""
 
-        if(self.__popupmenu == None):
-            self.__create_popupmenu()
-            self.__create_popupmenu_drawmode()
-            assert(_glsgnode != None)
-            self.__update_popupmenu_drawmode(_glsgnode.get_drawmode())
-
-
+        # create menu every time
+        self.__popupmenu = None
+        self.__create_popupmenu()
+        self.__create_popupmenu_drawmode(_glsgnode)
+        assert(_glsgnode != None)
+        self.__update_popupmenu_drawmode(_glsgnode.get_drawmode())
         self.__popupmenu.exec_(QtGui.QCursor.pos())
 
         # print 'DEBUG: node = ' + str(_glsgnode)
@@ -574,19 +581,23 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
 
 
 
-    # create popup menu: draw mode
-    def __create_popupmenu_drawmode(self):
-        """create popup menu for right click. local draw mode part
-        following the control menu creation."""
+    def __create_popupmenu_drawmode(self, _glnode):
+        """create popup menu's draw mode part by a right click. local
+        draw mode part following the control menu creation. These
+        local draw mode may depends on the GL scenegraph node.
 
-        # __drawmode_list is set by update_scenegraph.
-        assert(self.__drawmode_list != None)
+        \param[in] _glnode a GLSceneGraph node
+        """
+
+        # Some node doesn't have local draw mode.
+        if _glnode.get_drawmode_list() == None:
+            return
 
         # local draw mode is not radio button. Each can be set/unset
         # independently. (differ from QtExaminerWidget's
         # __create_popup_menu_drawmode()).
 
-        for dmi in self.__drawmode_list.get_mode_item_list():
+        for dmi in _glnode.get_drawmode_list().get_mode_item_list():
             if dmi.is_avairable:
                 # Using a closure. mode_closure make a closure
                 # function that holds self (through this) and
