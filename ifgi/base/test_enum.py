@@ -23,11 +23,10 @@ class TestEnum(unittest.TestCase):
         # s = str(Animals.Bat)    # error
         # print s
 
-
-
 #
 # main test
 #
-suit0   = unittest.TestLoader().loadTestsFromTestCase(TestEnum)
-alltest = unittest.TestSuite([suit0])
-unittest.TextTestRunner(verbosity=2).run(alltest)
+if __name__ == '__main__':
+    suit0   = unittest.TestLoader().loadTestsFromTestCase(TestEnum)
+    alltest = unittest.TestSuite([suit0])
+    unittest.TextTestRunner(verbosity=2).run(alltest)

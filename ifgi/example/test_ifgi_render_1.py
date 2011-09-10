@@ -18,6 +18,7 @@ import numpy
 from ifgi.base    import Sampler
 from ifgi.ptracer import IfgiSys
 from ifgi.scene   import SceneGraph, Primitive, Film, test_scene_util, IfgiSceneReader
+from ifgi.scene   import SceneUtil
 
 
 class TestIfgiRender(unittest.TestCase):
@@ -36,18 +37,11 @@ class TestIfgiRender(unittest.TestCase):
         self.__image_xsize = 128
         self.__image_ysize = 128
 
-        # # FIXME: trimesh should be retrieved by scene (or aggregate)
-        # DELETEME
-        # self.__fixme_trimesh = None
-
         # members
         self.__scenegraph = None
 
-        # global material list
-
-        # HEREHERE 2011-9-7(Wed)
-        # self.__scene_geo_mat = SceneGeometryMaterialContainer()
-
+        # global geometry/material list
+        self.__scene_geo_mat = SceneUtil.SceneGeometryMaterialContainer()
 
         # run the test
         self.__create_scene()
@@ -76,12 +70,14 @@ class TestIfgiRender(unittest.TestCase):
         sg = SceneGraph.create_ifgi_scenegraph(ifgireader)
         sg.update_all_bbox()
 
-
         # create the global material_name -> material lookup map
-        # HEREHERE 2011-9-7(Wed)
-        # self.__scene_geo_mat.append_ifgi_data(ifgirenader)
+        self.__scene_geo_mat.append_ifgi_data(ifgireader)
+        self.__scene_geo_mat.print_summary()
 
         # assign global material index to all primitives
+
+
+
         # -- now all primitive (TriMesh) can look up the material
 
 

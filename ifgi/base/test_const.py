@@ -6,6 +6,7 @@
 \file
 \brief test for python const.
 """
+import unittest
 import const
 
 # This works well
@@ -13,14 +14,22 @@ import const
 # const.a = 'world'
 
 # This works well
-class ConstTest(object):
+class TestConst(unittest.TestCase):
     """const test"""
-    def __init__(self):
-        """constructor."""
+
+    def test_const(self):
+        """test const."""
         const.a = 'hello'
         self.a = const.a
         self.a = 'world'
         # print self.a
 
-ConstTest()
+#
+# main test
+#
+if __name__ == '__main__':
+    suit0   = unittest.TestLoader().loadTestsFromTestCase(TestConst)
+    alltest = unittest.TestSuite([suit0])
+    unittest.TextTestRunner(verbosity=2).run(alltest)
+
 
