@@ -21,11 +21,10 @@ from ifgi.scene   import SceneGraph, Primitive, Film, test_scene_util, IfgiScene
 from ifgi.scene   import SceneUtil
 
 
-class TestIfgiRender(unittest.TestCase):
+class TestIfgiRender1(unittest.TestCase):
     """test: ifgi render test. This is a big example for development"""
 
     FIXME_REDARY = numpy.array([1, 0, 0, 1])
-
 
     def test_render(self):
         """test rendering"""
@@ -67,16 +66,14 @@ class TestIfgiRender(unittest.TestCase):
         if(not ifgireader.read(_infilepath)):
             raise StandardError, ('load file [' + _infilepath + '] failed.')
 
-        sg = SceneGraph.create_ifgi_scenegraph(ifgireader)
-        sg.update_all_bbox()
+        self.__scenegraph = SceneGraph.create_ifgi_scenegraph(ifgireader)
+        self.__scenegraph.update_all_bbox()
 
         # create the global material_name -> material lookup map
         self.__scene_geo_mat.append_ifgi_data(ifgireader)
         self.__scene_geo_mat.print_summary()
 
-        # assign global material index to all primitives
-
-
+        # FIXME 2011-9-10(Sat) assign global material index to all primitives
 
         # -- now all primitive (TriMesh) can look up the material
 
@@ -159,8 +156,9 @@ class TestIfgiRender(unittest.TestCase):
 #
 # main test
 #
-suit0   = unittest.TestLoader().loadTestsFromTestCase(TestIfgiRender)
-alltest = unittest.TestSuite([suit0])
-unittest.TextTestRunner(verbosity=2).run(alltest)
+if __name__ == '__main__':
+    suit0   = unittest.TestLoader().loadTestsFromTestCase(TestIfgiRender1)
+    alltest = unittest.TestSuite([suit0])
+    unittest.TextTestRunner(verbosity=2).run(alltest)
 
 

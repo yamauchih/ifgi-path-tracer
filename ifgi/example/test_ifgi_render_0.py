@@ -19,7 +19,7 @@ from ifgi.ptracer import IfgiSys
 from ifgi.scene   import SceneGraph, Primitive, Film, test_scene_util
 from ifgi.base    import Sampler
 
-class TestIfgiRender(unittest.TestCase):
+class TestIfgiRender0(unittest.TestCase):
     """test: ifgi render test. This is a big example for development"""
 
     FIXME_REDARY = numpy.array([1, 0, 0, 1])
@@ -166,8 +166,9 @@ class TestIfgiRender(unittest.TestCase):
 #
 # main test
 #
-suit0   = unittest.TestLoader().loadTestsFromTestCase(TestIfgiRender)
-alltest = unittest.TestSuite([suit0])
-unittest.TextTestRunner(verbosity=2).run(alltest)
+if __name__ == '__main__':
+    suit0   = unittest.TestLoader().loadTestsFromTestCase(TestIfgiRender0)
+    alltest = unittest.TestSuite([suit0])
+    unittest.TextTestRunner(verbosity=2).run(alltest)
 
 

@@ -29,7 +29,7 @@ class SceneGeometryMaterialContainer(object):
         self.material_name_idx_dict = {}
 
         # global geometry list
-        self.geometry_list = []
+        self.geometry_dict_list = []
         # global geometry name -> index of geometry_def_list
         self.geometry_name_idx_dict = {}
 
@@ -48,7 +48,7 @@ class SceneGeometryMaterialContainer(object):
         # ifgi_reader)
         assert(len(self.material_list) == len(self.material_name_idx_dict))
 
-        for mat_dict in _ifgi_reader.material_list:
+        for mat_dict in _ifgi_reader.material_dict_list:
             mat = Material.material_factory(mat_dict)
             self.material_list.append(mat)
             idx = len(self.material_list) - 1
@@ -58,25 +58,25 @@ class SceneGeometryMaterialContainer(object):
         assert(len(self.material_list) == len(self.material_name_idx_dict))
 
         # append geometry (so far added geometry as geo_dict as is)
-        assert(len(self.geometry_list) == len(self.geometry_name_idx_dict))
+        assert(len(self.geometry_dict_list) == len(self.geometry_name_idx_dict))
 
-        for geo_dict in _ifgi_reader.geometry_list:
+        for geo_dict in _ifgi_reader.geometry_dict_list:
             geo_name = geo_dict['geo_name']
-            self.geometry_list.append(geo_dict)
-            idx = len(self.geometry_list) - 1
+            self.geometry_dict_list.append(geo_dict)
+            idx = len(self.geometry_dict_list) - 1
             self.geometry_name_idx_dict[geo_name] = idx
 
-        assert(len(self.geometry_list) == len(self.geometry_name_idx_dict))
+        assert(len(self.geometry_dict_list) == len(self.geometry_name_idx_dict))
 
 
     def print_summary(self):
         """print summary"""
         print '# of materials  = ', len(self.material_list)
-        print '# of geometries = ', len(self.geometry_list)
+        print '# of geometries = ', len(self.geometry_dict_list)
 
         # sanity check
         assert(len(self.material_list) == len(self.material_name_idx_dict))
-        assert(len(self.geometry_list) == len(self.geometry_name_idx_dict))
+        assert(len(self.geometry_dict_list) == len(self.geometry_name_idx_dict))
 
         for mat_name in self.material_name_idx_dict.keys():
             idx = self.material_name_idx_dict[mat_name]
@@ -88,7 +88,7 @@ class SceneGeometryMaterialContainer(object):
 
         for geo_name in self.geometry_name_idx_dict.keys():
             idx = self.geometry_name_idx_dict[geo_name]
-            if(self.geometry_list[idx]['geo_name'] != geo_name):
+            if(self.geometry_dict_list[idx]['geo_name'] != geo_name):
                 raise StandardError, ('invalid geometry name to index map.')
 
         print 'geometry name index map is valid.'

@@ -812,7 +812,7 @@ def create_ifgi_scenegraph(_ifgi_reader):
     # 'materialgroup' is a special group.
     mat_group_node = SceneGraphNode('materialgroup')
     rootsg.append_child(mat_group_node)
-    for mat_dict in _ifgi_reader.material_list:
+    for mat_dict in _ifgi_reader.material_dict_list:
         mat = Material.material_factory(mat_dict)
         ch_mat_node = MaterialNode(mat_dict['mat_name'])
         ch_mat_node.set_material(mat)
@@ -821,7 +821,7 @@ def create_ifgi_scenegraph(_ifgi_reader):
 
     mesh_group = SceneGraphNode('meshgroup')
     rootsg.append_child(mesh_group)
-    for geo_dict in _ifgi_reader.geometry_list:
+    for geo_dict in _ifgi_reader.geometry_dict_list:
         ch_node = PrimitiveNode(geo_dict['geo_name'], geo_dict['TriMesh'])
         mesh_group.append_child(ch_node)
 

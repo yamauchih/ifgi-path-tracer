@@ -17,6 +17,7 @@
    set trimesh(material index from the name)
    lookup the material
 
+
 ** TODO tracer. show depth buffer
 ** TODO tracer. show in the viewer (GLImageFilmNode)
 ** TODO Unified the test in one directory.

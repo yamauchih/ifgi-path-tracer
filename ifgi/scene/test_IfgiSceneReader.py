@@ -19,8 +19,9 @@ class TestIfgiSceneReader(unittest.TestCase):
         ifgireader.read('../../sampledata/cornel_box.ifgi')
         # ifgireader.dump()
 
-        self.assertEquals(len(ifgireader.material_list), 8)
-        self.assertEquals(len(ifgireader.geometry_list), 8)
+        self.assertEquals(len(ifgireader.material_dict_list), 8)
+        self.assertEquals(len(ifgireader.geometry_dict_list), 8)
+        self.assertEquals(len(ifgireader.camera_dict_dict), 1)
 
 
 #

@@ -15,7 +15,7 @@ import unittest
 from ifgi.ptracer.IfgiSys import IfgiSys
 
 
-class TestIfgiStartShutdown(unittest.TestCase):
+class TestIfgiInitShutdown(unittest.TestCase):
     """test: ifgi sysyem start and shutdown"""
 
     def test_start_shutdown(self):
@@ -41,9 +41,10 @@ class TestIfgiStartShutdown(unittest.TestCase):
 #
 # main test
 #
-suit0   = unittest.TestLoader().loadTestsFromTestCase(TestIfgiStartShutdown)
-alltest = unittest.TestSuite([suit0])
-unittest.TextTestRunner(verbosity=2).run(alltest)
+if __name__ == '__main__':
+    suit0   = unittest.TestLoader().loadTestsFromTestCase(TestIfgiInitShutdown)
+    alltest = unittest.TestSuite([suit0])
+    unittest.TextTestRunner(verbosity=2).run(alltest)
 
 
 

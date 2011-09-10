@@ -44,6 +44,23 @@ class IfgiSceneReader(object):
     - geo_info['geo_file_type'] = 'obj'
     - geo_info['geo_file_name'] = filename
     - geo_info['TriMesh']  = Primitive.TriMesh object
+
+    - def camera {
+        cam_name = name_of_camera
+        eye_pos = eye_pos
+        view_dir = view_dir
+        up_dir = up_dir
+        fovy_rad = fovy_rad
+        aspect_ratio = aspect_ratio
+        z_near = z_near
+        z_far = z_far
+        projection = projection
+        target_dist = target_dist
+        focal_length = focal_length
+        lens_screen_dist = lens_screen_dist
+        lens_film_dis = lens_film_dis
+        }
+
     """
 
     # supported geometry file format
@@ -56,19 +73,22 @@ class IfgiSceneReader(object):
         """default constructor"""
         self.__curline     = -1
 
-        self.__defined_type_list = ['material', 'geometry']
+        self.__defined_type_list = ['material', 'geometry', 'camera']
 
         self.__ifgi_abspath = ''
         self.__ifgi_dirname = ''
 
-        self.material_list = []
+        self.material_dict_list = []
         #    material name -> index of material_def_list
         self.material_name_idx_dict = {}
 
         # geometry
-        self.geometry_list = []
+        self.geometry_dict_list = []
         #    geometry name -> index of geometry_def_list
         self.geometry_name_idx_dict = {}
+
+        # camera. This is dict
+        self.camera_dict_dict = {}
 
         # last read status
         self.__is_valid = False
@@ -143,12 +163,16 @@ class IfgiSceneReader(object):
         print 'dirname [' + self.__ifgi_dirname + ']'
 
         print '--- material definition'
-        for m in self.material_list:
+        for m in self.material_dict_list:
             print 'def_material:', m
 
         print '--- geometry definition'
-        for g in self.geometry_list:
+        for g in self.geometry_dict_list:
             print 'def_geometry:', g
+
+        print '--- camera definition'
+        for c in self.camera_dict_dict.keys():
+            print 'def_camera:', self.camera_dict_dict[c]
 
 
     # private: ------------------------------------------------------------
@@ -195,7 +219,7 @@ class IfgiSceneReader(object):
 
     def __append_material(self, _new_mat):
         """append new matrial.
-        \param[in] _new_mat new material to append.
+        \param[in] _new_mat new material dict to append.
         """
         # check the material
         if (not self.__is_valid_material(_new_mat)):
@@ -204,33 +228,33 @@ class IfgiSceneReader(object):
         if(_new_mat['mat_name'] in self.material_name_idx_dict):
             raise StandardError, ('duplicate material [' + _new_mat['mat_name'] + '].')
 
-        new_mat_idx = len(self.material_list)
-        self.material_list.append(_new_mat)
+        new_mat_idx = len(self.material_dict_list)
+        self.material_dict_list.append(_new_mat)
         self.material_name_idx_dict[_new_mat['mat_name']] = new_mat_idx
 
 
-    def __is_valid_geometry(self, geo):
+    def __is_valid_geometry(self, _geo_dict):
         """check the geometry information.
-        \param[in] geo
+        \param[in] _geo_dict
         \return True when geometry information is valid.
         """
         necessary_key = ['geo_name', 'material', 'geo_file_name']
         is_success = True
         for k in necessary_key:
-            if(not k in geo):
+            if(not k in _geo_dict):
                 ILog.error('invalid geometry: missing necessary key [' + k +\
                                '], in the geometry block of line ' + str(self.__curline))
                 return False
 
         # material exists?
-        if (not (geo['material'] in self.material_name_idx_dict)):
-            ILog.error('material ['+ geo['material'] + '] of geometry [' +\
-                           geo['geo_name'] + '] is not defined in the geometry ' +\
+        if (not (_geo_dict['material'] in self.material_name_idx_dict)):
+            ILog.error('material ['+ _geo_dict['material'] + '] of geometry [' +\
+                           _geo_dict['geo_name'] + '] is not defined in the geometry ' +\
                            'block of line ' + str(self.__curline))
             return False
 
         # geometry file exists?
-        geo_fpath = os.path.join(self.__ifgi_dirname, geo['geo_file_name'])
+        geo_fpath = os.path.join(self.__ifgi_dirname, _geo_dict['geo_file_name'])
         if (not os.path.isfile(geo_fpath)):
             ILog.error('file [' + geo_fpath + '] does not exist in the geometry ' +\
                            'block of line ' + str(self.__curline))
@@ -239,25 +263,54 @@ class IfgiSceneReader(object):
         return True
 
 
-    def __append_geometry(self, _new_geo):
+    def __append_geometry(self, _new_geo_dict):
         """append new geometry.
-        \param[in] _new_geo new geometry info to append.
+        \param[in] _new_geo_dict new geometry info dict to append.
         """
         # check the geometry
-        if (not self.__is_valid_geometry(_new_geo)):
+        if (not self.__is_valid_geometry(_new_geo_dict)):
             raise StandardError, ('invalid geometry.')
 
-        if(_new_geo['geo_name'] in self.geometry_name_idx_dict):
-            raise StandardError, ('duplicate geometry [' + _new_geo['geo_name'] + '].')
+        if(_new_geo_dict['geo_name'] in self.geometry_name_idx_dict):
+            raise StandardError, ('duplicate geometry [' + _new_geo_dict['geo_name'] + '].')
 
-        new_geo_idx = len(self.geometry_list)
-        self.geometry_list.append(_new_geo)
-        self.geometry_name_idx_dict[_new_geo['geo_name']] = new_geo_idx
+        new_geo_idx = len(self.geometry_dict_list)
+        self.geometry_dict_list.append(_new_geo_dict)
+        self.geometry_name_idx_dict[_new_geo_dict['geo_name']] = new_geo_idx
 
         # I can not set the material global index to the primitive
         # here, because the scene can be constructed by multiple ifgi
         # files.  primitive -> material map should be constructed
         # somewhere else.
+
+
+    def __is_valid_camera(self, _cam_dict):
+        """check the camera dictionary validity.
+        """
+        necessary_key = ['cam_name', 'eye_pos', 'up_dir']
+        is_success = True
+        for k in necessary_key:
+            if(not k in _cam_dict):
+                ILog.error('invalid camera: missing necessary key [' + k +\
+                               '], in the camera block of line ' + str(self.__curline))
+                return False
+
+        return True
+
+
+    def __append_camera(self, _new_cam_dict):
+        """append new camera dict.
+        \param[in] _new_cam new camera info dict to append.
+        """
+        # check the camera name
+        if (not self.__is_valid_camera(_new_cam_dict)):
+            raise StandardError, ('invalid camera.')
+
+        cam_name = _new_cam_dict['cam_name']
+        if(cam_name in self.camera_dict_dict):
+            ILog.warning('duplicate camera name, overridden.')
+
+        self.camera_dict_dict[cam_name] = _new_cam_dict
 
 
     def __parse_line(self, _infile):
@@ -349,13 +402,15 @@ class IfgiSceneReader(object):
             self.__append_material(def_dict)
         elif(_define_type == 'geometry'):
             self.__append_geometry(def_dict)
+        elif(_define_type == 'camera'):
+            self.__append_camera(def_dict)
 
         return read_line_count
 
     def __read_all_geometry_file(self):
         """read all geometry files.
         """
-        for geoinfo in self.geometry_list:
+        for geoinfo in self.geometry_dict_list:
             self.__read_geometry_file(geoinfo)
 
 
