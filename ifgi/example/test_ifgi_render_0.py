@@ -158,7 +158,7 @@ class TestIfgiRender0(unittest.TestCase):
         assert(cur_cam != None)
         film = cur_cam.get_film('Hit')
         assert(film != None)
-        fname = 'test_ifgi_render_0.HitBuf.png'
+        fname = 'test_ifgi_render_0.Hit.png'
         film.save_file(fname)
         print 'Saved ... ' + fname
 

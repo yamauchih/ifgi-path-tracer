@@ -5,9 +5,9 @@
 #
 def camera {
     cam_name = default
-    eye_pos = 278.0, 273.0, -800.0
-    view_dir = 0.0, 0.0, 1.0
-    up_dir = 0.0, 1.0, 0.0
+    eye_pos = 278.0 273.0 -800.0
+    view_dir = 0.0 0.0 1.0
+    up_dir = 0.0 1.0 0.0
     # fovy_rad = 
     # aspect_ratio = 
     z_near = 0.1

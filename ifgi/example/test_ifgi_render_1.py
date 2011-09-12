@@ -33,8 +33,8 @@ class TestIfgiRender1(unittest.TestCase):
         ifgi_stat = ifgi_inst.start()
         assert(ifgi_stat == True)
 
-        self.__image_xsize = 128
-        self.__image_ysize = 128
+        self.__image_xsize = 64
+        self.__image_ysize = 64
 
         # members
         self.__scenegraph = None
@@ -44,19 +44,17 @@ class TestIfgiRender1(unittest.TestCase):
 
         # run the test
         self.__create_scene()
-        self.__set_camera_paramneter()
-
         self.__render_frame()
         self.__save_frame()
 
         ifgi_stat = ifgi_inst.shutdown()
 
 
-
-    #----------------------------------------------------------------------
-    # test subroutines
-    #----------------------------------------------------------------------
     def __create_scene(self):
+        """create scene.
+        geometry, material, and camera.
+        """
+
         print 'creating a scene'
 
         # create scenegraph by the ifgi scene parser
@@ -73,35 +71,21 @@ class TestIfgiRender1(unittest.TestCase):
         self.__scene_geo_mat.append_ifgi_data(ifgireader)
         self.__scene_geo_mat.print_summary()
 
-        # FIXME 2011-9-10(Sat) assign global material index to all primitives
-
         # -- now all primitive (TriMesh) can look up the material
 
+        # set the camera
+        # default camera should exist
+        print ifgireader.camera_dict_dict
+        assert('default' in ifgireader.camera_dict_dict)
 
-    # set a perspective camera, look at the triangle
-    def __set_camera_paramneter(self):
         cur_cam = self.__scenegraph.get_current_camera()
-        assert(cur_cam != None)
-        # cornel box official camera parameter
-        # Position	278 273 -800
-        # Direction	0 0 1
-        # Up direction	0 1 0
-        # Focal length	0.035
-        # Width, height	0.025 0.025
-        eye_pos    = numpy.array([278.0, 273.0, -800.0])
-        view_dir   = numpy.array([ 0.0, 0.0, 1.0])
-        up_dir     = numpy.array([ 0.0, 1.0, 0.0])
-        cur_cam.set_eye_pos(eye_pos)
-        cur_cam.set_view_dir(view_dir)
-        cur_cam.set_up_dir(up_dir)
-        cur_cam.set_z_near(0.01)
-        cur_cam.set_z_far(5000.0)
+        cur_cam.set_config_dict(ifgireader.camera_dict_dict['default'])
 
-        # added RGBA buffer to the current camera.
+        # added RGBA buffer and Hit buffer to the current camera.
         imgsz = (self.__image_xsize, self.__image_ysize, 4)
         cur_cam.set_film('Hit',  Film.ImageFilm(imgsz, 'Hit'))
         cur_cam.set_film('RGBA', Film.ImageFilm(imgsz, 'RGBA'))
-        cur_cam.print_obj()
+        # cur_cam.print_obj()
 
 
     # ray trimesh intersection test
@@ -111,12 +95,11 @@ class TestIfgiRender1(unittest.TestCase):
         hit_buf = cur_cam.get_film('Hit')
         col_buf = cur_cam.get_film('RGBA')
 
-        hr = self.__trimesh.ray_intersect(_ray)
+        hr = self.__scene_geo_mat.ray_intersect(_ray)
         if hr != None:
             # Hit point visualization
             hit_buf.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
             # col_buf.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
-
 
 
     # render a frame
@@ -148,7 +131,13 @@ class TestIfgiRender1(unittest.TestCase):
         assert(cur_cam != None)
         film = cur_cam.get_film('RGBA')
         assert(film != None)
-        fname = 'test_ifgi_render.png'
+        fname = 'test_ifgi_render_1.RGBA.png'
+        film.save_file(fname)
+        print 'Saved ... ' + fname
+
+        film = cur_cam.get_film('Hit')
+        assert(film != None)
+        fname = 'test_ifgi_render_1.Hit.png'
         film.save_file(fname)
         print 'Saved ... ' + fname
 

@@ -513,7 +513,8 @@ class Camera(object):
             ep = numpy_util.str2array(str(_config['eye_pos']))
             print ep
             if len(ep) != 3:
-                raise StandardError('eye_pos must be a float_3.')
+                raise StandardError('eye_pos must be a float_3, but ' +\
+                                        str(_config['eye_pos']))
             self.set_eye_pos(ep)
 
         if 'view_dir' in _config:

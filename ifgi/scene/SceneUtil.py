@@ -8,10 +8,10 @@
 \brief scene related utility.
 """
 
-# import copy, numpy
+import sys
 
 # import Camera, Primitive, Material, Texture
-import ObjReader, IfgiSceneReader, Material
+import ObjReader, IfgiSceneReader, Material, HitRecord
 from ifgi.base.ILog import ILog
 
 
@@ -67,6 +67,22 @@ class SceneGeometryMaterialContainer(object):
             self.geometry_name_idx_dict[geo_name] = idx
 
         assert(len(self.geometry_dict_list) == len(self.geometry_name_idx_dict))
+
+
+    # should be aggregate
+    def ray_intersect(self, _ray):
+        """ray to whole geometry intersect
+        """
+        closest_hr = HitRecord.HitRecord()
+        for geo in self.geometry_dict_list:
+            hr = geo['TriMesh'].ray_intersect(_ray)
+            if(hr != None):
+                if closest_hr.dist > hr.dist:
+                    closest_hr = hr
+
+        if closest_hr.dist == sys.float_info.max:
+            return None
+        return closest_hr
 
 
     def print_summary(self):

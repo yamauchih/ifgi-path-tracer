@@ -807,6 +807,11 @@ def create_ifgi_scenegraph(_ifgi_reader):
     # create scenegraph's root node
     rootsg = SceneGraphNode('rootsg')
     cam_node = CameraNode('main_cam')
+    if('default' in _ifgi_reader.camera_dict_dict):
+        cam_node.get_camera().set_config_dict(_ifgi_reader.camera_dict_dict['default'])
+    else:
+        ILog.warn('ifgi scene file has no default camera, use camera default.')
+
     rootsg.append_child(cam_node)
 
     # 'materialgroup' is a special group.

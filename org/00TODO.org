@@ -1,22 +1,10 @@
 * Task ifgi path tracer 2011-9-9(Fri)
 
 ** top5
-*** DONE implemented ifgi parser: material def and geometry def
-*** DONE load ifgi scene file and construct ifgi scenegraph
-*** DONE implemented converter from ifgi scene graph to GL scenegraph
-*** DONE GLMaterialNode referes ifgi material
-*** DONE Implemented FG color
-*** DONE Fixed Bug
-**** DONE scenegraph node contect menu is not updated.
-     SceneGraph node context menu should be reconstructed for each
-     node. The cache mechanism doesn't make sense, therefore, removed.
-     (Only the selected node is exactly the same, we can reuse it.)
 
 ** TODO tracer. show constant color
-   SceneUtil.py
-   set trimesh(material index from the name)
-   lookup the material
-
+   SceneUtil.py, set trimesh(material index from the name)
+   lookup the material and saven the color to RGBA buffer.
 
 ** TODO tracer. show depth buffer
 ** TODO tracer. show in the viewer (GLImageFilmNode)

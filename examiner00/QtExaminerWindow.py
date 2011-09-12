@@ -400,7 +400,9 @@ class QtExaminerWindow(QtGui.QMainWindow):
 
         # attach the GLSceneGraph to Examiner to see
         self.__examiner_widget.attach_gl_scenegraph(glsg)
-        self.__examiner_widget.view_all()
+
+        # scene file camera support
+        # self.__examiner_widget.view_all()
 
 
     def __load_obj_file(self, _infilepath):

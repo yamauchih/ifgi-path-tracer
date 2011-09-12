@@ -1,0 +1,44 @@
+* 2011 DONE list
+
+** 2011-09-11
+*** DONE ifgi parser: material and geometry definition (map)
+*** DONE camera definition and camera support of scene graph
+*** DONE load ifgi scene file and construct ifgi scenegraph
+*** DONE implemented converter from ifgi scene graph to GL scenegraph
+*** DONE GLMaterialNode referes ifgi material
+*** DONE Implemented FG color
+*** DONE Fixed Bug
+**** scenegraph node contect menu is not updated.
+     SceneGraph node context menu should be reconstructed for each
+     node. The cache mechanism doesn't make sense, therefore, removed.
+     (Only the selected node is exactly the same, we can reuse it.)
+
+
+** 2011-09-04
+*** DONE GLLightNode
+
+
+** 2011-08-28
+*** DONE GLLightNode
+
+
+** 2011-08-14
+*** DONE animation mode. examiner menu animatio on/off
+
+
+** 2011-07-31
+*** DONE Add Camera parameter control GUI
+*** DONE complete Camera set_config_data/get_config_data
+
+*** DONE parameter iterator of Camera
+*** DONE get_keys (list), and get value dict, get parameter type dict
+*** DONE typename update: vector3 -> float_3, enum -> enum_enumname
+
+
+** 2011-07-24
+*** DONE Implement observer
+    listener NodeDialog, QtSceneGraphWidget, QtExaminerWidget
+
+
+** 2011-07-17
+*** DONE Cornel Box model
