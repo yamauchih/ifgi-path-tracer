@@ -28,6 +28,7 @@ class HitRecord(object):
         self.hit_primitive = None
         # w component is normal direction of hit point
         self.hit_basis     = None
+        self.hit_material_index = -1
 
     # class name
     def get_classname(self):
@@ -40,8 +41,9 @@ class HitRecord(object):
     # string representation
     def __str__(self):
         return 'HitRecord: dist: '+ str(self.dist) +\
-            ', pos: ' + str(self.intersect_pos) +\
-            ', basis: ' + str(self.hit_basis)
+            ', pos: '    + str(self.intersect_pos) +\
+            ', basis: '  + str(self.hit_basis) +\
+            ', matidx: ' + str(self.hit_material_index)
 
 
 

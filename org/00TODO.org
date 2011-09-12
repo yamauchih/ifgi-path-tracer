@@ -1,11 +1,12 @@
-* Task ifgi path tracer 2011-9-9(Fri)
+* Task ifgi path tracer 2011-9-12(Mon)
 
 ** top5
 
-** TODO tracer. show constant color
+** DONE tracer. show constant color
    SceneUtil.py, set trimesh(material index from the name)
-   lookup the material and saven the color to RGBA buffer.
+   lookup the material and save the color to RGBA buffer.
 
+** TODO EnvironmentNode, GLEnvironmentNode for the background color.
 ** TODO tracer. show depth buffer
 ** TODO tracer. show in the viewer (GLImageFilmNode)
 ** TODO Unified the test in one directory.
@@ -121,3 +122,4 @@ Code guideline
 *** Integration: WebGL in the chrome, Sketchup, Blender
 *** Car configuration example
 *** Marcov Chain Monte Carlo texture synthesis
+*** Use PySide

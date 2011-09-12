@@ -99,7 +99,11 @@ class TestIfgiRender1(unittest.TestCase):
         if hr != None:
             # Hit point visualization
             hit_buf.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
-            # col_buf.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
+            # lookup material
+            mat = self.__scene_geo_mat.material_list[hr.hit_material_index]
+            # just constant color
+            col_buf.put_color((_pixel_x, _pixel_y),
+                              mat.ambient_response(None, None, None, None))
 
 
     # render a frame

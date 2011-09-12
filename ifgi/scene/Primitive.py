@@ -347,6 +347,7 @@ class TriMesh(Primitive):
         super(TriMesh, self).set_name(_mash_name)
         super(TriMesh, self).set_material_name(_mat_name)
 
+        # geometry information
         self.vertex_list       = []
         self.face_idx_list     = []
         self.texcoord_list     = []
@@ -354,6 +355,10 @@ class TriMesh(Primitive):
         self.normal_list       = []
         self.normal_idx_list   = []
         self.bbox              = BBox()
+
+        # global material index of this geometry (valid after
+        # preprocessing)
+        self.material_index = -1
 
 
     def get_classname(self):
@@ -397,6 +402,15 @@ class TriMesh(Primitive):
         self.update_bbox()
 
 
+    def set_material_index(self, _mat_idx):
+        """set global material index.
+
+        \param[in] _mat_idx global material index.
+        """
+        # FIXME: Or shall I push this information to each triangles?
+        self.material_index = _mat_idx
+
+
     def info_summary(self):
         """summary information
 
@@ -409,7 +423,8 @@ class TriMesh(Primitive):
             '# texcoord idx = ' + str(len(self.texcoord_idx_list)) + '\n' +\
             '# normal       = ' + str(len(self.normal_list))   + '\n' +\
             '# normal idx   = ' + str(len(self.normal_idx_list)) + '\n' +\
-            'bbox           = ' + str(self.get_bbox())
+            'bbox           = ' + str(self.get_bbox())         + '\n' +\
+            'material idx   = ' + str(self.material_index)
 
         return ret_str
 
@@ -456,6 +471,7 @@ class TriMesh(Primitive):
                     trimesh_hr.dist = hr.dist
                     trimesh_hr.hit_primitive = tri
                     trimesh_hr.hit_basis = hr.hit_basis
+                    trimesh_hr.hit_material_index = self.material_index
 
         if trimesh_hr.hit_primitive != None:
             return trimesh_hr

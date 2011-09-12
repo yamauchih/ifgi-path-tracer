@@ -65,6 +65,10 @@ class SceneGeometryMaterialContainer(object):
             self.geometry_dict_list.append(geo_dict)
             idx = len(self.geometry_dict_list) - 1
             self.geometry_name_idx_dict[geo_name] = idx
+            # get material index and set to the geometry
+            mat_name = geo_dict['material']
+            mat_idx  = self.material_name_idx_dict[mat_name]
+            geo_dict['TriMesh'].set_material_index(mat_idx)
 
         assert(len(self.geometry_dict_list) == len(self.geometry_name_idx_dict))
 
@@ -74,8 +78,8 @@ class SceneGeometryMaterialContainer(object):
         """ray to whole geometry intersect
         """
         closest_hr = HitRecord.HitRecord()
-        for geo in self.geometry_dict_list:
-            hr = geo['TriMesh'].ray_intersect(_ray)
+        for geo_dict in self.geometry_dict_list:
+            hr = geo_dict['TriMesh'].ray_intersect(_ray)
             if(hr != None):
                 if closest_hr.dist > hr.dist:
                     closest_hr = hr
