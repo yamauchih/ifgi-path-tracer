@@ -138,9 +138,11 @@ class GLSceneGraph(SceneGraph.SceneGraph):
         \param[in] _gl_rootnode GL scenegraph node
         """
         # Add OpenGL scenegraph specific nodes to the GL rootnode.
-        # { GLLightNode }
+        # { GLLightNode, GLMaterialNode (for environment) }
         ch_gl_light_node = GLLightNode('GL:light_node')
         _gl_rootnode.append_child(ch_gl_light_node)
+
+        environment_mat = None
 
         # clear material name -> material reference
         self.__name_material_dict = {}
@@ -162,7 +164,21 @@ class GLSceneGraph(SceneGraph.SceneGraph):
                     # material name should be unique
                     assert(not (mat.get_material_name() in self.__name_material_dict))
                     self.__name_material_dict[mat.get_material_name()] = mat
+                    # check environment node exists
+                    if(mat.get_classname() == 'EnvironmentMaterial'):
+                        # should be only one environment material
+                        assert(environment_mat == None)
+                        environment_mat = mat
+
                 print str(len(self.__name_material_dict)) + ' materials are referenced.'
+
+        if(environment_mat != None):
+            ch_gl_envmat_node = GLEnvironmentMaterialNode('GL:environment')
+            ch_gl_envmat_node.set_material(environment_mat)
+            _gl_rootnode.append_child(ch_gl_envmat_node)
+        else:
+            ILog.warn('no environment material found in the scenegraph.')
+
 
         # construct GL scenegraph from the ifgi scenegraph
         self.__create_glscenegraph_sub(_sg_rootnode, _gl_rootnode, 0)
@@ -1419,6 +1435,158 @@ class GLMaterialNode(GLSceneGraphNode):
         # print preview_dict
         self.set_config_dict(preview_dict)
 
+# ----------------------------------------------------------------------
+
+class GLEnvironmentMaterialNode(GLSceneGraphNode):
+    """OpenGL EnvironmentMaterialNode
+
+    A OpenGL environment material node
+    FIXME currently only support constant color environment."""
+
+    def __init__(self, _nodename):
+        """default constructor.
+        \param[in] _nodename this node name.
+        """
+        # call base class constructor to fill the members
+        super(GLEnvironmentMaterialNode, self).__init__(_nodename)
+
+        # ifgi material (non OpenGL material)
+        self.__ifgi_mat = None
+
+        # OpenGL push state
+        self.__push_clear_color  = numpy.array([0.0, 0.0, 0.0, 1.0])
+
+        # constant background color (for constant color background)
+        self.__const_bg_color    = numpy.array([0.0, 0.0, 0.0, 1.0])
+
+
+    def get_classname(self):
+        """get classname
+
+        \return class name string"""
+
+        return 'GLEnvironmentMaterialNode'
+
+
+    def get_drawmode_list(self):
+        """get draw mode list of this GLSceneGraphNode
+        \return None. Material node has no drawmode list
+        """
+        return None
+
+
+    # enter, leave, draw ----------------------------------------
+
+    def enter(self):
+        """enter draw. Prologue of the draw()
+        Usually set up for draw. E.g., save the OpenGL states.
+        """
+        self.__push_clear_color = GL.glGetFloatv(GL.GL_COLOR_CLEAR_VALUE)
+        GL.glClearColor(self.__const_bg_color[0], self.__const_bg_color[1],
+                        self.__const_bg_color[2], self.__const_bg_color[3])
+
+        # really clear the color buffer. Because of this, this node
+        # should be the first one to draw.
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+
+
+    def leave(self):
+        """leave draw. Epilogue of the draw()
+        Usually clean up after draw. E.g., pop the OpenGL states.
+        """
+        GL.glClearColor(self.__push_clear_color[0], self.__push_clear_color[1],
+                        self.__push_clear_color[2], self.__push_clear_color[3])
+
+
+    def draw(self, _global_drawmode):
+        """material node does nothing in draw.
+        \param[in] _global_drawmode drawmode list (or-ed drawmode list bitmap)."""
+        pass
+
+
+    def get_info_html(self):
+        """Get information html text.
+        Inherited from GLSceneGraphNode
+        \return GL materal node info
+        """
+        mat_info = self.get_info_html_GLSceneGraphNode() +\
+            '<h2>GLEnvironmentMaterialNode information</h2>\n' +\
+            '<ul>\n' +\
+            '  <li><b>constant background color:</b> ' +\
+            numpy_util.array2str(self.__const_bg_color)  + '\n' +\
+            '</ul>\n'
+
+        return mat_info
+
+
+    def create_config_dialog(self, _tab_dialog):
+        """Create configuration dialog for GLEnvironmentMaterialNode.
+        The configuration dialog is QtSimpleTabDialog.
+        Inherited from GLSceneGraphNode
+
+        \param[in] _tab_dialog a QtSimpleTabDialog
+        \return True since this node is configurable.
+        """
+
+        mat_group = _tab_dialog.add_group('GLEnvironmentMaterialNode')
+
+        mat_group.add(QtWidgetIO.QtColorButton(),
+                      'const_bg_color',
+                      self.__const_bg_color,
+                      {'LABEL': 'constant BG color'})
+
+        # call self.update() when button is pushed (_arg is button type)
+        _tab_dialog.set_button_observer(self)
+        # call set_config_dict(dict) when apply button is pushed.
+        _tab_dialog.set_associated_configuable_object('GLEnvironmentMaterialNode', self)
+
+        # set node (which has get_subject() attribute to get the
+        # Listener's subject. This subject notify dialog when node
+        # status is changed.
+        _tab_dialog.set_subject_node(self)
+
+        return True
+
+    def update(self, _arg):
+        """Implementation of QtWidgetIOObserverIF.update().
+        """
+        print 'GLEnvironmentMaterialNode: I observe ' + _arg
+
+    #------------------------------------------------------------
+    # configurable
+    #------------------------------------------------------------
+
+    def set_config_dict(self, _config_dict):
+        """set configuration dictionary. (configSetData)
+        \param[in] _config_dict configuration dictionary for GLEnvironmentMaterialNode
+        """
+        self.__const_bg_color  = _config_dict['const_bg_color']
+        self.get_subject().notify_listeners(['ConfigChanged'])
+
+
+    def get_config_dict(self):
+        """get configuration dictionary. (configGetData)
+        \return configuration dictionary of GLEnvironmentMaterialNode
+        """
+        config_dict = {'const_bg_color':  self.__const_bg_color}
+        return config_dict
+
+
+    #------------------------------------------------------------
+    # ifgi material
+    #------------------------------------------------------------
+
+    def set_material(self, _mat):
+        """set ifgi material
+        \param[in] _mat ifgi material
+        """
+        self.__ifgi_mat = _mat
+        print self.__ifgi_mat.get_classname()
+        assert(self.__ifgi_mat.get_classname() == 'EnvironmentMaterial')
+
+        preview_dict = self.__ifgi_mat.get_gl_preview_dict()
+        # print preview_dict
+        self.set_config_dict(preview_dict)
 
 
 # ----------------------------------------------------------------------

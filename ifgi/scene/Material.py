@@ -329,6 +329,94 @@ class DiffuseMaterial(Material):
 
 # ----------------------------------------------------------------------
 
+class EnvironmentMaterial(Material):
+    """Environment material
+    """
+
+    def __init__(self, _mat_name, _texture):
+        """default constructor
+
+        \param[in] _mat_name material name
+        \param[in] _texture  texture object
+        """
+        super(EnvironmentMaterial, self).__init__(_mat_name)
+
+        self.__texture = _texture
+
+
+    def get_classname(self):
+        """get class name..
+        \return 'EnvironmentMaterial'
+        """
+        return 'EnvironmentMaterial'
+
+
+    # def is_emit(self):
+    #     """is emit light?.
+    #     \return true when emit light.
+    #     """
+    #     return False
+    # def emit_radiance(self, _hit_onb, _light_out_dir, _tex_point, _tex_uv):
+
+
+    def get_texture(self):
+        """get texture
+        """
+        return self.__texture
+
+
+    def ambient_response(self, _hit_onb, _incident_dir, _tex_point, _tex_uv):
+        """ambient response
+
+        \param[in] _hit_onb hit point orthonomal basis
+        \param[in] _incident_dir incident direction
+        \param[in] _tex_point texture 3d point (if solid)
+        \param[in] _tex_uv    texture uv coordinate (if surface)
+        \return ambient response
+        """
+        return self.__texture.value(_tex_uv, _tex_point)
+
+
+
+    def explicit_brdf(self, _hit_onb, _out_v0, _out_v1, _tex_point, _tex_uv):
+        """explicit brdf
+
+        \param[in] _hit_onb hit point orthonomal basis
+        \param[in] _out_v0  outgoing vector v0
+        \param[in] _out_v1  outgoing vector v1
+        \param[in] _tex_point texture 3d point (if solid)
+        \param[in] _tex_uv    texture uv coordinate (if surface)
+        \return False when not supported
+        """
+        (1/math.pi) * self.__texture.value(_tex_uv, _tex_point)
+
+        return True
+
+
+    def get_gl_preview_dict(self):
+        """get material information for OpenGL preview.
+        gl_preview_dict = {'const_bg_color':  float4}
+        \return OpenGL preview data
+        """
+        const_bg_color = numpy.array([0.1, 0.1, 0.1, 1.0]),
+        if(self.__texture.get_classname() == 'ConstantColorTexture'):
+            diffuse_col = self.__texture.value(None, None)
+            const_bg_color = copy.deepcopy(diffuse_col)
+
+        gl_preview_dict = {'const_bg_color':  const_bg_color}
+        return gl_preview_dict
+
+
+    def set_gl_preview_dict(self, _gl_preview_dict):
+        """set material information from OpenGL material editor.
+        \param[in] _gl_preview_dict
+        """
+        const_bg_color = _gl_preview_dict['const_bg_color']
+        self.__texture.set_constant_color(const_bg_color)
+
+
+# ----------------------------------------------------------------------
+
 def material_factory(_mat_dict):
     """material factory from material information dictionary.
     \return a material
@@ -339,6 +427,10 @@ def material_factory(_mat_dict):
         diffuse_color = _mat_dict['diffuse_color']
         tex = Texture.ConstantColorTexture(numpy_util.str2array(diffuse_color))
         mat = DiffuseMaterial(_mat_dict['mat_name'], tex)
+    elif(mat_type == 'environment_constant_color'):
+        diffuse_color = _mat_dict['diffuse_color']
+        tex = Texture.ConstantColorTexture(numpy_util.str2array(diffuse_color))
+        mat = EnvironmentMaterial(_mat_dict['mat_name'], tex)
     else:
         raise StandardError, ('Unsupported material type [' + mat_type + ']')
 

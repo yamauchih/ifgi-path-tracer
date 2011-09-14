@@ -737,7 +737,8 @@ def create_one_trimeh_scenegraph(_objfname):
                +--+ SceneGraphNode: 'rootsg' __root_node
                                  +--+ CameraNode: 'main_cam' __camera
                                  +--+ SceneGraphNode: 'materialgroup'
-                                                   +--+ Material: 'mat'
+                                                   +--+ EnvironmentMaterial: 'default_env'
+                                                   +--+ DiffuseMaterial: 'mat'
                                  +--+ SceneGraphNode: 'meshgroup'
                                                    +--+ TriMesh: 'trimesh'
 
@@ -760,12 +761,19 @@ def create_one_trimeh_scenegraph(_objfname):
     # 'materialgroup' is a special group.
     child1 = SceneGraphNode('materialgroup')
     rootsg.append_child(child1)
-    child1_0 = MaterialNode('mat_trimesh')
-    tex = Texture.ConstantColorTexture(numpy.array([1,0,0,1]))
-    # default_diffuse is material name for the trimesh
-    mat = Material.DiffuseMaterial(tmesh.get_material_name(), tex)
-    child1_0.set_material(mat)
+
+    child1_0 = MaterialNode('environment')
+    tex0 = Texture.ConstantColorTexture(numpy.array([0.2,0.2,0.2,1]))
+    mat0 = Material.EnvironmentMaterial('default_env', tex0)
+    child1_0.set_material(mat0)
     child1.append_child(child1_0)
+
+    child1_1 = MaterialNode('mat_trimesh')
+    tex1 = Texture.ConstantColorTexture(numpy.array([1,0,0,1]))
+    # default_diffuse is material name for the trimesh
+    mat1 = Material.DiffuseMaterial(tmesh.get_material_name(), tex1)
+    child1_1.set_material(mat1)
+    child1.append_child(child1_1)
 
     child2 = SceneGraphNode('meshgroup')
     rootsg.append_child(child2)

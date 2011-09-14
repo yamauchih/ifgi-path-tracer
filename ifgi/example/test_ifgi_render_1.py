@@ -11,6 +11,7 @@
 \brief a big example. This is for developing.
 """
 
+import cProfile
 import unittest
 import numpy
 
@@ -33,8 +34,8 @@ class TestIfgiRender1(unittest.TestCase):
         ifgi_stat = ifgi_inst.start()
         assert(ifgi_stat == True)
 
-        self.__image_xsize = 64
-        self.__image_ysize = 64
+        self.__image_xsize = 32
+        self.__image_ysize = 32
 
         # members
         self.__scenegraph = None
@@ -153,5 +154,3 @@ if __name__ == '__main__':
     suit0   = unittest.TestLoader().loadTestsFromTestCase(TestIfgiRender1)
     alltest = unittest.TestSuite([suit0])
     unittest.TextTestRunner(verbosity=2).run(alltest)
-
-

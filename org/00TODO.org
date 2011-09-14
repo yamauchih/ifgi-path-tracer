@@ -5,8 +5,11 @@
 ** DONE tracer. show constant color
    SceneUtil.py, set trimesh(material index from the name)
    lookup the material and save the color to RGBA buffer.
+** DONE EnvironmentNode, GLEnvironmentNode for the background color.
 
-** TODO EnvironmentNode, GLEnvironmentNode for the background color.
+** TODO BUG
+*** When chenge the scenegraph dialog, no update GL runs.
+
 ** TODO tracer. show depth buffer
 ** TODO tracer. show in the viewer (GLImageFilmNode)
 ** TODO Unified the test in one directory.

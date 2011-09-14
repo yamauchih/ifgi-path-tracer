@@ -20,6 +20,15 @@ def camera {
 }
 
 #
+# environment material
+#
+def material {
+    mat_name = default_env
+    mat_type = environment_constant_color
+    diffuse_color = 0.1 0.1 0.1 1.0
+}
+
+#
 # Floor
 # white 1-4
 #
