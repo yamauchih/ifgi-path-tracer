@@ -2,15 +2,15 @@
 """Qt ifgi path tracer
 
 \file
-\brief ifgi path tracer with Qt examiner GUI
+\brief ifgi path tracer with Qt (PySide) examiner GUI
 \author Yamauchi, Hitoshi
 """
 
 import optparse
 import sys
-from PyQt4  import QtCore, QtGui, QtOpenGL
+from PySide import QtCore, QtGui, QtOpenGL
+from examiner import QtExaminerWindow
 
-from examiner00 import QtExaminerWindow
 
 # main
 if __name__ == '__main__':
