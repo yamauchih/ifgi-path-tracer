@@ -50,7 +50,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
         self.__examiner_widget = QtExaminerWidget.QtExaminerWidget(self, self.statusBar())
 
         vbox = QtGui.QVBoxLayout()
-        vbox.setMargin(5)
+        vbox.setContentsMargins(5,5,5,5)
         vbox.addWidget(self.__examiner_widget)
         widget.setLayout(vbox)
 

@@ -49,7 +49,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
         self.__examiner_widget = QtExaminerWidget.QtExaminerWidget(self, self.statusBar())
 
         vbox = QtGui.QVBoxLayout()
-        # DELETEME vbox.setMargin(5)
+        vbox.setContentsMargins(5,5,5,5)
         vbox.addWidget(self.__examiner_widget)
         widget.setLayout(vbox)
 
@@ -124,7 +124,9 @@ class QtExaminerWindow(QtGui.QMainWindow):
             "Open a scene file",
             self.__open_file_last_selected_dir, # default dir
             "All files (*);;obj files (*.obj);;ifgi scene file (*.ifgi)",
-            self.__open_file_last_selected_filter, # default filter
+            # FIXME later: PySide 1.0.1 doesn't have selected filter
+            # 1.0.7 has it, but Ubuntu 11.04 has 1.0.1 so far
+            # self.__open_file_last_selected_filter, # default filter
             options)
 
         if fileName:

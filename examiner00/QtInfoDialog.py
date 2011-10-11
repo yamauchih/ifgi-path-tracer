@@ -47,7 +47,7 @@ class QtInfoDialog(QtGui.QDialog):
         # layout
         self.__layout = QtGui.QVBoxLayout();
         self.__layout.setObjectName('Information dialog')
-        self.__layout.setMargin(0);
+        self.__layout.setContentsMargins(0, 0, 0, 0);
         self.__layout.addWidget(self.__info_text)
         self.__layout.addWidget(self.__button_box)
 

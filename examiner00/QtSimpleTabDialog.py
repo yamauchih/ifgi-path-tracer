@@ -92,7 +92,7 @@ class QtSimpleTabDialog(QtGui.QDialog):
         # layout
         self.__layout = QtGui.QVBoxLayout();
         self.__layout.setObjectName('QtSimpleTabDialog')
-        self.__layout.setMargin(0);
+        self.__layout.setContentsMargins(0, 0, 0, 0);
         self.__layout.addWidget(self.__tab_widget)
         self.__layout.addWidget(self.__button_box)
 

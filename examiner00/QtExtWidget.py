@@ -172,7 +172,7 @@ class QtExtColorButton(QtGui.QFrame):
         self.__label = QtGui.QLabel(self)
         self.__label.setObjectName(_name + '.valueLabel')
         # for expand minimumSize(), all direction 1 pixel
-        self.__label.setMargin(1)
+        self.__label.setContentsMargins(1, 1, 1, 1)
 	# give minimumSize to this
         self.__label.setMinimumSize(self.__label.sizeHint())
 

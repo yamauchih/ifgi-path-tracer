@@ -31,13 +31,13 @@ class QtSceneGraphDialog(QtGui.QDialog):
 
         # scenegraph treeview widget
         self.__sg_view_widget = \
-            QtSceneGraphWidget.QtSceneGraphViewWidget(self, self);
+            QtSceneGraphWidget.QtSceneGraphViewWidget(self, self)
 
         self.__layout = QtGui.QVBoxLayout();
-        self.__layout.setObjectName('SceneGraph viewer, dialog layout');
-        self.__layout.setMargin(0);
-        self.__layout.addWidget(self.__sg_view_widget);
-        self.setLayout(self.__layout);
+        self.__layout.setObjectName('SceneGraph viewer, dialog layout')
+        self.__layout.setContentsMargins(0, 0, 0, 0)
+        self.__layout.addWidget(self.__sg_view_widget)
+        self.setLayout(self.__layout)
         self.resize(450, 300)
 
         # only works with show(), exec_() will override

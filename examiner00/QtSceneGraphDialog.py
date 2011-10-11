@@ -35,7 +35,7 @@ class QtSceneGraphDialog(QtGui.QDialog):
 
         self.__layout = QtGui.QVBoxLayout();
         self.__layout.setObjectName('SceneGraph viewer, dialog layout');
-        self.__layout.setMargin(0);
+        self.__layout.setContentsMargins(0, 0, 0, 0);
         self.__layout.addWidget(self.__sg_view_widget);
         self.setLayout(self.__layout);
         self.resize(450, 300)
