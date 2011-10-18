@@ -126,7 +126,7 @@ class QtExaminerWindow(QtGui.QMainWindow):
             "All files (*);;obj files (*.obj);;ifgi scene file (*.ifgi)",
             # FIXME later: PySide 1.0.1 doesn't have selected filter
             # 1.0.7 has it, but Ubuntu 11.04 has 1.0.1 so far
-            # self.__open_file_last_selected_filter, # default filter
+            self.__open_file_last_selected_filter, # default filter
             options)
 
         if fileName:

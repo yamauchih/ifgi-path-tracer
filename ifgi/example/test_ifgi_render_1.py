@@ -84,8 +84,9 @@ class TestIfgiRender1(unittest.TestCase):
 
         # added RGBA buffer and Hit buffer to the current camera.
         imgsz = (self.__image_xsize, self.__image_ysize, 4)
-        cur_cam.set_film('Hit',  Film.ImageFilm(imgsz, 'Hit'))
-        cur_cam.set_film('RGBA', Film.ImageFilm(imgsz, 'RGBA'))
+        cur_cam.set_film('Hit',     Film.ImageFilm(imgsz, 'Hit'))
+        cur_cam.set_film('RGBA',    Film.ImageFilm(imgsz, 'RGBA'))
+        cur_cam.set_film('Zbuffer', Film.ImageFilm(imgsz, 'Zbuffer'))
         # cur_cam.print_obj()
 
 
@@ -95,8 +96,11 @@ class TestIfgiRender1(unittest.TestCase):
         cur_cam = self.__scenegraph.get_current_camera()
         hit_buf = cur_cam.get_film('Hit')
         col_buf = cur_cam.get_film('RGBA')
+        z_buf   = cur_cam.get_film('Zbuffer')
 
         hr = self.__scene_geo_mat.ray_intersect(_ray)
+        # (/ 761295 676) average dist 1126
+        dist_scale = 2000
         if hr != None:
             # Hit point visualization
             hit_buf.put_color((_pixel_x, _pixel_y), self.FIXME_REDARY)
@@ -105,7 +109,11 @@ class TestIfgiRender1(unittest.TestCase):
             # just constant color
             col_buf.put_color((_pixel_x, _pixel_y),
                               mat.ambient_response(None, None, None, None))
-
+            # record depth
+            depth = hr.dist/dist_scale
+            z_buf.put_color((_pixel_x, _pixel_y),
+                            numpy.array([depth, depth, depth, 1]))
+            # print 'dist ', hr.dist
 
     # render a frame
     def __render_frame(self):
@@ -143,6 +151,12 @@ class TestIfgiRender1(unittest.TestCase):
         film = cur_cam.get_film('Hit')
         assert(film != None)
         fname = 'test_ifgi_render_1.Hit.png'
+        film.save_file(fname)
+        print 'Saved ... ' + fname
+
+        film = cur_cam.get_film('Zbuffer')
+        assert(film != None)
+        fname = 'test_ifgi_render_1.Zbuf.png'
         film.save_file(fname)
         print 'Saved ... ' + fname
 

@@ -4,7 +4,7 @@
 
 1. run the program
 
-       python QtIfgi.py
+       python PySideIfgi.py
 
 2. setup (if you want to develop the code)
 
