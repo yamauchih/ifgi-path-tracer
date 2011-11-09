@@ -1,4 +1,4 @@
-* Task ifgi path tracer 2011-9-12(Mon)
+* Task ifgi path tracer 2011-9-12(Mon), 2011-11-9(Wed)
 
 ** top5
 
@@ -9,12 +9,16 @@
 ** DONE tracer. show depth buffer
 
 ** DONE Add emission to DiffuseMaterial
+** DONE add check keys list of dictionary
+** DONE Add emission to EnvironmentNode
 
-** TODO Install Eclipse (on new machine), PySide documentation.
-** TODO Add emission to EnvironmentNode
-** TODO add check keys list of dictionary
-** TODO All Material constructor take mat_dict only
-** TODO export the scene
+** TODO Install
+*** Eclipse (on new machine)
+*** Local PySide documentation.
+*** Local Python documentation
+
+** TODO export the scene (each scene element has export_to_stream(stream))
+** TODO set random seed 
 ** TODO tracer
 *** for each pixel, compute path 
 *** accumurate the path
@@ -43,8 +47,6 @@
 ** TODO Implement texture class
 *** TextureIF
 *** ImageTexture
-
-
 
 ** TODO Add primitive to get_bsdf
 
@@ -79,7 +81,6 @@
     numpy.linalg.solve(a,b)
 
 *** Fix the viewport
-
 *** ImageFilm as Primitive (draw()able in the screen)
 **** resizable.
 **** when set to the camera, resize.
@@ -91,32 +92,15 @@
 *** Z buffer          (32bit)
 
 ** Add GLImageFilmNode
-
 ** drawa()ble node in the screen.
-
 
 ** Shoot rays
 *** Intersection routine with a triangle and its test.
 
 ** Add some QtWidgetIO
-*** Color button
 *** GLNode has the configuration script to set up the config.
 
 ** Picking
-
-** Menu Render -- Render GL
-*** Render IFGI
-
-** Scene
-*** Primitive
-*** 一つしか object を持てない
-
-** Camera: lookat を入れる．view direction は normalized
-
-** ObjLoader
-   Scene に object を入れる
-
-** OffLoader
 
 ** GLNode
    Scene の要素を参照して draw する (update は v0 では考えない)
@@ -134,4 +118,3 @@ Code guideline
 *** Integration: WebGL in the chrome, Sketchup, Blender
 *** Car configuration example
 *** Marcov Chain Monte Carlo texture synthesis
-*** Use PySide

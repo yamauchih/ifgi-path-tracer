@@ -397,7 +397,7 @@ class EnvironmentMaterial(Material):
         """default constructor
 
         \param[in] _mat_name material name
-        \param[in] _texture  texture object
+        \param[in] _texture  texture object (consider as emission)
         """
         super(EnvironmentMaterial, self).__init__(_mat_name)
 
@@ -484,15 +484,15 @@ def material_factory(_mat_dict):
     mat = None
     mat_type = _mat_dict['mat_type']
     if(mat_type == 'lambert'):
-        # diffuse_color = _mat_dict['diffuse_color']
-        # tex = Texture.ConstantColorTexture(numpy_util.str2array(diffuse_color))
-        mat = DiffuseMaterial(_mat_dict['mat_name'], None, None)
+        # texture and emit color are initialized in initialized_by_dict
+        texture = None
+        emit_color = None
+        mat = DiffuseMaterial(_mat_dict['mat_name'], texture, emit_color)
         mat.initialize_by_dict(_mat_dict)
 
     elif(mat_type == 'environment_constant_color'):
-        # FIXME
-        diffuse_color = _mat_dict['diffuse_color']
-        tex = Texture.ConstantColorTexture(numpy_util.str2array(diffuse_color))
+        emit_color = _mat_dict['emit_color']
+        tex = Texture.ConstantColorTexture(numpy_util.str2array(emit_color))
         mat = EnvironmentMaterial(_mat_dict['mat_name'], tex)
     else:
         raise StandardError, ('Unsupported material type [' + mat_type + ']')

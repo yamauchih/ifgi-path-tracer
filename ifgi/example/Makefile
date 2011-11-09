@@ -23,6 +23,7 @@ ADDITIONAL_CLEAN_FILE := 		\
 	test_ifgi_render_1.Hit.png	\
 	test_ifgi_render_1.RGBA.png	\
 	test_ifgi_render_1.Zbuf.png	\
+	test_ifgi_render_2.RGBA.png	\
 
 
 #----------------------------------------------------------------------

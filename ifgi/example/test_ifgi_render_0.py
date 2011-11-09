@@ -32,8 +32,8 @@ class TestIfgiRender0(unittest.TestCase):
         ifgi_stat = ifgi_inst.start()
         assert(ifgi_stat == True)
 
-        self._image_xsize = 128
-        self._image_ysize = 128
+        self._image_xsize = 32
+        self._image_ysize = 32
 
         # FIXME: trimesh should be retrieved by scene (or aggregate)
         self.__fixme_trimesh = None

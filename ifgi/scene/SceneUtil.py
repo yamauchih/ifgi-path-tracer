@@ -91,8 +91,8 @@ class SceneGeometryMaterialContainer(object):
 
     def print_summary(self):
         """print summary"""
-        print '# of materials  = ', len(self.material_list)
-        print '# of geometries = ', len(self.geometry_dict_list)
+        ILog.info('# of materials  = ' + str(len(self.material_list)) +
+                  ', # of geometries = ' + str(len(self.geometry_dict_list)))
 
         # sanity check
         assert(len(self.material_list) == len(self.material_name_idx_dict))
@@ -103,15 +103,19 @@ class SceneGeometryMaterialContainer(object):
             if(self.material_list[idx].get_material_name() != mat_name):
                 raise StandardError, ('invalid material name to index map.')
 
-        print 'material name index map is valid.'
+        # print 'material name index map is valid.'
 
+        if (self.material_name_idx_dict.has_key('default_env')):
+            ILog.info('default_env material exists.')
+        else:
+            ILog.warn('no default_env material.')
 
         for geo_name in self.geometry_name_idx_dict.keys():
             idx = self.geometry_name_idx_dict[geo_name]
             if(self.geometry_dict_list[idx]['geo_name'] != geo_name):
                 raise StandardError, ('invalid geometry name to index map.')
 
-        print 'geometry name index map is valid.'
+        # print 'geometry name index map is valid.'
 
 
 
