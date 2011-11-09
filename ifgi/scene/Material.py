@@ -8,7 +8,7 @@
 """
 
 import sys, math, numpy, copy
-from ifgi.base import numpy_util
+from ifgi.base import numpy_util, ifgi_util
 
 import Texture
 # import HitRecord
@@ -194,15 +194,73 @@ class Material(object):
 class DiffuseMaterial(Material):
     """Diffuse material"""
 
-    def __init__(self, _mat_name, _texture):
+    def __init__(self, _mat_name, _texture, _emit_color):
         """default constructor
 
         \param[in] _mat_name material name
         \param[in] _texture  texture object
+        \param[in] _emit_color emittion color (may None)
         """
         super(DiffuseMaterial, self).__init__(_mat_name)
 
         self.__texture = _texture
+        self.__emit_color = None
+        self.set_emit_color(_emit_color)
+
+
+    def initialize_by_dict(self, _mat_dict):
+        """initialize by dictionary
+
+        \param[in] _mat_dict material parameter dictionary
+        """
+
+        mat_dict_copy = copy.deepcopy(_mat_dict)
+
+        # mandatory parameters
+        mkey = ['mat_type', 'mat_name', 'diffuse_color']
+        if not(ifgi_util.has_dict_all_key(mat_dict_copy, mkey)):
+            missing_keys = ifgi_util.get_dict_missing_key(mat_dict_copy, mkey)
+            raise StandardError, ('missing parameter of lambert material [' +\
+                                      str(missing_keys) + ']')            
+        # material type and name
+        assert(mat_dict_copy['mat_type'] == 'lambert')
+        mat_dict_copy.pop('mat_type')
+        assert(mat_dict_copy['mat_name'] == self.get_material_name())
+        mat_dict_copy.pop('mat_name')
+
+        # diffuse color        
+        diffuse_color = mat_dict_copy['diffuse_color']
+        self.__texture = Texture.ConstantColorTexture(numpy_util.str2array(diffuse_color))
+        mat_dict_copy.pop('diffuse_color')
+
+        # optional parameters
+        if mat_dict_copy.has_key('emit_color'):
+            emit_color = numpy_util.str2array(mat_dict_copy['emit_color'])
+            self.set_emit_color(emit_color)
+            mat_dict_copy.pop('emit_color')
+            print 'DEBUG: this lambert material has emit_color ', self.__emit_color
+
+        if len(mat_dict_copy) > 0:
+            print mat_dict_copy
+            raise StandardError, ('_mat_dict has unknown parameters.' + str(mat_dict_copy))
+
+
+    def set_emit_color(self, _emit_color):
+        """set emit color
+
+        \param[in] _emit_color emit radiance color. all zeros or None,
+        no emit anymore.
+        """
+        self.__emit_color = None
+        zero4 = numpy.zeros(4)
+        # None or all zeros => None
+        if (_emit_color == None) or all(_emit_color == zero4):
+            return
+
+        if not(all(_emit_color >= zero4)):
+            raise StandardError, ('emit color components must be >= 0')
+
+        self.__emit_color = _emit_color
 
 
     def get_classname(self):
@@ -212,12 +270,16 @@ class DiffuseMaterial(Material):
         return 'DiffuseMaterial'
 
 
-    # def is_emit(self):
-    #     """is emit light?.
-    #     \return true when emit light.
-    #     """
-    #     return False
-    # def emit_radiance(self, _hit_onb, _light_out_dir, _tex_point, _tex_uv):
+    def is_emit(self):
+        """is emit light?.
+        \return true when emit light.
+        """
+        return self.__emit_color != None
+
+
+    def emit_radiance(self, _hit_onb, _light_out_dir, _tex_point, _tex_uv):
+        """emitting radiance color"""
+        return self.__emit_color
 
 
     def get_texture(self):
@@ -288,8 +350,6 @@ class DiffuseMaterial(Material):
 
     # def transmission_direction(self, _hit_onb, _incident_dir, _tex_point, _tex_uv,\
     #                           _rnd_seed, _ext_color, _fresnel_scale, _v_out):
-
-
 
 
     def get_gl_preview_dict(self):
@@ -424,10 +484,13 @@ def material_factory(_mat_dict):
     mat = None
     mat_type = _mat_dict['mat_type']
     if(mat_type == 'lambert'):
-        diffuse_color = _mat_dict['diffuse_color']
-        tex = Texture.ConstantColorTexture(numpy_util.str2array(diffuse_color))
-        mat = DiffuseMaterial(_mat_dict['mat_name'], tex)
+        # diffuse_color = _mat_dict['diffuse_color']
+        # tex = Texture.ConstantColorTexture(numpy_util.str2array(diffuse_color))
+        mat = DiffuseMaterial(_mat_dict['mat_name'], None, None)
+        mat.initialize_by_dict(_mat_dict)
+
     elif(mat_type == 'environment_constant_color'):
+        # FIXME
         diffuse_color = _mat_dict['diffuse_color']
         tex = Texture.ConstantColorTexture(numpy_util.str2array(diffuse_color))
         mat = EnvironmentMaterial(_mat_dict['mat_name'], tex)
