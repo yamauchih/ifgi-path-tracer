@@ -60,7 +60,8 @@ class TestSceneGraph(unittest.TestCase):
         mat0 = SceneGraph.MaterialNode('mat0')
         tex = Texture.ConstantColorTexture(numpy.array([1,0,0,1]))
         # default_diffuse is material name for the trimesh
-        mat = Material.DiffuseMaterial(tmesh.get_material_name(), tex)
+        emit_color = None
+        mat = Material.DiffuseMaterial(tmesh.get_material_name(), tex, emit_color)
         mat0.set_material(mat)
         grp1.append_child(mat0)
 

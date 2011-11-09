@@ -14,7 +14,7 @@ include $(IFGI_ROOT)/tool/Premake.mk
 #----------------------------------------------------------------------
 # each Makefile define
 #----------------------------------------------------------------------
-SUBDIR := ifgi examiner00
+SUBDIR := ifgi examiner00 examiner
 
 
 

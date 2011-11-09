@@ -56,7 +56,7 @@ class QtExtTextLine(QtGui.QWidget):
 
         hspacing = 10
         self.__orientation = _orientation
-        if (self.__orientation == Qt.Qt.Horizontal):
+        if (self.__orientation == Qt.Horizontal):
             self.__layout = QtGui.QHBoxLayout(self)
             self.__layout.addWidget(self.__label)
 

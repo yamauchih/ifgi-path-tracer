@@ -10,7 +10,7 @@
 """
 
 #import math
-#import numpy
+import numpy
 
 # Ray class
 class Ray(object):
@@ -31,6 +31,10 @@ class Ray(object):
         self.__dir    = _dir
         self.__min_t  = _min_t
         self.__max_t  = _max_t
+
+        self.path_length = 0
+        self.reflectance = numpy.array([1.0, 1.0, 1.0, 1.0])
+        self.intensity   = numpy.array([0.0, 0.0, 0.0, 1.0])
 
     # class name
     def get_classname(self):

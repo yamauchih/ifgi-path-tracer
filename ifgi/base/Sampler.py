@@ -46,7 +46,7 @@ class StratifiedRegularSampler(object):
         self._ysize  = self._yend - self._ystart + 1
         if(self._sample_loc_x.shape != ( (self._xsize, self._ysize) )):
             # resize
-            print 'resize the sample loc from ' + str(self._sample_loc_x.shape) +\
+            print 'resize the sample location from ' + str(self._sample_loc_x.shape) +\
                 ' to ' + str((self._xsize, self._ysize) )
             self._sample_loc_x = numpy.zeros( (self._xsize, self._ysize) )
             self._sample_loc_y = numpy.zeros( (self._xsize, self._ysize) )
