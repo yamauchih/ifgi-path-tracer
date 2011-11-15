@@ -18,6 +18,11 @@ include $(IFGI_ROOT)/tool/Premake.mk
 SUBDIR :=
 
 
+# additional clean files
+ADDITIONAL_CLEAN_FILE := 			\
+	unit_disk_uniform_sampler_res.png	\
+
+
 #----------------------------------------------------------------------
 #
 # setup depends on each Makefile and TARGET

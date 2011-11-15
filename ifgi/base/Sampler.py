@@ -6,15 +6,14 @@
 \file
 \brief samplers: stratified sampler, QMC (maybe), ..."""
 
-import numpy
+import numpy, random, math, ifgimath
 
-# Logger
 class StratifiedRegularSampler(object):
     """a simple stratified regular sampler.
     """
 
-    # default constructor
     def __init__(self):
+        """default constructor"""
         self._xstart = 0
         self._xend   = 0
         self._ystart = -1
@@ -24,7 +23,7 @@ class StratifiedRegularSampler(object):
         self._sample_loc_x = numpy.zeros( (0, 0) )
         self._sample_loc_y = numpy.zeros( (0, 0) )
 
-    # compute sample
+
     def compute_sample(self, _xstart, _xend, _ystart, _yend):
         """compute samples. Allocate memory.
 
@@ -67,13 +66,57 @@ class StratifiedRegularSampler(object):
         return self._sample_loc_y[_xidx,_yidx]
 
 
+class UnitDiskUniformSampler(object):
+    """Generate uniform sampling on a unit disk.
+    Uniform respect to area
+    """
+    
+    def __init__(self):
+        """default constructor"""
+        pass
 
 
+    def get_sample(self):
+        """get sample point on an unit disk
+        \return a touple (x,y)"""
+        u1 = random.random()
+        u2 = random.random()        
+        r  = math.sqrt(u1)
+        t  = 2.0 * math.pi * u2
+        x  = r * math.cos(t)
+        y  = r * math.sin(t)
+        return (x, y)
+
+
+
+class UnitHemisphereUniformSampler(object):
+    """Generate uniform sampling on a hemisphere.
+    Using UnitDiskUniformSampler.
+    """
+
+    def __init__(self):
+        """default constructor"""
+        self.__udus = UnitDiskUniformSampler()
+
+    def get_sample(self):
+        """get sample point on a unit hemisphere
+        \return numpy.array([x,y,z])"""
+
+        # p = [-1,1]x[-1,1]
+        p = self.__udus.get_sample()
+
+        x = p[0]
+        y = p[1]
+        z = math.sqrt(numpy.max([0, 1 - x * x - y * y]))
+        v = numpy.array([x, y, z])
+        r = ifgimath.normalize_vec(v)
+
+        return v
+
+        
 
 #
-# main test ... test_ObjReader
+# main test
 #
 # if __name__ == '__main__':
-#     objreader = ObjReader()
-#     objreader.read('../sampledata/one_tri.obj')
 #
