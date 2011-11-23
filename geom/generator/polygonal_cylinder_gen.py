@@ -61,6 +61,13 @@ class Polygonal_cylinder_gen(object):
         self.__radius[_top_or_bottom] = _radius
 
 
+    def set_generate_top_bottom_triangle(self, _is_gen):
+        """set generate top and bottom triangles.
+        \param[in] _is_gen generate top and bottom triangles when True
+        """
+        self.__is_gen_top_bottom_tris = _is_gen
+
+
     def set_n_gon(self, _n):
         """set n of n-gon.
         \param[in] _n top and bottom polygon n-gon

@@ -38,10 +38,11 @@ class TestPolygonalCylinderGen(unittest.TestCase):
         pc_gen.gen_cylinder()
         pc_gen.export_obj('cylinder1.obj')
 
-        # skewed center, 12-gon
+        # skewed center, 12-gon, without top and bottom polygons
         pc_gen.set_n_gon(12)
         pc_gen.set_polygon(0, numpy.array([3.0, 0.0, 10.0]), 2)
         pc_gen.set_polygon(1, numpy.array([0.0, 0.0,  0.0]), 5)
+        pc_gen.set_generate_top_bottom_triangle(False)
         pc_gen.gen_cylinder()
         pc_gen.export_obj('cylinder2.obj')
 
