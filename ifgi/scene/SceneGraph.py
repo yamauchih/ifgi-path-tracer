@@ -771,7 +771,8 @@ def create_one_trimeh_scenegraph(_objfname):
     child1_1 = MaterialNode('mat_trimesh')
     tex1 = Texture.ConstantColorTexture(numpy.array([1,0,0,1]))
     # default_diffuse is material name for the trimesh
-    mat1 = Material.DiffuseMaterial(tmesh.get_material_name(), tex1)
+    emit_color = None
+    mat1 = Material.DiffuseMaterial(tmesh.get_material_name(), tex1, emit_color)
     child1_1.set_material(mat1)
     child1.append_child(child1_1)
 
