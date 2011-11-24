@@ -531,6 +531,12 @@ class QtSceneGraphViewWidget(QtGui.QTreeView):
                           statusTip="use global default when GL draw",
                           triggered=self.__set_global_drawmode,
                           checkable=True)
+            # PySide 1.0.8 has a bug. Bugzilla 1062 - Unable to
+            # connect to triggered[bool] signal in QAction constructor
+            # with checkable=True. You will see here,
+            # self.__set_global_drawmode() is called instead of
+            # self.__set_global_drawmode(bool)
+
         self.__popupmenu_global_drawmode_act.setChecked(True) # default on
         self.__popupmenu.addAction(self.__popupmenu_global_drawmode_act)
 
