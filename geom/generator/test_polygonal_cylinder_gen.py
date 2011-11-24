@@ -25,26 +25,39 @@ class TestPolygonalCylinderGen(unittest.TestCase):
         pc_gen = polygonal_cylinder_gen.Polygonal_cylinder_gen()
 
         # a simple one
+        pc_gen.clear()
         pc_gen.set_n_gon(6)
-        pc_gen.set_polygon(0, numpy.array([0.0, 0.0, 10.0]), 2)
-        pc_gen.set_polygon(1, numpy.array([0.0, 0.0,  0.0]), 2)
+        pc_gen.set_generate_segment_tris(True)
+        pc_gen.append_center_point(numpy.array([0.0, 0.0,  0.0]), 2)
+        pc_gen.append_center_point(numpy.array([0.0, 0.0,  5.0]), 2)
+        pc_gen.append_center_point(numpy.array([0.0, 0.0, 10.0]), 2)
         pc_gen.gen_cylinder()
         pc_gen.export_obj('cylinder0.obj')
+        # print pc_gen
 
         # different radius, 12-gon
+        pc_gen.clear()
         pc_gen.set_n_gon(12)
-        pc_gen.set_polygon(0, numpy.array([0.0, 0.0, 10.0]), 2)
-        pc_gen.set_polygon(1, numpy.array([0.0, 0.0,  0.0]), 5)
+        pc_gen.append_center_point(numpy.array([0.0, 0.0,  0.0]), 2)
+        pc_gen.append_center_point(numpy.array([0.0, 0.0,  4.0]), 2)
+        pc_gen.append_center_point(numpy.array([0.0, 0.0,  5.0]), 3)
+        pc_gen.append_center_point(numpy.array([0.0, 0.0,  6.0]), 2)
+        pc_gen.append_center_point(numpy.array([0.0, 0.0, 10.0]), 2)
         pc_gen.gen_cylinder()
         pc_gen.export_obj('cylinder1.obj')
+        # print pc_gen
 
         # skewed center, 12-gon, without top and bottom polygons
+        pc_gen.clear()
         pc_gen.set_n_gon(12)
-        pc_gen.set_polygon(0, numpy.array([3.0, 0.0, 10.0]), 2)
-        pc_gen.set_polygon(1, numpy.array([0.0, 0.0,  0.0]), 5)
-        pc_gen.set_generate_top_bottom_triangle(False)
+        pc_gen.append_center_point(numpy.array([0.3, 0.0,  0.0]), 1)
+        pc_gen.append_center_point(numpy.array([0.0, 0.0,  4.0]), 1)
+        pc_gen.append_center_point(numpy.array([0.0, 0.0,  5.0]), 3)
+        pc_gen.append_center_point(numpy.array([0.0, 0.0,  6.0]), 1)
+        pc_gen.append_center_point(numpy.array([0.3, 0.0, 10.0]), 2)
         pc_gen.gen_cylinder()
         pc_gen.export_obj('cylinder2.obj')
+        # print pc_gen
 
 
 #
