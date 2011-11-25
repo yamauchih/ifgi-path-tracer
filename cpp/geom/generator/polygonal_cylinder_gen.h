@@ -7,10 +7,31 @@
 /// \file
 /// \brief Generate a (polygonal) cylinder from a center point list
 
-#ifndef IFGI_PATH_TRACER/CPP/GEOM/GENERATOR/POLYGONAL_CYLINDER_GEN_H
-#define IFGI_PATH_TRACER/CPP/GEOM/GENERATOR/POLYGONAL_CYLINDER_GEN_H
+#ifndef IFGI_PATH_TRACER_CPP_GEOM_GENERATOR_POLYGONAL_CYLINDER_GEN_H
+#define IFGI_PATH_TRACER_CPP_GEOM_GENERATOR_POLYGONAL_CYLINDER_GEN_H
 
 #include <vector>
+#include <string>
+
+class Vector3f{
+public:
+    explicit Vector3f(float x, float y, float z){
+    }
+    float operator[](size_t i) const {
+        return 0.0f;
+    }
+    float x;
+    float y;
+    float z;
+};
+class Vector3i{
+public:
+    explicit Vector3i(int x, int y, int z){
+    }
+    int operator[](size_t i) const {
+        return 1;
+    }
+};
 
 /// Simple poltgonal cylinder generator.
 ///
@@ -29,7 +50,8 @@ public:
     /// set polygon parameter
     /// \param[in] center_point polygon center point
     /// \param[in] radius       polygon radius
-    void append_center_point(Vector3f const & center_point, float radius);
+    /// \return true when append succeeded
+    bool append_center_point(Vector3f const & center_point, float radius);
 
     /// set generate top and bottom triangles.
     /// \param[in] is_gen generate top and bottom triangles when True
@@ -49,7 +71,7 @@ public:
 private:
     /// check we can generate a cylinder.
     // raise an exception if not.
-    bool is_able_to_gen();
+    bool is_able_to_gen() const;
 
     /// generate vertices for the cylinder
     void gen_vertex();
@@ -64,17 +86,12 @@ private:
 
     /// check the face index's validity
     /// raise an exception when not valid
-    bool is_face_index_valid();
+    bool is_face_index_valid() const;
 
-    // # string representation
-    // def __str__(self):
-    //     return 'Polygonal_cylinder_gen: ' + \
-    //         str(len(self.__center_list)) + ' centers, ' + \
-    //         str(self.__n_gon) + '-gon, ' + \
-    //         str(len(self.__vertex_list)) + ' vertices, ' + \
-    //         str(len(self.__segment_face_list)) + ' seg tris, ' + \
-    //         str(len(self.__side_face_list)) + ' side faces'
-    //                            };
+    /// string representation
+    /// \return string representation of this object
+    std::string to_string() const;
+
 private:
     /// segment polygon normal. basis n
     Vector3f m_poly_normal;
@@ -90,4 +107,12 @@ private:
     int m_n_gon;
     /// switch to generate segment polygon triangles
     bool m_is_gen_segment_tris;
+    /// generated vertices vector
+    std::vector< Vector3f >  m_vertex_vec;
+    /// generated segment face vector
+    std::vector< Vector3i > m_segment_face_vec;
+    /// generated side face vector
+    std::vector< Vector3i > m_side_face_vec;
 };
+
+#endif // #ifndef IFGI_PATH_TRACER_CPP_GEOM_GENERATOR_POLYGONAL_CYLINDER_GEN_H
