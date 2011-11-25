@@ -33,11 +33,17 @@ public:
     }
 };
 
-/// Simple poltgonal cylinder generator.
+/// Simple polygonal cylinder generator.
 ///
 /// The normal of top and bottom polygons are always z+ (0,0,1)
 class Polygonal_cylinder_gen
 {
+public:
+    /// std::vector of Vector3f
+    typedef std::vector< Vector3f > Float32_3_vec;
+    /// std::vector of Vector3i
+    typedef std::vector< Vector3i > Sint32_3_vec;
+
 public:
     /// constructor
     Polygonal_cylinder_gen();
@@ -108,11 +114,11 @@ private:
     /// switch to generate segment polygon triangles
     bool m_is_gen_segment_tris;
     /// generated vertices vector
-    std::vector< Vector3f >  m_vertex_vec;
+    Float32_3_vec  m_vertex_vec;
     /// generated segment face vector
-    std::vector< Vector3i > m_segment_face_vec;
+    Sint32_3_vec m_segment_face_vec;
     /// generated side face vector
-    std::vector< Vector3i > m_side_face_vec;
+    Sint32_3_vec m_side_face_vec;
 };
 
 #endif // #ifndef IFGI_PATH_TRACER_CPP_GEOM_GENERATOR_POLYGONAL_CYLINDER_GEN_H

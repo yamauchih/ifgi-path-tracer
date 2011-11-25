@@ -220,7 +220,7 @@ bool Polygonal_cylinder_gen::is_face_index_valid() const
 {
     int const vsize = m_vertex_vec.size();
 
-    for(std::vector< Vector3f >::const_iterator vi = m_segment_face_vec.begin();
+    for(Sint32_3_vec::const_iterator vi = m_segment_face_vec.begin();
         vi != m_segment_face_vec.end(); ++vi)
     {
         for(int i = 0; i < 3; ++i){
@@ -233,7 +233,7 @@ bool Polygonal_cylinder_gen::is_face_index_valid() const
         }
     }
 
-    for(std::vector< Vector3f >::const_iterator vi = m_side_face_vec.begin();
+    for(Sint32_3_vec::const_iterator vi = m_side_face_vec.begin();
         vi != m_side_face_vec.end(); ++vi)
     {
         for(int i = 0; i < 3; ++i){
