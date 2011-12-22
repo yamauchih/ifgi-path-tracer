@@ -313,6 +313,7 @@ class Triangle(Primitive):
         # print 'Hit: t = ' + str(t) + ', b1 = ' + str(b1) + ', b2 = ' + str(b2)
         hr = HitRecord.HitRecord()
         hr.dist = t
+        hr.intersect_pos = self.__vertex[0] + b1 * e1 + b2 * e2
         hr.hit_primitive = self
         hr.hit_basis = OrthonomalBasis.OrthonomalBasis()
         hr.hit_basis.init_from_uv(e1, e2) # set normal
@@ -469,6 +470,7 @@ class TriMesh(Primitive):
             if hr != None:
                 if trimesh_hr.dist > hr.dist:
                     trimesh_hr.dist = hr.dist
+                    trimesh_hr.intersect_pos = hr.intersect_pos
                     trimesh_hr.hit_primitive = tri
                     trimesh_hr.hit_basis = hr.hit_basis
                     trimesh_hr.hit_material_index = self.material_index

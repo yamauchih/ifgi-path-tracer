@@ -8,7 +8,7 @@
 """
 
 import sys, math, numpy, copy
-from ifgi.base import numpy_util, ifgi_util
+from ifgi.base import numpy_util, ifgi_util, Sampler
 
 import Texture
 # import HitRecord
@@ -81,26 +81,21 @@ class Material(object):
         \param[in] _out_v1  outgoing vector v1
         \param[in] _tex_point texture 3d point (if solid)
         \param[in] _tex_uv    texture uv coordinate (if surface)
-        \return False when not supported
+        \return None when not supported
         """
-        return False
+        return None
 
 
-    def diffuse_direction(self, _hit_onb, _incident_dir, _tex_point, _tex_uv,\
-                              _rnd_seed, _out_color, _v_out):
+    def diffuse_direction(self, _hit_onb, _incident_dir, _hemisphere_sampler):
         """explicit brdf
 
         \param[in] _hit_onb hit point orthonomal basis
         \param[in] _incident_dir incident direction
-        \param[in] _tex_point texture 3d point (if solid)
-        \param[in] _tex_uv    texture uv coordinate (if surface)
-        \param[in,out] _rnd_seed random number seed on screen (vec2)
-        \param[out] _out_color output color
-        \param[out] _v_out outgoing vector?
+        \param[in] _hemisphere_sampler   uniform sampler on a hemisphere
 
-        \return true when supported
+        \return outgoing direction, None if not supported
         """
-        return False
+        return None
 
 
     def specular_direction(self, _hit_onb, _incident_dir, _tex_point, _tex_uv,\
@@ -309,39 +304,32 @@ class DiffuseMaterial(Material):
         \param[in] _out_v1  outgoing vector v1
         \param[in] _tex_point texture 3d point (if solid)
         \param[in] _tex_uv    texture uv coordinate (if surface)
-        \return False when not supported
+        \return BRDF
         """
-        (1/math.pi) * self.__texture.value(_tex_uv, _tex_point)
+        brdf = (1/math.pi) * self.__texture.value(_tex_uv, _tex_point)
+        return brdf
 
-        return True
 
-
-    def diffuse_direction(self, _hit_onb, _incident_dir, _tex_point, _tex_uv,\
-                              _rnd_seed, _out_color, _v_out):
+    def diffuse_direction(self, _hit_onb, _incident_dir, _hemisphere_sampler):
         """explicit brdf
 
         \param[in] _hit_onb hit point orthonomal basis
         \param[in] _incident_dir incident direction
-        \param[in] _tex_point texture 3d point (if solid)
-        \param[in] _tex_uv    texture uv coordinate (if surface)
-        \param[in,out] _rnd_seed random number seed on screen (vec2)
-        \param[out] _out_color output color
+        \param[in] _hemisphere_sampler uniform sampler on a hemisphere
         \param[out] _v_out outgoing vector?
 
-        \return true when supported
+        \return outgoing direction, None if not supported
         """
+        v_on_hs = _hemisphere_sampler.get_sample()
+        v_out   = \
+            v_on_hs[0] * _hit_onb.u() +\
+            v_on_hs[1] * _hit_onb.v() +\
+            v_on_hs[2] * _hit_onb.w()
 
-        phi = 2 * math.pi * _rnd_seed.x()
-        r   = math.sqrt(_rnd_seed.y())
-        x   = r * math.cos(phi)
-        y   = r * math.sin(phi)
-        z   = math.sqrt(1 - x*x - y*y)
-        _out_color = self.__texture.value(_tex_uv, _tex_point)
-        _v_out     = x * _hit_onb.u() + y * _hit_onb.v() + z * _hit_onb.v()
+        # need normalize?
+        assert(abs(numpy.linalg.norm(v_out) - 1.0) < 0.00001)
 
-        _rnd_seed.scramble()
-
-        return True
+        return v_out
 
 
     # def specular_direction(self, _hit_onb, _incident_dir, _tex_point, _tex_uv,\
@@ -448,9 +436,8 @@ class EnvironmentMaterial(Material):
         \param[in] _tex_uv    texture uv coordinate (if surface)
         \return False when not supported
         """
-        (1/math.pi) * self.__texture.value(_tex_uv, _tex_point)
-
-        return True
+        brdf = (1/math.pi) * self.__texture.value(_tex_uv, _tex_point)
+        return brdf
 
 
     def get_gl_preview_dict(self):

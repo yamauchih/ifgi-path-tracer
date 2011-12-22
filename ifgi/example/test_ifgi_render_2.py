@@ -13,8 +13,7 @@
 
 import cProfile
 import unittest
-import numpy
-import random
+import numpy, random, copy
 
 # package import: specify a directory and file.
 from ifgi.base    import Sampler
@@ -36,11 +35,14 @@ class TestIfgiRender1(unittest.TestCase):
         assert(ifgi_stat == True)
 
         random.seed(0)
+        # unit hemisphere uniform sampler
+        self.__hemisphere_sampler = Sampler.UnitHemisphereUniformSampler()
+
         # FIXME random.uniform(0,1)
 
-        self.__image_xsize = 32
-        self.__image_ysize = 32
-        self.__max_path_length = 10
+        self.__image_xsize = 50
+        self.__image_ysize = 50
+        self.__max_path_length = 2 # 2...for direct light only
 
         # members
         self.__scenegraph = None
@@ -53,8 +55,16 @@ class TestIfgiRender1(unittest.TestCase):
         # get environment material from the scene
         self.__environment_mat = self.__retrieve_environment_material_from_scene()
 
-        self.__render_frame()
-        self.__save_frame()
+        save_per_frame = 25
+
+        for nf in xrange(0, 10000):
+            self.__render_frame(nf)
+            print nf
+            if ((nf != 0) and (nf % save_per_frame == 0)):
+                self.__save_frame(nf)
+
+        self.__save_frame(0)
+
 
         ifgi_stat = ifgi_inst.shutdown()
 
@@ -99,7 +109,7 @@ class TestIfgiRender1(unittest.TestCase):
     def __retrieve_environment_material_from_scene(self):
         """retrieve environment material from the scene.
         The scene should be constructed.
-        
+
         \return found environment material in the scene"""
 
         env_mat_name = 'default_env'
@@ -113,13 +123,11 @@ class TestIfgiRender1(unittest.TestCase):
         return env_mat
 
 
-    def __compute_color(self, _pixel_x, _pixel_y, _ray):
+    def __compute_color(self, _pixel_x, _pixel_y, _ray, _nframe):
         """compute framebuffer color"""
         # FIXME: super slow
         cur_cam = self.__scenegraph.get_current_camera()
         col_buf = cur_cam.get_film('RGBA')
-
-        print 'DEBUG: compute color'
 
         for _ray.path_length in xrange(0, self.__max_path_length):
             hr = self.__scene_geo_mat.ray_intersect(_ray)
@@ -130,30 +138,25 @@ class TestIfgiRender1(unittest.TestCase):
                 # FIXME: only Lambert
                 # mat.explicit_brdf(hr.hit_basis, _out_v0, _out_v1, _tex_point, _tex_uv)
                 # print 'DEBUG: mat ref = ', mat.explicit_brdf(None, None, None, None, None)
-                _ray.reflectance = (_ray.reflectance *
-                                    mat.explicit_brdf(None, None, None, None, None))
+                brdf = mat.explicit_brdf(None, None, None, None, None)
+                _ray.reflectance = (_ray.reflectance * brdf)
                 if mat.is_emit():
                     # FIXME: only Lambert emittance
                     # mat.emit_radiance(_hit_onb, _light_out_dir, _tex_point, _tex_uv))
                     _ray.intensity = _ray.intensity + \
-                        (_ray.reflectance * 
-                         mat.emit_radiance(None, None, None, None))
-                # HITOSHI Question: refrectance is less than ?, when stop
-                # mac refrectance is less than 0.001 stop
-                if not(self.__enough_reflectance(_ray)):
+                        (_ray.reflectance * mat.emit_radiance(None, None, None, None))
+                    # hit the light source
+                    print 'DEBUG: Hit a light source at path length = ', _ray.path_length
+
                     break
 
-                # generate ray again
-                print 'FIXME: generate ray again'
-                print 'DEBUG: hr obn = ', hr.hit_basis
-                tex_point = None
-                tex_uv = None
-                out_color = None
-                out_v = None
-                mat.diffuse_direction(hr.hit_basis, _ray.get_dir(), tex_point, tex_uv,\
-                                          rnd_seed, out_color, v_out)
-                
+                # Do not stop by reflectance criterion. (if stop, wrong)
 
+                # update ray information
+                out_v = mat.diffuse_direction(hr.hit_basis, _ray.get_dir(), \
+                                                  self.__hemisphere_sampler)
+                _ray.set_origin(copy.deepcopy(hr.intersect_pos))
+                _ray.set_dir(copy.deepcopy(out_v))
 
             else:
                 # done. hit to the environmnt.
@@ -163,13 +166,16 @@ class TestIfgiRender1(unittest.TestCase):
                 tex_point = None
                 tex_uv = None
                 # print 'DEBUG: ray int = ', _ray.intensity, ', ref = ' , _ray.reflectance
-                _ray.intensity = _ray.intensity + \
-                    (_ray.reflectance * 
-                     self.__environment_mat.ambient_response(hit_onb, light_out_dir,
-                                                             tex_point, tex_uv))
+                amb_col = self.__environment_mat.ambient_response(hit_onb, light_out_dir,\
+                                                                      tex_point, tex_uv)
+                _ray.intensity = _ray.intensity + (_ray.reflectance * amb_col)
+                # print 'DEBUG: hit env, amb_col = ', amb_col
+                break
 
-            # now we know the color
-            col_buf.put_color((_pixel_x, _pixel_y), _ray.intensity)
+
+        # now we know the color
+        col = float(_nframe) * col_buf.get_color((_pixel_x, _pixel_y)) + _ray.intensity
+        col_buf.put_color((_pixel_x, _pixel_y), col/(float(_nframe) + 1.0))
 
 
     # no more refrection, too less reflectance
@@ -181,7 +187,7 @@ class TestIfgiRender1(unittest.TestCase):
 
 
     # render a frame
-    def __render_frame(self):
+    def __render_frame(self, _nframe):
         srs = Sampler.StratifiedRegularSampler()
         srs.compute_sample(0, self.__image_xsize - 1, 0, self.__image_ysize - 1)
 
@@ -193,7 +199,7 @@ class TestIfgiRender1(unittest.TestCase):
         cur_cam = self.__scenegraph.get_current_camera()
 
         for x in xrange(0, self.__image_xsize, 1):
-            print 'DEBUG x = ', x
+            # print 'DEBUG x = ', x
             for y in xrange(0, self.__image_ysize, 1):
                 # get normalized coordinate
                 nx = srs.get_sample_x(x,y) * inv_xsz
@@ -201,16 +207,16 @@ class TestIfgiRender1(unittest.TestCase):
                 eye_ray = cur_cam.get_ray(nx, ny)
                 # print eye_ray
                 # print nx, ny
-                self.__compute_color(x, y, eye_ray)
+                self.__compute_color(x, y, eye_ray, _nframe)
 
     # save the result
-    def __save_frame(self):
+    def __save_frame(self, _nframe):
         print 'DEBUG: save frame'
         cur_cam = self.__scenegraph.get_current_camera()
         assert(cur_cam != None)
         film = cur_cam.get_film('RGBA')
         assert(film != None)
-        fname = 'test_ifgi_render_2.RGBA.png'
+        fname = 'test_ifgi_render_2.RGBA.' + str(_nframe) + '.png'
         film.save_file(fname)
         print 'Saved ... ' + fname
 

@@ -70,7 +70,7 @@ class UnitDiskUniformSampler(object):
     """Generate uniform sampling on a unit disk.
     Uniform respect to area
     """
-    
+
     def __init__(self):
         """default constructor"""
         pass
@@ -80,7 +80,7 @@ class UnitDiskUniformSampler(object):
         """get sample point on an unit disk
         \return a touple (x,y)"""
         u1 = random.random()
-        u2 = random.random()        
+        u2 = random.random()
         r  = math.sqrt(u1)
         t  = 2.0 * math.pi * u2
         x  = r * math.cos(t)
@@ -109,11 +109,12 @@ class UnitHemisphereUniformSampler(object):
         y = p[1]
         z = math.sqrt(numpy.max([0, 1 - x * x - y * y]))
         v = numpy.array([x, y, z])
-        r = ifgimath.normalize_vec(v)
+        # v should be a normalized vector. see in the test.
+        # r = ifgimath.normalize_vec(v)
 
         return v
 
-        
+
 
 #
 # main test
