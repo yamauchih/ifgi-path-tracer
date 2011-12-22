@@ -17,10 +17,19 @@
 *** Local PySide documentation.
 *** Local Python documentation
 
+** TODO save filename should be a parameter
+** TODO lookup light source
+   find emitting light
+   select one of the emit light randomly
+   look the center of the light source
+   check the shadow exists
+** TODO max path length 10 case
+** TODO writing a C++ version
+
 ** TODO export the scene (each scene element has export_to_stream(stream))
-** TODO set random seed 
+** TODO set random seed
 ** TODO tracer
-*** for each pixel, compute path 
+*** for each pixel, compute path
 *** accumurate the path
 ** TODO BUG
 *** When chenge the scenegraph dialog, no update GL runs.
