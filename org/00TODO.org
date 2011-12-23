@@ -1,16 +1,11 @@
-* Task ifgi path tracer 2011-9-12(Mon), 2011-11-9(Wed)
+* Task ifgi path tracer 2011-12-23(Fri)
 
 ** top5
 
-** DONE tracer. show constant color
-   SceneUtil.py, set trimesh(material index from the name)
-   lookup the material and save the color to RGBA buffer.
-** DONE EnvironmentNode, GLEnvironmentNode for the background color.
-** DONE tracer. show depth buffer
+** TODO cpp implementation
+*** send material to cpp code
+*** send triangle mesh to cpp code
 
-** DONE Add emission to DiffuseMaterial
-** DONE add check keys list of dictionary
-** DONE Add emission to EnvironmentNode
 
 ** TODO Install
 *** Eclipse (on new machine)

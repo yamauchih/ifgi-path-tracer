@@ -2,18 +2,18 @@
 #
 # Copyright (C) 2010-2011 Yamauchi, Hitoshi
 #
-# Example 1: rendering test/example
+# Example 2: rendering test/example
 #
 # For set up the environment to run, see test_all.sh
 #
 """
 \file
-\brief a big example. This is for developing.
+\brief a big example. This is for developing. Full python implementation.
 """
 
 import cProfile
 import unittest
-import numpy, random, copy
+import numpy, random, copy, math
 
 # package import: specify a directory and file.
 from ifgi.base    import Sampler
@@ -22,10 +22,8 @@ from ifgi.scene   import SceneGraph, Primitive, Film, test_scene_util, IfgiScene
 from ifgi.scene   import SceneUtil
 
 
-class TestIfgiRender1(unittest.TestCase):
+class TestIfgiRender2(unittest.TestCase):
     """test: ifgi render test. This is a big example for development"""
-
-    # DELETEME FIXME_REDARY = numpy.array([1, 0, 0, 1])
 
     def test_render(self):
         """test rendering"""
@@ -40,9 +38,9 @@ class TestIfgiRender1(unittest.TestCase):
 
         # FIXME random.uniform(0,1)
 
-        self.__image_xsize = 50
-        self.__image_ysize = 50
-        self.__max_path_length = 2 # 2...for direct light only
+        self.__image_xsize = 32
+        self.__image_ysize = 32
+        self.__max_path_length = 10 # 2...for direct light only
 
         # members
         self.__scenegraph = None
@@ -55,16 +53,11 @@ class TestIfgiRender1(unittest.TestCase):
         # get environment material from the scene
         self.__environment_mat = self.__retrieve_environment_material_from_scene()
 
-        save_per_frame = 25
-
-        for nf in xrange(0, 10000):
-            self.__render_frame(nf)
-            print nf
-            if ((nf != 0) and (nf % save_per_frame == 0)):
-                self.__save_frame(nf)
-
-        self.__save_frame(0)
-
+        # reder frames
+        # max_frame      = 2000
+        max_frame      = 1
+        save_per_frame = 50
+        self.__render_all_frame(max_frame, save_per_frame)
 
         ifgi_stat = ifgi_inst.shutdown()
 
@@ -129,28 +122,32 @@ class TestIfgiRender1(unittest.TestCase):
         cur_cam = self.__scenegraph.get_current_camera()
         col_buf = cur_cam.get_film('RGBA')
 
+        is_update_intensity = False
         for _ray.path_length in xrange(0, self.__max_path_length):
             hr = self.__scene_geo_mat.ray_intersect(_ray)
             if hr != None:
                 # hit somthing, lookup material
                 assert(hr.hit_material_index >= 0)
                 mat = self.__scene_geo_mat.material_list[hr.hit_material_index]
-                # FIXME: only Lambert
+                # only Lambert
                 # mat.explicit_brdf(hr.hit_basis, _out_v0, _out_v1, _tex_point, _tex_uv)
-                # print 'DEBUG: mat ref = ', mat.explicit_brdf(None, None, None, None, None)
-                brdf = mat.explicit_brdf(None, None, None, None, None)
+                # print 'DEBUG: mat ref ', mat.explicit_brdf(None, None, None, None, None)
+
+                # probability is 1/pi, here, constant importance,
+                # therefore, divided by (1/pi) = multiplied by pi
+                brdf = math.pi * mat.explicit_brdf(None, None, None, None, None)
                 _ray.reflectance = (_ray.reflectance * brdf)
                 if mat.is_emit():
-                    # FIXME: only Lambert emittance
+                    # only Lambert emittance
                     # mat.emit_radiance(_hit_onb, _light_out_dir, _tex_point, _tex_uv))
                     _ray.intensity = _ray.intensity + \
                         (_ray.reflectance * mat.emit_radiance(None, None, None, None))
                     # hit the light source
                     print 'DEBUG: Hit a light source at path length = ', _ray.path_length
-
+                    is_update_intensity = True
                     break
 
-                # Do not stop by reflectance criterion. (if stop, wrong)
+                # Do not stop by reflectance criterion. (if stop, it's wrong.)
 
                 # update ray information
                 out_v = mat.diffuse_direction(hr.hit_basis, _ray.get_dir(), \
@@ -169,13 +166,16 @@ class TestIfgiRender1(unittest.TestCase):
                 amb_col = self.__environment_mat.ambient_response(hit_onb, light_out_dir,\
                                                                       tex_point, tex_uv)
                 _ray.intensity = _ray.intensity + (_ray.reflectance * amb_col)
+                is_update_intensity = True
                 # print 'DEBUG: hit env, amb_col = ', amb_col
                 break
 
 
         # now we know the color
-        col = float(_nframe) * col_buf.get_color((_pixel_x, _pixel_y)) + _ray.intensity
-        col_buf.put_color((_pixel_x, _pixel_y), col/(float(_nframe) + 1.0))
+        if (is_update_intensity == True): # and (_ray.path_length == 2)
+            col = float(_nframe) * col_buf.get_color((_pixel_x, _pixel_y)) +\
+                _ray.intensity
+            col_buf.put_color((_pixel_x, _pixel_y), col/(float(_nframe) + 1.0))
 
 
     # no more refrection, too less reflectance
@@ -209,6 +209,19 @@ class TestIfgiRender1(unittest.TestCase):
                 # print nx, ny
                 self.__compute_color(x, y, eye_ray, _nframe)
 
+    def __render_all_frame(self, _max_frame, _save_per_frame):
+        """render all frames
+        \param[in] _max_frame      max number of frames.
+        \param[in] _save_per_frame each _save_per_frame, save the frame to a file.
+        """
+        for nf in xrange(0, _max_frame):
+            self.__render_frame(nf)
+            print 'reder frame ', nf
+            if ((nf != 0) and (nf % _save_per_frame == 0)):
+                self.__save_frame(nf)
+        self.__save_frame(0)
+
+
     # save the result
     def __save_frame(self, _nframe):
         print 'DEBUG: save frame'
@@ -216,28 +229,17 @@ class TestIfgiRender1(unittest.TestCase):
         assert(cur_cam != None)
         film = cur_cam.get_film('RGBA')
         assert(film != None)
-        fname = 'test_ifgi_render_2.RGBA.' + str(_nframe) + '.png'
+        if (_nframe == 0):
+            fname = 'test_ifgi_render_2.RGBA.png'
+        else:
+            fname = 'test_ifgi_render_2.RGBA.' + str(_nframe) + '.png'
         film.save_file(fname)
-        print 'Saved ... ' + fname
-
-        # DELETEME
-        # film = cur_cam.get_film('Hit')
-        # assert(film != None)
-        # fname = 'test_ifgi_render_2.Hit.png'
-        # film.save_file(fname)
-        # print 'Saved ... ' + fname
-
-        # film = cur_cam.get_film('Zbuffer')
-        # assert(film != None)
-        # fname = 'test_ifgi_render_2.Zbuf.png'
-        # film.save_file(fname)
-        # print 'Saved ... ' + fname
-
+        print 'Saved ... ', fname
 
 #
 # main test
 #
 if __name__ == '__main__':
-    suit0   = unittest.TestLoader().loadTestsFromTestCase(TestIfgiRender1)
+    suit0   = unittest.TestLoader().loadTestsFromTestCase(TestIfgiRender2)
     alltest = unittest.TestSuite([suit0])
     unittest.TextTestRunner(verbosity=2).run(alltest)

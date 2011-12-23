@@ -10,6 +10,7 @@ import unittest
 import test_ifgi_init_shutdown
 import test_ifgi_render_0
 import test_ifgi_render_1
+import test_ifgi_render_2
 
 #
 # main test
@@ -19,6 +20,6 @@ if __name__ == '__main__':
     suits.append(unittest.TestLoader().loadTestsFromTestCase(test_ifgi_init_shutdown.TestIfgiInitShutdown))
     suits.append(unittest.TestLoader().loadTestsFromTestCase(test_ifgi_render_0.TestIfgiRender0))
     suits.append(unittest.TestLoader().loadTestsFromTestCase(test_ifgi_render_1.TestIfgiRender1))
-
+    suits.append(unittest.TestLoader().loadTestsFromTestCase(test_ifgi_render_2.TestIfgiRender2))
     alltest = unittest.TestSuite(suits)
     unittest.TextTestRunner(verbosity=2).run(alltest)

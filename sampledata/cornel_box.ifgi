@@ -53,7 +53,7 @@ def material {
     mat_name = light_mat
     mat_type = lambert
     diffuse_color = 1.0 1.0 1.0 1.0
-    emit_color = 200.0 200.0 200.0 1.0
+    emit_color = 10.0 10.0 10.0 1.0
 }
 def geometry {
     geo_name = light

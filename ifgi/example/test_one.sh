@@ -14,6 +14,10 @@ export PYTHONPATH=`pwd`
 echo "export PYTHONPATH=${PYTHONPATH}"
 cd ${CURDIR}
 
+# profile
+# python -m cProfile test_ifgi_render_2.py
+# exit
+
 if [ $# -eq 0 ]; then
     echo "Usage: test_one.sh test_foo.py"
     exit 1
