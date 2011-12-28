@@ -33,9 +33,9 @@ class TestIfgiRender3(unittest.TestCase):
         ifgi_stat = ifgi_inst.start()
         assert(ifgi_stat == True)
 
-        random.seed(0)
+        # random.seed(0)
         # unit hemisphere uniform sampler
-        self.__hemisphere_sampler = Sampler.UnitHemisphereUniformSampler()
+        # self.__hemisphere_sampler = Sampler.UnitHemisphereUniformSampler()
 
         # FIXME random.uniform(0,1)
 
@@ -44,10 +44,10 @@ class TestIfgiRender3(unittest.TestCase):
         self.__max_path_length = 10 # 2...for direct light only
 
         # members
-        self.__scenegraph = None
+        # self.__scenegraph = None
 
         # global geometry/material list
-        self.__scene_geo_mat = SceneUtil.SceneGeometryMaterialContainer()
+        # self.__scene_geo_mat = SceneUtil.SceneGeometryMaterialContainer()
 
         self.__create_scene()
 
@@ -77,6 +77,8 @@ class TestIfgiRender3(unittest.TestCase):
             raise StandardError, ('load file [' + _infilepath + '] failed.')
 
         ifgi_cpp_render_core = ifgi_cpp_render_mod.ifgi_cpp_render()
+
+        ifgi_cpp_render_core.initialize()
 
         mat_env = {'mat_name': 'default_env',
                    'mat_type': 'environment_constant_color',

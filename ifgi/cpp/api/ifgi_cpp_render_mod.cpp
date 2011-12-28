@@ -20,12 +20,20 @@
 namespace ifgi {
 
 /// ifgi C++ rendering core interface
-class IfgiCppRender {
+class IfgiCppRender
+{
 public:
     /// constructor
     IfgiCppRender()
     {
         // empty
+    }
+
+    /// initialize ifgi
+    /// \return 0 when succeeded
+    int initialize()
+    {
+        return 0;
     }
 
     /// add a material to the scene
@@ -118,6 +126,9 @@ private:
 BOOST_PYTHON_MODULE(ifgi_cpp_render_mod)
 {
     boost::python::class_<ifgi::IfgiCppRender>("ifgi_cpp_render")
+        .def("initialize",
+             &ifgi::IfgiCppRender::initialize,
+             "initialize ifgi C++ rendering core")
         .def("add_material",
              &ifgi::IfgiCppRender::add_material,
              "add material to C++ rendering core")

@@ -4,4 +4,4 @@
 # Copyright (C) 2010-2011 Yamauchi Hitoshi
 # Sunday Researcher
 # ============================================================
-subdir { base }
+subdir { base scene api }
