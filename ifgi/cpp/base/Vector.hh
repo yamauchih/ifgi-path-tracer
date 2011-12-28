@@ -262,8 +262,11 @@ public:
      }
 
     /// component-wise multiplication with scalar
-    // inline Vector< Scalar, DIM > operator*(const Scalar &s) const {
-    //     Vector< Scalar, DIM > v(*this); return v*=s; }
+    inline Vector< Scalar, DIM > operator*(Scalar const & s) const
+    {
+        Vector< Scalar, DIM > v(*this);
+        return v *= s;
+    }
 
     /// component-wise self-multiplication
     // inline const Vector< Scalar, DIM >& operator*=(const Vector< Scalar, DIM > &rhs) {
@@ -371,11 +374,12 @@ inline std::ostream & operator<<(std::ostream & os, Vector< Scalar, DIM > const 
     return os;
 }
 
-// /** scalar * vector */
-// template<typename Scalar,int DIM>
-// inline Vector< Scalar, DIM > operator*(Scalar s, const Vector< Scalar, DIM >& v ) {
-//     return v*s;
-// }
+/// scalar * Vector
+template< typename Scalar, int DIM >
+inline Vector< Scalar, DIM > operator*(Scalar s, Vector< Scalar, DIM > const & v )
+{
+    return v * s;
+}
 
 /** read the space-separated components of a vector from a stream */
 template<typename Scalar,int DIM>

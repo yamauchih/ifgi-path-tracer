@@ -1,0 +1,9 @@
+# -*-Mode: tcl -*-
+# ============================================================
+# TMakefile for ifgi
+# Copyright (C) 2010-2011 Yamauchi Hitoshi
+# Sunday Researcher
+# ============================================================
+module { cxx }
+
+# lappend EXCLUDE
