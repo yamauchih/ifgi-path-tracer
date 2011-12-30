@@ -594,80 +594,89 @@ Vector< Float32, 3 >::dot(Vector< Float32, 3 > const & rhs) const
 // }
 
 
-/** \name typedefs fr specific case */
+/// \name typedefs fr specific case
 //@{
-// /// 1-byte signed vector
-// typedef Vector<signed char,1> Vec1c;
-// /// 1-byte unsigned vector
-// typedef Vector<unsigned char,1> Vec1uc;
-// /// 1-short signed vector
-// typedef Vector<signed short int,1> Vec1s;
-// /// 1-short unsigned vector
-// typedef Vector<unsigned short int,1> Vec1us;
-// /// 1-int signed vector
-// typedef Vector<signed int,1> Vec1i;
-// /// 1-int unsigned vector
-// typedef Vector<unsigned int,1> Vec1ui;
-// /// 1-Float32 vector
-// typedef Vector<Float32,1> Vec1f;
-// /// 1-Float64 vector
-// typedef Vector<Float64,1> Vec1d;
 
-/// 2-byte signed vector
-// typedef Vector<signed char,2> Vec2c;
-// /// 2-byte unsigned vector
-// typedef Vector<unsigned char,2> Vec2uc;
-// /// 2-short signed vector
-// typedef Vector<signed short int,2> Vec2s;
-// /// 2-short unsigned vector
-// typedef Vector<unsigned short int,2> Vec2us;
-// /// 2-int signed vector
-// typedef Vector<signed int,2> Vec2i;
-// /// 2-int unsigned vector
-// typedef Vector<unsigned int,2> Vec2ui;
-/// 2-Float32 vector
-typedef Vector<Float32,2> Float32_2;
-/// 2-Float64 vector
-typedef Vector<Float64,2> Float64_2;
+/// Sint8 vector 2
+typedef Vector< Sint8,   2 > Sint8_2;
+/// Sint8 vector 3
+typedef Vector< Sint8,   3 > Sint8_3;
+/// Sint8 vector 4
+typedef Vector< Sint8,   4 > Sint8_4;
 
-/// 3-byte signed vector
-// typedef Vector<signed char,3> Vec3c;
-// /// 3-byte unsigned vector
-// typedef Vector<unsigned char,3> Vec3uc;
-// /// 3-short signed vector
-// typedef Vector<signed short int,3> Vec3s;
-// /// 3-short unsigned vector
-// typedef Vector<unsigned short int,3> Vec3us;
-// /// 3-int signed vector
-// typedef Vector<signed int,3> Vec3i;
-// /// 3-int unsigned vector
-// typedef Vector<unsigned int,3> Vec3ui;
-/// 3-Float32 vector
+/// Uint8 vector 2
+typedef Vector< Uint8,   2 > Uint8_2;
+/// Uint8 vector 3
+typedef Vector< Uint8,   3 > Uint8_3;
+/// Uint8 vector 4
+typedef Vector< Uint8,   4 > Uint8_4;
+
+/// Sint16 vector 2
+typedef Vector< Sint16,  2 > Sint16_2;
+/// Sint16 vector 3
+typedef Vector< Sint16,  3 > Sint16_3;
+/// Sint16 vector 4
+typedef Vector< Sint16,  4 > Sint16_4;
+
+
+/// Uint16 vector 2
+typedef Vector< Uint16,  2 > Uint16_2;
+/// Uint16 vector 3
+typedef Vector< Uint16,  3 > Uint16_3;
+/// Uint16 vector 4
+typedef Vector< Uint16,  4 > Uint16_4;
+
+
+/// Sint32 vector 2
+typedef Vector< Sint32,  2 > Sint32_2;
+/// Sint32 vector 3
+typedef Vector< Sint32,  3 > Sint32_3;
+/// Sint32 vector 4
+typedef Vector< Sint32,  4 > Sint32_4;
+
+
+/// Uint32 vector 2
+typedef Vector< Uint32,  2 > Uint32_2;
+/// Uint32 vector 3
+typedef Vector< Uint32,  3 > Uint32_3;
+/// Uint32 vector 4
+typedef Vector< Uint32,  4 > Uint32_4;
+
+
+/// Sint64 vector 2
+typedef Vector< Sint64,  2 > Sint64_2;
+/// Sint64 vector 3
+typedef Vector< Sint64,  3 > Sint64_3;
+/// Sint64 vector 4
+typedef Vector< Sint64,  4 > Sint64_4;
+
+
+/// Uint64 vector 2
+typedef Vector< Uint64,  2 > Uint64_2;
+/// Uint64 vector 3
+typedef Vector< Uint64,  3 > Uint64_3;
+/// Uint64 vector 4
+typedef Vector< Uint64,  4 > Uint64_4;
+
+
+/// Float32 vector 2
+typedef Vector< Float32, 2 > Float32_2;
+/// Float32 vector 3
 typedef Vector< Float32, 3 > Float32_3;
-/// 3-Float64 vector
-typedef Vector<Float64,3> Float64_3;
+/// Float32 vector 4
+typedef Vector< Float32, 4 > Float32_4;
 
-// /// 4-byte signed vector
-// typedef Vector<signed char,4> Vec4c;
-// /// 4-byte unsigned vector
-// typedef Vector<unsigned char,4> Vec4uc;
-// /// 4-short signed vector
-// typedef Vector<signed short int,4> Vec4s;
-// /// 4-short unsigned vector
-// typedef Vector<unsigned short int,4> Vec4us;
-// /// 4-int signed vector
-// typedef Vector<signed int,4> Vec4i;
-// /// 4-int unsigned vector
-// typedef Vector<unsigned int,4> Vec4ui;
-/// 4-Float32 vector
-typedef Vector<Float32,4> Float32_4;
-/// 4-Float64 vector
-typedef Vector<Float64,4> Float64_4;
+
+/// Float64 vector 2
+typedef Vector< Float64, 2 > Float64_2;
+/// Float64 vector 3
+typedef Vector< Float64, 3 > Float64_3;
+/// Float64 vector 4
+typedef Vector< Float64, 4 > Float64_4;
 
 
 /// Color definition
-typedef Vector<Float32,4> Color;
-
+typedef Vector< Float32, 4 > Color;
 
 //@}
 } // namespace ifgi
