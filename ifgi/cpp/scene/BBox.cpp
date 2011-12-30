@@ -7,6 +7,7 @@
 
 #include "BBox.hh"
 
+#include <cassert>
 #include <limits>
 #include <sstream>
 
@@ -44,9 +45,10 @@ bool BBox32::can_intersect() const
 
 //----------------------------------------------------------------------
 // compute ray intersection. interface method.
-bool BBox32::ray_intersect(Ray const & ray, HitRecord & hr)
+bool BBox32::ray_intersect(Ray const & ray, HitRecord & hr) const
 {
     std::cout << "NIN BBox32::ray_intersect" << std::endl;
+    assert(false);
     return false;
 }
 

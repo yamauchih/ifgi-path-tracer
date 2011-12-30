@@ -3,7 +3,7 @@
 // Copyright (C) 2010-2011 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
-/// \brief axis aligned bounding box
+/// \brief primitive axis aligned bounding box
 #ifndef IFGI_PATH_TRACER_IFGI_CPP_SCENE_BBOX_HH
 #define IFGI_PATH_TRACER_IFGI_CPP_SCENE_BBOX_HH
 
@@ -37,18 +37,19 @@ public:
 
     /// get the bounding box
     /// \return this
-    BBox32 const & get_bbox() const;
+    virtual BBox32 const & get_bbox() const;
 
     /// can bbox primitive intersect with a ray?
     /// \return true
-    bool can_intersect() const;
+    virtual bool can_intersect() const;
 
     /// compute ray intersection. interface method.
     /// \param[in]  ray a ray
     /// \param[out] a HitRecord
     /// \return true when hit
-    virtual bool ray_intersect(Ray const & ray, HitRecord & hr);
+    virtual bool ray_intersect(Ray const & ray, HitRecord & hr) const;
 
+public:
     /// invalidate this bbox.
     /// The bbox has no volume after invalidate().
     void invalidate();

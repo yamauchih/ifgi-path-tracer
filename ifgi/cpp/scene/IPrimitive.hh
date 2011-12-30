@@ -7,11 +7,16 @@
 #ifndef IFGI_PATH_TRACER_IFGI_CPP_SCENE_IPRIMITIVE_HH
 #define IFGI_PATH_TRACER_IFGI_CPP_SCENE_IPRIMITIVE_HH
 
+#include <string>
+
+#include <cpp/base/types.hh>
+#include <cpp/base/Vector.hh>
+
 namespace ifgi
 {
 
 // forward declarations
-class BBox;
+class BBox32;
 class Ray;
 class HitRecord;
 
@@ -33,33 +38,33 @@ public:
 
     /// set primitive associated name.
     /// \return primitive name
-    virtual void set_name(std::string const & name) = 0;
+    // virtual void set_name(std::string const & name) = 0;
 
     /// get primitive associated name.
     /// \return primitive name
-    virtual std::string get_name() const = 0;
+
 
     /// set primitive's material name.
     /// \param[in] mat_name material name
-    virtual void set_material_name(std::string & mat_name) = 0;
+    // virtual void set_material_name(std::string & mat_name) = 0;
 
     /// get primitive"s material name.
     /// \return material name
-    virtual std::string get_material_name() const = 0;
+    // virtual std::string get_material_name() const = 0;
 
     /// set primitive"s material global index.
     /// material index is scene global index for fast material lookup.
     /// \param[in] mat_idx material index (for fast lookup);
-    virtual void set_material_global_index(Sint32 mat_idx) = 0;
+    // virtual void set_material_global_index(Sint32 mat_idx) = 0;
 
     /// get primitive"s material global index.
     /// If -1, no material is indicated.
     /// \return global material index
-    virtual Sint32 get_material_global_index() const = 0;
+    // virtual Sint32 get_material_global_index() const = 0;
 
     /// get the bounding box. interface method.
     /// \return bounding box of this primitive.
-    virtual BBox const & get_bbox() = 0;
+    virtual BBox32 const & get_bbox() const = 0;
 
     /// can this primitive intersect with a ray?
     ///
@@ -69,104 +74,11 @@ public:
 
     /// compute ray intersection. interface method.
     /// \param[in]  ray a ray
-    /// \param[out] a HitRecord
+    /// \param[out] a HitRecord. Only valid when return true
     /// \return true when hit
     virtual bool ray_intersect(Ray const & ray, HitRecord & hr) const = 0;
 };
 
-
-/// ----------------------------------------------------------------------
-
-// class Triangle(IPrimitive){
-//     /// A triangle.
-//     ///
-
-//     def _init__(){
-//         /// default constructor.
-//         ///
-//         super(Triangle, ).__init__();
-//         this->__vertex = None
-//         this->__bbox   = None
-
-
-//     def get_classname(){
-//         return "Triangle"
-
-
-//     def get_bbox(){
-//         if this->__bbox == None:
-//             raise StandardError, ("Invalid triangle, no bounding box.");
-
-//         return this->__bbox
-
-
-//     def can_intersect(){
-//         /// can a triangle intersect with a ray? Yes.
-//         ///
-//         return True
-
-
-//     def ray_intersect(_ray){
-//         /// compute ray intersection. interface method.
-//         \param[in]  ray a ray
-//         \return a HitRecord. None when not hit.
-
-//         ///
-//         assert(this->__vertex != None);
-
-//         /// Cramer"s rule based ray-triangle intersection
-
-//         /// get s1
-//         e1 = this->__vertex[1] - this->__vertex[0]
-//         e2 = this->__vertex[2] - this->__vertex[0]
-//         s1 = numpy.cross(_ray.get_dir(), e2);
-//         div = numpy.dot(s1, e1);
-//         if div == 0.0:
-//             return None
-//         inv_div = 1.0/div
-
-//         /// get barycentric coord b1
-//         d = ray.get_origin() - this->__vertex[0]
-//         b1 = numpy.dot(d, s1) * inv_div
-//         if ((b1 < 0.0) or (b1 > 1.0)){
-//             return None
-
-//         /// get barycentric coord b2
-//         s2 = numpy.cross(d, e1);
-//         b2 = numpy.dot(_ray.get_dir(), s2) * inv_div
-//         if ((b2 < 0.0) or ((b1 + b2) > 1.0)){
-//             return None
-
-//         /// get intersection point (distance t);
-//         t = numpy.dot(e2, s2) * inv_div
-//         if ((t < ray.get_min_t()) or (t > ray.get_max_t())){
-//             return None
-
-//         /// print "Hit: t = " + str(t) + ", b1 = " + str(b1) + ", b2 = " + str(b2);
-//         hr = HitRecord.HitRecord();
-//         hr.dist = t
-//         hr.intersect_pos = this->__vertex[0] + b1 * e1 + b2 * e2
-//         hr.hit_primitive =
-//         hr.hit_basis = OrthonomalBasis.OrthonomalBasis();
-//         hr.hit_basis.init_from_uv(e1, e2) /// set normal
-//         return hr
-
-
-//     def set_vertex(_v0, v1, v2){
-//         /// Set triangle vertices.
-//         \param[in] v0 vertex 0
-//         \param[in] v1 vertex 1
-//         \param[in] v2 vertex 2
-//         ///
-//         this->__vertex = [_v0, v1, v2]
-//         this->__update_bbox();
-
-
-//     def _update_bbox(){
-//         this->__bbox = BBox();
-//         this->__bbox.insert_point(this->__vertex[0]);
-//         this->__bbox.insert_point(this->__vertex[1]);
-//         this->__bbox.insert_point(this->__vertex[2]);
 
 // /// ----------------------------------------------------------------------
 

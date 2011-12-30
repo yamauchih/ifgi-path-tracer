@@ -15,8 +15,11 @@
        '("):"      "){")
        '(")$"      ");")
        '("\\$"      "")                 ; remove trailing backslash
-       '(" _"       " ")                ;
-
+       '(" _"       " ")
+       '(" and "    " && ")
+       '(" or "     " || ")
+       '("numpy.cross" "cross")
+       '("numpy.dot"   "dot")
 
        ;; ;; QFileDialog
        ;; '("QFileDialog(\\(.*\\),[ \t\n]*\\(\".*\"\\),[ \t\n]*\\(.*\\))"
