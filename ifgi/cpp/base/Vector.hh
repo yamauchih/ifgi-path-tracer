@@ -12,6 +12,7 @@
 #include <cstring>
 #include <iostream>
 
+
 #include "types.hh"
 
 
@@ -91,9 +92,9 @@ public:
     }
 
     /// Construct from a value array
-    // explicit inline Vector(const Scalar values[DIM])
+    // explicit inline Vector(const Scalar value[DIM])
     // {
-    //     memcpy(m_value, values, DIM * sizeof(Scalar));
+    //     memcpy(m_value, m_value, DIM * sizeof(Scalar));
     // }
 
     /// copy constructor (same kind of vector)
@@ -179,7 +180,7 @@ public:
     //     int    iMax = 0;
 
     //     for (int i=1;i<N;++i) {
-    //         Scalar a=absolute(values[i]);
+    //         Scalar a=absolute(m_value[i]);
     //         if (a>sMax) {
     //             sMax=a;
     //             iMax=i;
@@ -210,8 +211,8 @@ public:
     //     Scalar m;
     //     bool first=true;
     //     for(int i=0; i<N; i++)
-    //         if(first) { m=values[i]; first=false; }
-    //         else if(values[i]>m) m=values[i];
+    //         if(first) { m=m_value[i]; first=false; }
+    //         else if(m_value[i]>m) m=m_value[i];
     //     return m;
     // }
 
@@ -221,8 +222,8 @@ public:
     //     Scalar m;
     //     bool first=true;
     //     for(int i=0; i<N; i++)
-    //         if(first) { m=values[i]; first=false; }
-    //         else if(values[i]<m) m=values[i];
+    //         if(first) { m=m_value[i]; first=false; }
+    //         else if(m_value[i]<m) m=m_value[i];
     //     return m;
     // }
 
@@ -230,7 +231,7 @@ public:
     // inline Vector< Scalar, DIM > min(const Vector< Scalar, DIM > &rhs) {
     //     Vector< Scalar, DIM > res;
     //     for (int i = 0; i < N; i++)
-    //         res[i] = std::min(values[i],rhs[i]);
+    //         res[i] = std::min(m_value[i],rhs[i]);
     //     return res;
     // }
 
@@ -238,7 +239,7 @@ public:
     // inline Vector< Scalar, DIM > max(const Vector< Scalar, DIM > &rhs) {
     //     Vector< Scalar, DIM > res;
     //     for (int i = 0; i < N; i++)
-    //         res[i] = std::max(values[i],rhs[i]);
+    //         res[i] = std::max(m_value[i],rhs[i]);
     //     return res;
     // }
 
@@ -270,7 +271,7 @@ public:
 
     /// component-wise self-multiplication
     // inline const Vector< Scalar, DIM >& operator*=(const Vector< Scalar, DIM > &rhs) {
-    //     for(int i=0; i<N; i++) values[i] *= rhs[i]; return *this; }
+    //     for(int i=0; i<N; i++) m_value[i] *= rhs[i]; return *this; }
 
     /// component-wise multiplication
     // inline Vector< Scalar, DIM > operator*(const Vector< Scalar, DIM > &rhs) const {
@@ -278,7 +279,7 @@ public:
 
     /// component-wise self-division by scalar
     // inline const Vector< Scalar, DIM > &operator/=(const Scalar &s) {
-    //     for(int i=0; i<N; i++) values[i] /= s; return *this; }
+    //     for(int i=0; i<N; i++) m_value[i] /= s; return *this; }
 
     /// component-wise division by scalar
     // inline Vector< Scalar, DIM > operator/(const Scalar &s) const {
@@ -286,19 +287,27 @@ public:
 
     /// component-wise self-division
     // inline const Vector< Scalar, DIM > &operator/=(const Vector< Scalar, DIM > &rhs) {
-    //     for(int i=0; i<N; i++) values[i] /= rhs[i]; return *this; }
+    //     for(int i=0; i<N; i++) m_value[i] /= rhs[i]; return *this; }
 
     /// component-wise division
     // inline Vector< Scalar, DIM > operator/(const Vector< Scalar, DIM > &rhs) const {
     //     Vector< Scalar, DIM > v(*this); return v/=rhs; }
 
     /// vector difference from this
-    // inline Vector< Scalar, DIM > &operator-=(const Vector< Scalar, DIM > &rhs) {
-    //     for(int i=0; i<N; i++) values[i] -= rhs.values[i]; return *this; }
+    inline Vector< Scalar, DIM > & operator-=(Vector< Scalar, DIM > const & rhs)
+    {
+        for(int i = 0; i < DIM; ++i){
+            m_value[i] -= rhs.m_value[i];
+        }
+        return *this;
+    }
 
     /// vector difference
-    // inline Vector< Scalar, DIM > operator-(const Vector< Scalar, DIM > &rhs) const
-    // { Vector< Scalar, DIM > v(*this); v-=rhs; return v; }
+    inline Vector< Scalar, DIM > operator-(Vector< Scalar, DIM > const & rhs) const
+    {
+        Vector< Scalar, DIM > v(*this); v -= rhs;
+        return v;
+    }
 
     /// vector self-addition. *this is updated.
     /// \param[in] rhs right hand side
@@ -358,7 +367,7 @@ public:
     //     return result; }
 
 private:
-    /// The vector values of the template Scalar type.
+    /// The vector value of the template Scalar type.
     Scalar m_value[DIM];
 };
 

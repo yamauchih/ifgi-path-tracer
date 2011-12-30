@@ -62,6 +62,7 @@ public:
         }
 
         // TODO: push this material to C++ ifgi renderer core
+        
     }
 
     /// get material name list
