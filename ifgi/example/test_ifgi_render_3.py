@@ -80,11 +80,16 @@ class TestIfgiRender3(unittest.TestCase):
 
         ifgi_cpp_render_core.initialize()
 
-        mat_env = {'mat_name': 'default_env',
-                   'mat_type': 'environment_constant_color',
-                   'emit_color': '0.1 0.1 0.1 1.0'
-                   }
-        ifgi_cpp_render_core.add_material(mat_env)
+        # mat_env = {'mat_name': 'default_env',
+        #            'mat_type': 'environment_constant_color',
+        #            'emit_color': '0.1 0.1 0.1 1.0'
+        #            }
+        # ifgi_cpp_render_core.add_material(mat_env)
+
+        # add material to the cpp render core
+        for mat in ifgireader.material_dict_list:
+            ifgi_cpp_render_core.add_material(mat)
+
 
 
 

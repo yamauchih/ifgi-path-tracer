@@ -4,11 +4,11 @@
 
 **** DONE developed: python to C++ code converter elisp (only by patterns)
 **** DONE developed class: IMaterial, DiffuseMaterial, EnvironmentMaterial,
-ITexture, ConstantColorTexture, Vector, Exception handling, IPrimitive, BBox32
+ITexture, ConstantColorTexture, Vector, Exception handling, IPrimitive, BBox32,
+Triangle, TriMesh
 
 ** TODO cpp implementation
-*** convert Primitive classes
-**** Triangle, TriMesh
+*** MaterialFactory, base/Dictionary
 *** send material to cpp code
 *** send triangle mesh to cpp code
 
