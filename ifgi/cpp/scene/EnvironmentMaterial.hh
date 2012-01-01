@@ -14,6 +14,7 @@ namespace ifgi {
 
 // forward declaration
 class ITexture;
+class Dictionary;
 
 //----------------------------------------------------------------------
 /// Environment material
@@ -26,28 +27,33 @@ public:
     EnvironmentMaterial(std::string const & mat_name,
                         ITexture * p_texture);
 
-    // ///
-    // super(EnvironmentMaterial, ).__init__(_mat_name);
-    // this->__texture = texture
+    /// peek texture
+    /// \return reference to the texture
+    ITexture * peek_texture() const;
 
+public:
 
-    /// get class name..
+    /// \name implementation of IMaterial
+    /// @{
+
+    /// get class name.
     /// \return get this class name
     virtual std::string get_classname() const;
+
+    /// get material name
+    /// \return material name (should be unique)
+    virtual std::string get_material_name() const;
+
+    /// initialize by dictionary
     ///
-    // return "EnvironmentMaterial"
+    /// \param[in] _mat_dict material parameter dictionary
+    virtual void initialize_by_dict(Dictionary const & mat_dict);
 
+    /// is emit light?.
+    /// \return true when emit light.
+    virtual bool is_emit() const;
 
-    /// def is_emit(){
-    ///     /// is emit light?.
-    ///     \return true when emit light.
-    ///     ///
-    ///     return False
     /// def emit_radiance(_hit_onb, light_out_dir, tex_point, tex_uv){
-
-    /// peek texture
-    ITexture * peek_texture();
-    // return this->__texture
 
     /// ambient response
     ///
@@ -58,10 +64,7 @@ public:
     /// \param[out] out_amb_res  (output) ambient responce
     virtual void ambient_response(//_hit_onb, incident_dir, tex_point, tex_uv
         Color & out_amb_res
-        );
-    ///
-    /// return this->__texture.value(_tex_uv, tex_point);
-
+        ) const;
 
     /// explicit brdf
     ///
@@ -73,12 +76,13 @@ public:
     /// \param[out] out_brdf  (output) brdf
     virtual void explicit_brdf(// _hit_onb, out_v0, out_v1, tex_point, tex_uv)
         Color & out_brdf
-        );
+        ) const;
 
         // ///
         // brdf = (1/math.pi) * this->__texture.value(_tex_uv, tex_point);
         // return brdf
 
+public:
     // def get_gl_preview_dict(){
     //     /// get material information for OpenGL preview.
     //     gl_preview_dict = {"const_bg_color":  float4}
@@ -99,37 +103,16 @@ public:
     //     ///
     //     const_bg_color = gl_preview_dict["const_bg_color"]
     //     this->__texture.set_constant_color(const_bg_color);
+
+    /// @}
+
 private:
     /// material name
     std::string m_material_name;
-    ///
+    /// reference to the texture
     ITexture * m_p_texture_ref;
 };
 
 //----------------------------------------------------------------------
-
-// IMaterial * material_factory(Dictionary const & mat_dict){
-//     /// material factory from material information dictionary.
-//     \return a material
-//     ///
-//     mat = None
-//     mat_type = mat_dict["mat_type"]
-//     if(mat_type == "lambert"){
-//         /// texture and emit color are initialized in initialized_by_dict
-//         texture = None
-//         emit_color = None
-//         mat = DiffuseMaterial(_mat_dict["mat_name"], texture, emit_color);
-//         mat.initialize_by_dict(_mat_dict);
-
-//     elif(mat_type == "environment_constant_color"){
-//         emit_color = mat_dict["emit_color"]
-//         tex = Texture.ConstantColorTexture(numpy_util.str2array(emit_color));
-//         mat = EnvironmentMaterial(_mat_dict["mat_name"], tex);
-//     else:
-//         raise StandardError, ("Unsupported material type [" + mat_type + "]");
-
-//     return mat
-
 } // namespace ifgi
-
 #endif // #ifndef IFGI_CPP_SCENE_ENVIRONMENTMATERIAL_HH

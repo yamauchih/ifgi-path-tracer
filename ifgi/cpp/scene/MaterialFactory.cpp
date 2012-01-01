@@ -15,6 +15,7 @@
 #include "EnvironmentMaterial.hh"
 
 #include "ITexture.hh"
+#include "ConstantColorTexture.hh"
 
 namespace ifgi
 {

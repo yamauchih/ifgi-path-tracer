@@ -6,4 +6,4 @@
 # ============================================================
 module { cxx }
 
-lappend EXCLUDE MaterialFactory.cpp
+# lappend EXCLUDE MaterialFactory.cpp

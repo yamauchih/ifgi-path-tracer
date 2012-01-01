@@ -96,7 +96,7 @@ ITexture * DiffuseMaterial::peek_texture() const
 
 //----------------------------------------------------------------------
 // get class name
-std::string DiffuseMaterial::get_classname()
+std::string DiffuseMaterial::get_classname() const
 {
     return std::string("DiffuseMaterial");
 }
@@ -130,7 +130,7 @@ void DiffuseMaterial::ambient_response(// _hit_onb, _incident_dir, _tex_point, _
 // explicit brdf
 void DiffuseMaterial::explicit_brdf(// _hit_onb, _out_v0, _out_v1, _tex_point, _tex_uv
     Color & out_brdf
-    )
+    ) const
 {
     // 1/pi * pho
     out_brdf = Float32(M_1_PI) * m_p_texture_ref->value(); //_tex_uv, _tex_point

@@ -8,6 +8,7 @@
 #include "EnvironmentMaterial.hh"
 
 #include "ITexture.hh"
+#include "cpp/base/Dictionary.hh"
 
 
 namespace ifgi {
@@ -24,33 +25,43 @@ EnvironmentMaterial::EnvironmentMaterial(std::string const & mat_name,
 }
 
 //----------------------------------------------------------------------
-// get class name..
-std::string EnvironmentMaterial::get_classname() const
-{
-    return "EnvironmentMaterial";
-}
-
-//----------------------------------------------------------------------
-    /// def is_emit(){
-    ///     /// is emit light?.
-    ///     \return true when emit light.
-
-//----------------------------------------------------------------------
-
-// def emit_radiance(_hit_onb, light_out_dir, tex_point, tex_uv){
-
-//----------------------------------------------------------------------
 // peek texture
-ITexture * EnvironmentMaterial::peek_texture()
+ITexture * EnvironmentMaterial::peek_texture() const
 {
     return m_p_texture_ref;
 }
 
 //----------------------------------------------------------------------
+// get class name..
+std::string EnvironmentMaterial::get_classname() const
+{
+    return std::string("EnvironmentMaterial");
+}
+
+//----------------------------------------------------------------------
+// initialize by dictionary
+void EnvironmentMaterial::initialize_by_dict(Dictionary const & mat_dict)
+{
+    std::cout << "NIN: EnvironmentMaterial::initialize_by_dict" << std::endl;
+}
+
+//----------------------------------------------------------------------
+// is emit light?.
+bool EnvironmentMaterial::is_emit() const
+{
+    return false;
+}
+
+//----------------------------------------------------------------------
+
+// def emit_radiance(_hit_onb, light_out_dir, tex_point, tex_uv){
+
+
+//----------------------------------------------------------------------
 // ambient response
 void EnvironmentMaterial::ambient_response(//_hit_onb, incident_dir, tex_point, tex_uv
     Color & out_amb_res
-    )
+    ) const
 {
     out_amb_res = m_p_texture_ref->value();
 }
@@ -59,7 +70,7 @@ void EnvironmentMaterial::ambient_response(//_hit_onb, incident_dir, tex_point, 
 // explicit brdf
 void EnvironmentMaterial::explicit_brdf(// _hit_onb, out_v0, out_v1, tex_point, tex_uv)
     Color & out_brdf
-    )
+    ) const
 {
     out_brdf = Float32(M_1_PI) * m_p_texture_ref->value();
 }

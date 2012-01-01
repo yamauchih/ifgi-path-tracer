@@ -11,15 +11,12 @@
 #include <string>
 #include <cpp/base/Vector.hh>
 
-// import sys, math, numpy, copy
-// from ifgi.base import numpy_util, ifgi_util, Sampler
-
-// import Texture
-// # import HitRecord
-// # from ifgi.base import OrthonomalBasis
-
 namespace ifgi {
+//----------------------------------------------------------------------
+// forward declaration
+class Dictionary;
 
+//----------------------------------------------------------------------
 /// material interface
 class IMaterial
 {
@@ -27,39 +24,22 @@ public:
     /// constructor
     IMaterial();
 
-    // /// constructor
-    // /// \param[in] _mat_name material name (this should be unique)
-    // IMaterial(std::string const & mat_name);
-    // def __init__(self, _mat_name):
-    //     """constructor
-
-    //     \param[in] _mat_name material name (this should be unique)
-    //     """
-
-    //     self.__material_name = _mat_name
-
     /// get class name. interface method.
     /// \return class name
-    virtual std::string get_classname() const = 0;
-        // """get class name. interface method. (public).
-        // \return class name
-        // """
+    virtual std::string get_classname() const;
 
     /// get material name
     /// \return material name (should be unique)
     virtual std::string get_material_name() const = 0;
-        // """get material name
-        // \return material name (should be unique)
-        // """
-        // return self.__material_name
+
+    /// initialize by dictionary
+    ///
+    /// \param[in] _mat_dict material parameter dictionary
+    virtual void initialize_by_dict(Dictionary const & mat_dict);
 
     /// is this material emit light?
     /// \return true when emit light.
     virtual bool is_emit() const = 0;
-        // """
-        // \return true when emit light.
-        // """
-        // return False
 
     /// emit radiance
     ///
