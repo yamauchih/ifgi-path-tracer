@@ -8,6 +8,7 @@
 
 #include "ifgi_cpp_render_mod.hh"
 
+// boost side
 #include <stdexcept>
 #include <iostream>
 #include <boost/python/extract.hpp>
@@ -15,8 +16,8 @@
 #include <boost/python/dict.hpp>
 #include <boost/python/str.hpp>
 
-//#include 
-
+// ifgi side
+#include <cpp/base/Dict.hh>
 
 namespace ifgi {
 
@@ -43,6 +44,7 @@ void IfgiCppRender::add_material(boost::python::object mat) const
 
     int const len = boost::python::len(keylist);
     std::cout << "len(keylist) = " << len << std::endl;
+    ifgi::Dict dict;
     for(int i = 0; i < len; ++i){
         // operator[] is in python::boost::object
         std::string keystr =
@@ -51,6 +53,8 @@ void IfgiCppRender::add_material(boost::python::object mat) const
             boost::python::extract< std::string >(
                 boost::python::str(cppdict[keylist[i]]));
         std::cout << "key:[" << keystr << "]->[" << valstr << "]" << std::endl;
+
+        dict.set(keystr, valstr);
     }
 
         // TODO: push this material to C++ ifgi renderer core
