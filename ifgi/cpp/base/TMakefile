@@ -6,4 +6,4 @@
 # ============================================================
 module { cxx gtest }
 
-lappend EXCLUDE test_Dict.cpp
+# lappend EXCLUDE test_Dict.cpp

@@ -5,7 +5,7 @@
 /// \file
 /// \brief key value map with type conversion
 
-#include "Dictionary.hh"
+#include "Dict.hh"
 #include "Exception.hh"
 
 namespace ifgi {
@@ -15,7 +15,7 @@ namespace ifgi {
 //======================================================================
 
 // dictonary conversion functions namespace
-namespace dictconv {
+namespace dict_conv {
 
 /// general vector to string method
 /// \param[val] vec_val vector value
@@ -87,35 +87,35 @@ Float32_3 string_to_value< Float32_3 >(std::string const & val_str)
 }
 
 //----------------------------------------------------------------------
-} // namespace dictconv
+} // namespace dict_conv
 
 
 //----------------------------------------------------------------------
 // constructor
-Dictionary::Dictionary()
+Dict::Dict()
 {
     // empty
 }
 
 //----------------------------------------------------------------------
 // destructor.
-Dictionary::~Dictionary()
+Dict::~Dict()
 {
     // empty
 }
 
 //----------------------------------------------------------------------
 // clear the dictionary
-void Dictionary::clear()
+void Dict::clear()
 {
     m_dict_impl.clear();
 }
 
 //----------------------------------------------------------------------
 // is defined the key?
-bool Dictionary::is_defined(std::string const & key) const
+bool Dict::is_defined(std::string const & key) const
 {
-    Dictionary_map::const_iterator di = m_dict_impl.find(key);
+    Dict_map::const_iterator di = m_dict_impl.find(key);
     if(di != m_dict_impl.end()){
         return true;
     }
@@ -124,35 +124,40 @@ bool Dictionary::is_defined(std::string const & key) const
 
 //----------------------------------------------------------------------
 // insert key and value
-void Dictionary::insert(std::string const & key, std::string const & val)
+std::pair< Dict::iterator, bool >
+Dict::insert(std::string const & key, Dict_value const & val)
 {
-    m_dict_impl.insert(std::make_pair(key, val));
-}
-
-//----------------------------------------------------------------------
-// get the value as a string
-std::string Dictionary::get(std::string const & key,
-                            std::string const & default_val) const
-{
-    Dictionary_map::const_iterator di = m_dict_impl.find(key);
-    if(di != m_dict_impl.end()){
-        return di->second;
+    std::pair< Dict_map::iterator, bool > ret =
+        m_dict_impl.insert(std::make_pair(key, val));
+    if(!(ret.second)){
+        // the key has been there, replace the value with the new one.
+        (ret.first)->second = val;
     }
-    return default_val;
+    return ret;
 }
 
 //----------------------------------------------------------------------
-// get the value
-// template < typename T > T Dictionary::get(std::string const & key,
-//                                           std::string const & default_val = "");
+// empty
+bool Dict::empty() const
+{
+    return m_dict_impl.empty();
+}
+
+//----------------------------------------------------------------------
+// size of dict
+size_t Dict::size() const
+{
+    return m_dict_impl.size();
+}
+
 
 //----------------------------------------------------------------------
 // output parameters to stream, format: <line_prefix><key> = <value>
-// void Dictionary::write(std::ostream &os, std::string const & prefix) const;
+// void Dict::write(std::ostream &os, std::string const & prefix) const;
 
 //----------------------------------------------------------------------
 // read dictionary from a stream
-// void Dictionary::read(std::istream & is, std::string const & prefix);
+// void Dict::read(std::istream & is, std::string const & prefix);
 
 //----------------------------------------------------------------------
 } // namespace ifgi
