@@ -9,7 +9,7 @@
 
 #include "MaterialFactory.hh"
 #include "cpp/base/Exception.hh"
-#include "cpp/base/Dictionary.hh"
+#include "cpp/base/Dict.hh"
 
 #include "DiffuseMaterial.hh"
 #include "EnvironmentMaterial.hh"
@@ -21,7 +21,7 @@ namespace ifgi
 {
 //----------------------------------------------------------------------
 // material factory
-IMaterial * new_material_factory(Dictionary const & mat_dict)
+IMaterial * new_material_factory(Dict const & mat_dict)
 {
     if(!mat_dict.is_defined("mat_type")){
         throw Exception("illegal mat_dict. material dict has no mat_type.");
@@ -32,8 +32,8 @@ IMaterial * new_material_factory(Dictionary const & mat_dict)
 
     IMaterial * p_mat = 0;
 
-    std::string const mat_type_str = mat_dict.get("mat_type");
-    std::string const mat_name_str = mat_dict.get("mat_name");
+    std::string const mat_type_str = mat_dict.get< std::string >("mat_type");
+    std::string const mat_name_str = mat_dict.get< std::string >("mat_name");
     if(mat_type_str == "lambert"){
         // texture and emit color are initialized in initialized_by_dict
         ITexture * p_tex = 0;

@@ -1,0 +1,44 @@
+# -*-Mode: tcl -*-
+# ============================================================
+# python.boost tmk module
+# Copyright (C) 2010-2011 Yamauchi Hitoshi
+# Sunday Researcher
+# ============================================================
+
+#
+# assumed given strings
+#
+# python module name
+#      MOD_CPP_SOURCE_BASE
+#      ex.  ifgi_cpp_render_mod
+# linking project basename list
+#      PROJLIB_BASE_LIST
+#      ex. { base scene }
+
+set PYTHON_INCPATH [exec python-config --include]
+
+append cxx::FLAGS " -I ${PYTHON_INCPATH} -DPIC -shared -fexceptions -pthread"
+append link::FLAGS " -DPIC -fPIC"
+
+set COMPILE_OBJ_DIR [arch_name ${CODELEVEL}]
+
+set PROJLIB_LIST {}
+foreach bname $PROJLIB_BASE_LIST {
+    set PROJLIB {}
+
+    # TODO: this assumes all the project subdir is the same level and
+    # under cpp/
+    #
+    # The right way is $PROJROOT + / + splitprojectbase1 + / splitprojectbase2
+    # ...
+    append PROJLIB "../" ${bname} "/" ${COMPILE_OBJ_DIR} "/libcpp_" ${bname} ".so"
+    lappend PROJLIB_LIST $PROJLIB
+    # puts $PROJLIB
+    # puts $PROJLIB_LIST
+}
+
+set COMP_COM "g++ -DPIC -shared -fPIC -o ${MOD_CPP_SOURCE_BASE}.so ${PROJLIB_LIST} -lboost_python"
+
+# TODO: write this to a file: build_python_mod.sh
+puts ${python.boost::COMP_COM}
+# eval exec ${python.boost::COMP_COM}

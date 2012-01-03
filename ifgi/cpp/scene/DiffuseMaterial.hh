@@ -15,7 +15,7 @@ namespace ifgi {
 //----------------------------------------------------------------------
 
 // forward declaration
-class Dictionary;
+class Dict;
 class ITexture;
 
 //----------------------------------------------------------------------
@@ -59,7 +59,7 @@ public:
     /// initialize by dictionary
     ///
     /// \param[in] _mat_dict material parameter dictionary
-    virtual void initialize_by_dict(Dictionary const & mat_dict);
+    virtual void initialize_by_dict(Dict const & mat_dict);
 
     /// is emit light?.
     /// \return true when emit light.

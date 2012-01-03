@@ -8,13 +8,13 @@
 #define IFGI_PATH_TRACER_IFGI_CPP_SCENE_MATERIALFACTORY_HH
 
 #include "IMaterial.hh"
-#include "cpp/base/Dictionary.hh"
+#include "cpp/base/Dict.hh"
 
 namespace ifgi
 {
 //----------------------------------------------------------------------
 // material factory
-extern IMaterial * new_material_factory(Dictionary const & mat_dict);
+extern IMaterial * new_material_factory(Dict const & mat_dict);
 
 //----------------------------------------------------------------------
 } // namespace ifgi

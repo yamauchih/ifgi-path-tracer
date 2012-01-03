@@ -29,7 +29,7 @@ DiffuseMaterial::DiffuseMaterial(std::string const & mat_name,
 
 //----------------------------------------------------------------------
 // initialize by dictionary
-void DiffuseMaterial::initialize_by_dict(Dictionary const & mat_dict)
+void DiffuseMaterial::initialize_by_dict(Dict const & mat_dict)
 {
     // mat_dict_copy = copy.deepcopy(_mat_dict);
     // // mandatory parameters

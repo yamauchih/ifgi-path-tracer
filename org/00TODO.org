@@ -1,4 +1,4 @@
-* Task ifgi path tracer 2011-12-30(Fri)
+* Task ifgi path tracer 2012-1-3(Tue)
 
 ** top5
 
@@ -8,6 +8,7 @@ ITexture, ConstantColorTexture, Vector, Exception handling, IPrimitive, BBox32,
 Triangle, TriMesh
 
 ** TODO cpp implementation
+*** api directory's build system
 *** MaterialFactory, base/Dictionary, complete DiffuseMaterial, EnvironmentMaterial
 *** send material to cpp code
 *** send triangle mesh to cpp code

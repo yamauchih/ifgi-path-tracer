@@ -9,5 +9,6 @@ MOD_CPP_SOURCE_BASE=ifgi_cpp_render_mod
 
 # g++ -I ${IFGI_INCLUDE} ${PYTHON_INCLUDE} -DPIC -shared -fPIC ${MOD_CPP_SOURCE_BASE}.cpp -o ${MOD_CPP_SOURCE_BASE}.so ${IFGI_LIB} -lboost_python
 
-g++ ${PYTHON_INCLUDE} -DPIC -shared -fPIC ${MOD_CPP_SOURCE_BASE}.cpp -o ${MOD_CPP_SOURCE_BASE}.so -lboost_python 
+# g++ ${PYTHON_INCLUDE} -DPIC -shared -fPIC ${MOD_CPP_SOURCE_BASE}.cpp -o ${MOD_CPP_SOURCE_BASE}.so -lboost_python
 
+g++ -DPIC -shared -fPIC -o ${MOD_CPP_SOURCE_BASE}.so Ubuntu11.04/libcpp_api.so ../base/Ubuntu11.04/libcpp_base.so -lboost_python
