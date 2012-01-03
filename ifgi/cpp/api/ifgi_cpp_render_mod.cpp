@@ -5,7 +5,6 @@
 /// \file
 /// \brief ifgi render api for C++ implementation
 
-
 #include "ifgi_cpp_render_mod.hh"
 
 // boost side
@@ -56,8 +55,7 @@ void IfgiCppRender::add_material(boost::python::object mat) const
 
         dict.set(keystr, valstr);
     }
-
-        // TODO: push this material to C++ ifgi renderer core
+    // TODO: push this material to C++ ifgi renderer core
 }
 
 //----------------------------------------------------------------------

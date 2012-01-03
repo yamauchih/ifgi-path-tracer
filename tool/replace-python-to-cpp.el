@@ -20,6 +20,13 @@
        '(" or "     " || ")
        '("numpy.cross" "cross")
        '("numpy.dot"   "dot")
+       '("this->__"    "m_")               ; members
+       '("math.pi"     "M_PI")
+       '("math.sin"    "sin")
+       '("math.cos"    "cos")
+       '("math.tan"    "tan")
+       '("\\(^[ \t]*\\)\\(\\\\return\\)" "\\1/// \\2")
+       '("\\(^[ \t]*\\)\\(\\\\param\\)" "\\1/// \\2")
 
        ;; ;; QFileDialog
        ;; '("QFileDialog(\\(.*\\),[ \t\n]*\\(\".*\"\\),[ \t\n]*\\(.*\\))"
