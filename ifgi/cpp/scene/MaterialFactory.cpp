@@ -9,7 +9,7 @@
 
 #include "MaterialFactory.hh"
 #include "cpp/base/Exception.hh"
-#include "cpp/base/Dict.hh"
+#include "cpp/base/Dictionary.hh"
 
 #include "DiffuseMaterial.hh"
 #include "EnvironmentMaterial.hh"
@@ -21,7 +21,7 @@ namespace ifgi
 {
 //----------------------------------------------------------------------
 // material factory
-IMaterial * new_material_factory(Dict const & mat_dict)
+IMaterial * new_material_factory(Dictionary const & mat_dict)
 {
     if(!mat_dict.is_defined("mat_type")){
         throw Exception("illegal mat_dict. material dict has no mat_type.");

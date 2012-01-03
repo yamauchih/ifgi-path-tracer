@@ -17,7 +17,7 @@
 #include <boost/python/str.hpp>
 
 // ifgi side
-#include <cpp/base/Dict.hh>
+#include <cpp/base/Dictionary.hh>
 
 namespace ifgi {
 
@@ -44,7 +44,7 @@ void IfgiCppRender::add_material(boost::python::object mat) const
 
     int const len = boost::python::len(keylist);
     std::cout << "len(keylist) = " << len << std::endl;
-    ifgi::Dict dict;
+    Dictionary dict;
     for(int i = 0; i < len; ++i){
         // operator[] is in python::boost::object
         std::string keystr =

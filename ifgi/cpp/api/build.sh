@@ -4,11 +4,6 @@
 #
 PYTHON_INCLUDE=`python-config --includes`
 MOD_CPP_SOURCE_BASE=ifgi_cpp_render_mod
-# IFGI_INCLUDE=../..
-# IFGI_LIB=../base/Ubuntu11.10/libcpp_base.so
 
-# g++ -I ${IFGI_INCLUDE} ${PYTHON_INCLUDE} -DPIC -shared -fPIC ${MOD_CPP_SOURCE_BASE}.cpp -o ${MOD_CPP_SOURCE_BASE}.so ${IFGI_LIB} -lboost_python
-
-# g++ ${PYTHON_INCLUDE} -DPIC -shared -fPIC ${MOD_CPP_SOURCE_BASE}.cpp -o ${MOD_CPP_SOURCE_BASE}.so -lboost_python
-
-g++ -DPIC -shared -fPIC -o ${MOD_CPP_SOURCE_BASE}.so Ubuntu11.04/libcpp_api.so ../base/Ubuntu11.04/libcpp_base.so -lboost_python
+# linking order is important
+g++ -DPIC -shared -fPIC -o ${MOD_CPP_SOURCE_BASE}.so Ubuntu11.10/${MOD_CPP_SOURCE_BASE}.o ../base/Ubuntu11.10/libcpp_base.so -lboost_python

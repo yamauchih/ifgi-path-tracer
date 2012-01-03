@@ -15,6 +15,33 @@
 #      PROJLIB_BASE_LIST
 #      ex. { base scene }
 
+#
+# python module.so clean
+#
+target python_boost_clean ALWAYS_BUILD {
+    set deletefilelist [glob -nocomplain *~]
+    append deletefilelist " ${MOD_CPP_SOURCE_BASE}.so"
+    puts -nonewline "file delete -- "
+    foreach f ${deletefilelist} {
+	file delete -force -- ${f}
+	puts -nonewline "${f} "
+    }
+    puts ""
+}
+depend clean python_boost_clean
+
+
+#----------------------------------------------------------------------
+# write a file
+proc write_file { data filename } {
+    # open a file with "w"
+    set fileId [open ${filename} "w"]
+    puts -nonewline ${fileId} ${data}
+    # close
+    close ${fileId}
+}
+
+#----------------------------------------------------------------------
 set PYTHON_INCPATH [exec python-config --include]
 
 append cxx::FLAGS " -I ${PYTHON_INCPATH} -DPIC -shared -fexceptions -pthread"
@@ -37,8 +64,11 @@ foreach bname $PROJLIB_BASE_LIST {
     # puts $PROJLIB_LIST
 }
 
-set COMP_COM "g++ -DPIC -shared -fPIC -o ${MOD_CPP_SOURCE_BASE}.so ${PROJLIB_LIST} -lboost_python"
+set MOD_OBJ_FILE "$COMPILE_OBJ_DIR/${MOD_CPP_SOURCE_BASE}.o"
+set COMP_COM "g++ -DPIC -shared -fPIC -o ${MOD_CPP_SOURCE_BASE}.so ${MOD_OBJ_FILE} ${PROJLIB_LIST} -lboost_python"
 
-# TODO: write this to a file: build_python_mod.sh
-puts ${python.boost::COMP_COM}
+# puts ${python.boost::COMP_COM}
+set BUILD_SH "build_mod.sh"
+write_file ${COMP_COM} ${BUILD_SH}
+puts "Created ${BUILD_SH}, please run it to build the python module."
 # eval exec ${python.boost::COMP_COM}

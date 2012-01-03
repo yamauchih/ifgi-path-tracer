@@ -8,8 +8,7 @@
 #include "EnvironmentMaterial.hh"
 
 #include "ITexture.hh"
-#include "cpp/base/Dict.hh"
-
+#include "cpp/base/Dictionary.hh"
 
 namespace ifgi {
 
@@ -40,7 +39,7 @@ std::string EnvironmentMaterial::get_classname() const
 
 //----------------------------------------------------------------------
 // initialize by dictionary
-void EnvironmentMaterial::initialize_by_dict(Dict const & mat_dict)
+void EnvironmentMaterial::initialize_by_dict(Dictionary const & mat_dict)
 {
     std::cout << "NIN: EnvironmentMaterial::initialize_by_dict" << std::endl;
 }

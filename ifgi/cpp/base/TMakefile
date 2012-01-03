@@ -7,3 +7,8 @@
 module { cxx gtest }
 
 # lappend EXCLUDE test_Dict.cpp
+
+# It seems not necessary to make static library
+# set link::MAKE_SHLIB 0
+# set link::MAKE_LIB   1
+# set link::LINK_MODE "static"

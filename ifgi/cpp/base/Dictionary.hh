@@ -1,11 +1,11 @@
 //----------------------------------------------------------------------
-// ifgi c++ implementation: Dict.hh
+// ifgi c++ implementation: Dictionary.hh
 // Copyright (C) 2010-2011 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
 /// \brief python dict like class
-#ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_DICT_HH
-#define IFGI_PATH_TRACER_IFGI_CPP_BASE_DICT_HH
+#ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_DICTIONARY_HH
+#define IFGI_PATH_TRACER_IFGI_CPP_BASE_DICTIONARY_HH
 
 #include <map>
 #include <string>
@@ -17,7 +17,7 @@
 namespace ifgi {
 
 /// dictonary conversion functions namespace
-namespace dict_conv {
+namespace dictionary_conv {
 
 //======================================================================
 // any value -> string conversion
@@ -37,6 +37,13 @@ std::string value_to_string(T const & val)
 }
 
 //----------------------------------------------------------------------
+/// string -> string conversion (or no conversion)
+/// \param[in] str a string
+/// \return a string
+template <>
+std::string value_to_string< std::string >(std::string const & str);
+
+//----------------------------------------------------------------------
 /// Float32_3 -> string conversion
 /// \param[in] vec a vector of Float32_3
 /// \return string representation of Float32_3
@@ -54,10 +61,17 @@ template < typename T >
 T string_to_value(std::string const & str)
 {
     T ret;
-    std::ostringstream osstr;
-    osstr >> ret;
+    std::istringstream isstr(str);
+    isstr >> ret;
     return ret;
 }
+
+//----------------------------------------------------------------------
+/// string -> string conversion (or no conversion)
+/// \param[in] str a string
+/// \return a string
+template <>
+std::string string_to_value< std::string >(std::string const & str);
 
 //----------------------------------------------------------------------
 /// string -> Float32_3 conversion
@@ -67,19 +81,19 @@ template <>
 Float32_3 string_to_value< Float32_3 >(std::string const & vec_str);
 
 //----------------------------------------------------------------------
-} // namespace dict_conv
+} // namespace dictionary_conv
 
 
-/// dictionary value. The entry of Dict.
+/// dictionary value. The entry of Dictionary.
 ///
 /// This is a value and can be converted to many other types if
 /// possible. This has a string to keep the value.
 ///
-class Dict_value
+class Dictionary_value
 {
 public:
     /// constructor
-    Dict_value() :
+    Dictionary_value() :
         m_value_str("")
     {
         // empty
@@ -90,14 +104,14 @@ public:
     /// \param[in] val type T value, T must be supported in the
     /// conversion functions.
     template < typename T >
-    explicit Dict_value(T const & val) :
-        m_value_str(dict_conv::value_to_string(val))
+    explicit Dictionary_value(T const & val) :
+        m_value_str(dictionary_conv::value_to_string(val))
     {
         // empty
     }
 
     /// destructor
-    virtual ~Dict_value()
+    virtual ~Dictionary_value()
     {
         // empty
     }
@@ -109,12 +123,12 @@ public:
         return m_value_str;
     }
 
-    /// set string to Dict_value.
+    /// set string to Dictionary_value.
     /// \param[in] val value to set
     template < typename T >
     void set(T const & val) const
     {
-        m_value_str = dict_conv::value_to_string< T >(val);
+        m_value_str = dictionary_conv::value_to_string< T >(val);
     }
 
     /// get type T value
@@ -122,7 +136,7 @@ public:
     template < typename T >
     T get() const
     {
-        return dict_conv::string_to_value< T >(m_value_str);
+        return dictionary_conv::string_to_value< T >(m_value_str);
     }
 
 private:
@@ -131,24 +145,24 @@ private:
 };
 
 /// dictionary, key value map with type conversion
-class Dict
+class Dictionary
 {
 public:
     /// dictionary implementation type.
-    typedef std::map< std::string, Dict_value > Dict_map;
+    typedef std::map< std::string, Dictionary_value > Dictionary_map;
     /// STL like typedef. value_type
-    typedef Dict_map::value_type     value_type;
+    typedef Dictionary_map::value_type     value_type;
     /// STL like typedef. const_iterator
-    typedef Dict_map::const_iterator const_iterator;
+    typedef Dictionary_map::const_iterator const_iterator;
     /// STL like typedef. iterator
-    typedef Dict_map::iterator       iterator;
+    typedef Dictionary_map::iterator       iterator;
 
 public:
     /// constructor
-    Dict();
+    Dictionary();
 
     /// destructor.
-    virtual ~Dict();
+    virtual ~Dictionary();
 
     /// clear the dictionary
     void clear();
@@ -166,11 +180,11 @@ public:
     /// \return return.first is value, return.second is false when the
     /// key has already inserted. (Same as the STL associative map
     /// insert convention)
-    std::pair< Dict_map::iterator, bool >
-    insert(std::string const & key, Dict_value const & val);
+    std::pair< Dictionary_map::iterator, bool >
+    insert(std::string const & key, Dictionary_value const & val);
 
     /// insert all entries
-    // Sint32 insert_all(Dict const & di);NIN
+    // Sint32 insert_all(Dictionary const & di);NIN
 
     /// erase an ently by its key
     // void erase(std::string const & key);NIN
@@ -193,7 +207,7 @@ public:
     T get(std::string const & key,
           T const & default_val = T()) const
     {
-        Dict_map::const_iterator ci = m_dict_impl.find(key);
+        Dictionary_map::const_iterator ci = m_dict_impl.find(key);
         if(ci != m_dict_impl.end()){
             return ci->second.get< T >();
         }
@@ -209,7 +223,7 @@ public:
     void set(std::string const & key,
              T const & val)
     {
-        this->insert(key, Dict_value(val));
+        this->insert(key, Dictionary_value(val));
     }
 
     /// output parameters to a stream.
@@ -218,11 +232,8 @@ public:
 
     /// read dictionary from a stream
     // void read(std::istream & is, std::string const & prefix);
-
-private:
-    /// dictionary implementation
-    Dict_map m_dict_impl;
+    Dictionary_map m_dict_impl;
 };
 
 } // namespace ifgi
-#endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_DICT_HH
+#endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_DICTIONARY_HH

@@ -1,9 +1,9 @@
 //----------------------------------------------------------------------
-// test_vector: google test
+// test_Vector
 // Copyright (C) 2010-2011 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
-/// \brief Vector test
+/// \brief Vector unit test
 
 #include "Vector.hh"
 

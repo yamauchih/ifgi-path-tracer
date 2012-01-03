@@ -8,6 +8,7 @@ ITexture, ConstantColorTexture, Vector, Exception handling, IPrimitive, BBox32,
 Triangle, TriMesh
 
 ** TODO cpp implementation
+*** Back to Dictionary instead of Dict
 *** api directory's build system
 *** MaterialFactory, base/Dictionary, complete DiffuseMaterial, EnvironmentMaterial
 *** send material to cpp code

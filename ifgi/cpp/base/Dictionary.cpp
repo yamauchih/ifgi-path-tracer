@@ -5,7 +5,7 @@
 /// \file
 /// \brief key value map with type conversion
 
-#include "Dict.hh"
+#include "Dictionary.hh"
 #include "Exception.hh"
 
 namespace ifgi {
@@ -15,7 +15,7 @@ namespace ifgi {
 //======================================================================
 
 // dictonary conversion functions namespace
-namespace dict_conv {
+namespace dictionary_conv {
 
 /// general vector to string method
 /// \param[val] vec_val vector value
@@ -30,6 +30,14 @@ static inline std::string vector_value_to_string(
     }
     osstr << vec_val[vec_val.dim() - 1];
     return osstr.str();
+}
+
+//----------------------------------------------------------------------
+// string -> string conversion (or no conversion)
+template <>
+std::string value_to_string< std::string >(std::string const & str)
+{
+    return str;
 }
 
 //----------------------------------------------------------------------
@@ -78,6 +86,14 @@ static inline Vector< T, DIM > string_to_vector_value(
 #undef IFGI_MAKE_STRING_FROM_SYMBOL
 
 //----------------------------------------------------------------------
+// string -> string conversion (or no conversion)
+template <>
+std::string string_to_value< std::string >(std::string const & str)
+{
+    return str;
+}
+
+//----------------------------------------------------------------------
 // string -> Float32_3 conversion
 template <>
 Float32_3 string_to_value< Float32_3 >(std::string const & val_str)
@@ -87,35 +103,35 @@ Float32_3 string_to_value< Float32_3 >(std::string const & val_str)
 }
 
 //----------------------------------------------------------------------
-} // namespace dict_conv
+} // namespace dictionary_conv
 
 
 //----------------------------------------------------------------------
 // constructor
-Dict::Dict()
+Dictionary::Dictionary()
 {
     // empty
 }
 
 //----------------------------------------------------------------------
 // destructor.
-Dict::~Dict()
+Dictionary::~Dictionary()
 {
     // empty
 }
 
 //----------------------------------------------------------------------
 // clear the dictionary
-void Dict::clear()
+void Dictionary::clear()
 {
     m_dict_impl.clear();
 }
 
 //----------------------------------------------------------------------
 // is defined the key?
-bool Dict::is_defined(std::string const & key) const
+bool Dictionary::is_defined(std::string const & key) const
 {
-    Dict_map::const_iterator di = m_dict_impl.find(key);
+    Dictionary_map::const_iterator di = m_dict_impl.find(key);
     if(di != m_dict_impl.end()){
         return true;
     }
@@ -124,10 +140,10 @@ bool Dict::is_defined(std::string const & key) const
 
 //----------------------------------------------------------------------
 // insert key and value
-std::pair< Dict::iterator, bool >
-Dict::insert(std::string const & key, Dict_value const & val)
+std::pair< Dictionary::iterator, bool >
+Dictionary::insert(std::string const & key, Dictionary_value const & val)
 {
-    std::pair< Dict_map::iterator, bool > ret =
+    std::pair< Dictionary_map::iterator, bool > ret =
         m_dict_impl.insert(std::make_pair(key, val));
     if(!(ret.second)){
         // the key has been there, replace the value with the new one.
@@ -138,14 +154,14 @@ Dict::insert(std::string const & key, Dict_value const & val)
 
 //----------------------------------------------------------------------
 // empty
-bool Dict::empty() const
+bool Dictionary::empty() const
 {
     return m_dict_impl.empty();
 }
 
 //----------------------------------------------------------------------
-// size of dict
-size_t Dict::size() const
+// size of dictionary
+size_t Dictionary::size() const
 {
     return m_dict_impl.size();
 }
@@ -153,11 +169,11 @@ size_t Dict::size() const
 
 //----------------------------------------------------------------------
 // output parameters to stream, format: <line_prefix><key> = <value>
-// void Dict::write(std::ostream &os, std::string const & prefix) const;
+// void Dictionary::write(std::ostream &os, std::string const & prefix) const;
 
 //----------------------------------------------------------------------
 // read dictionary from a stream
-// void Dict::read(std::istream & is, std::string const & prefix);
+// void Dictionary::read(std::istream & is, std::string const & prefix);
 
 //----------------------------------------------------------------------
 } // namespace ifgi
