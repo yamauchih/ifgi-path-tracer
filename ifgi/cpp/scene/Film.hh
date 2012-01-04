@@ -6,21 +6,13 @@
 /// \brief scene element film (A camera has this.)
 #ifndef IFGI_PATH_TRACER_IFGI_CPP_SCENE_FILM_HH
 #define IFGI_PATH_TRACER_IFGI_CPP_SCENE_FILM_HH
+
+#include <cpp/base/Array3D.hh>
+
 namespace ifgi
 {
-// from PIL import Image
-// import numpy
-
-/// TODO: maybe reuse imgsynth's array2d or something check it out!
-
 
 /// image film (frame buffer)
-///
-/// PIXEL_T = { Color, Float32 }. Color ... RGBA buffer, Float32 ... ex. Z
-
-
-
-template < typename PIXEL_T >
 class ImageFilm
 {
 public:
@@ -28,17 +20,15 @@ public:
     /// \param[in] res  resolution (x, y) resolution.
     /// \param[in] buffername buffer name (RGBA, Z, ...);
     ImageFilm(Sint32_3 const & res, std::string const & buffername)
+        :
+        m_buffername(buffername),
+        m_framebuffer(res[0], res[1], res[2]);
     {
-        m_resolution = res
-        assert(m_resolution[0] > 0);
-        assert(m_resolution[1] > 0);
-
-        m_buffername = buffername
-
-        /// allocate buffer: zeros((shepe_touple), type, ...);
-        m_framebuffer = numpy.zeros((m_resolution[0],
-                                          m_resolution[1],
-                                     m_resolution[2]));
+        assert(res[0] > 0);
+        assert(res[1] > 0);
+        assert(res[2] > 0);
+        // allocate buffer
+        // m_framebuffer.resizeBuffer(res[0], res[1], res[2]);
     }
 
     /// get class name.
@@ -61,27 +51,53 @@ public:
     /// 1024x800, 3 channels.
     Sint32_3 const & get_resolution() const
     {
-        return m_resolution;
+        return m_framebuffer.getDimension();
     }
 
-    /// get a color at pixel pos.
+    /// get a value
     ///
-    /// \param[in] pos position of the pixel (x,y)
+    /// \param[in] aidx array index (x,y,z)
+    /// \return a value of (x,y,z)
+    Float32 const get_value(Sint32_3 const & aidx) const
+    {
+        return m_framebuffer.get(aidx[0], aidx[1], aidx[2]);
+    }
+
+    /// set a value
+    ///
+    /// \param[in] aidx array index (x,y,z)
+    /// \param[in] val  value to set
+    void set_value(Sint32_3 const & aidx, Float32 val) const
+    {
+        m_framebuffer.set(aidx[0], aidx[1], aidx[2], val);
+    }
+
+    /// get a color at pixel pos. This only works Zsize = 4 (RGBA)
+    ///
+    /// \param[in] x x index
+    /// \param[in] y y index
     /// \return a color of pos(x,y)
-    Color const & get_color(Sint32_2 const & pos) const
+    Color const & get_color(Sint32 x, Sint32 y) const
     {
-        return m_framebuffer[_pos];
+        assert(m_framebuffer.getZSize() == 4); // RGBA only
+        Color const col(m_framebuffer.get(x, y, 0),
+                        m_framebuffer.get(x, y, 1),
+                        m_framebuffer.get(x, y, 2),
+                        m_framebuffer.get(x, y, 3));
+        return col;
     }
 
-    /// put a color at pixel pos.
+    /// put a color at pixel (x,y).
     ///
-    /// \param[in] pos   position as pixel (tuple), e.g., (80, 120);
-    /// \param[in] color pixel color as numpy.array. e.g., [1.0, 0.0, 0.0, 1.0]
-    void put_color(Sint32_2 const & pos, Color const & color)
+    /// \param[in] x x index
+    /// \param[in] y y index
+    /// \param[in] col a color of pos(x,y)
+    void put_color(Sint32 x, Sint32 y, Color const & col)
     {
-        assert(((len(_pos) == 2) && (len(_color) == m_resolution[2])) or
-               ((len(_pos) == 3) && (len(_color) == 1)));
-        m_framebuffer[_pos] = color;
+        m_framebuffer.set(x, y, 0, col[0]);
+        m_framebuffer.set(x, y, 1, col[1]);
+        m_framebuffer.set(x, y, 2, col[2]);
+        m_framebuffer.set(x, y, 3, col[3]);
     }
 
     /// Fill the framebuffer with col.
@@ -89,9 +105,10 @@ public:
     /// \param[in] col color to be filled
     void fill_color(Color const & col)
     {
-        for(x in xrange(0, m_resolution[0], 1)){
-            for(y in xrange(0, m_resolution[1], 1)){
-                m_framebuffer[(x, y)] = col;
+        Sint32_3 const dim = m_framebuffer.getDimension();
+        for(int x = 0; x < dim[0], ++x){
+            for(int y = 0; y < dim[1], ++y){
+                this->put_color(x, y, col);
             }
         }
     }
@@ -151,10 +168,10 @@ public:
     //         % (m_buffername,  m_resolution[0], \
     //                m_resolution[1], m_resolution[2]);
 private:
-    /// buffer resolution
-    Sint32_2 m_resolution;
     /// buffer name
     std::string m_buffername;
+    /// the buffer
+    Array3D_Float32 m_framebuffer;
 };
 
 } // namespace ifgi

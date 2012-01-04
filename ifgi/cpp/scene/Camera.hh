@@ -678,9 +678,16 @@ private:
     /// y direction base vector
     Float32_3 m_ey;
     /// films map: framebuffer map
-    std::map< std::string, Film * > m_film_map;
+    std::map< std::string, ImageFilm * > m_film_map;
     /// orthogonal projection width
     Float32 m_ortho_width;
+
+private:
+    /// NIN: the followings are needed, since m_film_map
+    /// copy constructor
+    Camera(const Camera& _rhs);
+    /// operator=
+    const Camera& operator=(const Camera& _rhs);
 };
 
 
