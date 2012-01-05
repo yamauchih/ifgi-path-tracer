@@ -7,6 +7,7 @@
 #ifndef IFGI_PATH_TRACER_IFGI_CPP_API_IFGI_CPP_RENDER_MOD_HH
 #define IFGI_PATH_TRACER_IFGI_CPP_API_IFGI_CPP_RENDER_MOD_HH
 
+// boost
 #include <boost/python.hpp>
 #include <boost/python/object.hpp>
 // #include <boost/python/extract.hpp>
@@ -16,11 +17,25 @@
 
 // #include <stdexcept>
 // #include <iostream>
-// #include <vector>
+#include <vector>
 #include <map>
+
+// ifgi
+#include <cpp/base/Dictionary.hh>
 
 namespace ifgi {
 
+//----------------------------------------------------------------------
+/// append python dictionary list to cpp dictionary vector
+///
+/// \param[out] cpp_dictionary_vec (output) cpp dictionary vector. The
+/// entry will be appended to this vector.
+/// \param[in]  pydict_list python dictionary list
+extern void append_pydict_list_to_dictionary_vec(
+    std::vector< Dictionary > & cpp_dictionary_vec,
+    boost::python::object const & pydict_list);
+
+//----------------------------------------------------------------------
 /// ifgi C++ rendering core interface
 class IfgiCppRender
 {
@@ -40,67 +55,21 @@ public:
     /// \return 0 when succeeded
     int initialize();
 
-    /// add a material to the scene
-    /// \param[in] mat material information as a dictionary
-    void add_material(boost::python::object mat) const ;
-    // {
-    //     // convert to the extracted object
-    //     boost::python::extract< boost::python::dict > cppmat_ext(mat);
-    //     if(!cppmat_ext.check()){
-    //         throw std::runtime_error(
-    //             "IfgiCppRender::add_material: type error: material is not a dictionary.");
-    //     }
+    /// clear the scene
+    void clear_scene();
 
-    //     boost::python::dict cppdict = cppmat_ext();
-    //     boost::python::list keylist = cppdict.keys();
+    /// append a new scene. material and geometry will be added.
+    ///
+    /// \param[in] mat_dict_list  material dictionary list
+    /// \param[in] geom_dict_list geometry dictionary list
+    /// \param[in] camera_dict    camera dictionary
+    void append_scene(boost::python::object mat_dict_list,
+                      boost::python::object geom_dict_list);
 
-    //     int const len = boost::python::len(keylist);
-    //     std::cout << "len(keylist) = " << len << std::endl;
-    //     for(int i = 0; i < len; ++i){
-    //         // operator[] is in python::boost::object
-    //         std::string keystr =
-    //             boost::python::extract< std::string >(boost::python::str(keylist[i]));
-    //         std::string valstr =
-    //             boost::python::extract< std::string >(
-    //                 boost::python::str(cppdict[keylist[i]]));
-    //         std::cout << "key:[" << keystr << "]->[" << valstr << "]" << std::endl;
-    //     }
-
-    //     // TODO: push this material to C++ ifgi renderer core
-    // }
-
-    /// get material name list
-    /// \return list of material name
-    // object get_material_name_list() const
-    // {
-    //     boost::python::list mat_name_list;
-
-    //     return mat_name_list;
-    // }
-
-
-    // /// pass a python object, but this should be a python dictionary.
-    // /// \param[in] pydict a dictionary
-    // void pass_dict(object pydict) const {
-    //     extract< dict > cppdict_ext(pydict);
-    //     if(!cppdict_ext.check()){
-    //         throw std::runtime_error(
-    //             "IfgiCppRender::pass_dict: type error: not a python dict.");
-    //     }
-
-    //     dict cppdict = cppdict_ext();
-    //     list keylist = cppdict.keys();
-
-    //     // careful with boost name. there already have a conflict.
-    //     int const len = boost::python::len(keylist);
-    //     std::cout << "len(keylist) = " << len << std::endl;
-    //     for(int i = 0; i < len; ++i){
-    //         // operator[] is in python::boost::object
-    //         std::string keystr = extract< std::string >(str(keylist[i]));
-    //         std::string valstr = extract< std::string >(str(cppdict[keylist[i]]));
-    //         std::cout << "key:[" << keystr << "]->[" << valstr << "]" << std::endl;
-    //     }
-    // }
+    /// set camera.
+    ///
+    /// \param[in] camera_dict camera dictionary
+    void set_camera(boost::python::object camera_dict);
 
     // /// return a dict object.
     // /// \return a dict object
@@ -120,9 +89,15 @@ public:
     // }
 
 private:
-    /// material name -> material map. FIXME: template second arg
-    /// should be material.
-    std::map< std::string, std::string > m_material_map;
+
+
+private:
+    /// material dictionary vector
+    std::vector< Dictionary > m_mat_dict_vec;
+    /// geometry dictionary vector
+    std::vector< Dictionary > m_geo_dict_vec;
+    ///camera dictionary
+    Dictionary m_camera_dict;
 };
 
 } // namespace ifgi

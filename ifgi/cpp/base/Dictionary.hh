@@ -228,8 +228,13 @@ public:
 
     /// output parameters to a stream.
     /// format: <line_prefix><key> = <value>
-    // void write(std::ostream &os, std::string const & prefix) const; NIN
+    ///
+    /// \param[in] os output stream
+    /// \param[in] perfix prefix string to add
+    void write(std::ostream &os,
+               std::string const & prefix = std::string("")) const;
 
+private:
     /// read dictionary from a stream
     // void read(std::istream & is, std::string const & prefix);
     Dictionary_map m_dict_impl;

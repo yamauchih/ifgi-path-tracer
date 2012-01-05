@@ -8,6 +8,9 @@
 #include "Dictionary.hh"
 #include "Exception.hh"
 
+#include <vector>
+#include <algorithm>
+
 namespace ifgi {
 
 //======================================================================
@@ -169,7 +172,31 @@ size_t Dictionary::size() const
 
 //----------------------------------------------------------------------
 // output parameters to stream, format: <line_prefix><key> = <value>
-// void Dictionary::write(std::ostream &os, std::string const & prefix) const;
+void Dictionary::write(std::ostream &os,
+                       std::string const & prefix) const
+{
+    // if(is_sort){
+    //     std::vector< std::string > sorted_line_buf; // including prefix
+    //     for(Dictionary_map::const_iterator vi = m_dict_impl.begin();
+    //         vi != m_dict_impl.end(); ++vi)
+    //     {
+    //         sorted_line_buf.push_back(
+    //             prefix + vi->first + " = " + vi->second.get_string());
+    //     }
+    //     std::sort(sorted_line_buf.begin(), sorted_line_buf.end());
+    //     for(std::vector< std::string >::const_iterator ki = sorted_line_buf.begin();
+    //         ki != sorted_line_buf.end(); ++ki)
+    //     {
+    //         os << (*ki) << "\n";
+    //     }
+    // }
+    // else{}
+    for(Dictionary_map::const_iterator vi = m_dict_impl.begin();
+        vi != m_dict_impl.end(); ++vi)
+    {
+        os << prefix << vi->first << " = " << vi->second.get_string() << "\n";
+    }
+}
 
 //----------------------------------------------------------------------
 // read dictionary from a stream

@@ -25,6 +25,7 @@ TEST(DictionaryTest, Vectos)
         dict.insert("x1", ifgi::Dictionary_value(x1));
         dict.insert("x2", ifgi::Dictionary_value(x2));
 
+
         bool          const b1 = dict.get< bool > ("b0");
         ifgi::Sint32  const y0 = dict.get< ifgi::Sint32 > ("x0");
         ifgi::Float32 const y1 = dict.get< ifgi::Float32 >("x1");
@@ -34,6 +35,7 @@ TEST(DictionaryTest, Vectos)
         ASSERT_EQ(x0, y0);
         ASSERT_EQ(x1, y1);
         ASSERT_EQ(x2, y2);
+        dict.write(std::cout, "write_test::");
     }
 
     // std::string
