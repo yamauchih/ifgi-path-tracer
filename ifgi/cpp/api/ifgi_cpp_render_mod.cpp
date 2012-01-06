@@ -20,42 +20,29 @@
 
 namespace ifgi {
 
+//----------------------------------------------------------------------
+/// convert cpp Dictionary to python dict
+///
+/// \param[in] cpp_dict cpp Dictionary
+/// \return python dictionary, but all the value elements are python
+/// strings
+boost::python::object get_pydict_from_cpp_dictionary(Dictionary const & cpp_dict)
+{
+    boost::python::dict pydict;
+    for(Dictionary::const_iterator di = cpp_dict.begin(); di != cpp_dict.end(); ++di)
+    {
+        pydict[di->first] = di->second.get_string();
+    }
+
+    return pydict;
+}
 
 //----------------------------------------------------------------------
-// test add dict list
-// void IfgiCppRender::add_dict_list(boost::python::object dict_list)
-// {
-//     // convert to the extracted object: list
-//     boost::python::extract< boost::python::list > cpp_dict_list_ext(dict_list);
-//     if(!cpp_dict_list_ext.check()){
-//         throw std::runtime_error(
-//             "IfgiCppRender::add_dict_list: type error: "
-//             "dict_list is not a list.");
-//     }
-
-//     boost::python::list cpp_dict_list = cpp_dict_list_ext();
-//     int const len = boost::python::len(cpp_dict_list);
-//     std::cout << "DEBUG: len(dict_list) = " << len << std::endl;
-//     for(int i = 0; i < len; ++i){
-//         boost::python::dict di =
-//             boost::python::extract< boost::python::dict >(cpp_dict_list[i]);
-
-//         boost::python::list keylist = di.keys();
-
-//         int const one_len = boost::python::len(keylist);
-//         for(int j = 0; j < one_len; ++j){
-//             std::string const keystr =
-//                 boost::python::extract< std::string >(
-//                     boost::python::str(keylist[j]));
-//             std::cout << "list[" << i << "]'s key[" << j << "]=["
-//                       << keystr << "]" << std::endl;
-//         }
-//     }
-// }
-// DELETEME
-
-//----------------------------------------------------------------------
-// convert python dict to cpp Dictionary
+/// convert python dict to cpp Dictionary
+///
+/// \param[in] pydict python dict
+/// \return cpp dictionary, but all the value elements are python
+/// strings
 Dictionary get_cpp_dictionary_from_pydict(boost::python::dict const & pydict)
 {
     boost::python::list keylist = pydict.keys();
@@ -130,98 +117,35 @@ void IfgiCppRender::append_scene(boost::python::object mat_dict_list,
     append_pydict_list_to_dictionary_vec(m_geo_dict_vec, geom_dict_list);
 }
 
-    // // convert to the extracted object: list
-    // boost::python::extract< boost::python::list > cpp_dict_list_ext(dict_list);
-    // if(!cpp_dict_list_ext.check()){
-    //     throw std::runtime_error(
-    //         "IfgiCppRender::add_dict_list: type error: "
-    //         "dict_list is not a list.");
-    // }
-
-    // boost::python::list cpp_dict_list = cpp_dict_list_ext();
-    // int const len = boost::python::len(cpp_dict_list);
-    // std::cout << "len(dict_list) = " << len << std::endl;
-    // for(int i = 0; i < len; ++i){
-    //     boost::python::dict di =
-    //         boost::python::extract< boost::python::dict >(cpp_dict_list[i]);
-    //     boost::python::list keylist = di.keys();
-
-    //     int const one_len = boost::python::len(keylist);
-    //     for(int j = 0; j < one_len; ++j){
-    //         std::string const keystr =
-    //             boost::python::extract< std::string >(
-    //                 boost::python::str(keylist[j]));
-    //         std::cout << "list[" << i << "]'s key[" << j << "]=["
-    //                   << keystr << "]" << std::endl;
-    //     }
-    // }
-
 //----------------------------------------------------------------------
 // set camera.
-void IfgiCppRender::set_camera(boost::python::object camera_dict)
+void IfgiCppRender::set_camera_dict(boost::python::object camera_pydict_obj)
 {
+    // object -> extractor
+    boost::python::extract< boost::python::dict > cpp_pydict_ext(camera_pydict_obj);
+    if(!cpp_pydict_ext.check()){
+        throw std::runtime_error("set_camera_dict: type error: "
+                                 "camera_pydict_obj is not a dict.");
+    }
+    Dictionary const cpp_cam_dict = get_cpp_dictionary_from_pydict(cpp_pydict_ext());
+
+    cpp_cam_dict.write(std::cout, "CPPCAM:");
+    m_camera_dict.clear();
+    m_camera_dict.insert_all(cpp_cam_dict);
 }
 
 //----------------------------------------------------------------------
-// add a material to the scene
-// void IfgiCppRender::add_material(boost::python::object mat)
-// {
-//     // convert to the extracted object
-//     boost::python::extract< boost::python::dict > cppmat_ext(mat);
-//     if(!cppmat_ext.check()){
-//         throw std::runtime_error(
-//             "IfgiCppRender::add_material: type error: material is not a dictionary.");
-//     }
-
-//     boost::python::dict cppdict = cppmat_ext();
-//     boost::python::list keylist = cppdict.keys();
-
-//     int const len = boost::python::len(keylist);
-//     std::cout << "len(keylist) = " << len << std::endl;
-//     Dictionary dict;
-//     for(int i = 0; i < len; ++i){
-//         // operator[] is in python::boost::object
-//         std::string keystr =
-//             boost::python::extract< std::string >(boost::python::str(keylist[i]));
-//         std::string valstr =
-//             boost::python::extract< std::string >(
-//                 boost::python::str(cppdict[keylist[i]]));
-//         std::cout << "key:[" << keystr << "]->[" << valstr << "]" << std::endl;
-
-//         dict.set(keystr, valstr);
-//     }
-//     // TODO: push this material to C++ ifgi renderer core
-// }
+// get camera.
+boost::python::object IfgiCppRender::get_camera_dict() const
+{
+    return get_pydict_from_cpp_dictionary(m_camera_dict);
+}
 
 //----------------------------------------------------------------------
-// test add dict list
-// void IfgiCppRender::add_dict_list(boost::python::object dict_list)
-// {
-//     // convert to the extracted object: list
-//     boost::python::extract< boost::python::list > cpp_dict_list_ext(dict_list);
-//     if(!cpp_dict_list_ext.check()){
-//         throw std::runtime_error(
-//             "IfgiCppRender::add_dict_list: type error: "
-//             "dict_list is not a list.");
-//     }
-
-//     boost::python::list cpp_dict_list = cpp_dict_list_ext();
-//     int const len = boost::python::len(cpp_dict_list);
-//     std::cout << "len(dict_list) = " << len << std::endl;
-//     for(int i = 0; i < len; ++i){
-//         boost::python::dict di =
-//             boost::python::extract< boost::python::dict >(cpp_dict_list[i]);
-//         boost::python::list keylist = di.keys();
-
-//         int const one_len = boost::python::len(keylist);
-//         for(int j = 0; j < one_len; ++j){
-//             std::string const keystr =
-//                 boost::python::extract< std::string >(
-//                     boost::python::str(keylist[j]));
-//             std::cout << "list[" << i << "]'s key[" << j << "]=["
-//                       << keystr << "]" << std::endl;
-//         }
-//     }
+// /// return a string object.
+// /// \return a string object
+// object return_string() const {
+//     return str("Incredible, this works.");
 // }
 
 //----------------------------------------------------------------------
@@ -240,9 +164,12 @@ BOOST_PYTHON_MODULE(ifgi_cpp_render_mod)
         .def("append_scene",
              &ifgi::IfgiCppRender::append_scene,
              "append material and geometry dict list to the scene.")
-        .def("set_camera",
-             &ifgi::IfgiCppRender::set_camera,
-             "set camera. only defined key value pairs will be updated.")
+        .def("set_camera_dict",
+             &ifgi::IfgiCppRender::set_camera_dict,
+             "set camera dictionary. Replace the camera (python dictionary).")
+        .def("get_camera_dict",
+             &ifgi::IfgiCppRender::get_camera_dict,
+             "get current camera dictionary.")
         ;
 }
 

@@ -66,30 +66,15 @@ public:
     void append_scene(boost::python::object mat_dict_list,
                       boost::python::object geom_dict_list);
 
-    /// set camera.
+    /// set camera. replaced all the data.
     ///
-    /// \param[in] camera_dict camera dictionary
-    void set_camera(boost::python::object camera_dict);
+    /// \param[in] camera_pydict_obj camera dictionary
+    void set_camera_dict(boost::python::object camera_pydict_obj);
 
-    // /// return a dict object.
-    // /// \return a dict object
-    // object return_dict() const {
-    //     dict cppdict;
-    //     cppdict["this"] = "work?";
-    //     cppdict["no"]   = "idea";
-    //     cppdict["number"]   = 1;
-
-    //     return cppdict;
-    // }
-
-    // /// return a dict object.
-    // /// \return a dict object
-    // object return_string() const {
-    //     return str("Incredible, this works.");
-    // }
-
-private:
-
+    /// get camera.
+    ///
+    /// \return get current camera
+    boost::python::object get_camera_dict() const;
 
 private:
     /// material dictionary vector

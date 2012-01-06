@@ -24,6 +24,17 @@ print 'append a scene'
 ifgicore.append_scene(mat_dict_list, geo_dict_list)
 
 print 'set a camera.'
-cam = {}
-ifgicore.set_camera(cam)
+cam = {
+    'cam_name': 'default',
+    'eye_pos': '278.0 273.0 -800.0',
+    'view_dir': '0.0 0.0 1.0',
+    'up_dir': '0.0 1.0 0.0',
+    'z_near': '0.1',
+    'z_far': '10000'
+    }
+ifgicore.set_camera_dict(cam)
 
+ret_cam = ifgicore.get_camera_dict()
+print ret_cam
+
+print 'end of unit test'

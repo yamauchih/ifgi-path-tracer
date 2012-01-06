@@ -156,6 +156,33 @@ Dictionary::insert(std::string const & key, Dictionary_value const & val)
 }
 
 //----------------------------------------------------------------------
+// insert all entries
+Sint32 Dictionary::insert_all(Dictionary const & dict)
+{
+    Sint32 inserted_count = 0;
+    for(const_iterator di = dict.begin(); di != dict.end(); ++di){
+        std::pair< iterator, bool > ii = this->insert(di->first, di->second);
+        if(ii.second){
+            ++inserted_count;
+        }
+    }
+    return inserted_count;
+}
+
+//----------------------------------------------------------------------
+// erase an ently by its key
+bool Dictionary::erase(std::string const & key)
+{
+    const_iterator di = m_dict_impl.find(key);
+    if(di != m_dict_impl.end()){
+        m_dict_impl.erase(key);
+        return true;
+    }
+    // no entry
+    return false;
+}
+
+//----------------------------------------------------------------------
 // empty
 bool Dictionary::empty() const
 {
@@ -169,6 +196,19 @@ size_t Dictionary::size() const
     return m_dict_impl.size();
 }
 
+//----------------------------------------------------------------------
+// const_iterator begin()
+Dictionary::const_iterator Dictionary::begin() const
+{
+    return m_dict_impl.begin();
+}
+
+//----------------------------------------------------------------------
+// const_iterator end()
+Dictionary::const_iterator Dictionary::end() const
+{
+    return m_dict_impl.end();
+}
 
 //----------------------------------------------------------------------
 // output parameters to stream, format: <line_prefix><key> = <value>

@@ -35,7 +35,19 @@ TEST(DictionaryTest, Vectos)
         ASSERT_EQ(x0, y0);
         ASSERT_EQ(x1, y1);
         ASSERT_EQ(x2, y2);
+        // write test
         dict.write(std::cout, "write_test::");
+
+        ASSERT_EQ(dict.erase("b0"), true);  // erase succeeded
+        ASSERT_EQ(dict.erase("b0"), false); // no more key
+
+        // iterator test
+        for(ifgi::Dictionary::const_iterator di = dict.begin();
+            di != dict.end(); ++di)
+        {
+            std::cout << "di->first: " << di->first
+                      << ", di->second: " << di->second.get_string() << std::endl;
+        }
     }
 
     // std::string

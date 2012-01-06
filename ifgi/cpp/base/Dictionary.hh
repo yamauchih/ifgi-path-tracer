@@ -183,11 +183,20 @@ public:
     std::pair< Dictionary_map::iterator, bool >
     insert(std::string const & key, Dictionary_value const & val);
 
-    /// insert all entries
-    // Sint32 insert_all(Dictionary const & di);NIN
+    /// insert all entries. The existing entry will be overwritten, if
+    /// there is no overwritten, they remains. If you want to set
+    /// it, first clear() the dictionary and insert_all().
+    ///
+    /// \param[in] dict dictionary to be inserted.
+    /// \return number of inserted entries
+    Sint32 insert_all(Dictionary const & dict);
 
-    /// erase an ently by its key
-    // void erase(std::string const & key);NIN
+    /// erase an ently by its key. If no key in the dictionary, no
+    /// effect.
+    ///
+    /// \param[in] key key of erasing entry
+    /// \return true when erase the entry with the key
+    bool erase(std::string const & key);
 
     /// empty?
     /// \return true when empty
@@ -225,6 +234,14 @@ public:
     {
         this->insert(key, Dictionary_value(val));
     }
+
+    /// const_iterator begin()
+    /// \return the first element of Dictionary_value
+    const_iterator begin() const;
+
+    /// const_iterator end()
+    /// \return the one past end of elements of Dictionary_value
+    const_iterator end() const;
 
     /// output parameters to a stream.
     /// format: <line_prefix><key> = <value>
