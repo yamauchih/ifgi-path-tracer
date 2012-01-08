@@ -13,7 +13,9 @@ cd ../../
 export PYTHONPATH=`pwd`
 echo "export PYTHONPATH=${PYTHONPATH}"
 cd ${CURDIR}
-export LD_LIBRARY_PATH=/home/hitoshi/data/project/ifgi-path-tracer/ifgi/cpp/api
+
+# when no -rpath specified
+export LD_LIBRARY_PATH=/home/hitoshi/data/project/ifgi-path-tracer/ifgi/cpp/base/Ubuntu11.04:/home/hitoshi/data/project/ifgi-path-tracer/ifgi/cpp/api/Ubuntu11.04
 
 # profile
 # python -m cProfile test_ifgi_render_2.py

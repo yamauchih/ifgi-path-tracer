@@ -61,12 +61,19 @@ foreach bname $PROJLIB_LIST {
     set libfilename "lib${libbasename}.so"
     # puts $libfilename
 
+    # create linker options
     set PROJLIB_DIR ""
     append PROJLIB_DIR ${PROJROOT} "/" ${bname} "/" ${COMPILE_OBJ_DIR}
+
+    # specified -rpath. But if you want to move the python cpp module
+    # somewhere else, -rpath option should not be specified. And all
+    # the .so location should be specified by LD_RUN_PAPH
     set RPATH_LD_OPT "-Wl,-rpath=${PROJLIB_DIR}"
     set LIBPATH_LD_OPT "-L${PROJLIB_DIR}"
 
-    set PROJLIB_OPT ${RPATH_LD_OPT}
+    set PROJLIB_OPT {}
+    # when -rpath needed
+    lappend PROJLIB_OPT ${RPATH_LD_OPT}
     lappend PROJLIB_OPT ${LIBPATH_LD_OPT}
     lappend PROJLIB_OPT "-l$libbasename"
     # puts $PROJLIB_OPT
