@@ -1,7 +1,7 @@
 # -*-Mode: tcl -*-
 # ============================================================
 # TMakefile for ifgi
-# Copyright (C) 2010-2011 Yamauchi Hitoshi
+# Copyright (C) 2010-2012 Yamauchi Hitoshi
 # Sunday Researcher
 # ============================================================
 
@@ -14,7 +14,7 @@ module { cxx }
 set MOD_CPP_SOURCE_BASE ifgi_cpp_render_mod
 
 # linking project directory. relative to PROJROOT
-set PROJLIB_LIST { cpp/base cpp/api }
+set PROJLIB_LIST { cpp/base cpp/scene cpp/api }
 
 module { python.boost python.boost_config }
 

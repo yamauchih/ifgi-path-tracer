@@ -256,13 +256,6 @@ class Camera(object):
         \param[in] _target_dist target distance."""
         self.__target_dist = _target_dist
 
-    # get lens to screen distance
-    def get_lens_to_screen_distance(self):
-        """get lens to screen distance.
-        \return lens to screen distance."""
-
-        return self.__lens_screen_dist
-
     # get focal length
     def get_focal_length(self):
         """get focal length.
@@ -280,7 +273,6 @@ class Camera(object):
         \return lens to screen distance."""
 
         return self.__lens_screen_dist
-
 
     def set_lens_to_screen_distance(self, _l2s_dist):
         """set get lens to screen distance.

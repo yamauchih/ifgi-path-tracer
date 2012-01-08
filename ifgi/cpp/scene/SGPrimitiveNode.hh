@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------
 // ifgi c++ implementation: SGPrimitiveNode.hh
-// Copyright (C) 2010-2011 Yamauchi, Hitoshi
+// Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
 /// \brief scene graph node primitive

@@ -4,19 +4,11 @@
 //----------------------------------------------------------------------
 /// \file
 /// \brief scene graph
-#ifndef IFGI_PATH_TRACER_IFGI_CPP_SCENE_SCENEGRAPH_HH
-#define IFGI_PATH_TRACER_IFGI_CPP_SCENE_SCENEGRAPH_HH
 
-// import Primitive, Material, Texture
-// import ObjReader, IfgiSceneReader
-// import ConvReader2Primitive
-// from ifgi.base.ILog import ILog
-#include "Camera.hh"
+#include "SceneGraph.hh"
 
 namespace ifgi
 {
-
-class SceneGraphNode;
 
 // /// SceneGraphTraverseStrategyIF ----------------------------------------
 // class SceneGraphTraverseStrategyIF(object){
@@ -177,99 +169,118 @@ class SceneGraphNode;
 
 
 //----------------------------------------------------------------------
-
-/// Scene graph
-/// This has
-/// - cur_camera   current camera
-/// - root_node    for all the geometry
-class SceneGraph
+// default constructor
+SceneGraph::SceneGraph()
+    :
+    m_cur_camera(),
+    m_p_root_node(0)
 {
-public:
-    /// default constructor
-    SceneGraph();
+    // empty
+}
 
-    /// set the root node
-    /// \param[in] root_node root node
-    void set_root_node(SceneGraphNode * p_root_node);
+//----------------------------------------------------------------------
+// set the root node
+void SceneGraph::set_root_node(SceneGraphNode * p_root_node)
+{
+    m_p_root_node = p_root_node;
+}
 
-    /// peek the root node
-    /// \return root node of this scenegraph
-    SceneGraphNode * peek_root_node();
+//----------------------------------------------------------------------
+// peek the root node
+SceneGraphNode * SceneGraph::peek_root_node()
+{
+    return m_p_root_node;
+}
 
-    /// set current camera
-    /// \param[in] current active camera.
-    void set_current_camera(Camera const & cur_camera);
+//----------------------------------------------------------------------
+// set current camera
+void SceneGraph::set_current_camera(Camera const & cur_camera)
+{
+    m_cur_camera = cur_camera;
+}
 
-    /// get current camera
-    /// \return current active camera of this scenegraph
-    Camera const & get_current_camera() const;
+//----------------------------------------------------------------------
+// get current camera
+Camera const & SceneGraph::get_current_camera() const
+{
+    return m_cur_camera;
+}
 
-    /// is valid scenegraph
-    /// test this scenegrapgh validity
-    /// \return true when the scenegraph is valid.
-    bool is_valid() const;
+//----------------------------------------------------------------------
+// is valid scenegraph
+bool SceneGraph::is_valid() const
+{
+    if(this->get_root_node() == 0){
+        print "Scenegraph: No rootnode";
+        return false;
+    }
 
-    /// travertse the scenegraph. subroutine of traverse_sgnode
-    ///
-    /// traverse scenegraph && apply strategy to all nodes
-    ///
-    /// \param[in] cur_node current visiting node
-    /// \param[in] level    current depth of the graph from the root
-    // void traverse_sgnode_sub(SceneGraphNode * p_cur_node,
-    //                          Sint32 level,
-    //                          strategy)
-    // {
-    //     // strategy.apply_before_recurse(_cur_node, level);
-    //     // if (not cur_node.is_primitive_node()){
-    //     //     /// children container
-    //     //     for chnode in cur_node.get_children(){
-    //     //         strategy.apply_middle(chnode, level);
-    //     //         m_traverse_sgnode_sub(chnode, level + 1, strategy);
+    return true;
+}
 
-    //     // strategy.apply_after_recurse(_cur_node, level);
-    // }
+//----------------------------------------------------------------------
 
-    /// traverse the scenegraph
-    /// \param[in] cur_node current node
-    /// \param[in] strategy strategy of the traverse
-    // void traverse_sgnode(_cur_node, strategy)
-    // {
-    //     level = 0;
-    //     m_traverse_sgnode_sub(_cur_node, level, strategy);
-    // }
+/// travertse the scenegraph. subroutine of traverse_sgnode
+///
+/// traverse scenegraph && apply strategy to all nodes
+///
+/// \param[in] cur_node current visiting node
+/// \param[in] level    current depth of the graph from the root
+// void traverse_sgnode_sub(SceneGraphNode * p_cur_node,
+//                          Sint32 level,
+//                          strategy)
+// {
+//     // strategy.apply_before_recurse(_cur_node, level);
+//     // if (not cur_node.is_primitive_node()){
+//     //     /// children container
+//     //     for chnode in cur_node.get_children(){
+//     //         strategy.apply_middle(chnode, level);
+//     //         m_traverse_sgnode_sub(chnode, level + 1, strategy);
 
-    /// print all nodes for debug && example of usage of
-    /// SceneGraphTraverseStrategyIF
-    // void print_all_node() const
-    // {
-    //     if m_root_node == None:
-    //         print "no root_node"
-    //         return
-    //     print_strategy = SGTPrintStrategy();
-    //     this->traverse_sgnode(m_root_node, print_strategy);
-    // }
+//     // strategy.apply_after_recurse(_cur_node, level);
+// }
 
-    /// update all bounding box recursively.
-    /// \see SGTUpdateBBoxStrategy
-    // void update_all_bbox()
-    // {
-    //     /// recompute root bbox
-    //     m_root_node.get_bbox().invalidate();
+/// traverse the scenegraph
+/// \param[in] cur_node current node
+/// \param[in] strategy strategy of the traverse
+// void traverse_sgnode(_cur_node, strategy)
+// {
+//     level = 0;
+//     m_traverse_sgnode_sub(_cur_node, level, strategy);
+// }
 
-    //     update_bbox_strategy = SGTUpdateBBoxStrategy();
-    //     this->traverse_sgnode(m_root_node, update_bbox_strategy);
-    //     /// handle no children have valid bbox (e.g., empty scene);
-    //     if not m_root_node.get_bbox().has_volume(){
-    //         ILog.warn("Rootnode has no volume, set [0 0 0]-[1 1 1]");
-    //         m_root_node.get_bbox().insert_point(numpy.array([0,0,0]));
-    //         m_root_node.get_bbox().insert_point(numpy.array([1,1,1]));
+/// print all nodes for debug && example of usage of
+/// SceneGraphTraverseStrategyIF
+// void print_all_node() const
+// {
+//     if m_root_node == None:
+//         print "no root_node"
+//         return
+//     print_strategy = SGTPrintStrategy();
+//     this->traverse_sgnode(m_root_node, print_strategy);
+// }
+
+/// update all bounding box recursively.
+/// \see SGTUpdateBBoxStrategy
+// void update_all_bbox()
+// {
+//     /// recompute root bbox
+//     m_root_node.get_bbox().invalidate();
+
+//     update_bbox_strategy = SGTUpdateBBoxStrategy();
+//     this->traverse_sgnode(m_root_node, update_bbox_strategy);
+//     /// handle no children have valid bbox (e.g., empty scene);
+//     if not m_root_node.get_bbox().has_volume(){
+//         ILog.warn("Rootnode has no volume, set [0 0 0]-[1 1 1]");
+//         m_root_node.get_bbox().insert_point(numpy.array([0,0,0]));
+//         m_root_node.get_bbox().insert_point(numpy.array([1,1,1]));
 
 private:
-    /// current camera
-    Camera m_cur_camera;
-    /// SceneGraph root node reference. SceneGraph is not an owner of
-    /// these nodes.
-    SceneGraphNode * m_p_root_node;
+/// current camera
+Camera m_cur_camera;
+/// SceneGraph root node reference. SceneGraph is not an owner of
+/// these nodes.
+SceneGraphNode * m_p_root_node;
 };
 
 /// ----------------------------------------------------------------------
@@ -531,4 +542,3 @@ private:
 // /// if _name__ == "__main__":
 
 } // namespace ifgi
-#endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_SCENE_SCENEGRAPH_HH

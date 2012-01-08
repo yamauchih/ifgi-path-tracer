@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------
 // ifgi c++ implementation: Film.hh
-// Copyright (C) 2010-2011 Yamauchi, Hitoshi
+// Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
 /// \brief scene element film (A camera has this.)
@@ -30,6 +30,20 @@ public:
         // allocate buffer
         // m_framebuffer.resizeBuffer(res[0], res[1], res[2]);
     }
+
+    /// copy constructor
+    ImageFilm(ImageFilm const & rhs)
+    {
+        std::cerr << "ImageFilm copy constructor NIN" << std::endl;
+    }
+
+    /// operator=
+    ImageFilm const & operator=(ImageFilm const & rhs);
+    {
+        std::cerr << "ImageFilm operator= NIN" << std::endl;
+    }
+
+
 
     /// get class name.
     /// \return class name

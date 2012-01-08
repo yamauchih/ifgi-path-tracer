@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------
 // ifgi c++ implementation: IPrimitive.hh
-// Copyright (C) 2010-2011 Yamauchi, Hitoshi
+// Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
 /// \brief scene element primitive interface

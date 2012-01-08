@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------
 // ifgi c++ implementation: Camera.hh
-// Copyright (C) 2010-2011 Yamauchi, Hitoshi
+// Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
 /// \brief ifgi Camera C++ implementation
@@ -8,15 +8,17 @@
 #define IFGI_PATH_TRACER_IFGI_CPP_SCENE_CAMERA_HH
 
 #include "cpp/base/Vector.hh"
+
 #include <cassert>
 #include <cmath>
+#include <map>
 
 namespace ifgi
 {
 //----------------------------------------------------------------------
 // forward declaration
 class Ray;
-class Film;
+class ImageFilm;
 
 //----------------------------------------------------------------------
 /// a camera
@@ -47,290 +49,147 @@ public:
 
 public:
     /// default constructor
-    Camera()
-        :
-        m_eye_pos (0.0f, 0.0f,  5.0f),
-        m_view_dir(0.0f, 0.0f, -1.0f),
-        m_up_dir  (0.0f, 1.0f,  0.0f),
-        m_fovy_rad(45.0 * M_PI / 180.0),
-        m_aspect_ratio(1.0),
-        m_z_near(0.1),
-        m_z_far(1000.0),
-        m_projection(Camera_Perspective),
-        // target distance = |eye_pos - lookat_point|
-        m_target_dist(1.0),
-        m_focal_length(1.0),
-        m_lens_screen_dist(1.0),
-        m_lens_film_dist(1.0),
-        // lower bottom corner
-        m_LB_corner(-1.0f, -1.0f,  0.0f),
-        // x direction base vector
-        m_ex(1.0f, 0.0f,  0.0f),
-        // y direction base vector
-        m_ey(0.0f, 1.0f,  0.0f),
-        // films: framebuffer
-        // m_film(),
-        m_ortho_width(1.0)
-    {
-        this->compute_screen_parameter();
-        // print "called Camara.__init__()"
-    }
+    Camera();
+
+    /// copy constructor. deep copy
+    /// \param[in] rhs right hand side (copy source)
+    Camera(Camera const & rhs);
 
     /// destructor
-    ~Camera()
-    {
-        // empty
-    }
+    ~Camera();
+
+    /// operator=. deep copy
+    /// \param[in] rhs right hand side (copy source)
+    const Camera& operator=(Camera const & rhs);
 
     /// get class name.
     /// \return "Camera"
-    std::string get_classname() const
-    {
-        return std::string("Camera");
-    }
+    std::string get_classname() const;
 
     /// set eye position.
     /// \param[in] eye_pos eye position
-    void set_eye_pos(Float32_3 const & eye_pos)
-    {
-        m_eye_pos = eye_pos;
-        this->compute_screen_parameter();
-    }
+    void set_eye_pos(Float32_3 const & eye_pos);
 
     /// get eye position.
     /// \return eye position
-    Float32_3 const & get_eye_pos() const
-    {
-        return m_eye_pos;
-    }
+    Float32_3 const & get_eye_pos() const;
 
     /// set view direction.
     /// \return view direction (normalized).
-    void set_view_dir(Float32_3 const & view_dir)
-    {
-        m_view_dir = view_dir;
-        m_view_dir.normalize();
-        this->compute_screen_parameter();
-    }
+    void set_view_dir(Float32_3 const & view_dir);
 
     /// get view direction.
     /// \return view direction
-    Float32_3 const & get_view_dir() const
-    {
-        return m_view_dir;
-    }
+    Float32_3 const & get_view_dir() const;
 
     /// set lookat position.
     /// \param[in] eye_pos    eye position
     /// \param[in] lookat_pos lookat position
-    void set_eye_lookat_pos(Float32_3 const & eye_pos, Float32_3 const & lookat_pos)
-    {
-        m_eye_pos  = eye_pos;
-        lookat_vec = lookat_pos - eye_pos;
-        dist = lookat_vec.norm();
-        assert(dist > 0);
-
-        m_target_dist = dist;
-        m_view_dir = lookat_vec / dist;
-        this->compute_screen_parameter();
-    }
+    void set_eye_lookat_pos(Float32_3 const & eye_pos,
+                            Float32_3 const & lookat_pos);
 
     /// set up direction.
     /// \param[in] up direction
-    void set_up_dir(Float32_3 const & up_dir)
-    {
-        m_up_dir = up_dir;
-        m_up_dir.normalize();
-        this->compute_screen_parameter();
-    }
+    void set_up_dir(Float32_3 const & up_dir);
 
     /// get up direction.
     /// \return up direction
-    Float32_3 const & get_up_dir() const
-    {
-        return m_up_dir;
-    }
+    Float32_3 const & get_up_dir() const;
 
     /// set fovy as radian.
     /// \param[in] fovy_rad field of view in radian.
-    void set_fovy_rad(Float32 fovy_rad)
-    {
-        m_fovy_rad = fovy_rad;
-    }
+    void set_fovy_rad(Float32 fovy_rad);
 
     /// get fovy as radian.
     /// \return field of view Y. (radian)
-    Float32 get_fovy_rad() const
-    {
-        return m_fovy_rad;
-    }
+    Float32 get_fovy_rad() const;
 
     /// set aspect ratio.
     /// \param[in] aspect_ratio aspect ratio.
-    void set_aspect_ratio(Float32 aspect_ratio)
-    {
-        m_aspect_ratio = aspect_ratio;
-    }
+    void set_aspect_ratio(Float32 aspect_ratio);
 
     /// get aspect ratio.
     /// \return aspect ratio.
-    Float32 get_aspect_ratio() const
-    {
-        return m_aspect_ratio;
-    }
+    Float32 get_aspect_ratio() const;
 
     /// set z near plane distance.
     /// \param[in] z_near z near plane distance.
-    void set_z_near(Float32 z_near)
-    {
-        m_z_near = z_near;
-    }
+    void set_z_near(Float32 z_near);
 
     /// get z near plane distance.
     /// \return z near plane distance.
-    Float32 get_z_near() const
-    {
-        return m_z_near;
-    }
+    Float32 get_z_near() const;
 
     /// set z far plane distance.
     /// \param[in] z_far z far plane distance.
-    void set_z_far(Float32 z_far)
-    {
-        /// print "set_z_far: ", z_far
-        m_z_far = z_far;
-    }
+    void set_z_far(Float32 z_far);
 
     /// get z far plane distance.
     /// \return z far plane distance.
-    Float32 get_z_far()const
-    {
-        return m_z_far;
-    }
+    Float32 get_z_far()const;
 
     /// get projection mode.
     /// \return projection mode
-    Camera_projection_mode_e get_projection() const
-    {
-        return m_projection;
-    }
+    Camera_projection_mode_e get_projection() const;
 
     /// set projection mode.
     /// \param[in] projection projection mode
-    void set_projection(Camera_projection_mode_e projection)
-    {
-        m_projection = projection;
-    }
+    void set_projection(Camera_projection_mode_e projection);
 
     /// get gluLookAt() parameters.
     /// \param[in] eye_type eye position for stereo {EyeCenter,
     /// EyeLeft, EyeRight}, NIN Not implemented now.
     /// \return lookat parameters as 3x3 matrix
     // get_lookat(Camera_eye_position_e eye_position)
-    // {
-    //     assert(_eye_type == EyePosition.EyeCenter);
-    //     assert(m_target_dist  != 0);
-    //     assert(m_focal_length != 0);
-    //     return [m_eye_pos,
-    //             m_eye_pos + m_target_dist * m_view_dir,
-    //             m_up_dir];
-    // }
 
     /// Get the camera coordinate system as OpenGL (left hand);
     ///
     /// Get orthonrmal basis for camera coordinate system {_ex,_ey,_ez}.
     /// \return [ex, ey, ez]  [right, up, viewingDriection()] system.
     // def get_coordinate_system()
-    // {
-    //     ex  = cross(m_view_dir, m_up_dir);
-    //     ex /= numpy.linalg.norm(ex);
-    //     ey  = cross(ex, m_view_dir);
-    //     ey /= numpy.linalg.norm(ey);
-    //     assert(abs(numpy.linalg.norm(m_view_dir) - 1) < 0.000001);
-
-    //     /// print "ex = " + str(ex);
-    //     /// print "ey = " + str(ey);
-    //     /// print "ez = " + str(m_view_dir);
-
-    //     return [ex, ey, m_view_dir];
-    // }
 
     /// get target (lookat point) distance.
     /// \return eye to lookat point (target) distance.
-    Float32 get_target_distance() const
-    {
-        return m_target_dist;
-    }
+    Float32 get_target_distance() const;
 
     /// set target (lookat point) distance.
     /// \param[in] target_dist target distance.
-    void set_target_distance(Float32 target_dist)
-    {
-        m_target_dist = target_dist;
-    }
+    void set_target_distance(Float32 target_dist);
 
     /// get lens to screen distance.
     /// \return lens to screen distance.
-    Float32 get_lens_to_screen_distance() const
-    {
-        return m_lens_screen_dist;
-    }
+    Float32 get_lens_to_screen_distance() const;
 
     /// get focal length
     /// \return focal length.
-    Float32 get_focal_length() const
-    {
-        return m_focal_length;
-    }
+    Float32 get_focal_length() const;
 
     /// set focal length.
     /// \param[in] focal_len focal length.
-    void set_focal_length(Float32 focal_len)
-    {
-        m_focal_length = focal_len;
-    }
-
-    /// get get lens to screen distance.
-    /// \return lens to screen distance.
-    Float32 get_lens_to_screen_distance() const
-    {
-        return m_lens_screen_dist;
-    }
-
-    /// set get lens to screen distance.
-    /// \param[in] l2s_dist lens to screen distance.
-    void set_lens_to_screen_distance(Float32 l2s_dist)
-    {
-        this->__lens_screen_dist = l2s_dist;
-    }
+    void set_focal_length(Float32 focal_len);
 
     /// get lens to fim distance.
     /// \return lens to screen distance.
     /// NIN
-    Float32 get_lens_to_film_distance() const
-    {
-        return m_lens_film_dist;
-    }
+    Float32 get_lens_to_film_distance() const;
 
     /// set lens to fim distance.
     /// \param[in] lens to film distance.
-    void set_lens_to_film_distance(Float32 l2f_dist)
-    {
-        m_lens_film_dist = l2f_dist;
-    }
+    void set_lens_to_film_distance(Float32 l2f_dist);
 
     /// get ray.
     /// \param[in] dx delta x normalized screen coordinate [0,1]
     /// \param[in] dy delta y normalized screen coordinate [0,1]
     /// \return a ray
     /// FIXME: don't new the Ray
-    Ray get_ray(Float32 dx, Float32 dy)
-    {
-        target =  m_LB_corner + dx * m_ex + dy * m_ey;
-        vdir   =  target - m_eye_pos;
-        vdir.normalize();
-        return Ray(m_eye_pos, vdir, m_z_near, m_z_far);
-    }
+    // Ray get_ray(Float32 dx, Float32 dy)
+    // {
+    //     target =  m_LB_corner + dx * m_ex + dy * m_ey;
+    //     vdir   =  target - m_eye_pos;
+    //     vdir.normalize();
+    //     return Ray(m_eye_pos, vdir, m_z_near, m_z_far);
+    // }
+    // NIN
 
     /// set a film.
     /// \param[in] film_name the film name
@@ -342,24 +201,19 @@ public:
 
     /// get a film
     /// \return film, exception if no film_name exists.
-    Film const & get_film(std::string const & film_name)
-    {
-        return m_film[_film_name];
-    }
+    // ImageFilm const & get_film(std::string const & film_name)
+    // {
+    //     return m_film[_film_name];
+    // }
+    // NIN
 
     /// set orthogonal projection width.
     /// \param[in] ortho_width orthogonal projection width size.
-    void set_ortho_width(Float32 ortho_width)
-    {
-        m_ortho_width = ortho_width;
-    }
+    void set_ortho_width(Float32 ortho_width);
 
     /// get orthogonal projection width.
     /// \return ortho_width
-    Float32 get_ortho_width() const
-    {
-        return m_ortho_width;
-    }
+    Float32 get_ortho_width() const;
 
     /// query glFrustum parameter to this camera.
     /// \return [left, right, bottom, top]
@@ -447,7 +301,7 @@ public:
     //     print "#" + cname + "::target_dist = " + str(m_target_dist);
     //     print "#" + cname + "::focal_length = " + str(m_focal_length);
 
-    //     print "#" + cname + "::lens_screen_dist = " +\
+    //     print "#" + cname + "::lens_screen_dist = " +
     //         str(m_lens_screen_dist);
     //     print "#" + cname + "::lens_film_dist = " + str(m_lens_film_dist);
     //     print "#" + cname + "::LB_corner = " + str(m_LB_corner);
@@ -541,7 +395,7 @@ public:
     //         ep = numpy_util.str2array(str(_config["eye_pos"]));
     //         print ep
     //         if len(ep) != 3:
-    //             raise StandardError("eye_pos must be a float_3, but " +\
+    //             raise StandardError("eye_pos must be a float_3, but " +
     //                                     str(_config["eye_pos"]));
     //         this->set_eye_pos(ep);
 
@@ -624,27 +478,11 @@ private:
     ///   |           | |
     /// LB+-----------+--
     ///   |-- _ex -->|
-    void compute_screen_parameter()
-    {
-        // get center
-        Float32_3 const center = m_eye_pos + m_lens_screen_dist * m_view_dir;
+    void compute_screen_parameter();
 
-        // get left bottom corner
-        Float32 const halffovy   = 0.5 * m_fovy_rad;
-        Float32 const halfwidth  = m_lens_screen_dist * tan(halffovy);
-        Float32 const halfheight = m_lens_screen_dist * tan(halffovy * m_aspect_ratio);
-
-        // get basis
-        [m_ex, m_ey, m_view_dir] = this->get_coordinate_system();
-
-        m_LB_corner = (center - (halfwidth * m_ex + halfheight * m_ey));
-
-        // print "DEBUG: halfwidth  = " + str(halfwidth);
-        // print "DEBUG: halfheight = " + str(halfheight);
-
-        m_ex = 2.0 * halfwidth  * m_ex;
-        m_ey = 2.0 * halfheight * m_ey;
-    }
+    /// deep copy function
+    /// \param[in] rhs copy origin
+    void deep_copy(Camera const & rhs);
 
 private:
     /// eye position
@@ -681,25 +519,7 @@ private:
     std::map< std::string, ImageFilm * > m_film_map;
     /// orthogonal projection width
     Float32 m_ortho_width;
-
-private:
-    /// NIN: the followings are needed, since m_film_map
-    /// copy constructor
-    Camera(const Camera& _rhs);
-    /// operator=
-    const Camera& operator=(const Camera& _rhs);
 };
 
-
-/// main test
-
-/// if _name__ == "__main__":
-///     gl_cam   = GLCamera();
-///     gl_cam.print_obj();
-
-///     ifgi_cam = IFGICamera();
-///     ifgi_cam.print_obj();
-
 } // namespace ifgi
-
 #endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_SCENE_CAMERA_HH

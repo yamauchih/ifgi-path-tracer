@@ -1,6 +1,6 @@
 //----------------------------------------------------------------------
 // ifgi c++ implementation: scene graph node
-// Copyright (C) 2010-2011 Yamauchi, Hitoshi
+// Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
 /// \brief scene graph node

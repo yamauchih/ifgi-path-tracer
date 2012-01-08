@@ -1,6 +1,6 @@
 #! /bin/sh -x
 #
-# Copyright (C) 2011 Hitoshi Yamauchi
+# Copyright (C) 2011-2012 Hitoshi Yamauchi
 #
 PYTHON_INCLUDE=`python-config --includes`
 MOD_CPP_SOURCE_BASE=ifgi_cpp_render_mod

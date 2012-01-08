@@ -1,9 +1,10 @@
 # -*-Mode: tcl -*-
 # ============================================================
 # TMakefile for ifgi
-# Copyright (C) 2010-2011 Yamauchi Hitoshi
+# Copyright (C) 2010-2012 Yamauchi Hitoshi
 # Sunday Researcher
 # ============================================================
 module { cxx }
 
-# lappend EXCLUDE MaterialFactory.cpp
+lappend EXCLUDE SceneGraph.cpp
+lappend EXCLUDE Camera.cpp

@@ -80,21 +80,13 @@ class TestIfgiRender3(unittest.TestCase):
 
         ifgi_cpp_render_core.initialize()
 
-        # mat_env = {'mat_name': 'default_env',
-        #            'mat_type': 'environment_constant_color',
-        #            'emit_color': '0.1 0.1 0.1 1.0'
-        #            }
-        # ifgi_cpp_render_core.add_material(mat_env)
-
-        # clear the scene
-        ifgi_cpp_render_core.clear_scene()
-
         # add a new scene
-        ifgi_cpp_render_core.append_scene(ifgireader.material_dict_list,\
-                                          ifgireader.geometry_dict_list)
+        ifgi_cpp_render_core.create_scene(ifgireader.material_dict_list,\
+                                          ifgireader.geometry_dict_list,\
+                                          ifgireader.camera_dict_dict)
 
         # set the camera
-        ifgi_cpp_render_core.set_(ifgireader.camera_dict_dict)
+        # ifgi_cpp_render_core.set_camera_dict(ifgireader.camera_dict_dict)
 
 
 

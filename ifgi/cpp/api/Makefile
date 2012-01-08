@@ -1,6 +1,6 @@
 #
 # Makefile for ifgi/cpp/api
-# Copyright (C) 2010-2011 Yamauchi, Hitoshi
+# Copyright (C) 2010-2012 Yamauchi, Hitoshi
 #
 
 # root directory of ifgi-path-tracer

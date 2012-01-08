@@ -1,29 +1,25 @@
 //----------------------------------------------------------------------
 // ifgi c++ implementation
-// Copyright (C) 2010-2011 Yamauchi, Hitoshi
+// Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
 /// \brief ifgi render api for C++ implementation
-#ifndef IFGI_PATH_TRACER_IFGI_CPP_API_IFGI_CPP_RENDER_MOD_HH
-#define IFGI_PATH_TRACER_IFGI_CPP_API_IFGI_CPP_RENDER_MOD_HH
+#ifndef IFGI_PATH_TRACER_IFGI_CPP_API_IFGI_CPP_RENDER_HH
+#define IFGI_PATH_TRACER_IFGI_CPP_API_IFGI_CPP_RENDER_HH
 
 // boost
 #include <boost/python.hpp>
 #include <boost/python/object.hpp>
-// #include <boost/python/extract.hpp>
-// #include <boost/python/list.hpp>
-// #include <boost/python/dict.hpp>
-// #include <boost/python/str.hpp>
-
-// #include <stdexcept>
-// #include <iostream>
 #include <vector>
 #include <map>
 
 // ifgi
 #include <cpp/base/Dictionary.hh>
+#include <cpp/scene/SceneGraph.hh>
 
 namespace ifgi {
+
+class SceneGraph;
 
 //----------------------------------------------------------------------
 /// append python dictionary list to cpp dictionary vector
@@ -37,19 +33,21 @@ extern void append_pydict_list_to_dictionary_vec(
 
 //----------------------------------------------------------------------
 /// ifgi C++ rendering core interface
+///
+/// Typical usage.
+/// - construct this object
+/// - initialize() this object
+/// - create_scene()
+/// - set_camera_dict() ... may call several times
+/// - render()
 class IfgiCppRender
 {
 public:
     /// constructor
-    IfgiCppRender()
-    {
-        // empty
-    }
+    IfgiCppRender();
+
     /// destructor
-    ~IfgiCppRender()
-    {
-        // empty
-    }
+    ~IfgiCppRender();
 
     /// initialize ifgi
     /// \return 0 when succeeded
@@ -58,23 +56,28 @@ public:
     /// clear the scene
     void clear_scene();
 
-    /// append a new scene. material and geometry will be added.
+    /// create a new scene.
     ///
     /// \param[in] mat_dict_list  material dictionary list
     /// \param[in] geom_dict_list geometry dictionary list
     /// \param[in] camera_dict    camera dictionary
-    void append_scene(boost::python::object mat_dict_list,
-                      boost::python::object geom_dict_list);
+    void create_scene(boost::python::object const & mat_dict_list,
+                      boost::python::object const & geom_dict_list,
+                      boost::python::object const & camera_dict);
 
     /// set camera. replaced all the data.
     ///
     /// \param[in] camera_pydict_obj camera dictionary
-    void set_camera_dict(boost::python::object camera_pydict_obj);
+    void set_camera_dict(boost::python::object const & camera_pydict_obj);
 
     /// get camera.
     ///
     /// \return get current camera
     boost::python::object get_camera_dict() const;
+
+private:
+    /// clear scene node memory
+    void clear_node_memory();
 
 private:
     /// material dictionary vector
@@ -83,8 +86,11 @@ private:
     std::vector< Dictionary > m_geo_dict_vec;
     ///camera dictionary
     Dictionary m_camera_dict;
+
+    /// the scene graph
+    SceneGraph m_scene_graph;
 };
 
 } // namespace ifgi
 
-#endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_API_IFGI_CPP_RENDER_MOD_HH
+#endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_API_IFGI_CPP_RENDER_HH
