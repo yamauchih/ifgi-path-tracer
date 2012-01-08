@@ -86,11 +86,15 @@ class TestIfgiRender3(unittest.TestCase):
         #            }
         # ifgi_cpp_render_core.add_material(mat_env)
 
-        # add material to the cpp render core
-        for mat in ifgireader.material_dict_list:
-            ifgi_cpp_render_core.add_material(mat)
+        # clear the scene
+        ifgi_cpp_render_core.clear_scene()
 
+        # add a new scene
+        ifgi_cpp_render_core.append_scene(ifgireader.material_dict_list,\
+                                          ifgireader.geometry_dict_list)
 
+        # set the camera
+        ifgi_cpp_render_core.set_(ifgireader.camera_dict_dict)
 
 
 

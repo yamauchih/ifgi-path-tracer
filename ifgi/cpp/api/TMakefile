@@ -13,8 +13,8 @@ module { cxx }
 # the python module name
 set MOD_CPP_SOURCE_BASE ifgi_cpp_render_mod
 
-# linking project basename
-set PROJLIB_BASE_LIST { base api }
+# linking project directory. relative to PROJROOT
+set PROJLIB_LIST { cpp/base cpp/api }
 
 module { python.boost python.boost_config }
 

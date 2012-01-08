@@ -11,9 +11,9 @@
 # python module name
 #      MOD_CPP_SOURCE_BASE
 #      ex.  ifgi_cpp_render_mod
-# linking project basename list
-#      PROJLIB_BASE_LIST
-#      ex. { base scene }
+# linking project list
+#      PROJLIB_LIST
+#      ex. { cpp/base cpp/scene }
 
 #
 # python module.so clean
@@ -42,6 +42,7 @@ proc write_file { data filename } {
 }
 
 #----------------------------------------------------------------------
+
 set PYTHON_INCPATH [exec python-config --include]
 
 append cxx::FLAGS " -I ${PYTHON_INCPATH} -DPIC -shared -fexceptions -pthread"
@@ -49,23 +50,32 @@ append link::FLAGS " -DPIC -fPIC"
 
 set COMPILE_OBJ_DIR [arch_name ${CODELEVEL}]
 
-set PROJLIB_LIST {}
-foreach bname $PROJLIB_BASE_LIST {
-    set PROJLIB {}
+# set ABSOLUTE_CURRENT_DIR [pwd]
+# puts $PROJROOT
 
-    # TODO: this assumes all the project subdir is the same level and
-    # under cpp/
-    #
-    # The right way is $PROJROOT + / + splitprojectbase1 + / splitprojectbase2
-    # ...
-    append PROJLIB "../" ${bname} "/" ${COMPILE_OBJ_DIR} "/libcpp_" ${bname} ".so"
-    lappend PROJLIB_LIST $PROJLIB
-    # puts $PROJLIB
-    # puts $PROJLIB_LIST
+set PROJLIB_OPT_STR {}
+foreach bname $PROJLIB_LIST {
+    # replace / to _, this is libbasename = cpp_base
+    regsub -all {/} $bname {_} libbasename
+    # e.g., libfilename = libcpp_base.so
+    set libfilename "lib${libbasename}.so"
+    # puts $libfilename
+
+    set PROJLIB_DIR ""
+    append PROJLIB_DIR ${PROJROOT} "/" ${bname} "/" ${COMPILE_OBJ_DIR}
+    set RPATH_LD_OPT "-Wl,-rpath=${PROJLIB_DIR}"
+    set LIBPATH_LD_OPT "-L${PROJLIB_DIR}"
+
+    set PROJLIB_OPT ${RPATH_LD_OPT}
+    lappend PROJLIB_OPT ${LIBPATH_LD_OPT}
+    lappend PROJLIB_OPT "-l$libbasename"
+    # puts $PROJLIB_OPT
+
+    append PROJLIB_OPT_STR $PROJLIB_OPT " "
 }
 
 set MOD_OBJ_FILE "$COMPILE_OBJ_DIR/${MOD_CPP_SOURCE_BASE}.o"
-set COMP_COM "g++ -DPIC -shared -fPIC -o ${MOD_CPP_SOURCE_BASE}.so ${MOD_OBJ_FILE} ${PROJLIB_LIST} -lboost_python"
+set COMP_COM "g++ -DPIC -shared -fPIC -o ${MOD_CPP_SOURCE_BASE}.so ${MOD_OBJ_FILE} ${PROJLIB_OPT_STR} -lboost_python"
 
 # puts ${python.boost::COMP_COM}
 set BUILD_SH "build_mod.sh"
