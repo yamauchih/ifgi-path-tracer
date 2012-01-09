@@ -1,4 +1,10 @@
-* 2011 DONE list
+* 2012 DONE list
+
+** 2012-1-8(Sun)
+*** DONE developed: python to C++ code converter elisp (only by patterns)
+*** DONE developed class: IMaterial, DiffuseMaterial, EnvironmentMaterial,
+ITexture, ConstantColorTexture, Vector, Exception handling, IPrimitive, BBox32,
+Triangle, TriMesh
 
 ** 2011-12-23
 ** DONE tracer. show constant color

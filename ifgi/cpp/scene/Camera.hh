@@ -47,6 +47,9 @@ public:
         CAMERA_EYE_POSITION_COUNT
     };
 
+    /// the film map type
+    typedef std::map< std::string, ImageFilm * > FilmMap;
+
 public:
     /// default constructor
     Camera();
@@ -480,6 +483,9 @@ private:
     ///   |-- _ex -->|
     void compute_screen_parameter();
 
+    /// clear film map
+    void clear_film_map();
+
     /// deep copy function
     /// \param[in] rhs copy origin
     void deep_copy(Camera const & rhs);
@@ -515,10 +521,10 @@ private:
     Float32_3 m_ex;
     /// y direction base vector
     Float32_3 m_ey;
-    /// films map: framebuffer map
-    std::map< std::string, ImageFilm * > m_film_map;
     /// orthogonal projection width
     Float32 m_ortho_width;
+    /// films map: framebuffer map
+    FilmMap m_film_map;
 };
 
 } // namespace ifgi

@@ -6,6 +6,7 @@
 /// \brief ifgi Camera C++ implementation
 
 #include "Camera.hh"
+#include "ImageFilm.hh"
 
 namespace ifgi
 {
@@ -21,27 +22,23 @@ Camera::Camera()
     m_z_near(0.1),
     m_z_far(1000.0),
     m_projection(Camera_Perspective),
-    // target distance = |eye_pos - lookat_point|
-    m_target_dist(1.0),
+    m_target_dist(1.0),    // target distance = |eye_pos - lookat_point|
     m_focal_length(1.0),
     m_lens_screen_dist(1.0),
     m_lens_film_dist(1.0),
-    // lower bottom corner
     m_LB_corner(-1.0f, -1.0f,  0.0f),
-    // x direction base vector
     m_ex(1.0f, 0.0f,  0.0f),
-    // y direction base vector
     m_ey(0.0f, 1.0f,  0.0f),
-    // films: framebuffer
-    // m_film(),
     m_ortho_width(1.0)
+    // films: framebuffer
+    // m_film()
 {
     this->compute_screen_parameter();
     // print "called Camara.__init__()"
 }
 
 //----------------------------------------------------------------------
-// NIN: the followings are needed, since m_film_map
+// copy constructor
 Camera::Camera(Camera const & rhs)
 {
     this->deep_copy(rhs);
@@ -51,7 +48,8 @@ Camera::Camera(Camera const & rhs)
 // destructor
 Camera::~Camera()
 {
-    // empty
+    // delete owner memory on heap
+    this->clear_film_map();
 }
 
 //----------------------------------------------------------------------
@@ -614,6 +612,22 @@ void Camera::compute_screen_parameter()
 }
 
 //----------------------------------------------------------------------
+// clear film map
+void Camera::clear_film_map()
+{
+    for(FilmMap::iterator fi = this->m_film_map.begin();
+        fi != this->m_film_map.end(); ++fi)
+    {
+        if(fi->second != 0){
+            delete fi->second;
+            fi->second = 0;
+        }
+    }
+
+    m_film_map.clear();
+}
+
+//----------------------------------------------------------------------
 // deep copy function
 void Camera::deep_copy(Camera const & rhs)
 {
@@ -632,27 +646,18 @@ void Camera::deep_copy(Camera const & rhs)
     m_LB_corner        = rhs.m_LB_corner;
     m_ex               = rhs.m_ex;
     m_ey               = rhs.m_ey;
+    m_ortho_width      = rhs.m_ortho_width;
 
-    typedef std::map< std::string, ImageFilm * > FilmMap;
     // delete own films
-    for(FilmMap::const_iterator fi = this->m_film_map.begin();
-        fi != this->m_film_map.end(); ++fi)
-    {
-        if(fi->second != 0){
-            delete fi->second;
-            fi->second = 0;
-        }
-    }
+    this->clear_film_map();
     // copy with new
     for(FilmMap::const_iterator fi = rhs.m_film_map.begin();
         fi != rhs.m_film_map.end(); ++fi)
     {
         // deep copy relies on ImageFilm's copy constructor.
-        ImageFilm * p_dup = new ImageFilm(fi->second);
-        this->m_film_map[fi.first] = p_dup;
+        ImageFilm * p_dup = new ImageFilm(*(fi->second));
+        this->m_film_map[fi->first] = p_dup;
     }
-
-    m_ortho_width      = rhs.m_ortho_width;
 }
 //----------------------------------------------------------------------
 } // namespace ifgi

@@ -7,4 +7,4 @@
 module { cxx }
 
 lappend EXCLUDE SceneGraph.cpp
-lappend EXCLUDE Camera.cpp
+# lappend EXCLUDE Camera.cpp
