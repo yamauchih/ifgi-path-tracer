@@ -6,7 +6,7 @@
 *** DONE x
 
 ** TODO cpp implementation
-*** ImageFilm, Camera, MaterialFactory, base/Dictionary, complete DiffuseMaterial, EnvironmentMaterial
+*** MaterialFactory, base/Dictionary, complete DiffuseMaterial, EnvironmentMaterial, ImageFilm, Camera
 *** send material to cpp code
 *** send triangle mesh to cpp code
 
