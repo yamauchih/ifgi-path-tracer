@@ -3,10 +3,10 @@
 ** top5
 
 ** 2012-1-9(Mon)-
-*** DONE x
+*** DONE MaterialFactory, Dictionary, complete DiffuseMaterial, EnvironmentMaterial
 
 ** TODO cpp implementation
-*** MaterialFactory, base/Dictionary, complete DiffuseMaterial, EnvironmentMaterial, ImageFilm, Camera
+*** SceneGraphNode.cpp, ImageFilm, Camera
 *** send material to cpp code
 *** send triangle mesh to cpp code
 

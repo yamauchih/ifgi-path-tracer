@@ -109,14 +109,22 @@ public:
     /// primitive node.
     ///
     /// \param[in] prim primitive
-    virtual void set_primitive(IPrimitive const & prim) = 0;
+    virtual void set_primitive(IPrimitive const & prim)
+    {
+        // this node can not contain primitive
+        throw Exception("SceneGraphNode::set_primitive, should use PrimitiveNode.");
+    }
 
     /// get primitive.
     ///
     /// This is an interface and need to be implemented if the node is
     /// primitive node.
     /// \return primitive, raise exception when this is not a primitive node.
-    virtual IPrimitive * peek_primitive() = 0;
+    virtual IPrimitive * peek_primitive()
+    {
+        // this node can not contain primitive
+        throw Exception("SceneGraphNode::peek_primitive, should use PrimitiveNode.");
+    }
 
     /// get bounding box of this node
     /// \return bounding box

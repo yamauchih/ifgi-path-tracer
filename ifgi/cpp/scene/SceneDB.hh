@@ -15,6 +15,7 @@ namespace ifgi {
 // forward declaration
 class ITexture;
 class IMaterial;
+class SceneGraphNode;
 
 /// database element tag
 typedef Uint32 Tag;
@@ -64,6 +65,11 @@ public:
     /// \return currently no use
     Tag store_material(IMaterial * p_mat);
 
+    /// store scenegraph node. This SceneDB owns the scnegraph node object.
+    /// \param[in] p_sgnode pointer to a scene graph node
+    /// \return currently no use
+    Tag store_sgnode(SceneGraphNode * p_sgnode);
+
     /// clear the memory
     /// all the pointers will be invalid.
     void clear();
@@ -71,9 +77,10 @@ public:
 private:
     /// texture vector
     std::vector< ITexture * > m_texture_vec;
-
     /// material vector
     std::vector< IMaterial * > m_material_vec;
+    /// scenegraph node
+    std::vector< SceneGraphNode * > m_sgnode_vec;
 
 private:
     /// constructor. singleton

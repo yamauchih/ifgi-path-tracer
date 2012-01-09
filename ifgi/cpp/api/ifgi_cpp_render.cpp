@@ -16,7 +16,10 @@
 #include <boost/python/str.hpp>
 
 // ifgi side
-
+#include <cpp/base/ILog.hh>
+#include <cpp/scene/SceneGraphNode.hh>
+#include <cpp/scene/SceneDB.hh>
+#include <cpp/scene/MaterialFactory.hh>
 
 namespace ifgi {
 
@@ -112,6 +115,8 @@ IfgiCppRender::~IfgiCppRender()
 // initialize ifgi
 int IfgiCppRender::initialize()
 {
+    ILog::instance()->set_output_level(ILog::ILog_Debug);
+
     return 0;
 }
 
@@ -121,9 +126,44 @@ void IfgiCppRender::create_scene(boost::python::object const & mat_dict_list,
                                  boost::python::object const & geom_dict_list,
                                  boost::python::object const & camera_dict)
 {
-    append_pydict_list_to_dictionary_vec(m_mat_dict_vec, mat_dict_list);
-    append_pydict_list_to_dictionary_vec(m_geo_dict_vec, geom_dict_list);
+    
+    // create simple scenegraph structure
+    SceneGraphNode * p_rootsg = new SceneGraphNode("rootsg");
+    SceneDB::instance()->store_sgnode(p_rootsg);
+
+    // camera
     this->set_camera_dict(camera_dict);
+    // NIN
+    // CameraNode *     p_cam_node = new CameraNode("main_cam");
+    // if("default" in ifgi_reader.camera_dict_dict){
+    //     cam_node.get_camera().set_config_dict(_ifgi_reader.camera_dict_dict["default"]);
+    // else:
+    //     ILog.warn("ifgi scene file has no default camera, use camera default.");
+    // rootsg.append_child(cam_node);
+
+    // "materialgroup" is a special group.
+    SceneGraphNode * p_mat_group_node = new SceneGraphNode("materialgroup");
+    SceneDB::instance()->store_sgnode(p_mat_group_node);
+
+    p_rootsg->append_child(p_mat_group_node);
+    this->add_material_to_scene(p_mat_group_node, mat_dict_list);
+    // for mat_dict in ifgi_reader.material_dict_list:
+    //     mat = Material.material_factory(mat_dict);
+    //     ch_mat_node = MaterialNode(mat_dict["mat_name"]);
+    //     ch_mat_node.set_material(mat);
+    //     mat_group_node.append_child(ch_mat_node);
+
+    // geometry
+    // NIN FIXME
+    // append_pydict_list_to_dictionary_vec(m_geo_dict_vec, geom_dict_list);
+    // SceneGraphNode * p_mesh_group = new SceneGraphNode("meshgroup");
+    // p_rootsg->append_child(p_mesh_group);
+    // for geo_dict in ifgi_reader.geometry_dict_list:
+    //     ch_node = PrimitiveNode(geo_dict["geo_name"], geo_dict["TriMesh"]);
+    //     mesh_group.append_child(ch_node);
+    //
+    // sg.set_root_node(rootsg);
+    // sg.set_current_camera(cam_node.get_camera());
 }
 
 //----------------------------------------------------------------------
@@ -161,7 +201,6 @@ boost::python::object IfgiCppRender::get_camera_dict() const
 // clear the scene
 void IfgiCppRender::clear_scene()
 {
-    m_mat_dict_vec.clear();
     m_geo_dict_vec.clear();
     m_camera_dict.clear();
 
@@ -173,6 +212,30 @@ void IfgiCppRender::clear_scene()
 void IfgiCppRender::clear_node_memory()
 {
     // NIN
+}
+
+//----------------------------------------------------------------------
+// add material to the scene
+void IfgiCppRender::add_material_to_scene(
+    SceneGraphNode * p_mat_group_node,
+    boost::python::object const & mat_dict_list)
+{
+    assert(p_mat_group_node != 0);
+
+    // convert to cpp dictionary vector
+    std::vector< Dictionary > mat_dict_vec;
+    append_pydict_list_to_dictionary_vec(mat_dict_vec, mat_dict_list);
+
+    for(std::vector< Dictionary >::const_iterator di = mat_dict_vec.begin();
+        di != mat_dict_vec.end(); ++di)
+    {
+        IMaterial * p_mat = new_material_factory(*di);
+        // NIN FIXME Create MaterialNode and push the p_mat inside. HEREHERE 2012-1-9(Mon)
+        ILog::instance()->
+            debug("IfgiCppRender::add_material_to_scene: "
+                  "added material " + p_mat->get_classname() + "::" +
+                  p_mat->get_material_name() + "\n");
+    }
 }
 
 //----------------------------------------------------------------------

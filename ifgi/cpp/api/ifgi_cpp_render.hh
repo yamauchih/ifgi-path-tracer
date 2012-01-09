@@ -58,6 +58,20 @@ public:
 
     /// create a new scene.
     ///
+    /// SceneGraph structure.
+    ///
+    /// SceneGraph +
+    ///            +--+ SceneGraphNode: 'rootsg' root_node
+    ///                              +--+ CameraNode: 'main_cam' camera
+    ///                              +--+ SceneGraphNode: 'materialgroup'
+    ///                                                +--+ Material: 'mat0'
+    ///                                                +--+ Material: 'mat1'
+    ///                                                   ...
+    ///                              +--+ SceneGraphNode: 'meshgroup'
+    ///                                                +--+ TriMesh: 'trimesh0'
+    ///                                                +--+ TriMesh: 'trimesh1'
+    ///                                                   ...
+    ///
     /// \param[in] mat_dict_list  material dictionary list
     /// \param[in] geom_dict_list geometry dictionary list
     /// \param[in] camera_dict    camera dictionary
@@ -79,9 +93,15 @@ private:
     /// clear scene node memory
     void clear_node_memory();
 
+    /// add material to the scene
+    /// \param[in] p_mat_group_node material group node. All the
+    /// materials are this node's children.
+    /// \param[in] mat_dict_list material python dict list
+    void add_material_to_scene(
+        SceneGraphNode * p_mat_group_node,
+        boost::python::object const & mat_dict_list);
+
 private:
-    /// material dictionary vector
-    std::vector< Dictionary > m_mat_dict_vec;
     /// geometry dictionary vector
     std::vector< Dictionary > m_geo_dict_vec;
     ///camera dictionary

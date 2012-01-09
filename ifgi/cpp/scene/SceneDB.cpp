@@ -9,6 +9,7 @@
 
 #include "ITexture.hh"
 #include "IMaterial.hh"
+#include "SceneGraphNode.hh"
 
 namespace ifgi {
 //----------------------------------------------------------------------
@@ -41,6 +42,15 @@ Tag SceneDB::store_material(IMaterial * p_mat)
 }
 
 //----------------------------------------------------------------------
+// store scenegraph node. This SceneDB owns the scnegraph node object.
+Tag SceneDB::store_sgnode(SceneGraphNode * p_sgnode)
+{
+    Tag ret_tag = static_cast< Tag >(m_sgnode_vec.size());
+    m_sgnode_vec.push_back(p_sgnode);
+    return ret_tag;
+}
+
+//----------------------------------------------------------------------
 // clear the memory
 void SceneDB::clear()
 {
@@ -61,6 +71,15 @@ void SceneDB::clear()
         (*mi) = 0;
     }
     m_material_vec.clear();
+
+    // delete scenegraph nodes
+    for(std::vector< SceneGraphNode * >::iterator si = m_sgnode_vec.begin();
+        si != m_sgnode_vec.end(); ++si)
+    {
+        delete (*si);
+        (*si) = 0;
+    }
+    m_sgnode_vec.clear();
 }
 
 //----------------------------------------------------------------------

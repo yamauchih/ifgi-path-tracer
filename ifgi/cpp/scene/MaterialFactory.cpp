@@ -66,7 +66,7 @@ static DiffuseMaterial * new_store_diffuse_material(
         emit_color = mat_dict_copy.get< Color >("emit_color");
         mat_dict_copy.erase("emit_color");
         ILog::instance()->debug("DEBUG: this lambert material has emit_color "
-                                + Dictionary_value(emit_color).get_string());
+                                + Dictionary_value(emit_color).get_string() + "\n");
     }
 
     DiffuseMaterial * p_mat = new DiffuseMaterial(mat_name_str, p_tex, emit_color);
