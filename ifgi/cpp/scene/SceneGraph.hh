@@ -194,7 +194,7 @@ public:
 
     /// peek the root node
     /// \return root node of this scenegraph
-    SceneGraphNode * peek_root_node();
+    SceneGraphNode const * peek_root_node() const;
 
     /// set current camera
     /// \param[in] current active camera.
@@ -507,7 +507,7 @@ private:
 
 //     /// create scenegraph
 //     sg = SceneGraph();
-//     assert(sg.get_root_node() == None);
+//     assert(sg.peek_root_node() == None);
 
 //     /// create scenegraph"s root node
 //     rootsg = SceneGraphNode("rootsg");

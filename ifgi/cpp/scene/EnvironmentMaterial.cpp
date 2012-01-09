@@ -38,10 +38,10 @@ std::string EnvironmentMaterial::get_classname() const
 }
 
 //----------------------------------------------------------------------
-// initialize by dictionary
-void EnvironmentMaterial::initialize_by_dict(Dictionary const & mat_dict)
+// get material name
+std::string EnvironmentMaterial::get_material_name() const
 {
-    std::cout << "NIN: EnvironmentMaterial::initialize_by_dict" << std::endl;
+    return m_material_name;
 }
 
 //----------------------------------------------------------------------

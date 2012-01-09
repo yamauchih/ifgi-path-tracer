@@ -35,11 +35,11 @@ IMaterial * new_material_factory(Dictionary const & mat_dict)
     std::string const mat_type_str = mat_dict.get< std::string >("mat_type");
     std::string const mat_name_str = mat_dict.get< std::string >("mat_name");
     if(mat_type_str == "lambert"){
-        // texture and emit color are initialized in initialized_by_dict
         ITexture * p_tex = 0;
         Color emit_color(0.0, 0.0, 0.0, 0.0);
         p_mat = new DiffuseMaterial(mat_name_str, p_tex, emit_color);
-        p_mat->initialize_by_dict(mat_dict);
+        // I should keep new-ed texture.
+        std::cout << "NIN: new_material_factory: diffuse material" << std::endl;
     }
     else if(mat_type_str == "environment_constant_color"){
         std::cout << "NIN: new_material_factory: environment_constant_color" << std::endl;

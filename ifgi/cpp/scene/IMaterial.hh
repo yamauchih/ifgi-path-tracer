@@ -10,6 +10,7 @@
 
 #include <string>
 #include <cpp/base/Vector.hh>
+#include <cpp/base/Exception.hh>
 
 namespace ifgi {
 //----------------------------------------------------------------------
@@ -23,19 +24,23 @@ class IMaterial
 public:
     /// constructor
     IMaterial();
+    /// destructor
+    virtual ~IMaterial();
 
     /// get class name. interface method.
     /// \return class name
-    virtual std::string get_classname() const;
+    virtual std::string get_classname() const = 0;
 
     /// get material name
     /// \return material name (should be unique)
     virtual std::string get_material_name() const = 0;
 
-    /// initialize by dictionary
-    ///
-    /// \param[in] _mat_dict material parameter dictionary
-    virtual void initialize_by_dict(Dictionary const & mat_dict);
+    // initialize by dictionary. This doesn't fit C++. Ownership of
+    // texture should be outside of material. Therefore, I should not
+    // create texture here.
+    //
+    // \param[in] _mat_dict material parameter dictionary
+    // virtual void initialize_by_dict(Dictionary const & mat_dict);
 
     /// is this material emit light?
     /// \return true when emit light.
@@ -50,7 +55,11 @@ public:
     /// \param[out] out_emit_rad (output) emit radiance
     virtual void emit_radiance(// hit_onb, light_out_dir, tex_point, tex_uv
         Color & out_emit_rad
-        ) const;
+        ) const
+    {
+        assert(this->is_emit());
+        throw Exception("IMaterial::emit_radiance: not supported");
+    }
 
     /// ambient response
     ///
@@ -61,8 +70,10 @@ public:
     /// \param[out] out_amb_res  (output) ambient responce
     virtual void ambient_response(//_hit_onb, incident_dir, tex_point, tex_uv
         Color & out_amb_res
-        ) const;
-        // return numpy.array([0,0,0])
+        ) const
+    {
+        throw Exception("IMaterial::ambient_response: not supported");
+    }
 
 
     /// explicit brdf
@@ -75,9 +86,10 @@ public:
     /// \param[out] out_brdf  (output) brdf
     virtual void explicit_brdf(// hit_onb, out_v0, out_v1, tex_point, tex_uv
         Color & out_brdf
-        ) const;
-        // """
-        // return None
+        ) const
+    {
+        throw Exception("IMaterial::explicit_brdf: not supported");
+    }
 
     /// explicit brdf
     ///
@@ -86,8 +98,12 @@ public:
     /// \param[in] hemisphere_sampler   uniform sampler on a hemisphere
     /// \return outgoing direction, None if not supported
     virtual Float32_3 diffuse_direction(// hit_onb, incident_dir, hemisphere_sampler
-        ) const;
-
+        ) const
+    {
+        assert(this->is_diffuse());
+        throw Exception("IMaterial::diffuse_direction: not supported");
+        return Float32_3();
+    }
 
     /// explicit brdf
     ///
@@ -100,14 +116,19 @@ public:
     /// \param[out] v_out outgoing vector?
     virtual Float32_3 specular_direction(//hit_onb, incident_dir, tex_point, tex_uv,
         // rnd_seed, tex_color, v_out
-        ) const;
+        ) const
+    {
+        assert(this->is_specular());
+        throw Exception("IMaterial::specular_direction: not supported");
+        return Float32_3();
+    }
 
         // \return true when supported
         // """
         // return False
 
     /// explicit brdf
-    /// 
+    ///
     /// \param[in] hit_onb hit point orthonomal basis
     /// \param[in] incident_dir incident direction
     /// \param[in] tex_point texture 3d point (if solid)
@@ -116,22 +137,28 @@ public:
     /// \param[out] ext_color extinction color
     /// \param[out] fresnel_scale fresnel scale
     /// \param[out] v_out outgoing vector?
-    /// 
+    ///
     /// \return true when supported
-    // def transmission_direction(_hit_onb, incident_dir, tex_point, tex_uv,
-    //                            rnd_seed, ext_color, fresnel_scale, v_out);
+    virtual Float32_3 transmission_direction(//_hit_onb, incident_dir, tex_point, tex_uv,
+                                             //rnd_seed, ext_color, fresnel_scale, v_out);
+        ) const
+    {
+        assert(this->is_transmissive());
+        throw Exception("IMaterial::transmission_direction: not supported");
+        return Float32_3();
+    }
 
     /// is diffuse?
     /// \return true when diffuse
-    virtual bool is_diffuse() const;
+    virtual bool is_diffuse() const = 0;
 
     /// is specular?
     /// \return true when specular
-    virtual bool is_specular() const;
+    virtual bool is_specular() const = 0;
 
     /// is transmissive?
     /// \return true when transmissive
-    virtual bool is_transmissive() const;
+    virtual bool is_transmissive() const = 0;
 
 
     // def get_gl_preview_dict();
@@ -139,7 +166,5 @@ public:
     // def set_gl_preview_dict(self, gl_preview_dict);
 };
 
-
 } // namespace ifgi
-
 #endif // #ifndef IFGI_CPP_SCENE_IMATERIAL_HH

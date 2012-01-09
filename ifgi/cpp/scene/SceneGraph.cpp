@@ -7,6 +7,8 @@
 
 #include "SceneGraph.hh"
 
+#include "cpp/base/ILog.hh"
+
 namespace ifgi
 {
 
@@ -187,7 +189,7 @@ void SceneGraph::set_root_node(SceneGraphNode * p_root_node)
 
 //----------------------------------------------------------------------
 // peek the root node
-SceneGraphNode * SceneGraph::peek_root_node()
+SceneGraphNode const * SceneGraph::peek_root_node() const
 {
     return m_p_root_node;
 }
@@ -210,8 +212,8 @@ Camera const & SceneGraph::get_current_camera() const
 // is valid scenegraph
 bool SceneGraph::is_valid() const
 {
-    if(this->get_root_node() == 0){
-        print "Scenegraph: No rootnode";
+    if(this->peek_root_node() == 0){
+        ILog::instance()->warn("Scenegraph: No rootnode");
         return false;
     }
 
@@ -275,13 +277,13 @@ bool SceneGraph::is_valid() const
 //         m_root_node.get_bbox().insert_point(numpy.array([0,0,0]));
 //         m_root_node.get_bbox().insert_point(numpy.array([1,1,1]));
 
-private:
-/// current camera
-Camera m_cur_camera;
-/// SceneGraph root node reference. SceneGraph is not an owner of
-/// these nodes.
-SceneGraphNode * m_p_root_node;
-};
+// private:
+// /// current camera
+// Camera m_cur_camera;
+// /// SceneGraph root node reference. SceneGraph is not an owner of
+// /// these nodes.
+// SceneGraphNode * m_p_root_node;
+// };
 
 /// ----------------------------------------------------------------------
 
@@ -410,7 +412,7 @@ SceneGraphNode * m_p_root_node;
 
 //     /// create scenegraph
 //     sg = SceneGraph();
-//     assert(sg.get_root_node() == None);
+//     assert(sg.peek_root_node() == None);
 
 //     /// create scenegraph"s root node
 //     rootsg = SceneGraphNode("rootsg");
@@ -470,7 +472,7 @@ SceneGraphNode * m_p_root_node;
 
 //     /// create scenegraph
 //     sg = SceneGraph();
-//     assert(sg.get_root_node() == None);
+//     assert(sg.peek_root_node() == None);
 
 //     /// create scenegraph"s root node
 //     rootsg = SceneGraphNode("rootsg");
@@ -518,7 +520,7 @@ SceneGraphNode * m_p_root_node;
 
 //     /// create scenegraph
 //     sg = SceneGraph();
-//     assert(sg.get_root_node() == None);
+//     assert(sg.peek_root_node() == None);
 
 //     /// create scenegraph"s root node
 //     rootsg = SceneGraphNode("rootsg");

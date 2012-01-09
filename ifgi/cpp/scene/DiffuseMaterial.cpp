@@ -8,6 +8,7 @@
 #include "DiffuseMaterial.hh"
 
 #include <cpp/base/Exception.hh>
+#include <cpp/base/Dictionary.hh>
 
 #include "ITexture.hh"
 
@@ -25,44 +26,6 @@ DiffuseMaterial::DiffuseMaterial(std::string const & mat_name,
     m_p_texture_ref(p_tex_ref)
 {
     this->set_emit_color(emit_color);
-}
-
-//----------------------------------------------------------------------
-// initialize by dictionary
-void DiffuseMaterial::initialize_by_dict(Dict const & mat_dict)
-{
-    // mat_dict_copy = copy.deepcopy(_mat_dict);
-    // // mandatory parameters
-    // mkey = ["mat_type", "mat_name", "diffuse_color"];
-    // if(!(ifgi_util.has_dict_all_key(mat_dict_copy, mkey))){
-    //     missing_keys = ifgi_util.get_dict_missing_key(mat_dict_copy, mkey);
-    //     raise StandardError, ("missing parameter of lambert material [" +
-    //                           str(missing_keys) + "]");
-    // }
-    // // material type and name
-    // assert(mat_dict_copy["mat_type"] == "lambert");
-    // mat_dict_copy.pop("mat_type");
-    // assert(mat_dict_copy["mat_name"] == this->get_material_name());
-    // mat_dict_copy.pop("mat_name");
-
-    // // diffuse color
-    // diffuse_color = mat_dict_copy["diffuse_color"];
-    // m_texture = Texture.ConstantColorTexture(numpy_util.str2array(diffuse_color));
-    // mat_dict_copy.pop("diffuse_color");
-
-    // // optional parameters
-    // if(mat_dict_copy.has_key("emit_color")){
-    //     emit_color = numpy_util.str2array(mat_dict_copy["emit_color"]);
-    //     this->set_emit_color(emit_color);
-    //     mat_dict_copy.pop("emit_color");
-    //     print "DEBUG: this lambert material has emit_color ", this->__emit_color;
-    // }
-
-    // if(len(mat_dict_copy) > 0){
-    //     print mat_dict_copy;
-    //     raise StandardError, ("_mat_dict has unknown parameters." + str(mat_dict_copy));
-    // }
-    std::cout << "NIN: DiffuseMaterial::initialize_by_dict" << std::endl;
 }
 
 //----------------------------------------------------------------------
@@ -100,6 +63,63 @@ std::string DiffuseMaterial::get_classname() const
 {
     return std::string("DiffuseMaterial");
 }
+
+//----------------------------------------------------------------------
+// get material name
+std::string DiffuseMaterial::get_material_name() const
+{
+    return m_material_name;
+}
+
+// //----------------------------------------------------------------------
+// // initialize by dictionary
+// void DiffuseMaterial::initialize_by_dict(Dictionary const & mat_dict)
+// {
+//     Dictionary mat_dict_copy = mat_dict;
+
+//     // mandatory parameters
+//     // mkey = ["mat_type", "mat_name", "diffuse_color"];
+//     // if(!(ifgi_util.has_dict_all_key(mat_dict_copy, mkey))){
+//     //     missing_keys = ifgi_util.get_dict_missing_key(mat_dict_copy, mkey);
+//     //     raise StandardError, ("missing parameter of lambert material [" +
+//     //                           str(missing_keys) + "]");
+//     // }
+//     char const * p_mandatory_key[] = { "mat_type",
+//                                        "mat_name",
+//                                        "diffuse_color",
+//                                        0};
+//     std::vector< std::string > undef_keys;
+//     if(!(is_all_key_defined(mat_dict_copy, p_mandatory_key, & undef_keys))){
+//         std::stringstream sstr;
+//         std::copy(undef_keys.begin(), undef_keys.end(),
+//                   std::ostream_iterator< std::string >(sstr, " "));
+//         throw Exception("missing parameter of lambert material [" + sstr.str() + "]");
+//     }
+
+//     // material type and name
+//     assert(mat_dict_copy["mat_type"] == "lambert");
+//     mat_dict_copy.erase("mat_type");
+//     assert(mat_dict_copy["mat_name"] == this->get_material_name());
+//     mat_dict_copy.erase("mat_name");
+
+//     // diffuse color
+//     Color diffuse_color = mat_dict_copy.get< Color >("diffuse_color");
+//     m_texture = Texture.ConstantColorTexture(numpy_util.str2array(diffuse_color));
+//     mat_dict_copy.pop("diffuse_color");
+
+//     // optional parameters
+//     if(mat_dict_copy.has_key("emit_color")){
+//         emit_color = numpy_util.str2array(mat_dict_copy["emit_color"]);
+//         this->set_emit_color(emit_color);
+//         mat_dict_copy.pop("emit_color");
+//         print "DEBUG: this lambert material has emit_color ", this->__emit_color;
+//     }
+
+//     if(len(mat_dict_copy) > 0){
+//         print mat_dict_copy;
+//         raise StandardError, ("_mat_dict has unknown parameters." + str(mat_dict_copy));
+//     }
+// }
 
 //----------------------------------------------------------------------
 // is emit light?.

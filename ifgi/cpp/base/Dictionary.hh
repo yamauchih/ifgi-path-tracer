@@ -8,6 +8,7 @@
 #define IFGI_PATH_TRACER_IFGI_CPP_BASE_DICTIONARY_HH
 
 #include <map>
+#include <vector>
 #include <string>
 #include <sstream>
 
@@ -164,6 +165,14 @@ public:
     /// destructor.
     virtual ~Dictionary();
 
+    /// copy constructor
+    /// \param[in] rhs right hand side, copy source
+    Dictionary(Dictionary const & rhs);
+
+    /// operator=
+    /// \param[in] rhs right hand side, copy source
+    Dictionary const & operator=(Dictionary const & rhs);
+
     /// clear the dictionary
     void clear();
 
@@ -251,11 +260,45 @@ public:
     void write(std::ostream &os,
                std::string const & prefix = std::string("")) const;
 
-private:
     /// read dictionary from a stream
     // void read(std::istream & is, std::string const & prefix);
+
+private:
+    /// implementation of dictionary
     Dictionary_map m_dict_impl;
 };
 
+//----------------------------------------------------------------------
+/// is all keys are defined in the dictionary?
+///
+/// \param[in] dict   dictionary to be checked
+/// \param[in] keyvec a vector of keys
+/// \param[out] p_non_def_key_vec (output) not defined keys vector,
+/// when 0, no output
+/// \return true if all keys are defined.
+extern bool is_all_key_defined(Dictionary const & dict,
+                               std::vector< std::string > const & keyvec,
+                               std::vector< std::string > * p_non_def_key_vec = 0);
+
+//----------------------------------------------------------------------
+/// is all keys are defined in the dictionary? This calls overloaded
+/// function (2nd arg is std::vector).
+///
+/// \code
+/// char const * p_key[] = {"key0", "key1", 0 };
+/// bool r = is_all_key_defined(dict, p_key, p_nondefs);
+/// \endcode
+///
+/// \param[in] dict   dictionary to be checked
+/// \param[in] p_keyarry an char* array of keys. The array should be 0
+/// terminated.
+/// \param[out] p_non_def_key_vec (output) not defined keys vector,
+/// when 0, no output
+/// \return true if all keys are defined.
+extern bool is_all_key_defined(Dictionary const & dict,
+                               char const * p_keyarray[],
+                               std::vector< std::string > * p_non_def_key_vec = 0);
+//----------------------------------------------------------------------
 } // namespace ifgi
 #endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_DICTIONARY_HH
+

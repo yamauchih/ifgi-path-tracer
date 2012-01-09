@@ -80,6 +80,21 @@ TEST(DictionaryTest, Vectos)
         ASSERT_EQ(dict.empty(), false);
         ASSERT_EQ(dict.size(),  1);
     }
+
+    // defined test
+    {
+        ifgi::Dictionary dict;
+        dict.insert("key0", ifgi::Dictionary_value("key0value"));
+        dict.insert("key1", ifgi::Dictionary_value("key1value"));
+        char const * p_key_true[]  = { "key0", "key1", 0, };
+        ASSERT_EQ(ifgi::is_all_key_defined(dict, p_key_true),  true);
+
+        char const * p_key_false[] = { "key0", "key1", "key2", 0, };
+        std::vector< std::string > undef_keys;
+        ASSERT_EQ(ifgi::is_all_key_defined(dict, p_key_false, &undef_keys), false);
+        ASSERT_EQ(undef_keys.size(), 1);
+        ASSERT_EQ(undef_keys[0], "key2"); // missing "key2"
+    }
 }
 
 int main(int argc, char **argv)

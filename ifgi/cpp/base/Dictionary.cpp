@@ -8,7 +8,6 @@
 #include "Dictionary.hh"
 #include "Exception.hh"
 
-#include <vector>
 #include <algorithm>
 
 namespace ifgi {
@@ -121,6 +120,23 @@ Dictionary::Dictionary()
 Dictionary::~Dictionary()
 {
     // empty
+}
+
+//----------------------------------------------------------------------
+// copy constructor
+Dictionary::Dictionary(Dictionary const & rhs)
+{
+    m_dict_impl = rhs.m_dict_impl;
+}
+
+//----------------------------------------------------------------------
+// operator=
+Dictionary const & Dictionary::operator=(Dictionary const & rhs)
+{
+    if(this != &rhs){
+        m_dict_impl = rhs.m_dict_impl;
+    }
+    return *this;
 }
 
 //----------------------------------------------------------------------
@@ -241,6 +257,41 @@ void Dictionary::write(std::ostream &os,
 //----------------------------------------------------------------------
 // read dictionary from a stream
 // void Dictionary::read(std::istream & is, std::string const & prefix);
+
+//----------------------------------------------------------------------
+// is all keys are defined in the dictionary?
+bool is_all_key_defined(Dictionary const & dict,
+                        std::vector< std::string > const & keyvec,
+                        std::vector< std::string > * p_non_def_key_vec)
+{
+    std::vector< std::string > nondefvec;
+    bool is_ok = true;
+    const size_t keyvec_len = keyvec.size();
+    for(size_t i = 0; i < keyvec_len; ++i){
+        if(!(dict.is_defined(keyvec[i]))){
+            is_ok = false;
+            nondefvec.push_back(keyvec[i]);
+        }
+    }
+    if(p_non_def_key_vec != 0){
+        (*p_non_def_key_vec) = nondefvec;
+    }
+    return is_ok;
+}
+
+//----------------------------------------------------------------------
+// is all keys are defined in the dictionary? This calls overloaded
+bool is_all_key_defined(Dictionary const & dict,
+                        char const * p_keyarray[],
+                        std::vector< std::string > * p_non_def_key_vec)
+{
+    std::vector< std::string > keyvec;
+    for(int i = 0; p_keyarray[i] != 0; i++){
+        keyvec.push_back(std::string(p_keyarray[i]));
+    }
+
+    return is_all_key_defined(dict, keyvec, p_non_def_key_vec);
+}
 
 //----------------------------------------------------------------------
 } // namespace ifgi

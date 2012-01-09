@@ -15,7 +15,7 @@ namespace ifgi {
 //----------------------------------------------------------------------
 
 // forward declaration
-class Dict;
+class Dictionary;
 class ITexture;
 
 //----------------------------------------------------------------------
@@ -59,7 +59,7 @@ public:
     /// initialize by dictionary
     ///
     /// \param[in] _mat_dict material parameter dictionary
-    virtual void initialize_by_dict(Dict const & mat_dict);
+    // virtual void initialize_by_dict(Dictionary const & mat_dict);
 
     /// is emit light?.
     /// \return true when emit light.
@@ -107,6 +107,18 @@ public:
     /// \return outgoing direction, None if not supported
     virtual Float32_3 diffuse_direction(// _hit_onb, _incident_dir, _hemisphere_sampler
         ) const ;
+
+    /// is diffuse?
+    /// \return true when diffuse
+    virtual bool is_diffuse() const      { return true; }
+
+    /// is specular?
+    /// \return true when specular
+    virtual bool is_specular() const     { return false; }
+
+    /// is transmissive?
+    /// \return true when transmissive
+    virtual bool is_transmissive() const { return false; }
 
     /// @}
 

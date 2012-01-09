@@ -44,11 +44,6 @@ public:
     /// \return material name (should be unique)
     virtual std::string get_material_name() const;
 
-    /// initialize by dictionary
-    ///
-    /// \param[in] _mat_dict material parameter dictionary
-    virtual void initialize_by_dict(Dictionary const & mat_dict);
-
     /// is emit light?.
     /// \return true when emit light.
     virtual bool is_emit() const;
@@ -81,6 +76,18 @@ public:
         // ///
         // brdf = (1/math.pi) * this->__texture.value(_tex_uv, tex_point);
         // return brdf
+
+    /// is diffuse?
+    /// \return false. no diffuse direction.
+    virtual bool is_diffuse() const      { return false; }
+
+    /// is specular?
+    /// \return false. no specular direction.
+    virtual bool is_specular() const     { return false; }
+
+    /// is transmissive?
+    /// \return false. no transmissive direction.
+    virtual bool is_transmissive() const { return false; }
 
 public:
     // def get_gl_preview_dict(){
