@@ -25,14 +25,14 @@ typedef Uint32 Tag;
 /// Currently there is no access and edit. This just tracks the new-ed
 /// objects and when the program exits, this deletes all the tracking
 /// objects.
-class ScendDB {
+class SceneDB {
 public:
     /// get the singleton instance
     /// \return singleton instance
-    static ScendDB * instance()
+    static SceneDB * instance()
     {
         if(G_p_scene_db == 0){
-            G_p_scene_db = new ScendDB();
+            G_p_scene_db = new SceneDB();
         }
         return G_p_scene_db;
     }
@@ -48,18 +48,18 @@ public:
 
 private:
     /// singleton instance
-    static ScendDB * G_p_scene_db;
+    static SceneDB * G_p_scene_db;
 
 public:
     /// destructor
-    virtual ~ScendDB();
+    virtual ~SceneDB();
 
-    /// store texture. This ScendDB owns the texture object.
+    /// store texture. This SceneDB owns the texture object.
     /// \param[in] p_tex pointer to a texture
     /// \return currently no use
     Tag store_texture(ITexture * p_tex);
 
-    /// store material. This ScendDB owns the material object.
+    /// store material. This SceneDB owns the material object.
     /// \param[in] p_mat pointer to a material
     /// \return currently no use
     Tag store_material(IMaterial * p_mat);
@@ -77,12 +77,12 @@ private:
 
 private:
     /// constructor. singleton
-    ScendDB();
+    SceneDB();
 private:
     /// copy constructor, never used.
-    ScendDB(const ScendDB& _rhs);
+    SceneDB(const SceneDB& _rhs);
     /// operator=, never used.
-    ScendDB const & operator=(ScendDB const & rhs);
+    SceneDB const & operator=(SceneDB const & rhs);
 };
 
 } // namespace ifgi

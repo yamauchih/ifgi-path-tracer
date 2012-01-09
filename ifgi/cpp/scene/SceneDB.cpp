@@ -13,18 +13,18 @@
 namespace ifgi {
 //----------------------------------------------------------------------
 // singleton instance implementation
-ScendDB * ScendDB::G_p_scene_db = 0;
+SceneDB * SceneDB::G_p_scene_db = 0;
 
 //----------------------------------------------------------------------
 // destructor
-ScendDB::~ScendDB()
+SceneDB::~SceneDB()
 {
     this->clear();
 }
 
 //----------------------------------------------------------------------
 // store texture
-Tag ScendDB::store_texture(ITexture * p_tex)
+Tag SceneDB::store_texture(ITexture * p_tex)
 {
     Tag ret_tag = static_cast< Tag >(m_texture_vec.size());
     m_texture_vec.push_back(p_tex);
@@ -33,7 +33,7 @@ Tag ScendDB::store_texture(ITexture * p_tex)
 
 //----------------------------------------------------------------------
 // store material
-Tag ScendDB::store_material(IMaterial * p_mat)
+Tag SceneDB::store_material(IMaterial * p_mat)
 {
     Tag ret_tag = static_cast< Tag >(m_material_vec.size());
     m_material_vec.push_back(p_mat);
@@ -42,7 +42,7 @@ Tag ScendDB::store_material(IMaterial * p_mat)
 
 //----------------------------------------------------------------------
 // clear the memory
-void ScendDB::clear()
+void SceneDB::clear()
 {
     // delete textures
     for(std::vector< ITexture * >::iterator ti = m_texture_vec.begin();
@@ -65,7 +65,7 @@ void ScendDB::clear()
 
 //----------------------------------------------------------------------
 // constructor. singleton
-ScendDB::ScendDB()
+SceneDB::SceneDB()
 {
     // empty
 }
