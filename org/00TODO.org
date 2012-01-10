@@ -6,9 +6,9 @@
 *** DONE MaterialFactory, Dictionary, complete DiffuseMaterial, EnvironmentMaterial
 
 ** TODO cpp implementation
-*** SceneGraphNode.cpp, ImageFilm, Camera
-*** send material to cpp code
-*** send triangle mesh to cpp code
+*** SceneDB::lookup_material_index("material name") return idx; peek_material(idx)
+*** push the TriMesh.
+*** ImageFilm, Camera
 
 ** TODO Install
 *** Eclipse (on new machine)

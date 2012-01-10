@@ -20,6 +20,7 @@
 #include <cpp/scene/SceneGraphNode.hh>
 #include <cpp/scene/SceneDB.hh>
 #include <cpp/scene/MaterialFactory.hh>
+#include <cpp/scene/SGMaterialNode.hh>
 
 namespace ifgi {
 
@@ -126,7 +127,7 @@ void IfgiCppRender::create_scene(boost::python::object const & mat_dict_list,
                                  boost::python::object const & geom_dict_list,
                                  boost::python::object const & camera_dict)
 {
-    
+
     // create simple scenegraph structure
     SceneGraphNode * p_rootsg = new SceneGraphNode("rootsg");
     SceneDB::instance()->store_sgnode(p_rootsg);
@@ -230,7 +231,16 @@ void IfgiCppRender::add_material_to_scene(
         di != mat_dict_vec.end(); ++di)
     {
         IMaterial * p_mat = new_material_factory(*di);
-        // NIN FIXME Create MaterialNode and push the p_mat inside. HEREHERE 2012-1-9(Mon)
+        SGMaterialNode * p_ch_mat_sgnode =
+            new SGMaterialNode("matnode::" + p_mat->get_material_name());
+        p_ch_mat_sgnode->set_material(p_mat);
+        SceneDB::instance()->store_sgnode(p_ch_mat_sgnode);
+
+        // put it under the material groupnode.
+        // But currently this is not used. Material lookup through the
+        // SceneDB.
+        p_mat_group_node->append_child(p_ch_mat_sgnode);
+
         ILog::instance()->
             debug("IfgiCppRender::add_material_to_scene: "
                   "added material " + p_mat->get_classname() + "::" +
