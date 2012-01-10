@@ -8,6 +8,9 @@
 #define IFGI_PATH_TRACER_IFGI_CPP_SCENE_SCENEDB_HH
 
 #include <vector>
+#include <string>
+#include <map>
+
 #include <cpp/base/types.hh>
 
 namespace ifgi {
@@ -18,7 +21,9 @@ class IMaterial;
 class SceneGraphNode;
 
 /// database element tag
-typedef Uint32 Tag;
+typedef Sint32 Tag;
+/// invalid Tag
+Tag const NULL_TAG = -1;
 
 //----------------------------------------------------------------------
 /// scene database. a simple object tracker. singleton.
@@ -26,6 +31,9 @@ typedef Uint32 Tag;
 /// Currently there is no access and edit. This just tracks the new-ed
 /// objects and when the program exits, this deletes all the tracking
 /// objects.
+///
+/// Note: A returned Tag is not a global identifier. Only valid in the
+/// same kind.
 class SceneDB {
 public:
     /// get the singleton instance
@@ -65,6 +73,18 @@ public:
     /// \return currently no use
     Tag store_material(IMaterial * p_mat);
 
+    /// get material index by material name
+    ///
+    /// \param[in] matname material name
+    /// \return index of material array. -1 if not found.
+    Sint32 get_material_index_by_name(std::string const & matname) const;
+
+    /// get material by index
+    ///
+    /// \param[in] matidx material array index
+    /// \return pointer to the material
+    IMaterial * peek_material(Sint32 matidx);
+
     /// store scenegraph node. This SceneDB owns the scnegraph node object.
     /// \param[in] p_sgnode pointer to a scene graph node
     /// \return currently no use
@@ -79,6 +99,8 @@ private:
     std::vector< ITexture * > m_texture_vec;
     /// material vector
     std::vector< IMaterial * > m_material_vec;
+    /// material name -> index map
+    std::map< std::string, Sint32 > m_matname_idx_map;
     /// scenegraph node
     std::vector< SceneGraphNode * > m_sgnode_vec;
 

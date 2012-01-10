@@ -96,6 +96,30 @@ void append_pydict_list_to_dictionary_vec(
     }
 }
 
+
+//----------------------------------------------------------------------
+/// convert python TriMesh to cpp TriMesh.
+bool convert_py_trimesh_to_cpp_trimesh(boost::python::object const & pytrimesh)
+{
+    // NIN How can access the python TriMesh members?
+
+    boost::python::object const vlist = pytrimesh.attr("vertex_list");
+    boost::python::extract< boost::python::list > vlist_ext(vlist);
+    assert(vlist_ext.check());
+    boost::python::list const vlist_cpp = vlist_ext();
+    int const len = boost::python::len(vlist_cpp);
+    std::cout << "vertex_list len = " << len << std::endl;
+    assert(len > 0);
+    // NIN make get_float32_3
+    std::cout << "Print first elem [0]: veclen = "
+              << boost::python::len(vlist_cpp[0]) << ": "
+              << boost::python::extract<float>(vlist_cpp[0].attr("__getitem__")(0)) << " "
+              << boost::python::extract<float>(vlist_cpp[0].attr("__getitem__")(1)) << " "
+              << boost::python::extract<float>(vlist_cpp[0].attr("__getitem__")(2))
+              << std::endl;
+    return false;
+}
+
 //----------------------------------------------------------------------
 //======================================================================
 //----------------------------------------------------------------------
@@ -148,16 +172,16 @@ void IfgiCppRender::create_scene(boost::python::object const & mat_dict_list,
 
     p_rootsg->append_child(p_mat_group_node);
     this->add_material_to_scene(p_mat_group_node, mat_dict_list);
-    // for mat_dict in ifgi_reader.material_dict_list:
-    //     mat = Material.material_factory(mat_dict);
-    //     ch_mat_node = MaterialNode(mat_dict["mat_name"]);
-    //     ch_mat_node.set_material(mat);
-    //     mat_group_node.append_child(ch_mat_node);
 
-    // geometry
     // NIN FIXME
+    // geometry
+    SceneGraphNode * p_mesh_group_node = new SceneGraphNode("meshgroup");
+    SceneDB::instance()->store_sgnode(p_mesh_group_node);
+
+    p_rootsg->append_child(p_mesh_group_node);
+    this->add_geometry_to_scene(p_mesh_group_node, geom_dict_list);
+
     // append_pydict_list_to_dictionary_vec(m_geo_dict_vec, geom_dict_list);
-    // SceneGraphNode * p_mesh_group = new SceneGraphNode("meshgroup");
     // p_rootsg->append_child(p_mesh_group);
     // for geo_dict in ifgi_reader.geometry_dict_list:
     //     ch_node = PrimitiveNode(geo_dict["geo_name"], geo_dict["TriMesh"]);
@@ -246,6 +270,68 @@ void IfgiCppRender::add_material_to_scene(
                   "added material " + p_mat->get_classname() + "::" +
                   p_mat->get_material_name() + "\n");
     }
+}
+
+//----------------------------------------------------------------------
+// add geometry to the scene
+void IfgiCppRender::add_geometry_to_scene(
+    SceneGraphNode * p_mesh_group_node,
+    boost::python::object const & geom_pydict_list)
+{
+    // convert to the extracted object: list
+    boost::python::extract< boost::python::list > cpp_list_ext(geom_pydict_list);
+    if(!cpp_list_ext.check()){
+        throw std::runtime_error(
+            "add_geometry_to_scene: type error: geom_pydict_list is not a list.");
+    }
+
+    // iterate over the list
+    boost::python::list cpp_dict_list = cpp_list_ext();
+    int const len = boost::python::len(cpp_dict_list);
+    for(int i = 0; i < len; ++i){
+        boost::python::dict geom_pydict =
+            boost::python::extract< boost::python::dict >(cpp_dict_list[i]);
+        // convert geom dict to scene
+        this->add_one_geometry_to_scene(p_mesh_group_node, geom_pydict);
+    }
+}
+
+//----------------------------------------------------------------------
+// add one primitive to the scene
+void IfgiCppRender::add_one_geometry_to_scene(
+    SceneGraphNode * p_mesh_group_node,
+    boost::python::dict const & geom_pydict)
+{
+    // geom_pydict entries
+    //   geom_pydict["geo_name"] = "name_of_geometry"
+    //   geom_pydict["material"] = "material_name"
+    //   geom_pydict["geo_file_type"] = "obj"
+    //   geom_pydict["geo_file_name"] = "filename"
+    //   geom_pydict["TriMesh"]  = Primitive.TriMesh object
+
+    Dictionary geom_cpp_dict = get_cpp_dictionary_from_pydict(geom_pydict);
+    geom_cpp_dict.write(std::cout, "DEBUG: ");
+
+    // check all the expected keys are there
+    char const * p_mandatory_key[] = { "geo_name",
+                                       "material",
+                                       "geo_file_type",
+                                       "geo_file_name",
+                                       "TriMesh",
+                                       0};
+    std::vector< std::string > undef_keys;
+    if(!(is_all_key_defined(geom_cpp_dict, p_mandatory_key, &undef_keys))){
+        std::stringstream sstr;
+        std::copy(undef_keys.begin(), undef_keys.end(),
+                  std::ostream_iterator< std::string >(sstr, " "));
+        throw Exception("missing keys for geom_pydict [" + sstr.str() + "]");
+    }
+
+    // NIN HEREHERE
+    convert_py_trimesh_to_cpp_trimesh(geom_pydict["TriMesh"]);
+
+    // ch_node = PrimitiveNode(geo_dict['geo_name'], geo_dict['TriMesh']);
+    // mesh_group.append_child(ch_node)
 }
 
 //----------------------------------------------------------------------

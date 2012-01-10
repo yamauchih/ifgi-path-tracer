@@ -101,6 +101,21 @@ private:
         SceneGraphNode * p_mat_group_node,
         boost::python::object const & mat_dict_list);
 
+    /// add geometry to the scene
+    ///
+    /// \param[in] p_mesh_group_node mesh group node. Currently all
+    /// the meshes are this node's children.
+    /// \param[in] geom_dict_list geometry python dict list
+    void add_geometry_to_scene(
+        SceneGraphNode * p_mat_group_node,
+        boost::python::object const & geom_dict_list);
+
+    /// add one primitive to the scene
+    void add_one_geometry_to_scene(
+        SceneGraphNode * p_mesh_group_node,
+        boost::python::dict const & geom_pydict);
+
+
 private:
     /// geometry dictionary vector
     std::vector< Dictionary > m_geo_dict_vec;

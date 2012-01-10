@@ -1,12 +1,12 @@
-* Task ifgi path tracer 2012-1-9(Mon)
+* Task ifgi path tracer 2012-1-10(Tue)
 
 ** top5
 
 ** 2012-1-9(Mon)-
 *** DONE MaterialFactory, Dictionary, complete DiffuseMaterial, EnvironmentMaterial
+lookup material in the SceneDB
 
 ** TODO cpp implementation
-*** SceneDB::lookup_material_index("material name") return idx; peek_material(idx)
 *** push the TriMesh.
 *** ImageFilm, Camera
 
