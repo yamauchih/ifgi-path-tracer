@@ -16,6 +16,7 @@
 #include <boost/python/str.hpp>
 
 // ifgi side
+#include <cpp/base/Exception.hh>
 #include <cpp/base/ILog.hh>
 #include <cpp/scene/SceneGraphNode.hh>
 #include <cpp/scene/SceneDB.hh>
@@ -98,6 +99,26 @@ void append_pydict_list_to_dictionary_vec(
 
 
 //----------------------------------------------------------------------
+Float32_3 get_float32_3(boost::python::object const & float32_3_obj)
+{
+    if(boost::python::len(float32_3_obj) != 3){
+        std::string const objstr =
+            boost::python::extract< std::string >(
+                boost::python::str(float32_3_obj));
+        throw Exception("get_float32_3: arg is not a float32_3 obj [" +
+                        objstr + "]");
+    }
+
+    Float32_3 vec(0.0f, 0.0f, 0.0f);
+    for(int i = 0; i < 3; ++i){
+        vec[i] = boost::python::extract< float >(
+            float32_3_obj.attr("__getitem__")(i));
+    }
+
+    return vec;
+}
+
+//----------------------------------------------------------------------
 /// convert python TriMesh to cpp TriMesh.
 bool convert_py_trimesh_to_cpp_trimesh(boost::python::object const & pytrimesh)
 {
@@ -113,10 +134,7 @@ bool convert_py_trimesh_to_cpp_trimesh(boost::python::object const & pytrimesh)
     // NIN make get_float32_3
     std::cout << "Print first elem [0]: veclen = "
               << boost::python::len(vlist_cpp[0]) << ": "
-              << boost::python::extract<float>(vlist_cpp[0].attr("__getitem__")(0)) << " "
-              << boost::python::extract<float>(vlist_cpp[0].attr("__getitem__")(1)) << " "
-              << boost::python::extract<float>(vlist_cpp[0].attr("__getitem__")(2))
-              << std::endl;
+              << get_float32_3(vlist_cpp[0]) << std::endl;
     return false;
 }
 
