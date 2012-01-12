@@ -97,8 +97,12 @@ void append_pydict_list_to_dictionary_vec(
     }
 }
 
-
 //----------------------------------------------------------------------
+/// get Float32_3 from python numpy.array <type, numpy.float64>
+///
+/// \param[in] float32_3_obj python numpy.array <type, numpy.float64>,
+/// length 3 object
+/// \return Float32_3 vector
 Float32_3 get_float32_3(boost::python::object const & float32_3_obj)
 {
     if(boost::python::len(float32_3_obj) != 3){
@@ -117,6 +121,37 @@ Float32_3 get_float32_3(boost::python::object const & float32_3_obj)
 
     return vec;
 }
+
+//----------------------------------------------------------------------
+/// get Sint32_3 from python numpy.array <type, numpy.int64>
+///
+/// \param[in] sint32_3_obj python numpy.array <type, numpy.int64>,
+/// length 3 object
+/// \return Sint32_3 vector
+Sint32_3 get_sint32_3(boost::python::object const & sint32_3_obj)
+{
+    if(boost::python::len(sint32_3_obj) != 3){
+        std::string const objstr =
+            boost::python::extract< std::string >(
+                boost::python::str(sint32_3_obj));
+        throw Exception("get_sint32_3: arg is not a sint32_3 obj [" +
+                        objstr + "]");
+    }
+
+    Sint32_3 vec(0, 0, 0);
+    for(int i = 0; i < 3; ++i){
+        // no conversion method of numpy.int64 is registered,
+        // therefore, once converted object and call its conversion
+        // attribute.
+        boost::python::object int64_obj = sint32_3_obj.attr("__getitem__")(i);
+        vec[i] = boost::python::extract< int >(
+            int64_obj.attr("__int__")());
+
+    }
+
+    return vec;
+}
+
 
 //----------------------------------------------------------------------
 /// convert python TriMesh to cpp TriMesh.
