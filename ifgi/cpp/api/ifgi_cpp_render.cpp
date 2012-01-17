@@ -22,6 +22,7 @@
 #include <cpp/scene/SceneDB.hh>
 #include <cpp/scene/MaterialFactory.hh>
 #include <cpp/scene/SGMaterialNode.hh>
+#include <cpp/scene/TriMesh.hh>
 
 namespace ifgi {
 
@@ -152,25 +153,96 @@ Sint32_3 get_sint32_3(boost::python::object const & sint32_3_obj)
     return vec;
 }
 
+//----------------------------------------------------------------------
+/// get Float32_3 vector from python numpy.array <type, numpy.float64> list
+///
+/// \param[in] float32_3_list python numpy.array <type, numpy.float64>,
+/// length 3 object list
+/// \param[out] vec_float32_3 vector of Float32_3
+void get_vector_float32_3(boost::python::list const & float32_3_list,
+                          std::vector< Float32_3 > & vec_float32_3)
+{
+    // boost::python::extract< boost::python::list > flist_ext(float32_3_list);
+    // assert(flist_ext.check());
+    // boost::python::list const flist_cpp = flist_ext();
+    int const len = boost::python::len(float32_3_list);
+    for(int i = 0; i < len; ++i){
+        Float32_3 const vec3 = get_float32_3(float32_3_list[i]);
+        vec_float32_3.push_back(vec3);
+    }
+}
+
+//----------------------------------------------------------------------
+/// get Sint32_3 vector from python numpy.array <type, numpy.int64> list
+///
+/// \param[in] sint32_3_list python numpy.array <type, numpy.int64>,
+/// length 3 object list
+/// \param[out] vec_sint32_3 vector of Sint32_3
+void get_vector_sint32_3(boost::python::list const & sint32_3_list,
+                         std::vector< Sint32_3 > & vec_sint32_3)
+{
+    // boost::python::extract< boost::python::list > slist_ext(sint32_3_list);
+    // assert(slist_ext.check());
+    // boost::python::list const slist_cpp = slist_ext();
+    int const len = boost::python::len(sint32_3_list);
+    for(int i = 0; i < len; ++i){
+        Sint32_3 const vec3 = get_sint32_3(sint32_3_list[i]);
+        vec_sint32_3.push_back(vec3);
+    }
+}
 
 //----------------------------------------------------------------------
 /// convert python TriMesh to cpp TriMesh.
-bool convert_py_trimesh_to_cpp_trimesh(boost::python::object const & pytrimesh)
+bool convert_py_trimesh_to_cpp_trimesh(boost::python::object const & pytrimesh,
+                                       TriMesh * p_trimesh)
 {
-    // NIN How can access the python TriMesh members?
+    assert(p_trimesh != 0);
+    std::vector< Float32_3 > f32_3_vec[3];
+    std::vector< Sint32_3 >  s32_3_vec[3];
 
-    boost::python::object const vlist = pytrimesh.attr("vertex_list");
-    boost::python::extract< boost::python::list > vlist_ext(vlist);
-    assert(vlist_ext.check());
-    boost::python::list const vlist_cpp = vlist_ext();
-    int const len = boost::python::len(vlist_cpp);
-    std::cout << "vertex_list len = " << len << std::endl;
-    assert(len > 0);
-    // NIN make get_float32_3
-    std::cout << "Print first elem [0]: veclen = "
-              << boost::python::len(vlist_cpp[0]) << ": "
-              << get_float32_3(vlist_cpp[0]) << std::endl;
-    return false;
+    // access to the python TriMesh members
+
+    // attribute names
+    const char * p_f32_3_attr_name[] = {
+        "vertex_list",
+        "texcoord_list",
+        "normal_list",
+        0,
+
+    };
+    // attribute names
+    const char * p_s32_3_attr_name[] = {
+        "face_idx_list",
+        "texcoord_idx_list",
+        "normal_idx_list",
+        0,
+    };
+
+    for(int i = 0; p_f32_3_attr_name[i] != 0; ++i){
+        boost::python::object const f32_3_list = pytrimesh.attr(p_f32_3_attr_name[i]);
+        boost::python::extract< boost::python::list > f32_3_ext(f32_3_list);
+        if(!f32_3_ext.check()){
+            throw Exception(std::string("pytrimesh has no [") + p_f32_3_attr_name[i] + "]");
+        }
+        get_vector_float32_3(f32_3_ext(), f32_3_vec[i]);
+    }
+
+    for(int i = 0; p_s32_3_attr_name[i] != 0; ++i){
+        boost::python::object const s32_3_list = pytrimesh.attr(p_s32_3_attr_name[i]);
+        boost::python::extract< boost::python::list > s32_3_ext(s32_3_list);
+        if(!s32_3_ext.check()){
+            throw Exception(std::string("pytrimesh has no [") + p_s32_3_attr_name[i] + "]");
+        }
+        get_vector_sint32_3(s32_3_ext(), s32_3_vec[i]);
+    }
+
+    p_trimesh->set_data(f32_3_vec[0],
+                        s32_3_vec[0],
+                        f32_3_vec[1],
+                        s32_3_vec[1],
+                        f32_3_vec[2],
+                        s32_3_vec[2]);
+    return true;
 }
 
 //----------------------------------------------------------------------
@@ -378,9 +450,13 @@ void IfgiCppRender::add_one_geometry_to_scene(
         throw Exception("missing keys for geom_pydict [" + sstr.str() + "]");
     }
 
-    // NIN HEREHERE
-    convert_py_trimesh_to_cpp_trimesh(geom_pydict["TriMesh"]);
+    TriMesh tmesh;
+    convert_py_trimesh_to_cpp_trimesh(geom_pydict["TriMesh"], &tmesh);
 
+    std::cout << "DEBUG: trimesh info\n"
+              << tmesh.get_info_summary() << std::endl;
+
+    // NIN HEREHERE
     // ch_node = PrimitiveNode(geo_dict['geo_name'], geo_dict['TriMesh']);
     // mesh_group.append_child(ch_node)
 }
