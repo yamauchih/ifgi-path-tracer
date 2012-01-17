@@ -82,12 +82,12 @@ public:
     /// set camera. replaced all the data.
     ///
     /// \param[in] camera_pydict_obj camera dictionary
-    void set_camera_dict(boost::python::object const & camera_pydict_obj);
+    void set_camera_pydict(boost::python::object const & camera_pydict_obj);
 
     /// get camera.
     ///
     /// \return get current camera
-    boost::python::object get_camera_dict() const;
+    boost::python::object get_camera_pydict() const;
 
 private:
     /// clear scene node memory
@@ -119,11 +119,10 @@ private:
 private:
     /// geometry dictionary vector
     std::vector< Dictionary > m_geo_dict_vec;
-    ///camera dictionary
-    Dictionary m_camera_dict;
-
     /// the scene graph
     SceneGraph m_scene_graph;
+    /// current camera
+    Camera m_camera;
 };
 
 } // namespace ifgi

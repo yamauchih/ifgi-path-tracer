@@ -82,8 +82,11 @@ class TestIfgiRender3(unittest.TestCase):
 
         # add a new scene
         ifgi_cpp_render_core.create_scene(ifgireader.material_dict_list,\
-                                          ifgireader.geometry_dict_list,\
-                                          ifgireader.camera_dict_dict)
+                                              ifgireader.geometry_dict_list,\
+                                              ifgireader.camera_dict_dict)
+
+        cam_dict = ifgi_cpp_render_core.get_camera_pydict()
+        print cam_dict
 
         # set the camera
         # ifgi_cpp_render_core.set_camera_dict(ifgireader.camera_dict_dict)

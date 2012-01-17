@@ -202,22 +202,12 @@ int IfgiCppRender::initialize()
 // create a new scene.
 void IfgiCppRender::create_scene(boost::python::object const & mat_dict_list,
                                  boost::python::object const & geom_dict_list,
-                                 boost::python::object const & camera_dict)
+                                 boost::python::object const & camera_pydict)
 {
 
     // create simple scenegraph structure
     SceneGraphNode * p_rootsg = new SceneGraphNode("rootsg");
     SceneDB::instance()->store_sgnode(p_rootsg);
-
-    // camera
-    this->set_camera_dict(camera_dict);
-    // NIN
-    // CameraNode *     p_cam_node = new CameraNode("main_cam");
-    // if("default" in ifgi_reader.camera_dict_dict){
-    //     cam_node.get_camera().set_config_dict(_ifgi_reader.camera_dict_dict["default"]);
-    // else:
-    //     ILog.warn("ifgi scene file has no default camera, use camera default.");
-    // rootsg.append_child(cam_node);
 
     // "materialgroup" is a special group.
     SceneGraphNode * p_mat_group_node = new SceneGraphNode("materialgroup");
@@ -240,32 +230,39 @@ void IfgiCppRender::create_scene(boost::python::object const & mat_dict_list,
     //     ch_node = PrimitiveNode(geo_dict["geo_name"], geo_dict["TriMesh"]);
     //     mesh_group.append_child(ch_node);
     //
-    // sg.set_root_node(rootsg);
-    // sg.set_current_camera(cam_node.get_camera());
+    m_scene_graph.set_root_node(p_rootsg);
+
+    // camera
+    this->set_camera_pydict(camera_pydict);
 }
 
 //----------------------------------------------------------------------
 // set camera.
-void IfgiCppRender::set_camera_dict(boost::python::object const & camera_pydict_obj)
+void IfgiCppRender::set_camera_pydict(
+    boost::python::object const & camera_pydict_obj)
 {
     // object -> extractor
     boost::python::extract< boost::python::dict > cpp_pydict_ext(camera_pydict_obj);
     if(!cpp_pydict_ext.check()){
-        throw std::runtime_error("set_camera_dict: type error: "
+        throw std::runtime_error("set_camera_pydict: type error: "
                                  "camera_pydict_obj is not a dict.");
     }
-    Dictionary const cpp_cam_dict = get_cpp_dictionary_from_pydict(cpp_pydict_ext());
+    // Dictionary const cpp_cam_dict = get_cpp_dictionary_from_pydict(cpp_pydict_ext());
 
-    // cpp_cam_dict.write(std::cout, "CPPCAM:");
-    m_camera_dict.clear();
-    m_camera_dict.insert_all(cpp_cam_dict);
+    // // cpp_cam_dict.write(std::cout, "CPPCAM:");
+    // return cpp_cam_dict;
+
+    Dictionary const cpp_camera_dict = get_cpp_dictionary_from_pydict(cpp_pydict_ext());
+    m_camera.set_config_dict(cpp_camera_dict);
+    m_scene_graph.set_current_camera(m_camera);
 }
 
 //----------------------------------------------------------------------
 // get camera.
-boost::python::object IfgiCppRender::get_camera_dict() const
+boost::python::object IfgiCppRender::get_camera_pydict() const
 {
-    return get_pydict_from_cpp_dictionary(m_camera_dict);
+    Dictionary const cpp_dict = m_camera.get_config_dict();
+    return get_pydict_from_cpp_dictionary(cpp_dict);
 }
 
 //----------------------------------------------------------------------
@@ -280,8 +277,6 @@ boost::python::object IfgiCppRender::get_camera_dict() const
 void IfgiCppRender::clear_scene()
 {
     m_geo_dict_vec.clear();
-    m_camera_dict.clear();
-
     this->clear_node_memory();
 }
 

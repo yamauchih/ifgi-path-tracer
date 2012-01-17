@@ -191,14 +191,14 @@ Float32 Camera::get_z_far()const
 
 //----------------------------------------------------------------------
 // get projection mode.
-Camera::Camera_projection_mode_e Camera::get_projection() const
+Uint32 Camera::get_projection() const
 {
     return m_projection;
 }
 
 //----------------------------------------------------------------------
 // set projection mode.
-void Camera::set_projection(Camera_projection_mode_e projection)
+void Camera::set_projection(Uint32 projection)
 {
     m_projection = projection;
 }
@@ -503,87 +503,84 @@ Float32 Camera::get_ortho_width() const
 // configurable
 //------------------------------------------------------------
 
-// void set_config_dict(_config){
-//     /// set camera parameter configuration dictionary.
-//     This is configurable.
-//     /// \param[in] config configuration dictionary.
+// set camera parameter configuration dictionary.
+void Camera::set_config_dict(Dictionary const & dict)
+{
+    if(dict.is_defined("eye_pos")){
+        Float32_3 const ep = dict.get< Float32_3 > ("eye_pos");
+        this->set_eye_pos(ep);
+    }
 
-//     if "eye_pos" in config:
-//         /// Note: config["eye_pos"] is QString, conevrt to str
-//         ep = numpy_util.str2array(str(_config["eye_pos"]));
-//         print ep
-//         if len(ep) != 3:
-//             raise StandardError("eye_pos must be a float_3, but " +
-//                                     str(_config["eye_pos"]));
-//         this->set_eye_pos(ep);
+    if(dict.is_defined("view_dir")){
+        Float32_3 const vd = dict.get< Float32_3 >("view_dir");
+        this->set_view_dir(vd);
+    }
 
-//     if "view_dir" in config:
-//         vd = numpy_util.str2array(str(_config["view_dir"]));
-//         print vd
-//         if len(vd) != 3:
-//             raise StandardError("view_dir must be a float_3.");
+    if(dict.is_defined("up_dir")){
+        Float32_3 const ud = dict.get< Float32_3 >("up_dir");
+        this->set_up_dir(ud);
+    }
 
-//         this->set_view_dir(vd);
+    if(dict.is_defined("fovy_rad")){
+        this->set_fovy_rad(dict.get< Float32 >("fovy_rad"));
+    }
 
-//     if "up_dir" in config:
-//         ud = numpy_util.str2array(str(_config["up_dir"]));
-//         print ud
-//         if len(ud) != 3:
-//             raise StandardError("up_dir must be a float_3.");
-//         this->set_up_dir(ud);
+    if(dict.is_defined("aspect_ratio")){
+        this->set_aspect_ratio(dict.get< Float32 >("aspect_ratio"));
+    }
 
-//     if "fovy_rad" in config:
-//         this->set_fovy_rad(float(_config["fovy_rad"]));
+    if(dict.is_defined("z_near")){
+        this->set_z_near(dict.get< Float32 >("z_near"));
+        /// print "DEBUG: set z_near", float(_config["z_near"]);
+    }
 
-//     if "aspect_ratio" in config:
-//         this->set_aspect_ratio(float(_config["aspect_ratio"]));
+    if(dict.is_defined("z_far")){
+        this->set_z_far(dict.get< Float32 >("z_far"));
+        /// print "DEBUG: set z_far", dict.get< Float32 >("z_far");
+    }
 
-//     if "z_near" in config:
-//         this->set_z_near(float(_config["z_near"]));
-//         /// print "DEBUG: set z_near", float(_config["z_near"]);
+    if(dict.is_defined("projection")){
+        this->set_projection(dict.get< Uint32 >("projection"));
+    }
 
-//     if "z_far" in config:
-//         this->set_z_far(float(_config["z_far"]));
-//         /// print "DEBUG: set z_far", float(_config["z_far"]);
+    if(dict.is_defined("target_dist")){
+        this->set_target_distance(dict.get< Float32 >("target_dist"));
+    }
 
-//     if "projection" in config:
-//         this->set_projection(str(_config["projection"]));
+    if(dict.is_defined("focal_length")){
+        this->set_focal_length(dict.get< Float32 >("focal_length"));
+    }
 
-//     if "target_dist" in config:
-//         this->set_target_distance(float(_config["target_dist"]));
+    // if(dict.is_defined("lens_screen_dist")){
+    //     this->set_lens_to_screen_distance(dict.get< Float32 >("lens_screen_dist"));
+    // }
 
-//     if "focal_length" in config:
-//         this->set_focal_length(float(_config["focal_length"]));
+    if(dict.is_defined("lens_film_dist")){
+        this->set_lens_to_film_distance(dict.get< Float32 >("lens_film_dist"));
+    }
+}
 
-//     if "lens_screen_dist" in config:
-//         this->set_lens_to_screen_distance(float(_config["lens_screen_dist"]));
+//----------------------------------------------------------------------
+// get camera parameter configurarion dictionary.
+Dictionary Camera::get_config_dict() const
+{
+    Dictionary value_dict;
 
-//     if "lens_film_dist" in config:
-//         this->set_lens_to_film_distance(float(_config["lens_film_dist"]));
-// }
+    value_dict.set("eye_pos",          this->get_eye_pos());
+    value_dict.set("view_dir",         this->get_view_dir());
+    value_dict.set("up_dir",           this->get_up_dir());
+    value_dict.set("fovy_rad",         this->get_fovy_rad());
+    value_dict.set("aspect_ratio",     this->get_aspect_ratio());
+    value_dict.set("z_near",           this->get_z_near());
+    value_dict.set("z_far",            this->get_z_far());
+    value_dict.set("projection",       this->get_projection());
+    value_dict.set("target_dist",      this->get_target_distance());
+    value_dict.set("focal_length",     this->get_focal_length());
+    value_dict.set("lens_screen_dist", this->get_lens_to_screen_distance());
+    value_dict.set("lens_film_dist",   this->get_lens_to_film_distance());
 
-// def get_config_dict(){
-//     /// get camera parameter configurarion dictionary.
-//     This is configuable.
-//     /// \return parameter key, value dictionary
-
-//     new_cam = copy.deepcopy();
-//     value_dict = {
-//         "eye_pos":          numpy_util.array2str(new_cam.get_eye_pos()),
-//         "view_dir":         numpy_util.array2str(new_cam.get_view_dir()),
-//         "up_dir":           numpy_util.array2str(new_cam.get_up_dir()),
-//         "fovy_rad":         str(new_cam.get_fovy_rad()),
-//         "aspect_ratio":     str(new_cam.get_aspect_ratio()),
-//         "z_near":           str(new_cam.get_z_near()),
-//         "z_far":            str(new_cam.get_z_far()),
-//         "projection":       str(new_cam.get_projection()),
-//         "target_dist":      str(new_cam.get_target_distance()),
-//         "focal_length":     str(new_cam.get_focal_length()),
-//         "lens_screen_dist": str(new_cam.get_lens_to_screen_distance()),
-//         "lens_film_dist":   str(new_cam.get_lens_to_film_distance());
-//         }
-//     return value_dict;
-// }
+    return value_dict;
+}
 
 //----------------------------------------------------------------------
 // compute screen parameters.

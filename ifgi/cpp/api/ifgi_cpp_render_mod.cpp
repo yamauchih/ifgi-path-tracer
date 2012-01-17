@@ -26,11 +26,11 @@ BOOST_PYTHON_MODULE(ifgi_cpp_render_mod)
              &ifgi::IfgiCppRender::create_scene,
              "create a scene. add material and geometry dict list, "
              "and a camera to the scene.")
-        .def("set_camera_dict",
-             &ifgi::IfgiCppRender::set_camera_dict,
+        .def("set_camera_pydict",
+             &ifgi::IfgiCppRender::set_camera_pydict,
              "set camera dictionary. Replace the camera (python dictionary).")
-        .def("get_camera_dict",
-             &ifgi::IfgiCppRender::get_camera_dict,
+        .def("get_camera_pydict",
+             &ifgi::IfgiCppRender::get_camera_pydict,
              "get current camera dictionary.")
         ;
 }
