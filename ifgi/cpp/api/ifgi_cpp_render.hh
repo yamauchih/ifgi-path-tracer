@@ -20,6 +20,7 @@
 namespace ifgi {
 
 class SceneGraph;
+class TriMesh;
 
 //----------------------------------------------------------------------
 /// append python dictionary list to cpp dictionary vector
@@ -92,6 +93,8 @@ public:
 private:
     /// clear scene node memory
     void clear_node_memory();
+    /// clear trimesh memory
+    void clear_trimesh_memory();
 
     /// add material to the scene
     /// \param[in] p_mat_group_node material group node. All the
@@ -117,8 +120,10 @@ private:
 
 
 private:
-    /// geometry dictionary vector
-    std::vector< Dictionary > m_geo_dict_vec;
+    /// geometry, reference to the trimesh, vector
+    std::vector< TriMesh * > m_p_trimesh_vec;
+    /// reference to the scene graph nodes
+    std::vector< SceneGraphNode * > m_p_sgnode_vec;
     /// the scene graph
     SceneGraph m_scene_graph;
     /// current camera

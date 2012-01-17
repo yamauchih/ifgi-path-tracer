@@ -84,14 +84,14 @@ public:
 
     /// set _nodename (shown in the SceneGraph viewer as Node);
     /// \param[in] nodename nodename for scenegraph visualization
-    void set_nodename(std::string const & nodename)
+    virtual void set_nodename(std::string const & nodename)
     {
         m_nodename = nodename;
     }
 
     /// get _nodename
     /// \return node (instance) name
-    std::string get_nodename() const
+    virtual std::string get_nodename() const
     {
         return m_nodename;
     }

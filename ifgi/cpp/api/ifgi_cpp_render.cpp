@@ -22,6 +22,7 @@
 #include <cpp/scene/SceneDB.hh>
 #include <cpp/scene/MaterialFactory.hh>
 #include <cpp/scene/SGMaterialNode.hh>
+#include <cpp/scene/SGPrimitiveNode.hh>
 #include <cpp/scene/TriMesh.hh>
 
 namespace ifgi {
@@ -294,14 +295,10 @@ void IfgiCppRender::create_scene(boost::python::object const & mat_dict_list,
     SceneDB::instance()->store_sgnode(p_mesh_group_node);
 
     p_rootsg->append_child(p_mesh_group_node);
-    this->add_geometry_to_scene(p_mesh_group_node, geom_dict_list);
 
-    // append_pydict_list_to_dictionary_vec(m_geo_dict_vec, geom_dict_list);
-    // p_rootsg->append_child(p_mesh_group);
-    // for geo_dict in ifgi_reader.geometry_dict_list:
-    //     ch_node = PrimitiveNode(geo_dict["geo_name"], geo_dict["TriMesh"]);
-    //     mesh_group.append_child(ch_node);
-    //
+    // HEREHERE missing material index reference. 2012-1-17(Tue)
+
+    this->add_geometry_to_scene(p_mesh_group_node, geom_dict_list);
     m_scene_graph.set_root_node(p_rootsg);
 
     // camera
@@ -351,7 +348,7 @@ boost::python::object IfgiCppRender::get_camera_pydict() const
 // clear the scene
 void IfgiCppRender::clear_scene()
 {
-    m_geo_dict_vec.clear();
+    this->clear_trimesh_memory();
     this->clear_node_memory();
 }
 
@@ -359,7 +356,26 @@ void IfgiCppRender::clear_scene()
 // clear scene node memory
 void IfgiCppRender::clear_node_memory()
 {
-    // NIN
+    for(std::vector< SceneGraphNode * >::iterator si = m_p_sgnode_vec.begin();
+        si != m_p_sgnode_vec.end(); ++si)
+    {
+        delete *(si);
+        *(si) = 0;
+    }
+    m_p_sgnode_vec.clear();
+}
+
+//----------------------------------------------------------------------
+// clear trimesh memory
+void IfgiCppRender::clear_trimesh_memory()
+{
+    for(std::vector< TriMesh * >::iterator ti = m_p_trimesh_vec.begin();
+        ti != m_p_trimesh_vec.end(); ++ti)
+    {
+        delete *(ti);
+        *(ti) = 0;
+    }
+    m_p_trimesh_vec.clear();
 }
 
 //----------------------------------------------------------------------
@@ -450,15 +466,19 @@ void IfgiCppRender::add_one_geometry_to_scene(
         throw Exception("missing keys for geom_pydict [" + sstr.str() + "]");
     }
 
-    TriMesh tmesh;
-    convert_py_trimesh_to_cpp_trimesh(geom_pydict["TriMesh"], &tmesh);
+    // this class has the ownership of trimeshes
+    TriMesh * p_tmesh = new TriMesh;
+    m_p_trimesh_vec.push_back(p_tmesh); // owner: keep the reference
+    convert_py_trimesh_to_cpp_trimesh(geom_pydict["TriMesh"], p_tmesh);
 
     std::cout << "DEBUG: trimesh info\n"
-              << tmesh.get_info_summary() << std::endl;
+              << p_tmesh->get_info_summary() << std::endl;
 
-    // NIN HEREHERE
-    // ch_node = PrimitiveNode(geo_dict['geo_name'], geo_dict['TriMesh']);
-    // mesh_group.append_child(ch_node)
+    // this class has the ownership of scenegraph nodes
+    SGPrimitiveNode * p_ch_node =
+        new SGPrimitiveNode(geom_cpp_dict.get< std::string >("geo_name"), p_tmesh);
+    m_p_sgnode_vec.push_back(p_ch_node); // owner: keep the reference
+    p_mesh_group_node->append_child(p_ch_node);
 }
 
 //----------------------------------------------------------------------

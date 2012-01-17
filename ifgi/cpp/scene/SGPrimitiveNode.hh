@@ -3,13 +3,13 @@
 // Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
-/// \brief scene graph node primitive
+/// \brief scene graph primitive node
 #ifndef IFGI_PATH_TRACER_IFGI_CPP_SCENE_SGPRIMITIVENODE_HH
 #define IFGI_PATH_TRACER_IFGI_CPP_SCENE_SGPRIMITIVENODE_HH
 
 #include "SceneGraphNode.hh"
 
-#include "cpp/base/ILog.hh"
+#include <cpp/base/ILog.hh>
 
 namespace ifgi
 {
@@ -21,11 +21,13 @@ class IPrimitive;
 
 /// Primitive node, a Scene Graph Node.
 ///
-/// This has a primitive also this can have children.
+/// This has
+/// - a primitive also this can have children.
+/// - a reference to the material.
+/// - a name
+/// - a bounding box
+/// TriMesh doesn't have many of them.
 ///
-/// This has reference to the material.
-///
-/// This node also has bounding box.
 class SGPrimitiveNode : public SceneGraphNode
 {
 public:
@@ -33,33 +35,19 @@ public:
     /// \param[in] nodename node name
     /// \param[in] p_prim   reference to a IPrimitive
     SGPrimitiveNode(std::string const & nodename,
-                    IPrimitive * p_prim)
-        :
-        SceneGraphNode(nodename),
-        m_p_prim_ref(p_prim)
-    {
-        // empty
-    }
+                    IPrimitive * p_prim);
 
     /// get classname
     /// \return: scnegraph node class name
-    virtual std::string get_classname() const
-    {
-        return "SceneGraphNode";
-    }
+    virtual std::string get_classname() const;
 
-    /// def set_nodename(_nodename){
-    ///     /// set nodename (shown in the SceneGraph viewer as Node);
-    ///     \param[in]: nodename nodename for scenegraph visualization///
+    /// set nodename (shown in the SceneGraph viewer as Node);
+    /// \param[in] nodename nodename for scenegraph visualization
+    // virtual void set_nodename(std::string const & nodename);
 
-    ///     m_nodename = nodename
-
-
-    /// def get_nodename(){
-    ///     /// get nodename
-    ///     \return: node (instance) name///
-
-    ///     return m_nodename
+    /// get nodename
+    /// \return: node (instance) name
+    // virtual std::string get_nodename() const;
 
     /// Use SceneGraphNode"s method
     /// def append_child(_child){
@@ -76,10 +64,10 @@ public:
     ///     \return list of children. may None///
     ///     return m_children
 
-
-    /// ------------------------------------------------------------
-    /// primitive node interface
-    /// ------------------------------------------------------------
+public:
+    // ------------------------------------------------------------
+    // primitive node interface
+    // ------------------------------------------------------------
 
     /// is this a primitive node?
     /// \return True when this node is primitive node.
@@ -94,17 +82,7 @@ public:
     /// set a primitive.
     ///
     /// \param[in] p_prim a primitive
-    void set_primitive(IPrimitive p_prim)
-    {
-        if(this->has_children()){
-            throw Exception("Can not set a primitive. already had children.");
-        }
-        if(m_p_prim_ref != 0){
-            ILog::instance()->warn("SGPrimitiveNode::set_primitive: "
-                                   "This node has a primitive. Override the primitive.");
-        }
-        m_p_prim_ref = p_prim;
-    }
+    void set_primitive(IPrimitive * p_prim);
 
     /// get the primitive.
     ///
@@ -125,32 +103,20 @@ public:
 
     /// get bounding box of this node
     /// \return bounding box
-    BBox32 const & get_bbox() const
-    {
-        if(m_p_prim_ref == 0){
-            throw Exception("No primitive set [" + this->get_classname() +
-                            " " + this->get_nodename() + "]");
-        }
-        return m_p_prim_ref->get_bbox();
-    }
+    BBox32 const & get_bbox() const;
 
     /// assign bbox value.
-    /// set the bbox object. (_bbox is cloned before set.);
-    /// \param bbox bounding box to be assigned.
-    def set_bbox(_bbox)
-    {
-        m_primitive.set_bbox(_bbox);
-    }
+    /// set the bbox object. (bbox is cloned before set.);
+    /// \param[in] bbox bounding box to be assigned.
+    // void set_bbox(BBox32 const & bbox)
+    // {
+    //     m_p_prim_ref->set_bbox(bbox);
+    // }
 
     /// print this object for debug.
-    /// \param[in] depth node depth///
-    void print_nodeinfo(Sint32 level)
-    {
-        indent = "  " * level
-        print indent + "+ SceneGraphNode:Primitive:" +\
-            m_primitive.get_classname() +\
-            " " + str(m_primitive.get_bbox());
-    }
+    /// \param[in] depth node depth
+    std::string get_nodeinfo(Sint32 level);
+
 private:
     /// reference to a primitive
     IPrimitive * m_p_prim_ref;
