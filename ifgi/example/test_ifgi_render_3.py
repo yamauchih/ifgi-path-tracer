@@ -81,17 +81,16 @@ class TestIfgiRender3(unittest.TestCase):
         ifgi_cpp_render_core.initialize()
 
         # add a new scene
+
+        #   may have many cameras, but not yet handled
+        cam_dict = ifgireader.camera_dict_dict['default']
         ifgi_cpp_render_core.create_scene(ifgireader.material_dict_list,\
                                               ifgireader.geometry_dict_list,\
-                                              ifgireader.camera_dict_dict)
-
-        cam_dict = ifgi_cpp_render_core.get_camera_pydict()
+                                              cam_dict)
         print cam_dict
-
-        # set the camera
-        # ifgi_cpp_render_core.set_camera_dict(ifgireader.camera_dict_dict)
-
-
+        # dir(ifgi_cpp_render_core)
+        ret_cam_dict = ifgi_cpp_render_core.get_camera_pydict()
+        print ret_cam_dict
 
         # self.__scenegraph = SceneGraph.create_ifgi_scenegraph(ifgireader)
         # self.__scenegraph.update_all_bbox()

@@ -253,6 +253,8 @@ void IfgiCppRender::set_camera_pydict(
     // return cpp_cam_dict;
 
     Dictionary const cpp_camera_dict = get_cpp_dictionary_from_pydict(cpp_pydict_ext());
+    cpp_camera_dict.write(std::cout, "set_camera_pydict: ");
+    assert(cpp_camera_dict.is_defined("cam_name"));
     m_camera.set_config_dict(cpp_camera_dict);
     m_scene_graph.set_current_camera(m_camera);
 }
@@ -262,6 +264,7 @@ void IfgiCppRender::set_camera_pydict(
 boost::python::object IfgiCppRender::get_camera_pydict() const
 {
     Dictionary const cpp_dict = m_camera.get_config_dict();
+
     return get_pydict_from_cpp_dictionary(cpp_dict);
 }
 

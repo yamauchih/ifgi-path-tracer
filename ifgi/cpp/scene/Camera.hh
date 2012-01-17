@@ -70,6 +70,14 @@ public:
     /// \return "Camera"
     std::string get_classname() const;
 
+    /// set camera name.
+    /// \param[in] cam_name camera name
+    void set_camera_name(std::string const & cam_name);
+
+    /// get camera name.
+    /// \return this camera's name
+    std::string get_camera_name() const;
+
     /// set eye position.
     /// \param[in] eye_pos eye position
     void set_eye_pos(Float32_3 const & eye_pos);
@@ -420,6 +428,8 @@ private:
     void deep_copy(Camera const & rhs);
 
 private:
+    /// camera name
+    std::string m_camera_name;
     /// eye position
     Float32_3 m_eye_pos;
     /// viewing direction

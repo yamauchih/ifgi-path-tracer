@@ -14,6 +14,7 @@ namespace ifgi
 // default constructor
 Camera::Camera()
     :
+    m_camera_name("<noname>"),
     m_eye_pos (0.0f, 0.0f,  5.0f),
     m_view_dir(0.0f, 0.0f, -1.0f),
     m_up_dir  (0.0f, 1.0f,  0.0f),
@@ -67,6 +68,21 @@ Camera const & Camera::operator=(Camera const & rhs)
 std::string Camera::get_classname() const
 {
     return std::string("Camera");
+}
+
+//----------------------------------------------------------------------
+// set camera name.
+void Camera::set_camera_name(std::string const & cam_name)
+{
+    assert(!cam_name.empty());
+    m_camera_name = cam_name;
+}
+
+//----------------------------------------------------------------------
+// get camera name.
+std::string Camera::get_camera_name() const
+{
+    return m_camera_name;
 }
 
 //----------------------------------------------------------------------
@@ -506,6 +522,12 @@ Float32 Camera::get_ortho_width() const
 // set camera parameter configuration dictionary.
 void Camera::set_config_dict(Dictionary const & dict)
 {
+    if(!dict.is_defined("cam_name")){
+        throw Exception("Camera::set_config_dict: no key [cam_name].");
+    }
+    this->set_camera_name(dict.get< std::string >("cam_name"));
+
+
     if(dict.is_defined("eye_pos")){
         Float32_3 const ep = dict.get< Float32_3 > ("eye_pos");
         this->set_eye_pos(ep);
@@ -628,6 +650,7 @@ void Camera::clear_film_map()
 // deep copy function
 void Camera::deep_copy(Camera const & rhs)
 {
+    m_camera_name      = rhs.m_camera_name;
     m_eye_pos          = rhs.m_eye_pos;
     m_view_dir         = rhs.m_view_dir;
     m_up_dir           = rhs.m_up_dir;
