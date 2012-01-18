@@ -357,7 +357,7 @@ int IfgiCppRender::prepare_rendering()
 
 //----------------------------------------------------------------------
 // render frame
-int IfgiCppRender::render_frame(Sint32 max_frame, Sint32 save_per_frame)
+int IfgiCppRender::render_n_frame(Sint32 max_frame, Sint32 save_per_frame)
 {
     assert(max_frame > 0);
     assert(save_per_frame > 0);
@@ -533,6 +533,9 @@ void IfgiCppRender::add_one_geometry_to_scene(
 // set up framebuffer in the camera
 void IfgiCppRender::setup_framebuffer()
 {
+    // from camera
+    
+
     std::cerr << "IfgiCppRender::setup_framebuffer: NIN" << std::endl;
 }
 

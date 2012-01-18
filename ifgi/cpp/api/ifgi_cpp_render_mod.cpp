@@ -36,9 +36,9 @@ BOOST_PYTHON_MODULE(ifgi_cpp_render_mod)
         .def("prepare_rendering",
              &ifgi::IfgiCppRender::prepare_rendering,
              "prepare rendering. Call this once before render_frame() call.")
-        .def("render_frame",
-             &ifgi::IfgiCppRender::render_frame,
-             "render frames: args: max_frame, save_per_frame.")
+        .def("render_n_frame",
+             &ifgi::IfgiCppRender::render_n_frame,
+             "render n frames: args: max_frame, save_per_frame.")
         ;
 }
 

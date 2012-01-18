@@ -99,12 +99,12 @@ public:
     /// \return preparation status. 0 ... success.
     Sint32 prepare_rendering();
 
-    /// render frame
+    /// render n frames
     ///
     /// \param[in] max_frame max number of frames to render by this call
     /// \param[in] save_per_frame save a frame each save_per_frame
     /// \return rendering status. 0 ... success
-    Sint32 render_frame(Sint32 max_frame, Sint32 save_per_frame);
+    Sint32 render_n_frame(Sint32 max_frame, Sint32 save_per_frame);
 
 private:
     /// clear scene node memory

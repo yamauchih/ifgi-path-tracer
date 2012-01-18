@@ -46,7 +46,8 @@ class Camera(object):
         self.__ex    = numpy.array([1, 0,  0])
         # y direction base vector
         self.__ey    = numpy.array([0, 1,  0])
-
+        self.__resolution_x = 128
+        self.__resolution_y = 64
         # films: framebuffer
         self.__film = {}
 
@@ -243,6 +244,37 @@ class Camera(object):
 
         return [ex, ey, self.__view_dir]
 
+
+    def set_resolution_x(self, _res_x):
+        """set resolution x.
+        \param[in] _res_x resolution x
+        """
+        assert(_res_x > 0)
+        self.__resolution_x = _res_x
+
+
+    def get_resolution_x(self):
+        """get resolution x.
+        \return get resolution x
+        """
+        return self.__resolution_x
+
+
+    def set_resolution_y(self, _res_y):
+        """set resolution y.
+        \param[in] _res_y resolution y
+        """
+        assert(_res_y > 0)
+        self.__resolution_y = _res_y
+
+
+    def get_resolution_y(self):
+        """get resolution y.
+        \return get resolution y
+        """
+        return self.__resolution_y
+
+
     # get target (lookat point) distance
     def get_target_distance(self):
         """get target (lookat point) distance.
@@ -396,6 +428,9 @@ class Camera(object):
         self.__LB_corner    = _othercam.__LB_corner
         self.__ex           = _othercam.__ex
         self.__ey           = _othercam.__ey
+        self.__resolution_x = _othercam.__resolution_x
+        self.__resolution_y = _othercam.__resolution_y
+
 
 
     # for debug
@@ -419,6 +454,8 @@ class Camera(object):
         print '#' + cname + '::LB_corner = ' + str(self.__LB_corner)
         print '#' + cname + '::ex = '      + str(self.__ex)
         print '#' + cname + '::ey = '      + str(self.__ey)
+        print '#' + cname + '::resolution_x = ' + str(self.__resolution_x)
+        print '#' + cname + '::resolution_y = ' + str(self.__resolution_y)
         print '#' + cname + '::film = '    + str(self.__film)
 
     # get html info
@@ -446,7 +483,9 @@ class Camera(object):
             '  <li>Left bottom corner: ' + str(self.__LB_corner)  + '\n' +\
             '  <li>ex (film x dir): ' + str(self.__ex)   + '\n' +\
             '  <li>ey (film y dir): ' + str(self.__ey)   + '\n' +\
-            '  <li>ey (films): '      + str(self.__film) + '\n' +\
+            '  <li>resolution x: '    + str(self.__resolution_x) + '\n' +\
+            '  <li>resolution y: '    + str(self.__resolution_y) + '\n' +\
+            '  <li>films: '           + str(self.__film) + '\n' +\
             '</ul>\n'
         return ret_s
 
@@ -467,7 +506,9 @@ class Camera(object):
             'target_dist',
             'focal_length',
             'lens_screen_dist',
-            'lens_film_dist'
+            'lens_film_dist',
+            'resolution_x',
+            'resolution_y'
             ]
         return param_list
 
@@ -487,7 +528,9 @@ class Camera(object):
             'target_dist':      'float',
             'focal_length':     'float',
             'lens_screen_dist': 'float',
-            'lens_film_dist':   'float'
+            'lens_film_dist':   'float',
+            'resolution_x':     'int',
+            'resolution_y':     'int'
             }
         return typename_dict
 
@@ -572,7 +615,9 @@ class Camera(object):
             'target_dist':      str(new_cam.get_target_distance()),
             'focal_length':     str(new_cam.get_focal_length()),
             'lens_screen_dist': str(new_cam.get_lens_to_screen_distance()),
-            'lens_film_dist':   str(new_cam.get_lens_to_film_distance())
+            'lens_film_dist':   str(new_cam.get_lens_to_film_distance()),
+            'resolution_x':     str(new_cam.get_resolution_x()),
+            'resolution_y':     str(new_cam.get_resolution_y())
             }
         return value_dict
 

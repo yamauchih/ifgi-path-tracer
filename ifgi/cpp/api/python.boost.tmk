@@ -82,7 +82,9 @@ foreach bname $PROJLIB_LIST {
 }
 
 set MOD_OBJ_FILE "$COMPILE_OBJ_DIR/${MOD_CPP_SOURCE_BASE}.o"
-set COMP_COM "g++ -DPIC -shared -fPIC -o ${MOD_CPP_SOURCE_BASE}.so ${MOD_OBJ_FILE} ${PROJLIB_OPT_STR} -lboost_python"
+
+# We don't know the projlib's dependency, so just link twice.
+set COMP_COM "g++ -DPIC -shared -fPIC -o ${MOD_CPP_SOURCE_BASE}.so ${MOD_OBJ_FILE} ${PROJLIB_OPT_STR} ${PROJLIB_OPT_STR} -lboost_python"
 
 # puts ${python.boost::COMP_COM}
 set BUILD_SH "build_mod.sh"

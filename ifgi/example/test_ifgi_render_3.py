@@ -51,9 +51,10 @@ class TestIfgiRender3(unittest.TestCase):
         self.__create_scene()
 
         # render frames
+        self.__ifgi_cpp_render_core.prepare_rendering()
         max_frame      = 2000
         save_per_frame = 50
-        self.__ifgi_cpp_render_core.render_all_frame(max_frame, save_per_frame)
+        self.__ifgi_cpp_render_core.render_n_frame(max_frame, save_per_frame)
 
         ifgi_stat = self.__ifgi_cpp_render_core.inst.shutdown()
 

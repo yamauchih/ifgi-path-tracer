@@ -9,6 +9,7 @@ lookup material in the SceneDB
 *** DONE push the TriMesh to C++ code.
 
 ** TODO cpp implementation
+*** add camera resolution, Fix PyQt examiner camera param, Fix the example renderer, not use the image_size
 *** ifgi_cpp_render.cpp Add framebuffers to the camera
 *** render_frame, render_single_frame, save_frame
 
