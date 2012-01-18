@@ -274,6 +274,13 @@ int IfgiCppRender::initialize()
 }
 
 //----------------------------------------------------------------------
+// shutdown
+int IfgiCppRender::shutdown()
+{
+    return 0;
+}
+
+//----------------------------------------------------------------------
 // create a new scene.
 void IfgiCppRender::create_scene(boost::python::object const & mat_dict_list,
                                  boost::python::object const & geom_dict_list,
@@ -291,7 +298,6 @@ void IfgiCppRender::create_scene(boost::python::object const & mat_dict_list,
     p_rootsg->append_child(p_mat_group_node);
     this->add_material_to_scene(p_mat_group_node, mat_dict_list);
 
-    // NIN FIXME
     // geometry
     SceneGraphNode * p_mesh_group_node = new SceneGraphNode("meshgroup");
     SceneDB::instance()->store_sgnode(p_mesh_group_node);
@@ -337,6 +343,37 @@ boost::python::object IfgiCppRender::get_camera_pydict() const
     Dictionary const cpp_dict = m_camera.get_config_dict();
 
     return get_pydict_from_cpp_dictionary(cpp_dict);
+}
+
+//----------------------------------------------------------------------
+// prepare rendering
+int IfgiCppRender::prepare_rendering()
+{
+    // put framebuffers
+    this->setup_framebuffer();
+
+    return 0;
+}
+
+//----------------------------------------------------------------------
+// render frame
+int IfgiCppRender::render_frame(Sint32 max_frame, Sint32 save_per_frame)
+{
+    assert(max_frame > 0);
+    assert(save_per_frame > 0);
+
+    for(int i = 0; i < max_frame; ++i){
+        this->render_single_frame();
+        std::stringstream sstr;
+        sstr << "frame: " << i;
+        ILog::instance()->info(sstr.str());
+        if((i != 0) && ((i % save_per_frame) == 0)){
+            this->save_frame(i);
+        }
+    }
+    this->save_frame(0);
+
+    return 0;
 }
 
 //----------------------------------------------------------------------
@@ -490,6 +527,29 @@ void IfgiCppRender::add_one_geometry_to_scene(
     SGPrimitiveNode * p_ch_node = new SGPrimitiveNode(geo_name, p_tmesh);
     m_p_sgnode_vec.push_back(p_ch_node); // owner: keep the reference
     p_mesh_group_node->append_child(p_ch_node);
+}
+
+//----------------------------------------------------------------------
+// set up framebuffer in the camera
+void IfgiCppRender::setup_framebuffer()
+{
+    std::cerr << "IfgiCppRender::setup_framebuffer: NIN" << std::endl;
+}
+
+//----------------------------------------------------------------------
+// render single frame.
+Sint32 IfgiCppRender::render_single_frame()
+{
+    std::cerr << "IfgiCppRender::render_single_frame: NIN" << std::endl;
+    return 1;
+}
+
+//----------------------------------------------------------------------
+// save a frame
+Sint32 IfgiCppRender::save_frame(Sint32 frame_count)
+{
+    std::cerr << "IfgiCppRender::sace_frame: NIN" << std::endl;
+    return 1;
 }
 
 //----------------------------------------------------------------------

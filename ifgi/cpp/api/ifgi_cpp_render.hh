@@ -52,7 +52,11 @@ public:
 
     /// initialize ifgi
     /// \return 0 when succeeded
-    int initialize();
+    Sint32 initialize();
+
+    /// shutdown
+    /// \return shutdown state. 0 ... success
+    Sint32 shutdown();
 
     /// clear the scene
     void clear_scene();
@@ -90,6 +94,18 @@ public:
     /// \return get current camera
     boost::python::object get_camera_pydict() const;
 
+    /// prepare rendering
+    ///
+    /// \return preparation status. 0 ... success.
+    Sint32 prepare_rendering();
+
+    /// render frame
+    ///
+    /// \param[in] max_frame max number of frames to render by this call
+    /// \param[in] save_per_frame save a frame each save_per_frame
+    /// \return rendering status. 0 ... success
+    Sint32 render_frame(Sint32 max_frame, Sint32 save_per_frame);
+
 private:
     /// clear scene node memory
     void clear_node_memory();
@@ -118,6 +134,19 @@ private:
         SceneGraphNode * p_mesh_group_node,
         boost::python::dict const & geom_pydict);
 
+    /// set up framebuffer in the camera
+    void setup_framebuffer();
+
+    /// render single frame.
+    ///
+    /// \return rendering status. 0 ... success
+    Sint32 render_single_frame();
+
+    /// save a frame
+    ///
+    /// \param[in] frame_count frame counter for this save.
+    /// \return rendering status. 0 ... success
+    Sint32 save_frame(Sint32 frame_count);
 
 private:
     /// geometry, reference to the trimesh, vector

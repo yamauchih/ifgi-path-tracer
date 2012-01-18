@@ -43,23 +43,19 @@ class TestIfgiRender3(unittest.TestCase):
         self.__image_ysize = 50
         self.__max_path_length = 10 # 2...for direct light only
 
-        # members
-        # self.__scenegraph = None
-
-        # global geometry/material list
-        # self.__scene_geo_mat = SceneUtil.SceneGeometryMaterialContainer()
+        # C++ rendering core. This core includes scenegraph, material,
+        # primitives...
+        self.__ifgi_cpp_render_core = ifgi_cpp_render_mod.ifgi_cpp_render()
+        self.__ifgi_cpp_render_core.initialize()
 
         self.__create_scene()
 
-        # get environment material from the scene
-        # self.__environment_mat = self.__retrieve_environment_material_from_scene()
+        # render frames
+        max_frame      = 2000
+        save_per_frame = 50
+        self.__ifgi_cpp_render_core.render_all_frame(max_frame, save_per_frame)
 
-        # # reder frames
-        # max_frame      = 2000
-        # save_per_frame = 50
-        # self.__render_all_frame(max_frame, save_per_frame)
-
-        # ifgi_stat = ifgi_inst.shutdown()
+        ifgi_stat = self.__ifgi_cpp_render_core.inst.shutdown()
 
 
     def __create_scene(self):
@@ -68,46 +64,28 @@ class TestIfgiRender3(unittest.TestCase):
         """
 
         print 'creating a scene'
-
         # create scenegraph by the ifgi scene parser
-
         _infilepath = '../../sampledata/cornel_box.ifgi'
         ifgireader = IfgiSceneReader.IfgiSceneReader()
         if(not ifgireader.read(_infilepath)):
             raise StandardError, ('load file [' + _infilepath + '] failed.')
 
-        ifgi_cpp_render_core = ifgi_cpp_render_mod.ifgi_cpp_render()
-
-        ifgi_cpp_render_core.initialize()
-
         # add a new scene
-
-        #   may have many cameras, but not yet handled
+        #   A ifgi file may have many cameras, but only default camera
+        #   is handled.
         cam_dict = ifgireader.camera_dict_dict['default']
-        ifgi_cpp_render_core.create_scene(ifgireader.material_dict_list,\
-                                              ifgireader.geometry_dict_list,\
-                                              cam_dict)
-        print cam_dict
+        assert(self.__ifgi_cpp_render_core != None)
+        self.__ifgi_cpp_render_core.create_scene(ifgireader.material_dict_list,\
+                                                     ifgireader.geometry_dict_list,\
+                                                     cam_dict)
+        # check the camera correctly pushed
+        # print cam_dict
         # dir(ifgi_cpp_render_core)
-        ret_cam_dict = ifgi_cpp_render_core.get_camera_pydict()
-        print ret_cam_dict
+        # ret_cam_dict = ifgi_cpp_render_core.get_camera_pydict()
+        # print ret_cam_dict
 
-        # self.__scenegraph = SceneGraph.create_ifgi_scenegraph(ifgireader)
         # self.__scenegraph.update_all_bbox()
-
-        # # create the global material_name -> material lookup map
-        # self.__scene_geo_mat.append_ifgi_data(ifgireader)
-        # self.__scene_geo_mat.print_summary()
-
-        # # -- now all primitive (TriMesh) can look up the material
-
-        # # set the camera
-        # # default camera should exist
-        # print ifgireader.camera_dict_dict
-        # assert('default' in ifgireader.camera_dict_dict)
-
-        # cur_cam = self.__scenegraph.get_current_camera()
-        # cur_cam.set_config_dict(ifgireader.camera_dict_dict['default'])
+        # -- now all primitive (TriMesh) can look up the material
 
         # # added RGBA buffer and Hit buffer to the current camera.
         # imgsz = (self.__image_xsize, self.__image_ysize, 4)

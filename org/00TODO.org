@@ -1,14 +1,16 @@
-* Task ifgi path tracer 2012-1-10(Tue)
+* Task ifgi path tracer 2012-1-18(Wed)
 
 ** top5
 
 ** 2012-1-9(Mon)-
 *** DONE MaterialFactory, Dictionary, complete DiffuseMaterial, EnvironmentMaterial
 lookup material in the SceneDB
+** 2012-1-18(Wed)
+*** DONE push the TriMesh to C++ code.
 
 ** TODO cpp implementation
-*** push the TriMesh.
-*** ImageFilm, Camera
+*** ifgi_cpp_render.cpp Add framebuffers to the camera
+*** render_frame, render_single_frame, save_frame
 
 ** TODO Install
 *** Eclipse (on new machine)
