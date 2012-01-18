@@ -223,7 +223,8 @@ bool convert_py_trimesh_to_cpp_trimesh(boost::python::object const & pytrimesh,
         boost::python::object const f32_3_list = pytrimesh.attr(p_f32_3_attr_name[i]);
         boost::python::extract< boost::python::list > f32_3_ext(f32_3_list);
         if(!f32_3_ext.check()){
-            throw Exception(std::string("pytrimesh has no [") + p_f32_3_attr_name[i] + "]");
+            throw Exception(std::string("pytrimesh has no [") +
+                            p_f32_3_attr_name[i] + "]");
         }
         get_vector_float32_3(f32_3_ext(), f32_3_vec[i]);
     }
@@ -232,7 +233,8 @@ bool convert_py_trimesh_to_cpp_trimesh(boost::python::object const & pytrimesh,
         boost::python::object const s32_3_list = pytrimesh.attr(p_s32_3_attr_name[i]);
         boost::python::extract< boost::python::list > s32_3_ext(s32_3_list);
         if(!s32_3_ext.check()){
-            throw Exception(std::string("pytrimesh has no [") + p_s32_3_attr_name[i] + "]");
+            throw Exception(std::string("pytrimesh has no [") +
+                            p_s32_3_attr_name[i] + "]");
         }
         get_vector_sint32_3(s32_3_ext(), s32_3_vec[i]);
     }
@@ -454,8 +456,8 @@ void IfgiCppRender::add_one_geometry_to_scene(
     // check all the expected keys are there
     char const * p_mandatory_key[] = { "geo_name",
                                        "material",
-                                       "geo_file_type",
-                                       "geo_file_name",
+                                       "geo_file_type", // currently discarded
+                                       "geo_file_name", // currently discarded
                                        "TriMesh",
                                        0};
     std::vector< std::string > undef_keys;
@@ -471,12 +473,21 @@ void IfgiCppRender::add_one_geometry_to_scene(
     m_p_trimesh_vec.push_back(p_tmesh); // owner: keep the reference
     convert_py_trimesh_to_cpp_trimesh(geom_pydict["TriMesh"], p_tmesh);
 
+    std::string const mat_name = geom_cpp_dict.get< std::string >("material");
+    std::string const geo_name = geom_cpp_dict.get< std::string >("geo_name");
+    Sint32 const matidx = SceneDB::instance()->
+        get_material_index_by_name(mat_name);
+    if(matidx < 0){
+        ILog::instance()->warn(mat_name + " is not found in SceneDB. [" +
+                               geo_name + "] has no material reference.");
+    }
+    p_tmesh->set_material_index(matidx);
+
     std::cout << "DEBUG: trimesh info\n"
               << p_tmesh->get_info_summary() << std::endl;
 
     // this class has the ownership of scenegraph nodes
-    SGPrimitiveNode * p_ch_node =
-        new SGPrimitiveNode(geom_cpp_dict.get< std::string >("geo_name"), p_tmesh);
+    SGPrimitiveNode * p_ch_node = new SGPrimitiveNode(geo_name, p_tmesh);
     m_p_sgnode_vec.push_back(p_ch_node); // owner: keep the reference
     p_mesh_group_node->append_child(p_ch_node);
 }
