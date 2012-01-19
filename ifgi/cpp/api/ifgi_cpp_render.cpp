@@ -534,7 +534,6 @@ void IfgiCppRender::add_one_geometry_to_scene(
 void IfgiCppRender::setup_framebuffer()
 {
     // from camera
-    
 
     std::cerr << "IfgiCppRender::setup_framebuffer: NIN" << std::endl;
 }
@@ -551,7 +550,7 @@ Sint32 IfgiCppRender::render_single_frame()
 // save a frame
 Sint32 IfgiCppRender::save_frame(Sint32 frame_count)
 {
-    std::cerr << "IfgiCppRender::sace_frame: NIN" << std::endl;
+    std::cerr << "IfgiCppRender::save_frame: NIN" << std::endl;
     return 1;
 }
 

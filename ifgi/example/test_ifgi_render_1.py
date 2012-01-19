@@ -34,6 +34,7 @@ class TestIfgiRender1(unittest.TestCase):
         ifgi_stat = ifgi_inst.start()
         assert(ifgi_stat == True)
 
+        # change the camera resolution to this size 
         self.__image_xsize = 32
         self.__image_ysize = 32
 
@@ -81,9 +82,16 @@ class TestIfgiRender1(unittest.TestCase):
 
         cur_cam = self.__scenegraph.get_current_camera()
         cur_cam.set_config_dict(ifgireader.camera_dict_dict['default'])
+        print 'resize the camera resolution from ['    +\
+            str(cur_cam.get_resolution_x())  + ' '     +\
+            str(cur_cam.get_resolution_y())  + '] -> ' +\
+            str(self.__image_xsize)  + ' '     +\
+            str(self.__image_ysize)  + ']'
+        cur_cam.set_resolution_x(self.__image_xsize)
+        cur_cam.set_resolution_y(self.__image_ysize)
 
         # added RGBA buffer and Hit buffer to the current camera.
-        imgsz = (self.__image_xsize, self.__image_ysize, 4)
+        imgsz = (cur_cam.get_resolution_x(), cur_cam.get_resolution_y(), 4)
         cur_cam.set_film('Hit',     Film.ImageFilm(imgsz, 'Hit'))
         cur_cam.set_film('RGBA',    Film.ImageFilm(imgsz, 'RGBA'))
         cur_cam.set_film('Zbuffer', Film.ImageFilm(imgsz, 'Zbuffer'))
@@ -117,18 +125,20 @@ class TestIfgiRender1(unittest.TestCase):
 
     # render a frame
     def __render_frame(self):
-        srs = Sampler.StratifiedRegularSampler()
-        srs.compute_sample(0, self.__image_xsize - 1, 0, self.__image_ysize - 1)
-
-        assert(self.__image_xsize > 0)
-        assert(self.__image_ysize > 0)
-
-        inv_xsz = 1.0/self.__image_xsize
-        inv_ysz = 1.0/self.__image_ysize
         cur_cam = self.__scenegraph.get_current_camera()
+        image_xsize = cur_cam.get_resolution_x()
+        image_ysize = cur_cam.get_resolution_y()
+        assert(image_xsize > 0)
+        assert(image_ysize > 0)
 
-        for x in xrange(0, self.__image_xsize, 1):
-            for y in xrange(0, self.__image_ysize, 1):
+        srs = Sampler.StratifiedRegularSampler()
+        srs.compute_sample(0, image_xsize - 1, 0, image_ysize - 1)
+
+        inv_xsz = 1.0/image_xsize
+        inv_ysz = 1.0/image_ysize
+
+        for x in xrange(0, image_xsize, 1):
+            for y in xrange(0, image_ysize, 1):
                 # get normalized coordinate
                 nx = srs.get_sample_x(x,y) * inv_xsz
                 ny = srs.get_sample_y(x,y) * inv_ysz

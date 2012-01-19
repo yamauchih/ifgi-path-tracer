@@ -249,8 +249,8 @@ class Camera(object):
         """set resolution x.
         \param[in] _res_x resolution x
         """
-        assert(_res_x > 0)
-        self.__resolution_x = _res_x
+        assert(int(_res_x) > 0)
+        self.__resolution_x = int(_res_x)
 
 
     def get_resolution_x(self):
@@ -264,8 +264,8 @@ class Camera(object):
         """set resolution y.
         \param[in] _res_y resolution y
         """
-        assert(_res_y > 0)
-        self.__resolution_y = _res_y
+        assert(int(_res_y) > 0)
+        self.__resolution_y = int(_res_y)
 
 
     def get_resolution_y(self):
@@ -529,8 +529,8 @@ class Camera(object):
             'focal_length':     'float',
             'lens_screen_dist': 'float',
             'lens_film_dist':   'float',
-            'resolution_x':     'int',
-            'resolution_y':     'int'
+            'resolution_x':     'float',
+            'resolution_y':     'float'
             }
         return typename_dict
 

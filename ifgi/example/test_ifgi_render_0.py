@@ -109,9 +109,11 @@ class TestIfgiRender0(unittest.TestCase):
         cur_cam.set_up_dir(up_dir)
         cur_cam.set_z_near(0.01)
         cur_cam.set_z_far(5000.0)
+        cur_cam.set_resolution_x(self._image_xsize)
+        cur_cam.set_resolution_y(self._image_ysize)
 
         # added RGBA buffer to the current camera.
-        imgsz = (self._image_xsize, self._image_ysize, 4)
+        imgsz = (cur_cam.get_resolution_x(), cur_cam.get_resolution_y(), 4)
         cur_cam.set_film('Hit',  Film.ImageFilm(imgsz, 'Hit'))
         cur_cam.print_obj()
 
@@ -131,18 +133,22 @@ class TestIfgiRender0(unittest.TestCase):
 
     # render a frame
     def __render_frame(self):
+        cur_cam = self.__scenegraph.get_current_camera()
+        image_xsize = cur_cam.get_resolution_x()
+        image_ysize = cur_cam.get_resolution_y()
+
         srs = Sampler.StratifiedRegularSampler()
-        srs.compute_sample(0, self._image_xsize - 1, 0, self._image_ysize - 1)
+        srs.compute_sample(0, image_xsize - 1, 0, image_ysize - 1)
 
-        assert(self._image_xsize > 0)
-        assert(self._image_ysize > 0)
+        assert(image_xsize > 0)
+        assert(image_ysize > 0)
 
-        inv_xsz = 1.0/self._image_xsize
-        inv_ysz = 1.0/self._image_ysize
+        inv_xsz = 1.0/image_xsize
+        inv_ysz = 1.0/image_ysize
         cur_cam = self.__scenegraph.get_current_camera()
 
-        for x in xrange(0, self._image_xsize, 1):
-            for y in xrange(0, self._image_ysize, 1):
+        for x in xrange(0, image_xsize, 1):
+            for y in xrange(0, image_ysize, 1):
                 # get normalized coordinate
                 nx = srs.get_sample_x(x,y) * inv_xsz
                 ny = srs.get_sample_y(x,y) * inv_ysz

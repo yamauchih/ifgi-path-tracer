@@ -56,7 +56,7 @@ class TestIfgiRender3(unittest.TestCase):
         save_per_frame = 50
         self.__ifgi_cpp_render_core.render_n_frame(max_frame, save_per_frame)
 
-        ifgi_stat = self.__ifgi_cpp_render_core.inst.shutdown()
+        ifgi_stat = self.__ifgi_cpp_render_core.shutdown()
 
 
     def __create_scene(self):
@@ -75,6 +75,15 @@ class TestIfgiRender3(unittest.TestCase):
         #   A ifgi file may have many cameras, but only default camera
         #   is handled.
         cam_dict = ifgireader.camera_dict_dict['default']
+        print 'resize the camera resolution from ['    +\
+            str(cam_dict['resolution_x'])  + ' '     +\
+            str(cam_dict['resolution_y'])  + '] -> ' +\
+            str(self.__image_xsize)  + ' '     +\
+            str(self.__image_ysize)  + ']'
+        cam_dict['resolution_x'] = self.__image_xsize
+        cam_dict['resolution_y'] = self.__image_ysize
+
+
         assert(self.__ifgi_cpp_render_core != None)
         self.__ifgi_cpp_render_core.create_scene(ifgireader.material_dict_list,\
                                                      ifgireader.geometry_dict_list,\
