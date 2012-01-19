@@ -625,6 +625,14 @@ void Camera::set_config_dict(Dictionary const & dict)
     if(dict.is_defined("lens_film_dist")){
         this->set_lens_to_film_distance(dict.get< Float32 >("lens_film_dist"));
     }
+
+    if(dict.is_defined("resolution_x")){
+        this->set_lens_to_film_distance(dict.get< Sint32 >("resolution_x"));
+    }
+
+    if(dict.is_defined("resolution_y")){
+        this->set_lens_to_film_distance(dict.get< Sint32 >("resolution_y"));
+    }
 }
 
 //----------------------------------------------------------------------

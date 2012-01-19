@@ -20,7 +20,7 @@ from ifgi.base    import Sampler
 from ifgi.ptracer import IfgiSys
 from ifgi.scene   import SceneGraph, Primitive, Film, test_scene_util, IfgiSceneReader
 from ifgi.scene   import SceneUtil
-from ifgi.cpp.api import ifgi_cpp_render_mod
+from ifgi.cpp.api import ifgi_python_cpp_translator_mod
 
 
 class TestIfgiRender3(unittest.TestCase):
@@ -43,9 +43,10 @@ class TestIfgiRender3(unittest.TestCase):
         self.__image_ysize = 50
         self.__max_path_length = 10 # 2...for direct light only
 
-        # C++ rendering core. This core includes scenegraph, material,
-        # primitives...
-        self.__ifgi_cpp_render_core = ifgi_cpp_render_mod.ifgi_cpp_render()
+        # C++ rendering translator. This translator has a cpp
+        # rendering core which has scenegraph, material, primitives...
+        self.__ifgi_cpp_render_core = \
+            ifgi_python_cpp_translator_mod.ifgi_python_cpp_translator()
         self.__ifgi_cpp_render_core.initialize()
 
         self.__create_scene()

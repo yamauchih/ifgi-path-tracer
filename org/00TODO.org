@@ -2,14 +2,18 @@
 
 ** top5
 
-** 2012-1-9(Mon)-
+** 2012-1-9(Mon)
 *** DONE MaterialFactory, Dictionary, complete DiffuseMaterial, EnvironmentMaterial
 lookup material in the SceneDB
 ** 2012-1-18(Wed)
-*** DONE push the TriMesh to C++ code.
+*** DONE push the TriMesh to C++ code. add camera resolution, Fix the example renderer.
+
 
 ** TODO cpp implementation
-*** add camera resolution, Fix PyQt examiner camera param, Fix the example renderer, not use the image_size
+*** Separate python -> cpp translator and rendering core library
+**** python module: ifgi_python_cpp_mod
+**** python -> cpp: translator ifgi_python_cpp. Translator has the ifgi_render
+**** rendering core: ifgi_cpp_render
 *** ifgi_cpp_render.cpp Add framebuffers to the camera
 *** render_frame, render_single_frame, save_frame
 

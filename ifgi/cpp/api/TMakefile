@@ -11,13 +11,13 @@
 module { cxx }
 
 # the python module name
-set MOD_CPP_SOURCE_BASE ifgi_cpp_render_mod
+set MOD_CPP_SOURCE_BASE ifgi_python_cpp_translator_mod
 
 # linking project directory. relative to PROJROOT
 set PROJLIB_LIST { cpp/base cpp/scene cpp/api }
 
 module { python.boost python.boost_config }
 
-
+lappend EXCLUDE ifgi_cpp_render.cpp
 
 
