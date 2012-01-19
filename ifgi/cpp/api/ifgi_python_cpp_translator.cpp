@@ -16,17 +16,17 @@
 #include <boost/python/str.hpp>
 
 // DELETEME The following should not be here
-#include <cpp/base/Exception.hh>
-#include <cpp/base/ILog.hh>
-#include <cpp/scene/SceneGraphNode.hh>
-#include <cpp/scene/SceneDB.hh>
-#include <cpp/scene/MaterialFactory.hh>
-#include <cpp/scene/SGMaterialNode.hh>
-#include <cpp/scene/SGPrimitiveNode.hh>
+// #include <cpp/base/ILog.hh>
+// #include <cpp/scene/SceneGraphNode.hh>
+// #include <cpp/scene/SceneDB.hh>
+// #include <cpp/scene/MaterialFactory.hh>
+// #include <cpp/scene/SGMaterialNode.hh>
+// #include <cpp/scene/SGPrimitiveNode.hh>
 #include <cpp/scene/TriMesh.hh>
 
 // ifgi side
 #include "ifgi_cpp_render.hh"
+#include <cpp/base/Exception.hh>
 
 namespace ifgi {
 
@@ -312,6 +312,9 @@ void IfgiPythonCppTranslator::create_scene(boost::python::object const & mat_dic
                                            boost::python::object const & camera_pydict)
 {
     assert(m_p_render_core != 0);
+
+    m_p_render_core->create_simple_scenegraph();
+
     // // create simple scenegraph structure
     // SceneGraphNode * p_rootsg = new SceneGraphNode("rootsg");
     // SceneDB::instance()->store_sgnode(p_rootsg);
@@ -321,14 +324,17 @@ void IfgiPythonCppTranslator::create_scene(boost::python::object const & mat_dic
     // SceneDB::instance()->store_sgnode(p_mat_group_node);
 
     // p_rootsg->append_child(p_mat_group_node);
-    // this->add_material_to_scene(p_mat_group_node, mat_dict_list);
 
-    // // geometry
     // SceneGraphNode * p_mesh_group_node = new SceneGraphNode("meshgroup");
     // SceneDB::instance()->store_sgnode(p_mesh_group_node);
-
     // p_rootsg->append_child(p_mesh_group_node);
 
+    // DELETEME
+
+    // add materials
+    this->add_material_to_scene(mat_dict_list);
+
+    // add geometries
     // HEREHERE missing material index reference. 2012-1-17(Tue)
 
     // this->add_geometry_to_scene(p_mesh_group_node, geom_dict_list);
@@ -458,10 +464,10 @@ void IfgiPythonCppTranslator::clear_scene()
 //----------------------------------------------------------------------
 // add material to the scene
 void IfgiPythonCppTranslator::add_material_to_scene(
-    SceneGraphNode * p_mat_group_node,
+    // DELETEME SceneGraphNode * p_mat_group_node,
     boost::python::object const & mat_dict_list)
 {
-    assert(p_mat_group_node != 0);
+    assert(m_p_render_core != 0);
 
     // convert to cpp dictionary vector
     std::vector< Dictionary > mat_dict_vec;
@@ -470,21 +476,22 @@ void IfgiPythonCppTranslator::add_material_to_scene(
     for(std::vector< Dictionary >::const_iterator di = mat_dict_vec.begin();
         di != mat_dict_vec.end(); ++di)
     {
-        IMaterial * p_mat = new_material_factory(*di);
-        SGMaterialNode * p_ch_mat_sgnode =
-            new SGMaterialNode("matnode::" + p_mat->get_material_name());
-        p_ch_mat_sgnode->set_material(p_mat);
-        SceneDB::instance()->store_sgnode(p_ch_mat_sgnode);
+        m_p_render_core->add_material_to_scene_by_dict(*di);
+        // IMaterial * p_mat = new_material_factory(*di);
+        // SGMaterialNode * p_ch_mat_sgnode =
+        //     new SGMaterialNode("matnode::" + p_mat->get_material_name());
+        // p_ch_mat_sgnode->set_material(p_mat);
+        // SceneDB::instance()->store_sgnode(p_ch_mat_sgnode);
 
-        // put it under the material groupnode.
-        // But currently this is not used. Material lookup through the
-        // SceneDB.
-        p_mat_group_node->append_child(p_ch_mat_sgnode);
+        // // put it under the material groupnode.
+        // // But currently this is not used. Material lookup through the
+        // // SceneDB.
+        // p_mat_group_node->append_child(p_ch_mat_sgnode);
 
-        ILog::instance()->
-            debug("IfgiPythonCppTranslator::add_material_to_scene: "
-                  "added material " + p_mat->get_classname() + "::" +
-                  p_mat->get_material_name() + "\n");
+        // ILog::instance()->
+        //     debug("IfgiPythonCppTranslator::add_material_to_scene: "
+        //           "added material " + p_mat->get_classname() + "::" +
+        //           p_mat->get_material_name() + "\n");
     }
 }
 
@@ -566,31 +573,6 @@ void IfgiPythonCppTranslator::add_one_geometry_to_scene(
     // m_p_sgnode_vec.push_back(p_ch_node); // owner: keep the reference
     // p_mesh_group_node->append_child(p_ch_node);
 }
-
-//----------------------------------------------------------------------
-// set up framebuffer in the camera
-// void IfgiPythonCppTranslator::setup_framebuffer()
-// {
-//     assert(m_p_render_core != 0);
-//     m_p_render_core->setup_framebuffer();
-// }
-
-//----------------------------------------------------------------------
-// render single frame.
-// Sint32 IfgiPythonCppTranslator::render_single_frame()
-// {
-//     assert(m_p_render_core != 0);
-//     return m_p_render_core->render_single_frame();
-// }
-
-//----------------------------------------------------------------------
-// save a frame
-// Sint32 IfgiPythonCppTranslator::save_frame(Sint32 frame_count)
-// {
-//     assert(m_p_render_core != 0);
-//     return m_p_render_core->save_frame(frame_count);
-// }
-// DELETEME
 
 //----------------------------------------------------------------------
 } // namespace ifgi

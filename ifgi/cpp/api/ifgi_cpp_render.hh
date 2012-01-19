@@ -7,14 +7,9 @@
 #ifndef IFGI_PATH_TRACER_IFGI_CPP_API_IFGI_CPP_RENDER_HH
 #define IFGI_PATH_TRACER_IFGI_CPP_API_IFGI_CPP_RENDER_HH
 
-// NIN: This should never have boost python include!
-// #include <boost/python.hpp>
-// #include <boost/python/object.hpp>
-// DELETEME
 #include <vector>
 #include <map>
 
-// ifgi
 #include <cpp/base/Dictionary.hh>
 #include <cpp/scene/SceneGraph.hh>
 
@@ -24,23 +19,12 @@ class SceneGraph;
 class TriMesh;
 
 //----------------------------------------------------------------------
-/// append python dictionary list to cpp dictionary vector
-///
-/// \param[out] cpp_dictionary_vec (output) cpp dictionary vector. The
-/// entry will be appended to this vector.
-/// \param[in]  pydict_list python dictionary list
-// extern void append_pydict_list_to_dictionary_vec(
-//     std::vector< Dictionary > & cpp_dictionary_vec,
-//     boost::python::object const & pydict_list);
-// DELETEME
-
-//----------------------------------------------------------------------
 /// ifgi C++ rendering core interface
 ///
 /// Typical usage.
 /// - construct this object
 /// - initialize() this object
-/// - create_scene()
+/// - create_simple_scene()
 /// - set_camera_dict() ... may call several times
 /// - render()
 class IfgiCppRender
@@ -63,7 +47,11 @@ public:
     /// clear the scene
     void clear_scene();
 
-    /// create a new scene.
+    /// create a simple scenegraph structure.
+    ///
+    /// This scene has a fixed structure. Maybe one day, I will write
+    /// a flexible scene structure creation API. But for a while, I
+    /// will stick to this simple structure.
     ///
     /// SceneGraph structure.
     ///
@@ -79,12 +67,11 @@ public:
     ///                                                +--+ TriMesh: 'trimesh1'
     ///                                                   ...
     ///
-    /// \param[in] mat_dict_list  material dictionary list
-    /// \param[in] geom_dict_list geometry dictionary list
-    /// \param[in] camera_dict    camera dictionary
-    // void create_scene(boost::python::object const & mat_dict_list,
-    //                   boost::python::object const & geom_dict_list,
-    //                   boost::python::object const & camera_dict);
+    void create_simple_scenegraph();
+
+    /// add a material to the scene via Dictionary
+    void add_material_to_scene_by_dict(Dictionary const & mat_dict);
+
 
     /// set camera via a Dictionary. Replaced all the data.
     ///
@@ -159,6 +146,10 @@ private:
     SceneGraph m_scene_graph;
     /// current camera
     Camera m_camera;
+    /// material group node reference
+    SceneGraphNode * m_p_mat_group_node_ref;
+    /// mesh group node reference
+    SceneGraphNode * m_p_mesh_group_node_ref;
 };
 
 } // namespace ifgi

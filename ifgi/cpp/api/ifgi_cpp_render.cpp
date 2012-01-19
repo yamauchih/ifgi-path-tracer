@@ -7,15 +7,8 @@
 
 #include "ifgi_cpp_render.hh"
 
-// NIN: This should not have any boost python code.
-#include <boost/python/extract.hpp>
-#include <boost/python/list.hpp>
-#include <boost/python/dict.hpp>
-#include <boost/python/str.hpp>
-
 #include <stdexcept>
 #include <iostream>
-
 
 // ifgi side
 #include <cpp/base/Exception.hh>
@@ -28,233 +21,12 @@
 #include <cpp/scene/TriMesh.hh>
 
 namespace ifgi {
-
-//----------------------------------------------------------------------
-/// convert cpp Dictionary to python dict
-///
-/// \param[in] cpp_dict cpp Dictionary
-/// \return python dictionary, but all the value elements are python
-/// strings
-// boost::python::object get_pydict_from_cpp_dictionary(Dictionary const & cpp_dict)
-// {
-//     boost::python::dict pydict;
-//     for(Dictionary::const_iterator di = cpp_dict.begin(); di != cpp_dict.end(); ++di)
-//     {
-//         pydict[di->first] = di->second.get_string();
-//     }
-
-//     return pydict;
-// }
-
-//----------------------------------------------------------------------
-/// convert python dict to cpp Dictionary
-///
-/// \param[in] pydict python dict
-/// \return cpp dictionary, but all the value elements are python
-/// strings
-// Dictionary get_cpp_dictionary_from_pydict(boost::python::dict const & pydict)
-// {
-//     boost::python::list keylist = pydict.keys();
-//     Dictionary ret_cpp_dict;
-
-//     int const keylen = boost::python::len(keylist);
-//     for(int i = 0; i <  keylen; ++i){
-//         std::string const keystr =
-//             boost::python::extract< std::string >(boost::python::str(keylist[i]));
-//         // std::cout << "DEBUG: list[" << i << "]" << std::endl;
-
-//         // get value as a string
-//         std::string valstr =
-//             boost::python::extract< std::string >(
-//                 boost::python::str(pydict[keylist[i]]));
-//         // std::cout << "DEBUG:   key:[" << keystr << "]->["
-//         //           << valstr << "]" << std::endl;
-
-//         ret_cpp_dict.set(keystr, valstr);
-//     }
-//     return ret_cpp_dict;
-// }
-
-//----------------------------------------------------------------------
-// append python dictionary list to cpp dictionary vector
-// void append_pydict_list_to_dictionary_vec(
-//     std::vector< Dictionary > & cpp_dictionary_vec,
-//     boost::python::object const & pydict_list)
-// {
-//     // convert to the extracted object: list
-//     boost::python::extract< boost::python::list > cpp_list_ext(pydict_list);
-//     if(!cpp_list_ext.check()){
-//         throw std::runtime_error(
-//             "append_pydict_list_to_dictionary_vec: type error: "
-//             "pydict_list is not a list.");
-//     }
-
-//     boost::python::list cpp_dict_list = cpp_list_ext();
-//     int const len = boost::python::len(cpp_dict_list);
-//     // std::cout << "len(dict_list) = " << len << std::endl;
-//     for(int i = 0; i < len; ++i){
-//         boost::python::dict pydict =
-//             boost::python::extract< boost::python::dict >(cpp_dict_list[i]);
-//         Dictionary const converted_cppdict = get_cpp_dictionary_from_pydict(pydict);
-//         // converted_cppdict.write(std::cout, "DEBUG: CPP Dictionary: ");
-//         cpp_dictionary_vec.push_back(converted_cppdict);
-//     }
-// }
-
-//----------------------------------------------------------------------
-/// get Float32_3 from python numpy.array <type, numpy.float64>
-///
-/// \param[in] float32_3_obj python numpy.array <type, numpy.float64>,
-/// length 3 object
-/// \return Float32_3 vector
-// Float32_3 get_float32_3(boost::python::object const & float32_3_obj)
-// {
-//     if(boost::python::len(float32_3_obj) != 3){
-//         std::string const objstr =
-//             boost::python::extract< std::string >(
-//                 boost::python::str(float32_3_obj));
-//         throw Exception("get_float32_3: arg is not a float32_3 obj [" +
-//                         objstr + "]");
-//     }
-
-//     Float32_3 vec(0.0f, 0.0f, 0.0f);
-//     for(int i = 0; i < 3; ++i){
-//         vec[i] = boost::python::extract< float >(
-//             float32_3_obj.attr("__getitem__")(i));
-//     }
-
-//     return vec;
-// }
-
-//----------------------------------------------------------------------
-/// get Sint32_3 from python numpy.array <type, numpy.int64>
-///
-/// \param[in] sint32_3_obj python numpy.array <type, numpy.int64>,
-/// length 3 object
-/// \return Sint32_3 vector
-// Sint32_3 get_sint32_3(boost::python::object const & sint32_3_obj)
-// {
-//     if(boost::python::len(sint32_3_obj) != 3){
-//         std::string const objstr =
-//             boost::python::extract< std::string >(
-//                 boost::python::str(sint32_3_obj));
-//         throw Exception("get_sint32_3: arg is not a sint32_3 obj [" +
-//                         objstr + "]");
-//     }
-
-//     Sint32_3 vec(0, 0, 0);
-//     for(int i = 0; i < 3; ++i){
-//         // no conversion method of numpy.int64 is registered,
-//         // therefore, once converted object and call its conversion
-//         // attribute.
-//         boost::python::object int64_obj = sint32_3_obj.attr("__getitem__")(i);
-//         vec[i] = boost::python::extract< int >(
-//             int64_obj.attr("__int__")());
-
-//     }
-
-//     return vec;
-// }
-
-//----------------------------------------------------------------------
-/// get Float32_3 vector from python numpy.array <type, numpy.float64> list
-///
-/// \param[in] float32_3_list python numpy.array <type, numpy.float64>,
-/// length 3 object list
-/// \param[out] vec_float32_3 vector of Float32_3
-// void get_vector_float32_3(boost::python::list const & float32_3_list,
-//                           std::vector< Float32_3 > & vec_float32_3)
-// {
-//     // boost::python::extract< boost::python::list > flist_ext(float32_3_list);
-//     // assert(flist_ext.check());
-//     // boost::python::list const flist_cpp = flist_ext();
-//     int const len = boost::python::len(float32_3_list);
-//     for(int i = 0; i < len; ++i){
-//         Float32_3 const vec3 = get_float32_3(float32_3_list[i]);
-//         vec_float32_3.push_back(vec3);
-//     }
-// }
-
-//----------------------------------------------------------------------
-/// get Sint32_3 vector from python numpy.array <type, numpy.int64> list
-///
-/// \param[in] sint32_3_list python numpy.array <type, numpy.int64>,
-/// length 3 object list
-/// \param[out] vec_sint32_3 vector of Sint32_3
-// void get_vector_sint32_3(boost::python::list const & sint32_3_list,
-//                          std::vector< Sint32_3 > & vec_sint32_3)
-// {
-//     // boost::python::extract< boost::python::list > slist_ext(sint32_3_list);
-//     // assert(slist_ext.check());
-//     // boost::python::list const slist_cpp = slist_ext();
-//     int const len = boost::python::len(sint32_3_list);
-//     for(int i = 0; i < len; ++i){
-//         Sint32_3 const vec3 = get_sint32_3(sint32_3_list[i]);
-//         vec_sint32_3.push_back(vec3);
-//     }
-// }
-
-//----------------------------------------------------------------------
-/// convert python TriMesh to cpp TriMesh.
-// bool convert_py_trimesh_to_cpp_trimesh(boost::python::object const & pytrimesh,
-//                                        TriMesh * p_trimesh)
-// {
-//     assert(p_trimesh != 0);
-//     std::vector< Float32_3 > f32_3_vec[3];
-//     std::vector< Sint32_3 >  s32_3_vec[3];
-
-//     // access to the python TriMesh members
-
-//     // attribute names
-//     const char * p_f32_3_attr_name[] = {
-//         "vertex_list",
-//         "texcoord_list",
-//         "normal_list",
-//         0,
-
-//     };
-//     // attribute names
-//     const char * p_s32_3_attr_name[] = {
-//         "face_idx_list",
-//         "texcoord_idx_list",
-//         "normal_idx_list",
-//         0,
-//     };
-
-//     for(int i = 0; p_f32_3_attr_name[i] != 0; ++i){
-//         boost::python::object const f32_3_list = pytrimesh.attr(p_f32_3_attr_name[i]);
-//         boost::python::extract< boost::python::list > f32_3_ext(f32_3_list);
-//         if(!f32_3_ext.check()){
-//             throw Exception(std::string("pytrimesh has no [") +
-//                             p_f32_3_attr_name[i] + "]");
-//         }
-//         get_vector_float32_3(f32_3_ext(), f32_3_vec[i]);
-//     }
-
-//     for(int i = 0; p_s32_3_attr_name[i] != 0; ++i){
-//         boost::python::object const s32_3_list = pytrimesh.attr(p_s32_3_attr_name[i]);
-//         boost::python::extract< boost::python::list > s32_3_ext(s32_3_list);
-//         if(!s32_3_ext.check()){
-//             throw Exception(std::string("pytrimesh has no [") +
-//                             p_s32_3_attr_name[i] + "]");
-//         }
-//         get_vector_sint32_3(s32_3_ext(), s32_3_vec[i]);
-//     }
-
-//     p_trimesh->set_data(f32_3_vec[0],
-//                         s32_3_vec[0],
-//                         f32_3_vec[1],
-//                         s32_3_vec[1],
-//                         f32_3_vec[2],
-//                         s32_3_vec[2]);
-//     return true;
-// }
-
-//----------------------------------------------------------------------
-//======================================================================
 //----------------------------------------------------------------------
 // constructor
 IfgiCppRender::IfgiCppRender()
+    :
+    m_p_mat_group_node_ref(0),
+    m_p_mesh_group_node_ref(0)
 {
     // empty
 }
@@ -284,26 +56,29 @@ int IfgiCppRender::shutdown()
 
 //----------------------------------------------------------------------
 // create a new scene.
-// void IfgiCppRender::create_scene(boost::python::object const & mat_dict_list,
-//                                  boost::python::object const & geom_dict_list,
-//                                  boost::python::object const & camera_pydict)
-// {
-//     // create simple scenegraph structure
-//     SceneGraphNode * p_rootsg = new SceneGraphNode("rootsg");
-//     SceneDB::instance()->store_sgnode(p_rootsg);
+void IfgiCppRender::create_simple_scenegraph()
+{
+    if(m_scene_graph.peek_root_node() != 0){
+        throw Exception("The scene is not empty! Double creation?");
+    }
 
-//     // "materialgroup" is a special group.
-//     SceneGraphNode * p_mat_group_node = new SceneGraphNode("materialgroup");
-//     SceneDB::instance()->store_sgnode(p_mat_group_node);
+    // create simple scenegraph structure
+    SceneGraphNode * p_rootsg = new SceneGraphNode("rootsg");
+    SceneDB::instance()->store_sgnode(p_rootsg);
 
-//     p_rootsg->append_child(p_mat_group_node);
-//     this->add_material_to_scene(p_mat_group_node, mat_dict_list);
+    // "materialgroup" is a special group.
+    assert(m_p_mat_group_node_ref == 0);
+    m_p_mat_group_node_ref = new SceneGraphNode("materialgroup");
+    SceneDB::instance()->store_sgnode(m_p_mat_group_node_ref);
 
-//     // geometry
-//     SceneGraphNode * p_mesh_group_node = new SceneGraphNode("meshgroup");
-//     SceneDB::instance()->store_sgnode(p_mesh_group_node);
+    p_rootsg->append_child(m_p_mat_group_node_ref);
+    // DELETEME this->add_material_to_scene(p_mat_group_node, mat_dict_list);
 
-//     p_rootsg->append_child(p_mesh_group_node);
+    // geometry
+    m_p_mesh_group_node_ref = new SceneGraphNode("meshgroup");
+    SceneDB::instance()->store_sgnode(m_p_mesh_group_node_ref);
+
+    p_rootsg->append_child(m_p_mesh_group_node_ref);
 
 //     // HEREHERE missing material index reference. 2012-1-17(Tue)
 
@@ -312,7 +87,29 @@ int IfgiCppRender::shutdown()
 
 //     // camera
 //     this->set_camera_pydict(camera_pydict);
-// }
+}
+
+//----------------------------------------------------------------------
+// add a material to the scene via Dictionary
+void IfgiCppRender::add_material_to_scene_by_dict(Dictionary const & mat_dict)
+{
+    IMaterial * p_mat = new_material_factory(mat_dict);
+    SGMaterialNode * p_ch_mat_sgnode =
+        new SGMaterialNode("matnode::" + p_mat->get_material_name());
+    p_ch_mat_sgnode->set_material(p_mat);
+    SceneDB::instance()->store_sgnode(p_ch_mat_sgnode);
+
+    // put it under the material groupnode.
+    // But currently this is not used. Material lookup through the
+    // SceneDB.
+    assert(m_p_mat_group_node_ref != 0);
+    m_p_mat_group_node_ref->append_child(p_ch_mat_sgnode);
+
+    ILog::instance()->
+        debug("IfgiCppRender::add_material_to_scene_by_dict: "
+              "added material " + p_mat->get_classname() + "::" +
+              p_mat->get_material_name() + "\n");
+}
 
 //----------------------------------------------------------------------
 // set camera.

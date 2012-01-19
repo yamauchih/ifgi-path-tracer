@@ -23,8 +23,8 @@ namespace ifgi {
 class IfgiCppRender;
 
 // FIXME: necessary?
-class SceneGraph;
-class TriMesh;
+// class SceneGraph;
+// class TriMesh;
 
 //----------------------------------------------------------------------
 /// append python dictionary list to cpp dictionary vector
@@ -115,14 +115,14 @@ private:
     // void clear_node_memory();
     // /// clear trimesh memory
     // void clear_trimesh_memory();
-//DELETME
+    // DELETME
 
     /// add material to the scene
     /// \param[in] p_mat_group_node material group node. All the
     /// materials are this node's children.
     /// \param[in] mat_dict_list material python dict list
     void add_material_to_scene(
-        SceneGraphNode * p_mat_group_node,
+        // SceneGraphNode * p_mat_group_node,
         boost::python::object const & mat_dict_list);
 
     /// add geometry to the scene
