@@ -30,7 +30,9 @@ Camera::Camera()
     m_LB_corner(-1.0f, -1.0f,  0.0f),
     m_ex(1.0f, 0.0f,  0.0f),
     m_ey(0.0f, 1.0f,  0.0f),
-    m_ortho_width(1.0)
+    m_ortho_width(1.0),
+    m_resolution_x(64),
+    m_resolution_y(64)
     // films: framebuffer
     // m_film()
 {
@@ -318,22 +320,6 @@ void Camera::set_lens_to_film_distance(Float32 l2f_dist)
 // }
 // NIN
 
-// set a film.
-// \param[in] film_name the film name
-// \param[in] film       film instance
-// void set_film(_film_name, film)
-// {
-//     m_film[_film_name] = film;
-// }
-
-// get a film
-// \return film, exception if no film_name exists.
-// ImageFilm const & get_film(std::string const & film_name)
-// {
-//     return m_film[_film_name];
-// }
-// NIN
-
 //----------------------------------------------------------------------
 // set orthogonal projection width.
 void Camera::set_ortho_width(Float32 ortho_width)
@@ -347,6 +333,65 @@ Float32 Camera::get_ortho_width() const
 {
     return m_ortho_width;
 }
+
+//----------------------------------------------------------------------
+// set image resolution x
+void Camera::set_resolution_x(Sint32 res_x)
+{
+    assert(res_x > 0);
+    m_resolution_x = res_x;
+}
+
+//----------------------------------------------------------------------
+// get image resolution x
+Sint32 Camera::get_resolution_x() const
+{
+    return m_resolution_x;
+}
+
+//----------------------------------------------------------------------
+// get image resolution y
+void Camera::set_resolution_y(Sint32 res_y)
+{
+    assert(res_y > 0);
+    m_resolution_y = res_y;
+}
+
+//----------------------------------------------------------------------
+// get image resolution y
+Sint32 Camera::get_resolution_y() const
+{
+    return m_resolution_y;
+}
+
+//----------------------------------------------------------------------
+// set a film. The film is owned by this instance.
+void Camera::set_film(std::string const & film_name,
+                      ImageFilm * p_img_film)
+{
+    FilmMap::const_iterator fi = m_film_map.find(film_name);
+    if(fi != m_film_map.end()){
+        // already exists
+        throw Exception("The film [" + film_name + "] has been set.");
+    }
+    // This instance took the ownership.
+    m_film_map[film_name] = p_img_film;
+}
+
+//----------------------------------------------------------------------
+// peek a film
+ImageFilm * Camera::peek_film(std::string const & film_name)
+{
+    FilmMap::const_iterator fi = m_film_map.find(film_name);
+    if(fi == m_film_map.end()){
+        // not exists
+        throw Exception("Not found the film [" + film_name + "].");
+    }
+    ImageFilm * p_ret = m_film_map[film_name];
+    assert(p_ret != 0);
+    return p_ret;
+}
+
 
 //----------------------------------------------------------------------
 // query glFrustum parameter to this camera.
@@ -600,6 +645,8 @@ Dictionary Camera::get_config_dict() const
     value_dict.set("focal_length",     this->get_focal_length());
     value_dict.set("lens_screen_dist", this->get_lens_to_screen_distance());
     value_dict.set("lens_film_dist",   this->get_lens_to_film_distance());
+    value_dict.set("resolution_x",     this->get_resolution_x());
+    value_dict.set("resolution_y",     this->get_resolution_y());
 
     return value_dict;
 }
@@ -667,6 +714,8 @@ void Camera::deep_copy(Camera const & rhs)
     m_ex               = rhs.m_ex;
     m_ey               = rhs.m_ey;
     m_ortho_width      = rhs.m_ortho_width;
+    m_resolution_x     = rhs.m_resolution_x;
+    m_resolution_y     = rhs.m_resolution_y;
 
     // delete own films
     this->clear_film_map();

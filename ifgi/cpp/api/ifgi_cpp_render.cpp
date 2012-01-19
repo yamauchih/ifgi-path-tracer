@@ -534,6 +534,11 @@ void IfgiCppRender::add_one_geometry_to_scene(
 void IfgiCppRender::setup_framebuffer()
 {
     // from camera
+    Sint32 const res_x = m_camera.get_resolution_x();
+    Sint32 const res_y = m_camera.get_resolution_y();
+
+    
+
 
     std::cerr << "IfgiCppRender::setup_framebuffer: NIN" << std::endl;
 }

@@ -203,22 +203,6 @@ public:
     // }
     // NIN
 
-    /// set a film.
-    /// \param[in] film_name the film name
-    /// \param[in] film       film instance
-    // void set_film(_film_name, film)
-    // {
-    //     m_film[_film_name] = film;
-    // }
-
-    /// get a film
-    /// \return film, exception if no film_name exists.
-    // ImageFilm const & get_film(std::string const & film_name)
-    // {
-    //     return m_film[_film_name];
-    // }
-    // NIN
-
     /// set orthogonal projection width.
     /// \param[in] ortho_width orthogonal projection width size.
     void set_ortho_width(Float32 ortho_width);
@@ -226,6 +210,45 @@ public:
     /// get orthogonal projection width.
     /// \return ortho_width
     Float32 get_ortho_width() const;
+
+    /// set image resolution x
+    /// \param[in] res_x image resolution x
+    void set_resolution_x(Sint32 res_x);
+
+    /// get image resolution x
+    /// \return image resolution x
+    Sint32 get_resolution_x() const;
+
+    /// get image resolution y
+    /// \param[in] res_y image resolution y
+    void set_resolution_y(Sint32 res_y);
+
+    /// get image resolution y
+    /// \return image resolution y
+    Sint32 get_resolution_y() const;
+
+    /// set a film. The film is owned by this instance.
+    ///
+    /// When set the same name film twice, casts exception.
+    ///
+    /// \param[in] film_name the film name
+    /// \param[in] p_img_film film instance
+    void set_film(std::string const & film_name,
+                  ImageFilm * p_img_film);
+    // {
+    //     m_film[_film_name] = film;
+    // }
+
+    /// peek a film
+    /// \param[in] film_name the film name
+    /// \return reference to the film, exception if no film_name exists.
+    ImageFilm * peek_film(std::string const & film_name);
+    // {
+    //     return m_film[_film_name];
+    // }
+    // NIN
+
+
 
     /// query glFrustum parameter to this camera.
     /// \return [left, right, bottom, top]
@@ -463,6 +486,10 @@ private:
     Float32_3 m_ey;
     /// orthogonal projection width
     Float32 m_ortho_width;
+    /// image resolution x
+    Sint32 m_resolution_x;
+    /// image resolution y
+    Sint32 m_resolution_y;
     /// films map: framebuffer map
     FilmMap m_film_map;
 };
