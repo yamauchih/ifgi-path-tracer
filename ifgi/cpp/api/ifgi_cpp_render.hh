@@ -72,6 +72,16 @@ public:
     /// add a material to the scene via Dictionary
     void add_material_to_scene_by_dict(Dictionary const & mat_dict);
 
+    /// add a trimesh to the scene. This object takes the ownership.
+    ///
+    /// \param[in] geo_name geometry name
+    /// \param[in] mat_name material name (The material should be
+    /// defined before this call.)
+    /// \param[in] p_tmesh a reference to the trimesh. This object
+    /// takes the ownership.
+    void add_trimesh_to_scene(std::string const geo_name,
+                              std::string const mat_name,
+                              TriMesh * p_tmesh);
 
     /// set camera via a Dictionary. Replaced all the data.
     ///
@@ -100,28 +110,6 @@ private:
     void clear_node_memory();
     /// clear trimesh memory
     void clear_trimesh_memory();
-
-    /// add material to the scene
-    /// \param[in] p_mat_group_node material group node. All the
-    /// materials are this node's children.
-    /// \param[in] mat_dict_list material python dict list
-    // void add_material_to_scene(
-    //     SceneGraphNode * p_mat_group_node,
-    //     boost::python::object const & mat_dict_list);
-
-    /// add geometry to the scene
-    ///
-    /// \param[in] p_mesh_group_node mesh group node. Currently all
-    /// the meshes are this node's children.
-    /// \param[in] geom_dict_list geometry python dict list
-    // void add_geometry_to_scene(
-    //     SceneGraphNode * p_mat_group_node,
-    //     boost::python::object const & geom_dict_list);
-
-    /// add one primitive to the scene
-    // void add_one_geometry_to_scene(
-    //     SceneGraphNode * p_mesh_group_node,
-    //     boost::python::dict const & geom_pydict);
 
     /// set up framebuffer in the camera
     void setup_framebuffer();

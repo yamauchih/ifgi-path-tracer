@@ -118,25 +118,20 @@ private:
     // DELETME
 
     /// add material to the scene
-    /// \param[in] p_mat_group_node material group node. All the
-    /// materials are this node's children.
     /// \param[in] mat_dict_list material python dict list
     void add_material_to_scene(
-        // SceneGraphNode * p_mat_group_node,
         boost::python::object const & mat_dict_list);
 
     /// add geometry to the scene
     ///
-    /// \param[in] p_mesh_group_node mesh group node. Currently all
-    /// the meshes are this node's children.
     /// \param[in] geom_dict_list geometry python dict list
     void add_geometry_to_scene(
-        SceneGraphNode * p_mat_group_node,
         boost::python::object const & geom_dict_list);
 
     /// add one primitive to the scene
+    ///
+    /// \param[in] geom_pydict geometry python dict
     void add_one_geometry_to_scene(
-        SceneGraphNode * p_mesh_group_node,
         boost::python::dict const & geom_pydict);
 
     // /// set up framebuffer in the camera

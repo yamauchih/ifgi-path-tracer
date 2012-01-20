@@ -9,8 +9,6 @@
 
 #include <stdexcept>
 #include <iostream>
-
-// ifgi side
 #include <cpp/base/Exception.hh>
 #include <cpp/base/ILog.hh>
 #include <cpp/scene/SceneGraphNode.hh>
@@ -72,9 +70,8 @@ void IfgiCppRender::create_simple_scenegraph()
     SceneDB::instance()->store_sgnode(m_p_mat_group_node_ref);
 
     p_rootsg->append_child(m_p_mat_group_node_ref);
-    // DELETEME this->add_material_to_scene(p_mat_group_node, mat_dict_list);
 
-    // geometry
+    // geometry group
     m_p_mesh_group_node_ref = new SceneGraphNode("meshgroup");
     SceneDB::instance()->store_sgnode(m_p_mesh_group_node_ref);
 
@@ -110,6 +107,30 @@ void IfgiCppRender::add_material_to_scene_by_dict(Dictionary const & mat_dict)
               "added material " + p_mat->get_classname() + "::" +
               p_mat->get_material_name() + "\n");
 }
+
+//----------------------------------------------------------------------
+// add a trimesh to the scene. This object takes the ownership.
+void IfgiCppRender::add_trimesh_to_scene(std::string const geo_name,
+                                         std::string const mat_name,
+                                         TriMesh * p_tmesh)
+{
+    Sint32 const matidx = SceneDB::instance()->get_material_index_by_name(mat_name);
+    if(matidx < 0){
+        ILog::instance()->warn(mat_name + " is not found in SceneDB. [" +
+                               geo_name + "] has no material reference.");
+    }
+    p_tmesh->set_material_index(matidx);
+    m_p_trimesh_vec.push_back(p_tmesh); // owner: keep the reference
+
+    std::cout << "DEBUG: trimesh info\n"
+              << p_tmesh->get_info_summary() << std::endl;
+
+    // this class has the ownership of scenegraph nodes
+    SGPrimitiveNode * p_ch_node = new SGPrimitiveNode(geo_name, p_tmesh);
+    m_p_sgnode_vec.push_back(p_ch_node); // owner: keep the reference
+    m_p_mesh_group_node_ref->append_child(p_ch_node);
+}
+
 
 //----------------------------------------------------------------------
 // set camera.
