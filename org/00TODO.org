@@ -7,14 +7,12 @@
 lookup material in the SceneDB
 ** 2012-1-18(Wed)
 *** DONE push the TriMesh to C++ code. add camera resolution, Fix the example renderer.
+** 2012-1-19(Wed)
+*** DONE Separate python -> cpp translator and rendering core library, added ImageFilm.
+
 
 
 ** TODO cpp implementation
-*** Separate python -> cpp translator and rendering core library
-**** python module: ifgi_python_cpp_mod
-**** python -> cpp: translator ifgi_python_cpp. Translator has the ifgi_render
-**** rendering core: ifgi_cpp_render
-*** ifgi_cpp_render.cpp Add framebuffers to the camera
 *** render_frame, render_single_frame, save_frame
 
 ** TODO Install

@@ -366,9 +366,11 @@ Sint32 Camera::get_resolution_y() const
 
 //----------------------------------------------------------------------
 // set a film. The film is owned by this instance.
-void Camera::set_film(std::string const & film_name,
-                      ImageFilm * p_img_film)
+void Camera::set_film(ImageFilm * p_img_film)
 {
+    assert(p_img_film != 0);
+    std::string const film_name = p_img_film->get_buffername();
+
     FilmMap::const_iterator fi = m_film_map.find(film_name);
     if(fi != m_film_map.end()){
         // already exists

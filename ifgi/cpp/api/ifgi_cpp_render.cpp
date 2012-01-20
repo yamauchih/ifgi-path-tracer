@@ -17,6 +17,7 @@
 #include <cpp/scene/SGMaterialNode.hh>
 #include <cpp/scene/SGPrimitiveNode.hh>
 #include <cpp/scene/TriMesh.hh>
+#include <cpp/scene/ImageFilm.hh>
 
 namespace ifgi {
 //----------------------------------------------------------------------
@@ -212,15 +213,19 @@ void IfgiCppRender::clear_trimesh_memory()
 void IfgiCppRender::setup_framebuffer()
 {
     // from camera
-    // Sint32 const res_x = m_camera.get_resolution_x();
-    // Sint32 const res_y = m_camera.get_resolution_y();
-    std::cerr << "IfgiCppRender::setup_framebuffer: NIN" << std::endl;
+    Sint32 const res_x = m_camera.get_resolution_x();
+    Sint32 const res_y = m_camera.get_resolution_y();
+
+    ImageFilm * p_rgba = new ImageFilm(Sint32_3(res_x, res_y, 4), "RGBA");
+    m_camera.set_film(p_rgba);
+    ILog::instance()->info("added ImageFilm: " + p_rgba->get_buffername() + "\n");
 }
 
 //----------------------------------------------------------------------
 // render single frame.
 Sint32 IfgiCppRender::render_single_frame()
 {
+    
     std::cerr << "IfgiCppRender::render_single_frame: NIN" << std::endl;
     return 1;
 }

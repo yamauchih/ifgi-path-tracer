@@ -231,24 +231,13 @@ public:
     ///
     /// When set the same name film twice, casts exception.
     ///
-    /// \param[in] film_name the film name
     /// \param[in] p_img_film film instance
-    void set_film(std::string const & film_name,
-                  ImageFilm * p_img_film);
-    // {
-    //     m_film[_film_name] = film;
-    // }
+    void set_film(ImageFilm * p_img_film);
 
     /// peek a film
     /// \param[in] film_name the film name
     /// \return reference to the film, exception if no film_name exists.
     ImageFilm * peek_film(std::string const & film_name);
-    // {
-    //     return m_film[_film_name];
-    // }
-    // NIN
-
-
 
     /// query glFrustum parameter to this camera.
     /// \return [left, right, bottom, top]
