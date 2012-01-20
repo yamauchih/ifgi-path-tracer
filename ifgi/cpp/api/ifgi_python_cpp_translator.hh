@@ -22,10 +22,6 @@ namespace ifgi {
 // forward declaration
 class IfgiCppRender;
 
-// FIXME: necessary?
-// class SceneGraph;
-// class TriMesh;
-
 //----------------------------------------------------------------------
 /// append python dictionary list to cpp dictionary vector
 ///
@@ -67,20 +63,6 @@ public:
 
     /// create a new scene.
     ///
-    /// SceneGraph structure.
-    ///
-    /// SceneGraph +
-    ///            +--+ SceneGraphNode: 'rootsg' root_node
-    ///                              +--+ CameraNode: 'main_cam' camera
-    ///                              +--+ SceneGraphNode: 'materialgroup'
-    ///                                                +--+ Material: 'mat0'
-    ///                                                +--+ Material: 'mat1'
-    ///                                                   ...
-    ///                              +--+ SceneGraphNode: 'meshgroup'
-    ///                                                +--+ TriMesh: 'trimesh0'
-    ///                                                +--+ TriMesh: 'trimesh1'
-    ///                                                   ...
-    ///
     /// \param[in] mat_dict_list  material dictionary list
     /// \param[in] geom_dict_list geometry dictionary list
     /// \param[in] camera_dict    camera dictionary
@@ -111,12 +93,6 @@ public:
     Sint32 render_n_frame(Sint32 max_frame, Sint32 save_per_frame);
 
 private:
-    /// clear scene node memory
-    // void clear_node_memory();
-    // /// clear trimesh memory
-    // void clear_trimesh_memory();
-    // DELETME
-
     /// add material to the scene
     /// \param[in] mat_dict_list material python dict list
     void add_material_to_scene(
@@ -134,31 +110,7 @@ private:
     void add_one_geometry_to_scene(
         boost::python::dict const & geom_pydict);
 
-    // /// set up framebuffer in the camera
-    // void setup_framebuffer();
-
-    // /// render single frame.
-    // ///
-    // /// \return rendering status. 0 ... success
-    // Sint32 render_single_frame();
-
-    // /// save a frame
-    // ///
-    // /// \param[in] frame_count frame counter for this save.
-    // /// \return rendering status. 0 ... success
-    // Sint32 save_frame(Sint32 frame_count);
-
 private:
-    // /// geometry, reference to the trimesh, vector
-    // std::vector< TriMesh * > m_p_trimesh_vec;
-    // /// reference to the scene graph nodes
-    // std::vector< SceneGraphNode * > m_p_sgnode_vec;
-    // /// the scene graph
-    // SceneGraph m_scene_graph;
-    // /// current camera
-    // Camera m_camera;
-
-
     /// rendering core reference
     IfgiCppRender * m_p_render_core;
 };

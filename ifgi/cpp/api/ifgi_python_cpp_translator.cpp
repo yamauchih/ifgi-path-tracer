@@ -15,18 +15,10 @@
 #include <boost/python/dict.hpp>
 #include <boost/python/str.hpp>
 
-// DELETEME The following should not be here
-// #include <cpp/base/ILog.hh>
-// #include <cpp/scene/SceneGraphNode.hh>
-// #include <cpp/scene/SceneDB.hh>
-// #include <cpp/scene/MaterialFactory.hh>
-// #include <cpp/scene/SGMaterialNode.hh>
-// #include <cpp/scene/SGPrimitiveNode.hh>
-#include <cpp/scene/TriMesh.hh>
-
 // ifgi side
 #include "ifgi_cpp_render.hh"
 #include <cpp/base/Exception.hh>
+#include <cpp/scene/TriMesh.hh>
 
 namespace ifgi {
 
@@ -266,7 +258,6 @@ IfgiPythonCppTranslator::IfgiPythonCppTranslator()
 // destructor
 IfgiPythonCppTranslator::~IfgiPythonCppTranslator()
 {
-    // DELETEME this->clear_scene();
     if(m_p_render_core != 0){
         std::cerr << "IfgiPythonCppTranslator::~IfgiPythonCppTranslator: "
             "unexpected destruction. Have you shutdown the core?" << std::endl;
@@ -282,8 +273,6 @@ IfgiPythonCppTranslator::~IfgiPythonCppTranslator()
 int IfgiPythonCppTranslator::initialize()
 {
     assert(m_p_render_core == 0);
-
-    // DELETEME ILog::instance()->set_output_level(ILog::ILog_Debug);
 
     m_p_render_core = new IfgiCppRender;
     Sint32 const ret = m_p_render_core->initialize();
@@ -320,7 +309,6 @@ void IfgiPythonCppTranslator::create_scene(boost::python::object const & mat_dic
     this->add_material_to_scene(mat_dict_list);
 
     // add geometries
-    // HEREHERE missing material index reference. 2012-1-17(Tue)
     this->add_geometry_to_scene(geom_dict_list);
 
     // set camera
@@ -339,18 +327,8 @@ void IfgiPythonCppTranslator::set_camera_pydict(
         throw std::runtime_error("set_camera_pydict: type error: "
                                  "camera_pydict_obj is not a dict.");
     }
-    // Dictionary const cpp_cam_dict = get_cpp_dictionary_from_pydict(cpp_pydict_ext());
-
-    // // cpp_cam_dict.write(std::cout, "CPPCAM:");
-    // return cpp_cam_dict;
 
     Dictionary const cpp_camera_dict = get_cpp_dictionary_from_pydict(cpp_pydict_ext());
-    // cpp_camera_dict.write(std::cout, "set_camera_pydict: ");
-    // assert(cpp_camera_dict.is_defined("cam_name"));
-    // m_camera.set_config_dict(cpp_camera_dict);
-    // m_scene_graph.set_current_camera(m_camera);
-    // DELETEME
-
     m_p_render_core->set_camera_dict(cpp_camera_dict);
 }
 
@@ -371,9 +349,6 @@ int IfgiPythonCppTranslator::prepare_rendering()
     assert(m_p_render_core != 0);
     Sint32 ret = m_p_render_core->prepare_rendering();
 
-    // // put framebuffers
-    // this->setup_framebuffer();
-
     return ret;
 }
 
@@ -382,72 +357,21 @@ int IfgiPythonCppTranslator::prepare_rendering()
 int IfgiPythonCppTranslator::render_n_frame(Sint32 max_frame, Sint32 save_per_frame)
 {
     assert(m_p_render_core != 0);
-    // assert(max_frame > 0);
-    // assert(save_per_frame > 0);
-
-    // for(int i = 0; i < max_frame; ++i){
-    //     this->render_single_frame();
-    //     std::stringstream sstr;
-    //     sstr << "frame: " << i;
-    //     ILog::instance()->info(sstr.str());
-    //     if((i != 0) && ((i % save_per_frame) == 0)){
-    //         this->save_frame(i);
-    //     }
-    // }
-    // this->save_frame(0);
-    // DELETEME
-
     Sint32 ret = m_p_render_core->render_n_frame(max_frame, save_per_frame);
     return ret;
 }
 
 //----------------------------------------------------------------------
-// /// return a string object.
-// /// \return a string object
-// object return_string() const {
-//     return str("Incredible, this works.");
-// }
-
-//----------------------------------------------------------------------
 // clear the scene
 void IfgiPythonCppTranslator::clear_scene()
 {
-    // this->clear_trimesh_memory();
-    // this->clear_node_memory();
     assert(m_p_render_core != 0);
     m_p_render_core->clear_scene();
 }
 
 //----------------------------------------------------------------------
-// clear scene node memory
-// void IfgiPythonCppTranslator::clear_node_memory()
-// {
-//     for(std::vector< SceneGraphNode * >::iterator si = m_p_sgnode_vec.begin();
-//         si != m_p_sgnode_vec.end(); ++si)
-//     {
-//         delete *(si);
-//         *(si) = 0;
-//     }
-//     m_p_sgnode_vec.clear();
-// }
-
-// //----------------------------------------------------------------------
-// // clear trimesh memory
-// void IfgiPythonCppTranslator::clear_trimesh_memory()
-// {
-//     for(std::vector< TriMesh * >::iterator ti = m_p_trimesh_vec.begin();
-//         ti != m_p_trimesh_vec.end(); ++ti)
-//     {
-//         delete *(ti);
-//         *(ti) = 0;
-//     }
-//     m_p_trimesh_vec.clear();
-// }
-
-//----------------------------------------------------------------------
 // add material to the scene
 void IfgiPythonCppTranslator::add_material_to_scene(
-    // DELETEME SceneGraphNode * p_mat_group_node,
     boost::python::object const & mat_dict_list)
 {
     assert(m_p_render_core != 0);
@@ -460,21 +384,6 @@ void IfgiPythonCppTranslator::add_material_to_scene(
         di != mat_dict_vec.end(); ++di)
     {
         m_p_render_core->add_material_to_scene_by_dict(*di);
-        // IMaterial * p_mat = new_material_factory(*di);
-        // SGMaterialNode * p_ch_mat_sgnode =
-        //     new SGMaterialNode("matnode::" + p_mat->get_material_name());
-        // p_ch_mat_sgnode->set_material(p_mat);
-        // SceneDB::instance()->store_sgnode(p_ch_mat_sgnode);
-
-        // // put it under the material groupnode.
-        // // But currently this is not used. Material lookup through the
-        // // SceneDB.
-        // p_mat_group_node->append_child(p_ch_mat_sgnode);
-
-        // ILog::instance()->
-        //     debug("IfgiPythonCppTranslator::add_material_to_scene: "
-        //           "added material " + p_mat->get_classname() + "::" +
-        //           p_mat->get_material_name() + "\n");
     }
 }
 
@@ -541,23 +450,6 @@ void IfgiPythonCppTranslator::add_one_geometry_to_scene(
     assert(m_p_render_core != 0);
     // m_p_render_core takes the ownership
     m_p_render_core->add_trimesh_to_scene(geo_name, mat_name, p_tmesh);
-
-
-    // Sint32 const matidx = SceneDB::instance()->
-    //     get_material_index_by_name(mat_name);
-    // if(matidx < 0){
-    //     ILog::instance()->warn(mat_name + " is not found in SceneDB. [" +
-    //                            geo_name + "] has no material reference.");
-    // }
-    // p_tmesh->set_material_index(matidx);
-
-    // std::cout << "DEBUG: trimesh info\n"
-    //           << p_tmesh->get_info_summary() << std::endl;
-
-    // // this class has the ownership of scenegraph nodes
-    // SGPrimitiveNode * p_ch_node = new SGPrimitiveNode(geo_name, p_tmesh);
-    // m_p_sgnode_vec.push_back(p_ch_node); // owner: keep the reference
-    // p_mesh_group_node->append_child(p_ch_node);
 }
 
 //----------------------------------------------------------------------

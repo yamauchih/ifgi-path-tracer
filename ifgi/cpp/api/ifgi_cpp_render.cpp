@@ -76,14 +76,6 @@ void IfgiCppRender::create_simple_scenegraph()
     SceneDB::instance()->store_sgnode(m_p_mesh_group_node_ref);
 
     p_rootsg->append_child(m_p_mesh_group_node_ref);
-
-//     // HEREHERE missing material index reference. 2012-1-17(Tue)
-
-//     this->add_geometry_to_scene(p_mesh_group_node, geom_dict_list);
-//     m_scene_graph.set_root_node(p_rootsg);
-
-//     // camera
-//     this->set_camera_pydict(camera_pydict);
 }
 
 //----------------------------------------------------------------------
@@ -136,18 +128,6 @@ void IfgiCppRender::add_trimesh_to_scene(std::string const geo_name,
 // set camera.
 void IfgiCppRender::set_camera_dict(Dictionary const & camera_dict)
 {
-    // // object -> extractor
-    // boost::python::extract< boost::python::dict > cpp_pydict_ext(camera_dict);
-    // if(!cpp_pydict_ext.check()){
-    //     throw std::runtime_error("set_camera_pydict: type error: "
-    //                              "camera_dict is not a dict.");
-    // }
-    // Dictionary const cpp_cam_dict = get_cpp_dictionary_from_pydict(cpp_pydict_ext());
-
-    // // cpp_cam_dict.write(std::cout, "CPPCAM:");
-    // return cpp_cam_dict;
-
-    // Dictionary const cpp_camera_dict = get_cpp_dictionary_from_pydict(cpp_pydict_ext());
     camera_dict.write(std::cout, "set_camera_pydict: ");
     assert(camera_dict.is_defined("cam_name"));
     m_camera.set_config_dict(camera_dict);
@@ -194,13 +174,6 @@ int IfgiCppRender::render_n_frame(Sint32 max_frame, Sint32 save_per_frame)
 }
 
 //----------------------------------------------------------------------
-// /// return a string object.
-// /// \return a string object
-// object return_string() const {
-//     return str("Incredible, this works.");
-// }
-
-//----------------------------------------------------------------------
 // clear the scene
 void IfgiCppRender::clear_scene()
 {
@@ -233,118 +206,6 @@ void IfgiCppRender::clear_trimesh_memory()
     }
     m_p_trimesh_vec.clear();
 }
-
-//----------------------------------------------------------------------
-// add material to the scene
-// void IfgiCppRender::add_material_to_scene(
-//     SceneGraphNode * p_mat_group_node,
-//     boost::python::object const & mat_dict_list)
-// {
-//     assert(p_mat_group_node != 0);
-
-//     // convert to cpp dictionary vector
-//     std::vector< Dictionary > mat_dict_vec;
-//     append_pydict_list_to_dictionary_vec(mat_dict_vec, mat_dict_list);
-
-//     for(std::vector< Dictionary >::const_iterator di = mat_dict_vec.begin();
-//         di != mat_dict_vec.end(); ++di)
-//     {
-//         IMaterial * p_mat = new_material_factory(*di);
-//         SGMaterialNode * p_ch_mat_sgnode =
-//             new SGMaterialNode("matnode::" + p_mat->get_material_name());
-//         p_ch_mat_sgnode->set_material(p_mat);
-//         SceneDB::instance()->store_sgnode(p_ch_mat_sgnode);
-
-//         // put it under the material groupnode.
-//         // But currently this is not used. Material lookup through the
-//         // SceneDB.
-//         p_mat_group_node->append_child(p_ch_mat_sgnode);
-
-//         ILog::instance()->
-//             debug("IfgiCppRender::add_material_to_scene: "
-//                   "added material " + p_mat->get_classname() + "::" +
-//                   p_mat->get_material_name() + "\n");
-//     }
-// }
-
-//----------------------------------------------------------------------
-// add geometry to the scene
-// void IfgiCppRender::add_geometry_to_scene(
-//     SceneGraphNode * p_mesh_group_node,
-//     boost::python::object const & geom_pydict_list)
-// {
-//     // convert to the extracted object: list
-//     boost::python::extract< boost::python::list > cpp_list_ext(geom_pydict_list);
-//     if(!cpp_list_ext.check()){
-//         throw std::runtime_error(
-//             "add_geometry_to_scene: type error: geom_pydict_list is not a list.");
-//     }
-
-//     // iterate over the list
-//     boost::python::list cpp_dict_list = cpp_list_ext();
-//     int const len = boost::python::len(cpp_dict_list);
-//     for(int i = 0; i < len; ++i){
-//         boost::python::dict geom_pydict =
-//             boost::python::extract< boost::python::dict >(cpp_dict_list[i]);
-//         // convert geom dict to scene
-//         this->add_one_geometry_to_scene(p_mesh_group_node, geom_pydict);
-//     }
-// }
-
-//----------------------------------------------------------------------
-// add one primitive to the scene
-// void IfgiCppRender::add_one_geometry_to_scene(
-//     SceneGraphNode * p_mesh_group_node,
-//     boost::python::dict const & geom_pydict)
-// {
-//     // geom_pydict entries
-//     //   geom_pydict["geo_name"] = "name_of_geometry"
-//     //   geom_pydict["material"] = "material_name"
-//     //   geom_pydict["geo_file_type"] = "obj"
-//     //   geom_pydict["geo_file_name"] = "filename"
-//     //   geom_pydict["TriMesh"]  = Primitive.TriMesh object
-
-//     Dictionary geom_cpp_dict = get_cpp_dictionary_from_pydict(geom_pydict);
-//     geom_cpp_dict.write(std::cout, "DEBUG: ");
-
-//     // check all the expected keys are there
-//     char const * p_mandatory_key[] = { "geo_name",
-//                                        "material",
-//                                        "geo_file_type", // currently discarded
-//                                        "geo_file_name", // currently discarded
-//                                        "TriMesh",
-//                                        0};
-//     std::vector< std::string > undef_keys;
-//     if(!(is_all_key_defined(geom_cpp_dict, p_mandatory_key, &undef_keys))){
-//         std::stringstream sstr;
-//         std::copy(undef_keys.begin(), undef_keys.end(),
-//                   std::ostream_iterator< std::string >(sstr, " "));
-//         throw Exception("missing keys for geom_pydict [" + sstr.str() + "]");
-//     }
-
-//     // this class has the ownership of trimeshes
-//     TriMesh * p_tmesh = new TriMesh;
-//     m_p_trimesh_vec.push_back(p_tmesh); // owner: keep the reference
-//     convert_py_trimesh_to_cpp_trimesh(geom_pydict["TriMesh"], p_tmesh);
-
-//     std::string const mat_name = geom_cpp_dict.get< std::string >("material");
-//     std::string const geo_name = geom_cpp_dict.get< std::string >("geo_name");
-//     Sint32 const matidx = SceneDB::instance()->
-//         get_material_index_by_name(mat_name);
-//     if(matidx < 0){
-//         ILog::instance()->warn(mat_name + " is not found in SceneDB. [" +
-//                                geo_name + "] has no material reference.");
-//     }
-//     p_tmesh->set_material_index(matidx);
-
-//     std::cout << "DEBUG: trimesh info\n"
-//               << p_tmesh->get_info_summary() << std::endl;
-
-//     // this class has the ownership of scenegraph nodes
-//     SGPrimitiveNode * p_ch_node = new SGPrimitiveNode(geo_name, p_tmesh);
-//     m_p_sgnode_vec.push_back(p_ch_node); // owner: keep the reference
-//     p_mesh_group_node->append_child(p_ch_node);
-// }
 
 //----------------------------------------------------------------------
 // set up framebuffer in the camera
