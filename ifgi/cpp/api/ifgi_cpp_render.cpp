@@ -25,7 +25,8 @@ namespace ifgi {
 IfgiCppRender::IfgiCppRender()
     :
     m_p_mat_group_node_ref(0),
-    m_p_mesh_group_node_ref(0)
+    m_p_mesh_group_node_ref(0),
+    m_p_sampler(0)
 {
     // empty
 }
@@ -150,6 +151,9 @@ int IfgiCppRender::prepare_rendering()
     // put framebuffers
     this->setup_framebuffer();
 
+    // create sampler
+    this->setup_sampler();
+
     return 0;
 }
 
@@ -222,10 +226,42 @@ void IfgiCppRender::setup_framebuffer()
 }
 
 //----------------------------------------------------------------------
+// set up sampler
+void IfgiCppRender::setup_sampler()
+{
+    assert(m_p_sampler == 0);
+
+    m_p_sampler = new Sampler;
+}
+
+//----------------------------------------------------------------------
 // render single frame.
 Sint32 IfgiCppRender::render_single_frame()
 {
-    
+    Sint32 const res_x = m_camera.get_resolution_x();
+    Sint32 const res_y = m_camera.get_resolution_y();
+    assert(res_x > 0);
+    assert(res_y > 0);
+
+    assert(m_p_sampler != 0);
+    m_p_sampler->compute_sample(0, res_x - 1, 0, res_y - 1);
+
+    Float32 inv_xsz = 1.0f / static_cast< Float32 >(res_x);
+    Float32 inv_ysz = 1.0f / static_cast< Float32 >(res_y);
+
+    // FIXME
+    // cur_cam = self.__scenegraph.get_current_camera();
+    // for(int y = 0; y < res_y; ++res_y){
+    //     for(int x = 0; x < res_x; ++res_x){
+    //         // get normalized coordinate
+    //         nx = srs.get_sample_x(x,y) * inv_xsz;
+    //         ny = srs.get_sample_y(x,y) * inv_ysz;
+    //         eye_ray = cur_cam.get_ray(nx, ny);
+    //         // print eye_ray
+    //         // print nx, ny
+    //         this->compute_color(x, y, eye_ray, _nframe);
+    //     }
+    // }
     std::cerr << "IfgiCppRender::render_single_frame: NIN" << std::endl;
     return 1;
 }

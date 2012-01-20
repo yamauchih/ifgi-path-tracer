@@ -1,6 +1,6 @@
 ;;
 ;; Utility functions of transforming python file to cpp file
-;; Copyright (C) 2011 Yamauchi Hitoshi
+;; Copyright (C) 2011-2012 Yamauchi Hitoshi
 ;;
 
 ;; symbol list
@@ -110,7 +110,7 @@
      (format
       "//----------------------------------------------------------------------
 // ifgi c++ implementation: %s
-// Copyright (C) 2010-2011 Yamauchi, Hitoshi
+// Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \\file
 /// \\brief %s

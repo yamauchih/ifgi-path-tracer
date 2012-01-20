@@ -1,4 +1,4 @@
-* Task ifgi path tracer 2012-1-18(Wed)
+* Task ifgi path tracer 2012-1-20(Fri)
 
 ** top5
 
@@ -11,9 +11,10 @@ lookup material in the SceneDB
 *** DONE Separate python -> cpp translator and rendering core library, added ImageFilm.
 
 
-
 ** TODO cpp implementation
+*** Sampler, Sampler's unit test
 *** render_frame, render_single_frame, save_frame
+*** IfgiCppRender::render_single_frame()
 
 ** TODO Install
 *** Eclipse (on new machine)

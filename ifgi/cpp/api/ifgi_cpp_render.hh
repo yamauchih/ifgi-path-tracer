@@ -114,6 +114,9 @@ private:
     /// set up framebuffer in the camera
     void setup_framebuffer();
 
+    /// set up sampler
+    void setup_sampler();
+
     /// render single frame.
     ///
     /// \return rendering status. 0 ... success
@@ -138,6 +141,8 @@ private:
     SceneGraphNode * m_p_mat_group_node_ref;
     /// mesh group node reference
     SceneGraphNode * m_p_mesh_group_node_ref;
+    /// sampler
+    Sampler * m_p_sampler;
 };
 
 } // namespace ifgi
