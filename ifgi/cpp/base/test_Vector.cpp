@@ -9,8 +9,8 @@
 
 #include <gtest/gtest.h>
 
-// Tests Vector
-TEST(VectorTest, Vectos)
+// Tests Vector TEST(test_case_name, test_name)
+TEST(VectorTest, Vectors)
 {
     ifgi::Float32_3 const v0(1.0f, 0.0f, 0.0f);
     ifgi::Float32_3 const v1(0.0f, 1.0f, 0.0f);

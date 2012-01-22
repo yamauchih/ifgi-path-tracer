@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 
 // Tests Dictionary
-TEST(DictionaryTest, Vectos)
+TEST(DictionaryTest, Vectors)
 {
     // POD types
     {

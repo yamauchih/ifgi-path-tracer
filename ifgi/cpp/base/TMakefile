@@ -12,3 +12,23 @@ module { cxx gtest }
 # set link::MAKE_SHLIB 0
 # set link::MAKE_LIB   1
 # set link::LINK_MODE "static"
+
+lappend EXCLUDE SamplerUnitDiskUniform.cpp
+lappend EXCLUDE SamplerStratifiedRegular.cpp
+lappend EXCLUDE SamplerUnitHemisphereUniform.cpp
+
+#
+# additional clean entry
+#
+target core_bk_clean ALWAYS_BUILD {
+    set deletebakupfile [glob -nocomplain *~]
+    append deletebakupfile " core a.out TAGS"
+    append deletebakupfile " unit_disk_uniform_sampler_res.ppm"
+    puts -nonewline "file delete -- "
+    foreach f ${deletebakupfile} {
+	file delete -force -- ${f}
+	puts -nonewline "${f} "
+    }
+    puts ""
+}
+depend clean core_bk_clean

@@ -25,6 +25,7 @@
        '("math.sin"    "sin")
        '("math.cos"    "cos")
        '("math.tan"    "tan")
+       '("math.sqrt"   "sqrt")
        '("elif"        "else if")
        '("\\(^[ \t]*\\)\\(\\\\return\\)" "\\1/// \\2")
        '("\\(^[ \t]*\\)\\(\\\\param\\)" "\\1/// \\2")

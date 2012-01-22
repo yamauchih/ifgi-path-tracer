@@ -6,21 +6,27 @@
 /// \brief SamplerUnitHemisphereUniform.cpp
 #ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITHEMISPHEREUNIFORM_CPP
 #define IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITHEMISPHEREUNIFORM_CPP
+
+#include "Vector.hh"
+#include "SamplerUnitDiskUniform.hh"
+
+
 namespace ifgi
 {
 
 /// Generate uniform sampling on a hemisphere.
 /// Using UnitDiskUniformSampler.
-class UnitHemisphereUniformSampler
+class SamplerUnitHemisphereUniform
 {
 public:
     /// constructor
-    UnitHemisphereUniformSampler(){
+    SamplerUnitHemisphereUniform()
+    {
         m_udus = UnitDiskUniformSampler();
     }
 
     /// destructor
-    virtual ~UnitHemisphereUniformSampler();
+    virtual ~SamplerUnitHemisphereUniform();
 
     /// get sample point on a unit hemisphere
     /// \return (x,y,z)
@@ -41,9 +47,10 @@ public:
 
 private:
   /// copy constructor, never used.
-  UnitHemisphereUniformSampler(UnitHemisphereUniformSampler const & rhs);
+  SamplerUnitHemisphereUniform(SamplerUnitHemisphereUniform const & rhs);
   /// operator=, never used.
-  UnitHemisphereUniformSampler const & operator=(UnitHemisphereUniformSampler const & rhs);
+  SamplerUnitHemisphereUniform const & operator=(
+      SamplerUnitHemisphereUniform const & rhs);
 };
 
 } // namespace ifgi
