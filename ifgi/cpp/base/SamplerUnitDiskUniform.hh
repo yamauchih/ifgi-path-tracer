@@ -4,8 +4,8 @@
 //----------------------------------------------------------------------
 /// \file
 /// \brief Sampler: uniformly sample on a unit disk
-#ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITDISKUNIFORM_CPP
-#define IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITDISKUNIFORM_CPP
+#ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITDISKUNIFORM_HH
+#define IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITDISKUNIFORM_HH
 
 #include "Vector.hh"
 
@@ -52,4 +52,4 @@ private:
 };
 
 } // namespace ifgi
-#endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITDISKUNIFORM_CPP
+#endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITDISKUNIFORM_HH

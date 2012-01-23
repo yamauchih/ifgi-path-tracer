@@ -13,9 +13,8 @@ module { cxx gtest }
 # set link::MAKE_LIB   1
 # set link::LINK_MODE "static"
 
-lappend EXCLUDE SamplerUnitDiskUniform.cpp
-lappend EXCLUDE SamplerStratifiedRegular.cpp
 lappend EXCLUDE SamplerUnitHemisphereUniform.cpp
+lappend EXCLUDE SamplerStratifiedRegular.cpp
 
 #
 # additional clean entry

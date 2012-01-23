@@ -3,13 +3,12 @@
 // Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
-/// \brief SamplerUnitHemisphereUniform.cpp
-#ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITHEMISPHEREUNIFORM_CPP
-#define IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITHEMISPHEREUNIFORM_CPP
+/// \brief Sampler: unit hemi sphere uniform sampling
+#ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITHEMISPHEREUNIFORM_HH
+#define IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITHEMISPHEREUNIFORM_HH
 
 #include "Vector.hh"
 #include "SamplerUnitDiskUniform.hh"
-
 
 namespace ifgi
 {
@@ -21,24 +20,29 @@ class SamplerUnitHemisphereUniform
 public:
     /// constructor
     SamplerUnitHemisphereUniform()
+        :
+        m_udus()
     {
-        m_udus = UnitDiskUniformSampler();
+        // empty
     }
 
     /// destructor
-    virtual ~SamplerUnitHemisphereUniform();
+    virtual ~SamplerUnitHemisphereUniform()
+    {
+        // empty
+    }
 
     /// get sample point on a unit hemisphere
     /// \return (x,y,z)
     Float32_3 get_sample()
     {
         // p = [-1,1]x[-1,1]
-        p = m_udus.get_sample();
+        Float32_2 const p = m_udus.get_sample();
 
-        x = p[0]
-        y = p[1]
-        z = math.sqrt(numpy.max([0, 1 - x * x - y * y]));
-        v = numpy.array([x, y, z]);
+        Float32 const x = p[0];
+        Float32 const y = p[1];
+        Float32 const z = sqrtf(std::max(0.0f, 1 - x * x - y * y));
+        Float32_3 const v(x, y, z);
         // v should be a normalized vector. see in the test.
         // r = ifgimath.normalize_vec(v);
 
@@ -46,12 +50,16 @@ public:
     }
 
 private:
-  /// copy constructor, never used.
-  SamplerUnitHemisphereUniform(SamplerUnitHemisphereUniform const & rhs);
-  /// operator=, never used.
-  SamplerUnitHemisphereUniform const & operator=(
+    /// unit disk uniform sampler
+    SamplerUnitDiskUniform m_udus;
+
+private:
+    /// copy constructor, never used.
+    SamplerUnitHemisphereUniform(SamplerUnitHemisphereUniform const & rhs);
+    /// operator=, never used.
+    SamplerUnitHemisphereUniform const & operator=(
       SamplerUnitHemisphereUniform const & rhs);
 };
 
 } // namespace ifgi
-#endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITHEMISPHEREUNIFORM_CPP
+#endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITHEMISPHEREUNIFORM_HH

@@ -5,7 +5,9 @@
 /// \file
 /// \brief Sampler unit test
 
+#include "SamplerStratifiedRegular.hh"
 #include "SamplerUnitDiskUniform.hh"
+#include "SamplerUnitHemisphereUniform.hh"
 #include "Array3D.hh"
 #include "LoadSavePPM.hh"
 
@@ -13,28 +15,25 @@
 
 using namespace ifgi;
 
-// # From file ILog (first one), import ILog (second one) class
-// import Sampler
+/// Sampler: UnitDiskUniform
+/// TEST(test_case_name, test_name)
+TEST(SamplarTest, StratifiedRegular)
+{
+    SamplerStratifiedRegular srs;
 
-// class TestStratifiedRegularSampler(unittest.TestCase){
-//     /// test: StratifiedRegularSampler/// 
+    Sint32 const xstart = 0;
+    Sint32 const xend   = 16;
+    Sint32 const ystart = 0;
+    Sint32 const yend   = 10;
 
-//     def test_stratified_regular_sample(){
-//         /// test stratified regular sample./// 
-
-//         srs = Sampler.StratifiedRegularSampler();
-
-//         xstart = 0
-//         xend   = 16
-//         ystart = 0
-//         yend   = 10
-
-//         srs.compute_sample(xstart, xend, ystart, yend);
-//         for x in xrange(xstart, xend + 1, 1){
-//             for y in xrange(ystart, yend + 1, 1){
-//                 assert(srs.get_sample_x(x,y) == x + 0.5);
-//                 assert(srs.get_sample_y(x,y) == y + 0.5);
-
+    srs.compute_sample(xstart, xend, ystart, yend);
+    for(Sint32 x = xstart; x < (xend + 1); ++x){
+        for(Sint32 y = ystart; y < (yend + 1); ++y){
+            ASSERT_EQ(srs.get_sample(x, y, 0), (static_cast< Float32 >(x) + 0.5f));
+            ASSERT_EQ(srs.get_sample(x, y, 1), (static_cast< Float32 >(y) + 0.5f));
+        }
+    }
+}
 
 /// Sampler: UnitDiskUniform
 /// TEST(test_case_name, test_name)
@@ -75,21 +74,19 @@ TEST(SamplarTest, UnitDiskUniform)
 }
 
 
+/// Sampler: UnitHemisphereUniform
+/// TEST(test_case_name, test_name)
+TEST(SamplarTest, UnitHemisphereUniform)
+{
+    SamplerUnitHemisphereUniform uhus;
+    int const sample_count = 100;
 
-// class TestUnitHemisphereUniformSampler(unittest.TestCase){
-//     /// test: UnitHemisphereUniformSampler/// 
-
-//     def test_unit_hemisphere_uniform_sampler(){
-//         /// test unit hemisphere uniform sampler./// 
-
-//         uhus = Sampler.UnitHemisphereUniformSampler();
-
-//         sample_count = 100
-
-//         for i in xrange(sample_count){
-//             v = uhus.get_sample();
-//             v_len = numpy.linalg.norm(v);
-//             assert(abs(v_len - 1.0) < 0.00001);
+    for(int i = 0; i < sample_count; ++i){
+        Float32_3 const v   = uhus.get_sample();
+        Float32 const v_len = v.norm();
+        assert(abs(v_len - 1.0) < 0.00001);
+    }
+}
 
 int main(int argc, char **argv)
 {

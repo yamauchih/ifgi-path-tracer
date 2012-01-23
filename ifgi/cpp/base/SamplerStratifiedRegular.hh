@@ -3,14 +3,19 @@
 // Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
-/// \brief samplers: stratified sampler, QMC (maybe), ..."""
-#ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERSTRATIFIEDREGULAR_CPP
-#define IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERSTRATIFIEDREGULAR_CPP
+/// \brief samplers: stratified sampler, QMC (maybe), ...
+#ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERSTRATIFIEDREGULAR_HH
+#define IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERSTRATIFIEDREGULAR_HH
+
+#include "ILog.hh"
+#include "Vector.hh"
+#include "Array3D.hh"
+
 namespace ifgi
 {
 
 /// a simple stratified regular sampler.
-class SamplerStratifiedRegularclass
+class SamplerStratifiedRegular
 {
 public:
     /// default constructor
@@ -23,6 +28,12 @@ public:
         m_xsize(0),
         m_ysize(0),
         m_sample_loc()
+    {
+        // empty
+    }
+
+    /// destructor
+    ~SamplerStratifiedRegular()
     {
         // empty
     }
@@ -47,13 +58,13 @@ public:
         m_xsize  = m_xend - m_xstart + 1;
         m_ysize  = m_yend - m_ystart + 1;
         Sint32_3 const new_dim(m_xsize, m_ysize, 2);
-        if(!m_sample_loc.isEqualDimension(new_dim)){
+        if(m_sample_loc.getDimension() != new_dim){
             // resize the buffer
             std::stringstream sstr;
             sstr << "resize the sample location from " << m_sample_loc.getDimension()
                  << " to " << new_dim;
             ILog::instance()->debug(sstr.str());
-            m_sample_loc.resize(new_dim);
+            m_sample_loc.resizeBuffer(new_dim);
         }
         for(Sint32 y = 0; y < m_ysize; ++y){
             for(Sint32 x = 0; x < m_xsize; ++x){
@@ -65,7 +76,7 @@ public:
 
     /// get the sample location x from the pixel index.
     Float32 get_sample(Sint32 xidx, Sint32 yidx, Sint32 depth) const {
-        return m_sample_loc_x(xidx, yidx, depth);
+        return m_sample_loc.get(xidx, yidx, depth);
     }
 
 private:
@@ -93,4 +104,4 @@ private:
 
 
 } // namespace ifgi
-#endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERSTRATIFIEDREGULAR_CPP
+#endif // #ifndef IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERSTRATIFIEDREGULAR_HH
