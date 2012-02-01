@@ -192,16 +192,15 @@ public:
     /// get ray.
     /// \param[in] dx delta x normalized screen coordinate [0,1]
     /// \param[in] dy delta y normalized screen coordinate [0,1]
-    /// \return a ray
-    /// FIXME: don't new the Ray
-    // Ray get_ray(Float32 dx, Float32 dy)
-    // {
-    //     target =  m_LB_corner + dx * m_ex + dy * m_ey;
-    //     vdir   =  target - m_eye_pos;
-    //     vdir.normalize();
-    //     return Ray(m_eye_pos, vdir, m_z_near, m_z_far);
-    // }
-    // NIN
+    /// \param[out] a ray initialized for (dx, dy)
+    void get_ray(Scalar dx, Scalar dy, Ray & out_ray)
+    {
+        Scalar_3 const target =  m_LB_corner + dx * m_ex + dy * m_ey;
+        Scalar_3 vdir   =  target - m_eye_pos;
+        vdir.normalize();
+
+        out_ray.initialize(m_eye_pos, vdir, m_z_near, m_z_far);
+    }
 
     /// set orthogonal projection width.
     /// \param[in] ortho_width orthogonal projection width size.

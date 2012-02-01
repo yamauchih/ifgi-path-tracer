@@ -37,6 +37,11 @@ typedef float  Float32;
 /// 64bit floating point
 typedef double Float64;
 
+/// Scalar type
+typedef Float32   Scalar;
+
+
+
 BOOST_STATIC_ASSERT( sizeof(  Sint8) == 1);
 BOOST_STATIC_ASSERT( sizeof(  Uint8) == 1);
 

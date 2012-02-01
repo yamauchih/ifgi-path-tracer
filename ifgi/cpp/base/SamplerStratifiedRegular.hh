@@ -75,7 +75,7 @@ public:
     }
 
     /// get the sample location x from the pixel index.
-    Float32 get_sample(Sint32 xidx, Sint32 yidx, Sint32 depth) const {
+    Scalar get_sample(Sint32 xidx, Sint32 yidx, Sint32 depth) const {
         return m_sample_loc.get(xidx, yidx, depth);
     }
 

@@ -13,8 +13,10 @@ lookup material in the SceneDB
 
 ** TODO cpp implementation
 *** Sampler, Sampler's unit test
+*** api/ifgi_cpp_render.cpp
 *** render_frame, render_single_frame, save_frame
 *** IfgiCppRender::render_single_frame()
+*** Stop using Float32, but Scalar typedef for later double possibility.
 
 ** TODO Install
 *** Eclipse (on new machine)

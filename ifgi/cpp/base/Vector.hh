@@ -675,6 +675,14 @@ typedef Vector< Float64, 3 > Float64_3;
 typedef Vector< Float64, 4 > Float64_4;
 
 
+/// Scalar vector 2
+typedef Vector< Scalar, 2 > Scalar_2;
+/// Scalar vector 3
+typedef Vector< Scalar, 3 > Scalar_3;
+/// Scalar vector 4
+typedef Vector< Scalar, 4 > Scalar_4;
+
+
 /// Color definition
 typedef Vector< Float32, 4 > Color;
 

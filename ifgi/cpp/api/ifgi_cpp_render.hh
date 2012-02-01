@@ -17,6 +17,7 @@ namespace ifgi {
 
 class SceneGraph;
 class TriMesh;
+class SamplerUnitHemisphereUniform;
 
 //----------------------------------------------------------------------
 /// ifgi C++ rendering core interface
@@ -117,6 +118,17 @@ private:
     /// set up sampler
     void setup_sampler();
 
+    /// compute a framebuffer color and store it
+    ///
+    /// \param[in] pixel_x pixel position x
+    /// \param[in] pixel_x pixel position y
+    /// \param[in] ray     ray 
+    /// \param[in] nframe  current frame number
+    void compute_color(Sint32 pixel_x,
+                       Sint32 pixel_y, 
+                       Ray & ray,
+                       Sint32 nframe);
+
     /// render single frame.
     ///
     /// \return rendering status. 0 ... success
@@ -137,12 +149,14 @@ private:
     SceneGraph m_scene_graph;
     /// current camera
     Camera m_camera;
+    /// current RGBA buffer
+    ImageFilm * m_p_framebuffer;
     /// material group node reference
     SceneGraphNode * m_p_mat_group_node_ref;
     /// mesh group node reference
     SceneGraphNode * m_p_mesh_group_node_ref;
-    /// sampler
-    Sampler * m_p_sampler;
+    /// hemisphere sampler
+    SamplerUnitHemisphereUniform * m_p_hemisphere_sampler;
 };
 
 } // namespace ifgi

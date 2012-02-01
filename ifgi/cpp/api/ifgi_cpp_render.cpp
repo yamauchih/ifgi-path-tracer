@@ -9,8 +9,12 @@
 
 #include <stdexcept>
 #include <iostream>
+
 #include <cpp/base/Exception.hh>
 #include <cpp/base/ILog.hh>
+#include <cpp/base/SamplerUnitHemisphereUniform.hh>
+#include <cpp/base/SamplerStratifiedRegular.hh>
+
 #include <cpp/scene/SceneGraphNode.hh>
 #include <cpp/scene/SceneDB.hh>
 #include <cpp/scene/MaterialFactory.hh>
@@ -19,14 +23,16 @@
 #include <cpp/scene/TriMesh.hh>
 #include <cpp/scene/ImageFilm.hh>
 
+
 namespace ifgi {
 //----------------------------------------------------------------------
 // constructor
 IfgiCppRender::IfgiCppRender()
     :
+    m_p_framebuffer(0),
     m_p_mat_group_node_ref(0),
     m_p_mesh_group_node_ref(0),
-    m_p_sampler(0)
+    m_p_hemisphere_sampler(0)
 {
     // empty
 }
@@ -229,40 +235,126 @@ void IfgiCppRender::setup_framebuffer()
 // set up sampler
 void IfgiCppRender::setup_sampler()
 {
-    assert(m_p_sampler == 0);
+    assert(m_p_hemisphere_sampler == 0);
 
-    m_p_sampler = new Sampler;
+    m_p_hemisphere_sampler = new SamplerUnitHemisphereUniform;
+}
+
+//----------------------------------------------------------------------
+// compute a color
+void IfgiCppRender::compute_color(Sint32 pixel_x,
+                                  Sint32 pixel_y, 
+                                  Ray & ray,
+                                  Sint32 nframe)
+{
+#if 0
+    bool is_update_intensity = false;
+    HitRecord hr;
+    for(Sint32 n_path = 0; n_path < ray.path_length; ++n_path){    
+
+        HEREHERE 2012-2-1(Wed)
+        m_scene_geo_mat.ray_intersect(ray, hr);
+        if(hr != None){
+            // hit somthing, lookup material
+            assert(hr.hit_material_index >= 0);
+            mat = m_scene_geo_mat.material_list[hr.hit_material_index];
+            // only Lambert
+            // mat.explicit_brdf(hr.hit_basis, out_v0, out_v1, tex_point, tex_uv);
+            /// print "DEBUG: mat ref ", mat.explicit_brdf(None, None, None, None, None);
+
+            // probability is 1/pi, here, constant importance,
+            // therefore, divided by (1/pi) = multiplied by pi
+            brdf = M_PI * mat.explicit_brdf(None, None, None, None, None);
+            ray.reflectance = (ray.reflectance * brdf);
+            if(mat.is_emit()){
+                // only Lambert emittance
+                // mat.emit_radiance(_hit_onb, light_out_dir, tex_point, tex_uv));
+                ray.intensity = ray.intensity +
+                    (ray.reflectance * mat.emit_radiance(None, None, None, None));
+                // hit the light source
+
+                // print "DEBUG: Hit a light source at path length = ", ray.path_length
+                //     is_update_intensity = True;
+                break;
+            }
+            // Do not stop by reflectance criterion. (if stop, it"s wrong.);
+
+            // update ray information
+            out_v = mat.diffuse_direction(hr.hit_basis, ray.get_dir(), 
+                                          m_p_hemisphere_sampler);
+            ray.set_origin(copy.deepcopy(hr.intersect_pos));
+            ray.set_dir(copy.deepcopy(out_v));
+        }
+        else{
+            // done. hit to the environmnt.
+            // FIXME: currently assume the environment color is always constant
+            hit_onb = None;
+            light_out_dir = None;
+            tex_point = None;
+            tex_uv = None;
+            // print "DEBUG: ray int = ", ray.intensity, ", ref = " , ray.reflectance
+            amb_col = m_environment_mat.ambient_response(hit_onb, light_out_dir,
+                                                         tex_point, tex_uv);
+            ray.intensity = ray.intensity + (ray.reflectance * amb_col);
+            is_update_intensity = True;
+            // print "DEBUG: hit env, amb_col = ", amb_col
+            break;
+        }
+    }
+
+    // now we know the color
+    assert(m_p_framebuffer != 0);
+    Scalar const s_nframe = static_cast< Scalar >(nframe);
+    Scalar const s_one(1.0);
+    if (is_update_intensity == true){ /// && (ray.path_length == 2);
+        col = s_nframe * col_buf.get_color((_pixel_x, pixel_y)) + ray.intensity;
+        m_p_framebuffer->put_color(pixel_x, pixel_y, col/(s_nframe + s_one));
+    }
+#endif
 }
 
 //----------------------------------------------------------------------
 // render single frame.
 Sint32 IfgiCppRender::render_single_frame()
 {
-    Sint32 const res_x = m_camera.get_resolution_x();
-    Sint32 const res_y = m_camera.get_resolution_y();
+    Camera & current_camera = m_camera;
+    ImageFilm * p_img = current_camera.peek_film("RGBA");
+    assert(p_img != 0);
+
+    Sint32 const res_x = current_camera.get_resolution_x();
+    Sint32 const res_y = current_camera.get_resolution_y();
     assert(res_x > 0);
     assert(res_y > 0);
 
-    assert(m_p_sampler != 0);
-    m_p_sampler->compute_sample(0, res_x - 1, 0, res_y - 1);
+    // screen space sampler
+    SamplerStratifiedRegular srs;
+    srs.compute_sample(0, res_x - 1, 0, res_y - 1);
 
-    Float32 inv_xsz = 1.0f / static_cast< Float32 >(res_x);
-    Float32 inv_ysz = 1.0f / static_cast< Float32 >(res_y);
+    assert(m_p_hemisphere_sampler != 0);
 
-    // FIXME
-    // cur_cam = self.__scenegraph.get_current_camera();
-    // for(int y = 0; y < res_y; ++res_y){
-    //     for(int x = 0; x < res_x; ++res_x){
-    //         // get normalized coordinate
-    //         nx = srs.get_sample_x(x,y) * inv_xsz;
-    //         ny = srs.get_sample_y(x,y) * inv_ysz;
-    //         eye_ray = cur_cam.get_ray(nx, ny);
-    //         // print eye_ray
-    //         // print nx, ny
-    //         this->compute_color(x, y, eye_ray, _nframe);
-    //     }
-    // }
-    std::cerr << "IfgiCppRender::render_single_frame: NIN" << std::endl;
+    Scalar const inv_xsz = 1.0f / static_cast< Scalar >(res_x);
+    Scalar const inv_ysz = 1.0f / static_cast< Scalar >(res_y);
+    
+    Sint32 const XDIR = 0;
+    Sint32 const YDIR = 1;
+    for(Sint32 y = 0; y < res_y; ++y){
+        for(Sint32 x = 0; x < res_x; ++x){
+            // get normalized coordinate
+            Scalar const nx = srs.get_sample(x, y, XDIR) * inv_xsz;
+            Scalar const ny = srs.get_sample(x, y, YDIR) * inv_ysz;
+
+            // HEREHERE
+            // Ray eye_ray = current_camera.get_ray(nx, ny); // FIXME Ray preallocation
+
+
+            // print eye_ray
+            // print nx, ny
+
+            this->compute_color(p_img, x, y, eye_ray, _nframe);
+        }
+    }
+
+    // success ... 0
     return 1;
 }
 
