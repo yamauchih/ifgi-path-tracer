@@ -14,11 +14,12 @@
 #include <cmath>
 #include <map>
 
+#include "Ray.hh"
+
 namespace ifgi
 {
 //----------------------------------------------------------------------
 // forward declaration
-class Ray;
 class ImageFilm;
 
 //----------------------------------------------------------------------

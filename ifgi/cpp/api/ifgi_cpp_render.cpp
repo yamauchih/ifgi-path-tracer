@@ -334,18 +334,18 @@ Sint32 IfgiCppRender::render_single_frame()
 
     Scalar const inv_xsz = 1.0f / static_cast< Scalar >(res_x);
     Scalar const inv_ysz = 1.0f / static_cast< Scalar >(res_y);
-    
+
     Sint32 const XDIR = 0;
     Sint32 const YDIR = 1;
+    Ray eye_ray;
     for(Sint32 y = 0; y < res_y; ++y){
         for(Sint32 x = 0; x < res_x; ++x){
             // get normalized coordinate
             Scalar const nx = srs.get_sample(x, y, XDIR) * inv_xsz;
             Scalar const ny = srs.get_sample(x, y, YDIR) * inv_ysz;
 
-            // HEREHERE
-            // Ray eye_ray = current_camera.get_ray(nx, ny); // FIXME Ray preallocation
-
+            // FIXME Ray preallocation
+            current_camera.get_ray(nx, ny, &eye_ray);
 
             // print eye_ray
             // print nx, ny
