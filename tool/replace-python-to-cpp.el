@@ -6,6 +6,7 @@
 ;; symbol list
 (setq python-cpp-symbol-replace-list
       (list
+       '("def __str__()" "std::string to_string() const")
        '("self, "  "")                  ; remove 'self, '
        '("self\\." "this->")            ; 'self.' -> 'this->'
        '("self"    "")                  ; remove 'self'

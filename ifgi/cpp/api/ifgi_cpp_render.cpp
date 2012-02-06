@@ -21,6 +21,7 @@
 #include <cpp/scene/SGMaterialNode.hh>
 #include <cpp/scene/SGPrimitiveNode.hh>
 #include <cpp/scene/TriMesh.hh>
+#include <cpp/scene/HitRecord.hh>
 #include <cpp/scene/ImageFilm.hh>
 
 
@@ -171,7 +172,7 @@ int IfgiCppRender::render_n_frame(Sint32 max_frame, Sint32 save_per_frame)
     assert(save_per_frame > 0);
 
     for(int i = 0; i < max_frame; ++i){
-        this->render_single_frame();
+        this->render_single_frame(i);
         std::stringstream sstr;
         sstr << "frame: " << i;
         ILog::instance()->info(sstr.str());
@@ -241,81 +242,91 @@ void IfgiCppRender::setup_sampler()
 }
 
 //----------------------------------------------------------------------
-// compute a color
-void IfgiCppRender::compute_color(Sint32 pixel_x,
-                                  Sint32 pixel_y, 
-                                  Ray & ray,
-                                  Sint32 nframe)
+// ray scene intersection
+bool IfgiCppRender::ray_scene_intersection(Ray const & ray, HitRecord & hr)
 {
-#if 0
+    // NIN FIXME
+    return false;
+}
+
+//----------------------------------------------------------------------
+// compute a color
+void IfgiCppRender::compute_color(
+    ImageFilm * p_img,
+    Sint32 pixel_x,
+    Sint32 pixel_y, 
+    Ray & ray,
+    Sint32 nframe)
+{
     bool is_update_intensity = false;
     HitRecord hr;
-    for(Sint32 n_path = 0; n_path < ray.path_length; ++n_path){    
 
-        HEREHERE 2012-2-1(Wed)
-        m_scene_geo_mat.ray_intersect(ray, hr);
-        if(hr != None){
-            // hit somthing, lookup material
-            assert(hr.hit_material_index >= 0);
-            mat = m_scene_geo_mat.material_list[hr.hit_material_index];
-            // only Lambert
-            // mat.explicit_brdf(hr.hit_basis, out_v0, out_v1, tex_point, tex_uv);
-            /// print "DEBUG: mat ref ", mat.explicit_brdf(None, None, None, None, None);
+    // FIXME max_path_length is here
+    Sint32 const max_path_length = 10;
+    ray.set_path_length(-1);
+    for(Sint32 path_len = 0; path_len < max_path_length; ++path_len){    
+        // bool const is_hit = this->ray_intersect(ray, hr);
+        // if(is_hit){
+        //     // hit somthing, lookup material
+        //     assert(hr.hit_material_index >= 0);
+        //     mat = m_scene_geo_mat.material_list[hr.hit_material_index];
+        //     // only Lambert
+        //     // mat.explicit_brdf(hr.hit_basis, out_v0, out_v1, tex_point, tex_uv);
+        //     /// print "DEBUG: mat ref ", mat.explicit_brdf(None, None, None, None, None);
 
-            // probability is 1/pi, here, constant importance,
-            // therefore, divided by (1/pi) = multiplied by pi
-            brdf = M_PI * mat.explicit_brdf(None, None, None, None, None);
-            ray.reflectance = (ray.reflectance * brdf);
-            if(mat.is_emit()){
-                // only Lambert emittance
-                // mat.emit_radiance(_hit_onb, light_out_dir, tex_point, tex_uv));
-                ray.intensity = ray.intensity +
-                    (ray.reflectance * mat.emit_radiance(None, None, None, None));
-                // hit the light source
+        //     // probability is 1/pi, here, constant importance,
+        //     // therefore, divided by (1/pi) = multiplied by pi
+        //     brdf = M_PI * mat.explicit_brdf(None, None, None, None, None);
+        //     ray.reflectance = (ray.reflectance * brdf);
+        //     if(mat.is_emit()){
+        //         // only Lambert emittance
+        //         // mat.emit_radiance(_hit_onb, light_out_dir, tex_point, tex_uv));
+        //         ray.intensity = ray.intensity +
+        //             (ray.reflectance * mat.emit_radiance(None, None, None, None));
+        //         // hit the light source
 
-                // print "DEBUG: Hit a light source at path length = ", ray.path_length
-                //     is_update_intensity = True;
-                break;
-            }
-            // Do not stop by reflectance criterion. (if stop, it"s wrong.);
+        //         // print "DEBUG: Hit a light source at path length = ", ray.path_length
+        //         //     is_update_intensity = True;
+        //         break;
+        //     }
+        //     // Do not stop by reflectance criterion. (if stop, it"s wrong.);
 
-            // update ray information
-            out_v = mat.diffuse_direction(hr.hit_basis, ray.get_dir(), 
-                                          m_p_hemisphere_sampler);
-            ray.set_origin(copy.deepcopy(hr.intersect_pos));
-            ray.set_dir(copy.deepcopy(out_v));
-        }
-        else{
-            // done. hit to the environmnt.
-            // FIXME: currently assume the environment color is always constant
-            hit_onb = None;
-            light_out_dir = None;
-            tex_point = None;
-            tex_uv = None;
-            // print "DEBUG: ray int = ", ray.intensity, ", ref = " , ray.reflectance
-            amb_col = m_environment_mat.ambient_response(hit_onb, light_out_dir,
-                                                         tex_point, tex_uv);
-            ray.intensity = ray.intensity + (ray.reflectance * amb_col);
-            is_update_intensity = True;
-            // print "DEBUG: hit env, amb_col = ", amb_col
-            break;
-        }
+        //     // update ray information
+        //     out_v = mat.diffuse_direction(hr.hit_basis, ray.get_dir(), 
+        //                                   m_p_hemisphere_sampler);
+        //     ray.set_origin(copy.deepcopy(hr.intersect_pos));
+        //     ray.set_dir(copy.deepcopy(out_v));
+        // }
+        // else{
+        //     // done. hit to the environmnt.
+        //     // FIXME: currently assume the environment color is always constant
+        //     hit_onb = None;
+        //     light_out_dir = None;
+        //     tex_point = None;
+        //     tex_uv = None;
+        //     // print "DEBUG: ray int = ", ray.intensity, ", ref = " , ray.reflectance
+        //     amb_col = m_environment_mat.ambient_response(hit_onb, light_out_dir,
+        //                                                  tex_point, tex_uv);
+        //     ray.intensity = ray.intensity + (ray.reflectance * amb_col);
+        //     is_update_intensity = True;
+        //     // print "DEBUG: hit env, amb_col = ", amb_col
+        //     break;
+        // }
     }
 
     // now we know the color
-    assert(m_p_framebuffer != 0);
-    Scalar const s_nframe = static_cast< Scalar >(nframe);
-    Scalar const s_one(1.0);
-    if (is_update_intensity == true){ /// && (ray.path_length == 2);
-        col = s_nframe * col_buf.get_color((_pixel_x, pixel_y)) + ray.intensity;
-        m_p_framebuffer->put_color(pixel_x, pixel_y, col/(s_nframe + s_one));
-    }
-#endif
+    // assert(m_p_framebuffer != 0);
+    // Scalar const s_nframe = static_cast< Scalar >(nframe);
+    // Scalar const s_one(1.0);
+    // if (is_update_intensity == true){ /// && (ray.path_length == 2);
+    //     col = s_nframe * col_buf.get_color((_pixel_x, pixel_y)) + ray.intensity;
+    //     m_p_framebuffer->put_color(pixel_x, pixel_y, col/(s_nframe + s_one));
+    // }
 }
 
 //----------------------------------------------------------------------
 // render single frame.
-Sint32 IfgiCppRender::render_single_frame()
+Sint32 IfgiCppRender::render_single_frame(Sint32 nframe)
 {
     Camera & current_camera = m_camera;
     ImageFilm * p_img = current_camera.peek_film("RGBA");
@@ -345,12 +356,11 @@ Sint32 IfgiCppRender::render_single_frame()
             Scalar const ny = srs.get_sample(x, y, YDIR) * inv_ysz;
 
             // FIXME Ray preallocation
-            current_camera.get_ray(nx, ny, &eye_ray);
+            current_camera.get_ray(nx, ny, eye_ray);
 
             // print eye_ray
             // print nx, ny
-
-            this->compute_color(p_img, x, y, eye_ray, _nframe);
+            this->compute_color(p_img, x, y, eye_ray, nframe);
         }
     }
 
