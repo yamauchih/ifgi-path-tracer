@@ -54,9 +54,9 @@ public:
     /// invalidate this bbox.
     /// The bbox has no volume after invalidate().
     void invalidate();
-
+    
     /// get rank of this bbox.
-    /// The number of this->__max > this->__min satisfied axis.
+    /// The number of m_max > m_min satisfied axis.
     /// \return True when this bbox has area.
     Sint32 get_rank() const;
 

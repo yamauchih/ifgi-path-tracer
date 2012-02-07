@@ -15,7 +15,6 @@ import Film
 # test Film
 class TestFilm(unittest.TestCase):
     """test suit for Film."""
-    # test bbox
     def test_imagefilm(self):
         """test for ImageFilm"""
         f = Film.ImageFilm((128, 128, 4), 'RGBA')
@@ -25,7 +24,7 @@ class TestFilm(unittest.TestCase):
         assert(res == (128, 128, 4))
 
         # fill white
-        res = f.fill_color(numpy.array([1,1,1,1]))
+        f.fill_color(numpy.array([1,1,1,1]))
 
         # draw a line
         red = numpy.array([1, 0, 0, 1])

@@ -8,6 +8,7 @@
 #define IFGI_PATH_TRACER_IFGI_CPP_SCENE_RAY_HH
 
 #include <limits>
+#include <sstream>
 
 #include <cpp/base/types.hh>
 
@@ -96,7 +97,7 @@ public:
 
     /// get the ray origin.
     /// \return ray origin.
-    Scalar_3 get_origin() const
+    Scalar_3 const & get_origin() const
     {
         return m_origin;
     }
@@ -110,7 +111,7 @@ public:
 
     /// get the ray direction vector.
     /// \return ray dir.
-    Scalar_3 get_dir() const
+    Scalar_3 const & get_dir() const
     {
         return m_dir;
     }

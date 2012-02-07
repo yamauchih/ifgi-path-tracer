@@ -6,3 +6,7 @@
 #-----------------------------------------------------------------------------
 
 lappend cxx::FLAGS -Wall
+
+# gcc 4.5.x or higher
+append  link::FLAGS "-Wl,--no-as-needed"
+

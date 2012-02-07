@@ -31,6 +31,8 @@ public:
     /// \return class name
     virtual std::string get_classname() const;
 
+    /// get the bounding box. interface method.
+    /// \return bounding box of this primitive.
     virtual BBox32 const & get_bbox() const;
 
     /// can a triangle intersect with a ray? Yes.

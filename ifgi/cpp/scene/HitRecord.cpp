@@ -17,6 +17,7 @@ std::string HitRecord::to_string() const
 {
     std::stringstream sstr;
     sstr << "HitRecord: dist: " << m_dist
+        // << ", HitPrim: " << m_p_hit_primitive->get_classname()
          << ", pos: "           << m_intersect_pos
          << ", basis: "         << m_hit_onb.to_string()
          << ", matidx: "        << m_hit_material_index;

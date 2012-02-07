@@ -9,11 +9,11 @@
 
 #include <gtest/gtest.h>
 
-// Tests Vector
+/// Test Array3D
+/// TEST(test_case_name, test_name)
 TEST(Array3DTest, Vectos)
 {
     ifgi::Array3D_Float32 buf(256, 256, 4);
-
 }
 
 int main(int argc, char **argv)

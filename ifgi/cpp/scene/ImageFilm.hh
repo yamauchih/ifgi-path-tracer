@@ -136,12 +136,17 @@ public:
     //     img.save(_filename);
     //                 }
 
-    /// human readable string
-    // def _str__(){
+    /// get human readable string
+    /// \return string representation of this object
+    std::string to_string() const
+    {
+        Sint32_3 const dim = m_framebuffer.getDimension();
+        std::stringstream sstr;
+        sstr << "[name: " << m_buffername << ", resolution: ("
+             << dim[0] << " " << dim[1] << " " << dim[2] << ")]";
+        return sstr.str();
+    }
 
-    //     return "[name: %s, resolution: (%d %d %d)]"
-    //         % (m_buffername,  m_resolution[0],
-    //                m_resolution[1], m_resolution[2]);
 private:
     /// buffer name
     std::string m_buffername;

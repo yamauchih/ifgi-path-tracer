@@ -9,10 +9,12 @@ lookup material in the SceneDB
 *** DONE push the TriMesh to C++ code. add camera resolution, Fix the example renderer.
 ** 2012-1-19(Wed)
 *** DONE Separate python -> cpp translator and rendering core library, added ImageFilm.
-
+** 2012-2-7(Tue) *
+** TODO TriMesh, Triangle intersection
 
 ** TODO cpp implementation
-*** api/ifgi_cpp_render.cpp::compute_color, Triangle::ray_intersect
+*** ImageFilm save file. use gfi to save png etc.
+*** api/ifgi_cpp_render.cpp::compute_color, 
 *** Sampler, Sampler's unit test
 *** render_frame, render_single_frame, save_frame
 *** IfgiCppRender::render_single_frame()

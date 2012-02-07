@@ -5,6 +5,10 @@
 /// \file
 /// \brief primitive triangle
 
+#include <cpp/base/Exception.hh>
+
+#include "HitRecord.hh"
+#include "Ray.hh"
 #include "Triangle.hh"
 
 namespace ifgi
@@ -36,13 +40,14 @@ std::string Triangle::get_classname() const
 }
 
 //----------------------------------------------------------------------
-// BBox32 const & Triangle::get_bbox() const
-// {
-//     if(m_bbox == None){
-//         raise StandardError, ("Invalid triangle, no bounding box.");
-//     }
-//     return m_bbox;
-// }
+// get the bounding box. interface method.
+BBox32 const & Triangle::get_bbox() const
+{
+    if(m_bbox.get_rank() < 2){
+        throw Exception("Invalid triangle, no bounding box.");
+    }
+    return m_bbox;
+}
 
 //----------------------------------------------------------------------
 // can a triangle intersect with a ray? Yes.
@@ -58,43 +63,41 @@ bool Triangle::ray_intersect(Ray const & ray, HitRecord & hr) const
     // Cramer's rule based ray-triangle intersection
 
     // get s1
-    // Scalar_3 const e1  = m_vertex[1] - m_vertex[0];
-    // Scalar_3 const e2  = m_vertex[2] - m_vertex[0];
-    // Scalar_3 const s1  = cross(ray.get_dir(), e2);
-    // Scalar   const div = dot(s1, e1);
-    // if(div == 0.0){
-    //     return false;
-    // }
-    // Scalar const inv_div = 1.0f / div;
+    Scalar_3 const e1  = m_vertex[1] - m_vertex[0];
+    Scalar_3 const e2  = m_vertex[2] - m_vertex[0];
+    Scalar_3 const s1  = cross(ray.get_dir(), e2);
+    Scalar   const div = s1.dot(e1);
+    if(div == 0.0){
+        return false;
+    }
+    Scalar const inv_div = Scalar(1.0) / div;
 
-    // // get barycentric coord b1
-    // Scalar_3 const d  = ray.get_origin() - m_vertex[0];
-    // Scalar   const b1 = dot(d, s1) * inv_div;
-    // if((b1 < 0.0) || (b1 > 1.0)){
-    //     return false;
-    // }
+    // get barycentric coord b1
+    Scalar_3 const d  = ray.get_origin() - m_vertex[0];
+    Scalar   const b1 = d.dot(s1) * inv_div;
+    if((b1 < 0.0) || (b1 > 1.0)){
+        return false;
+    }
 
-    // // get barycentric coord b2
-    // Scalar_3 const s2 = cross(d, e1);
-    // Scalar   const b2 = dot(_ray.get_dir(), s2) * inv_div;
-    // if ((b2 < 0.0) || ((b1 + b2) > 1.0)){
-    //     return false;
-    // }
+    // get barycentric coord b2
+    Scalar_3 const s2 = cross(d, e1);
+    Scalar   const b2 = ray.get_dir().dot(s2) * inv_div;
+    if((b2 < 0.0) || ((b1 + b2) > 1.0)){
+        return false;
+    }
 
-    // // get intersection point (distance t);
-    // Scalar const t = dot(e2, s2) * inv_div;
-    // if((t < ray.get_min_t()) || (t > ray.get_max_t())){
-    //     return false;
-    // }
+    // get intersection point (distance t);
+    Scalar const t = e2.dot(s2) * inv_div;
+    if((t < ray.get_min_t()) || (t > ray.get_max_t())){
+        return false;
+    }
 
-    std::cout << "NIN HitRecord" << std::endl;
-    assert(false);
-    // // print "Hit: t = " + str(t) + ", b1 = " + str(b1) + ", b2 = " + str(b2);
-    // hr.dist = t;
-    // hr.intersect_pos = m_vertex[0] + b1 * e1 + b2 * e2;
-    // hr.hit_primitive = this;
-    // hr.hit_basis = OrthonomalBasis.OrthonomalBasis();
-    // hr.hit_basis.init_from_uv(e1, e2); /// set normal
+    std::cout << "Hit: t = " << t << ", b1 = " << b1 << ", b2 = " << b2 << std::endl;
+    hr.m_dist = t;
+    hr.m_intersect_pos = m_vertex[0] + b1 * e1 + b2 * e2;
+    // hr.m_p_hit_primitive = this;
+    hr.m_hit_onb.init_from_uv(e1, e2); // set the normal of hit object
+
     return true;
 }
 

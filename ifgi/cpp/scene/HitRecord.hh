@@ -26,7 +26,7 @@ public:
     HitRecord()
         :
         m_dist(std::numeric_limits< Scalar >::max()),
-        m_p_hit_primitive(0),
+        // m_p_hit_primitive(0),
         m_intersect_pos(Scalar(0.0), Scalar(0.0), Scalar(0.0)),
         m_hit_onb(),
         m_hit_material_index(-1)
@@ -38,7 +38,7 @@ public:
     void initialize()
     {
         m_dist = std::numeric_limits< Scalar >::max();
-        m_p_hit_primitive = 0;
+        // m_p_hit_primitive = 0;
         m_intersect_pos = Scalar_3(Scalar(0.0), Scalar(0.0), Scalar(0.0));
         // m_hit_on_basis()
         m_hit_material_index = -1;
@@ -59,7 +59,7 @@ public:
     /// ray hit distance
     Scalar m_dist;
     /// hit primitive (currently primitive pointer. later a Tag)
-    Primitive * m_p_hit_primitive;
+    // Primitive * m_p_hit_primitive;
     /// intersection point
     Scalar_3 m_intersect_pos;
     /// hit point orthogonal basis

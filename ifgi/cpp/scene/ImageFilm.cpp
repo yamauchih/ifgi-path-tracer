@@ -58,6 +58,8 @@ Color ImageFilm::get_color(Sint32 x, Sint32 y) const
 // put a color at pixel (x,y).
 void ImageFilm::put_color(Sint32 x, Sint32 y, Color const & col)
 {
+    assert(m_framebuffer.getDimension()[2] == 4); // RGBA assumed
+
     m_framebuffer.set(x, y, 0, col[0]);
     m_framebuffer.set(x, y, 1, col[1]);
     m_framebuffer.set(x, y, 2, col[2]);

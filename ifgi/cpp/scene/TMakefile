@@ -4,6 +4,9 @@
 # Copyright (C) 2010-2012 Yamauchi Hitoshi
 # Sunday Researcher
 # ============================================================
-module { cxx }
+module { cxx gtest }
 
-# lappend EXCLUDE SceneGraph.cpp
+lappend link::PROJLIBS cpp/base
+
+# not yet ready
+lappend EXCLUDE test_Primitive.cpp

@@ -131,7 +131,7 @@ bool TriMesh::is_valid() const
 bool TriMesh::ray_intersect(Ray const & ray, HitRecord & trimesh_hr) const
 {
     trimesh_hr.m_dist = std::numeric_limits< Scalar >::max();
-    trimesh_hr.m_p_hit_primitive = 0;
+    // DELETEME trimesh_hr.m_p_hit_primitive = 0;
     HitRecord tmp_hr;
 
     Triangle tri; // FIXME. This triangle is constructed every intersection test.
@@ -161,6 +161,7 @@ bool TriMesh::ray_intersect(Ray const & ray, HitRecord & trimesh_hr) const
     }
 
     if(trimesh_hr.m_dist < std::numeric_limits< Scalar >::max()){
+        std::cout << "Ray hit to TriMesh." << std::endl;
         return true;
     }
     return false;
