@@ -12,7 +12,7 @@ lookup material in the SceneDB
 
 
 ** TODO cpp implementation
-*** api/ifgi_cpp_render.cpp::compute_color
+*** api/ifgi_cpp_render.cpp::compute_color, Triangle::ray_intersect
 *** Sampler, Sampler's unit test
 *** render_frame, render_single_frame, save_frame
 *** IfgiCppRender::render_single_frame()

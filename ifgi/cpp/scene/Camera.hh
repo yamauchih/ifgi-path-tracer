@@ -81,65 +81,65 @@ public:
 
     /// set eye position.
     /// \param[in] eye_pos eye position
-    void set_eye_pos(Float32_3 const & eye_pos);
+    void set_eye_pos(Scalar_3 const & eye_pos);
 
     /// get eye position.
     /// \return eye position
-    Float32_3 const & get_eye_pos() const;
+    Scalar_3 const & get_eye_pos() const;
 
     /// set view direction.
     /// \return view direction (normalized).
-    void set_view_dir(Float32_3 const & view_dir);
+    void set_view_dir(Scalar_3 const & view_dir);
 
     /// get view direction.
     /// \return view direction
-    Float32_3 const & get_view_dir() const;
+    Scalar_3 const & get_view_dir() const;
 
     /// set lookat position.
     /// \param[in] eye_pos    eye position
     /// \param[in] lookat_pos lookat position
-    void set_eye_lookat_pos(Float32_3 const & eye_pos,
-                            Float32_3 const & lookat_pos);
+    void set_eye_lookat_pos(Scalar_3 const & eye_pos,
+                            Scalar_3 const & lookat_pos);
 
     /// set up direction.
     /// \param[in] up direction
-    void set_up_dir(Float32_3 const & up_dir);
+    void set_up_dir(Scalar_3 const & up_dir);
 
     /// get up direction.
     /// \return up direction
-    Float32_3 const & get_up_dir() const;
+    Scalar_3 const & get_up_dir() const;
 
     /// set fovy as radian.
     /// \param[in] fovy_rad field of view in radian.
-    void set_fovy_rad(Float32 fovy_rad);
+    void set_fovy_rad(Scalar fovy_rad);
 
     /// get fovy as radian.
     /// \return field of view Y. (radian)
-    Float32 get_fovy_rad() const;
+    Scalar get_fovy_rad() const;
 
     /// set aspect ratio.
     /// \param[in] aspect_ratio aspect ratio.
-    void set_aspect_ratio(Float32 aspect_ratio);
+    void set_aspect_ratio(Scalar aspect_ratio);
 
     /// get aspect ratio.
     /// \return aspect ratio.
-    Float32 get_aspect_ratio() const;
+    Scalar get_aspect_ratio() const;
 
     /// set z near plane distance.
     /// \param[in] z_near z near plane distance.
-    void set_z_near(Float32 z_near);
+    void set_z_near(Scalar z_near);
 
     /// get z near plane distance.
     /// \return z near plane distance.
-    Float32 get_z_near() const;
+    Scalar get_z_near() const;
 
     /// set z far plane distance.
     /// \param[in] z_far z far plane distance.
-    void set_z_far(Float32 z_far);
+    void set_z_far(Scalar z_far);
 
     /// get z far plane distance.
     /// \return z far plane distance.
-    Float32 get_z_far()const;
+    Scalar get_z_far()const;
 
     /// get projection mode.
     /// \return projection mode
@@ -163,32 +163,32 @@ public:
 
     /// get target (lookat point) distance.
     /// \return eye to lookat point (target) distance.
-    Float32 get_target_distance() const;
+    Scalar get_target_distance() const;
 
     /// set target (lookat point) distance.
     /// \param[in] target_dist target distance.
-    void set_target_distance(Float32 target_dist);
+    void set_target_distance(Scalar target_dist);
 
     /// get lens to screen distance.
     /// \return lens to screen distance.
-    Float32 get_lens_to_screen_distance() const;
+    Scalar get_lens_to_screen_distance() const;
 
     /// get focal length
     /// \return focal length.
-    Float32 get_focal_length() const;
+    Scalar get_focal_length() const;
 
     /// set focal length.
     /// \param[in] focal_len focal length.
-    void set_focal_length(Float32 focal_len);
+    void set_focal_length(Scalar focal_len);
 
     /// get lens to fim distance.
     /// \return lens to screen distance.
     /// NIN
-    Float32 get_lens_to_film_distance() const;
+    Scalar get_lens_to_film_distance() const;
 
     /// set lens to fim distance.
     /// \param[in] lens to film distance.
-    void set_lens_to_film_distance(Float32 l2f_dist);
+    void set_lens_to_film_distance(Scalar l2f_dist);
 
     /// get ray.
     /// \param[in] dx delta x normalized screen coordinate [0,1]
@@ -205,11 +205,11 @@ public:
 
     /// set orthogonal projection width.
     /// \param[in] ortho_width orthogonal projection width size.
-    void set_ortho_width(Float32 ortho_width);
+    void set_ortho_width(Scalar ortho_width);
 
     /// get orthogonal projection width.
     /// \return ortho_width
-    Float32 get_ortho_width() const;
+    Scalar get_ortho_width() const;
 
     /// set image resolution x
     /// \param[in] res_x image resolution x
@@ -443,38 +443,38 @@ private:
     /// camera name
     std::string m_camera_name;
     /// eye position
-    Float32_3 m_eye_pos;
+    Scalar_3 m_eye_pos;
     /// viewing direction
-    Float32_3 m_view_dir;
+    Scalar_3 m_view_dir;
     /// up vector
-    Float32_3 m_up_dir;
+    Scalar_3 m_up_dir;
     /// Y field of view in radian
-    Float32 m_fovy_rad;
+    Scalar m_fovy_rad;
     /// aspect ratio
-    Float32 m_aspect_ratio;
+    Scalar m_aspect_ratio;
     /// z plane near distance
-    Float32 m_z_near;
+    Scalar m_z_near;
     /// z plane far distance
-    Float32 m_z_far;
+    Scalar m_z_far;
     /// camera projection mode: This type is Camera_projection_mode_e,
     /// but for Dictionary conversion Uint32
     Uint32 m_projection;
     /// target distance = |eye_pos - lookat_point|
-    Float32 m_target_dist;
+    Scalar m_target_dist;
     /// focul length
-    Float32 m_focal_length;
+    Scalar m_focal_length;
     /// lens to screen distance
-    Float32 m_lens_screen_dist;
+    Scalar m_lens_screen_dist;
     /// lens to film distance
-    Float32 m_lens_film_dist;
+    Scalar m_lens_film_dist;
     /// lower bottom corner position of the screen
-    Float32_3 m_LB_corner;
+    Scalar_3 m_LB_corner;
     /// x direction base vector
-    Float32_3 m_ex;
+    Scalar_3 m_ex;
     /// y direction base vector
-    Float32_3 m_ey;
+    Scalar_3 m_ey;
     /// orthogonal projection width
-    Float32 m_ortho_width;
+    Scalar m_ortho_width;
     /// image resolution x
     Sint32 m_resolution_x;
     /// image resolution y

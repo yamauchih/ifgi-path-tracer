@@ -54,15 +54,6 @@ public:
     /// get string representation
     /// \return string representation
     std::string to_string() const;
-    // {
-    //     std::stringstream sstr;
-    //     sstr << "HitRecord: dist: " << m_dist
-    //          << ", pos: "           << m_intersect_pos
-    //          << ", basis: "         << m_hit_basis
-    //          << ", matidx: "        << m_hit_material_index;
-    //     return sstr.str();
-    // }
-// DELETEME
 
 public:
     /// ray hit distance

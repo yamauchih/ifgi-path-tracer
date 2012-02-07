@@ -174,7 +174,7 @@ int IfgiCppRender::render_n_frame(Sint32 max_frame, Sint32 save_per_frame)
     for(int i = 0; i < max_frame; ++i){
         this->render_single_frame(i);
         std::stringstream sstr;
-        sstr << "frame: " << i;
+        sstr << "frame: " << i << "\n";
         ILog::instance()->info(sstr.str());
         if((i != 0) && ((i % save_per_frame) == 0)){
             this->save_frame(i);
@@ -243,10 +243,25 @@ void IfgiCppRender::setup_sampler()
 
 //----------------------------------------------------------------------
 // ray scene intersection
-bool IfgiCppRender::ray_scene_intersection(Ray const & ray, HitRecord & hr)
+bool IfgiCppRender::ray_scene_intersection(Ray const & ray, HitRecord & closest_hr)
 {
-    // NIN FIXME
-    return false;
+    closest_hr.initialize();    // set m_dist = std::numeric_limits< Scalar >::max();
+    HitRecord tmp_hr;
+    for(std::vector< TriMesh * >::const_iterator tmi = m_p_trimesh_vec.begin();
+        tmi != m_p_trimesh_vec.end(); ++tmi)
+    {
+        if((*tmi)->ray_intersect(ray, tmp_hr)){
+            // hit
+            if(closest_hr.m_dist > tmp_hr.m_dist){
+                closest_hr = tmp_hr; // FIXME. Maybe not necessary to copy alll
+            }
+        }
+    }
+
+    if(closest_hr.m_dist == std::numeric_limits< Scalar >::max()){
+        return false;
+    }
+    return true;
 }
 
 //----------------------------------------------------------------------
@@ -254,7 +269,7 @@ bool IfgiCppRender::ray_scene_intersection(Ray const & ray, HitRecord & hr)
 void IfgiCppRender::compute_color(
     ImageFilm * p_img,
     Sint32 pixel_x,
-    Sint32 pixel_y, 
+    Sint32 pixel_y,
     Ray & ray,
     Sint32 nframe)
 {
@@ -264,8 +279,8 @@ void IfgiCppRender::compute_color(
     // FIXME max_path_length is here
     Sint32 const max_path_length = 10;
     ray.set_path_length(-1);
-    for(Sint32 path_len = 0; path_len < max_path_length; ++path_len){    
-        // bool const is_hit = this->ray_intersect(ray, hr);
+    for(Sint32 path_len = 0; path_len < max_path_length; ++path_len){
+        bool const is_hit = this->ray_scene_intersection(ray, hr);
         // if(is_hit){
         //     // hit somthing, lookup material
         //     assert(hr.hit_material_index >= 0);
@@ -292,7 +307,7 @@ void IfgiCppRender::compute_color(
         //     // Do not stop by reflectance criterion. (if stop, it"s wrong.);
 
         //     // update ray information
-        //     out_v = mat.diffuse_direction(hr.hit_basis, ray.get_dir(), 
+        //     out_v = mat.diffuse_direction(hr.hit_basis, ray.get_dir(),
         //                                   m_p_hemisphere_sampler);
         //     ray.set_origin(copy.deepcopy(hr.intersect_pos));
         //     ray.set_dir(copy.deepcopy(out_v));

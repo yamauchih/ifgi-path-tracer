@@ -105,7 +105,7 @@ public:
     /// \param[out] _v_out outgoing vector?
     ///
     /// \return outgoing direction, None if not supported
-    virtual Float32_3 diffuse_direction(// _hit_onb, _incident_dir, _hemisphere_sampler
+    virtual Scalar_3 diffuse_direction(// _hit_onb, _incident_dir, _hemisphere_sampler
         ) const ;
 
     /// is diffuse?

@@ -62,7 +62,7 @@ public:
             // resize the buffer
             std::stringstream sstr;
             sstr << "resize the sample location from " << m_sample_loc.getDimension()
-                 << " to " << new_dim;
+                 << " to " << new_dim << "\n";
             ILog::instance()->debug(sstr.str());
             m_sample_loc.resizeBuffer(new_dim);
         }

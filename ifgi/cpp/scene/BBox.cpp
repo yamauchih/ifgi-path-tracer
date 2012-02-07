@@ -56,19 +56,19 @@ bool BBox32::ray_intersect(Ray const & ray, HitRecord & hr) const
 // invalidate this bbox.
 void BBox32::invalidate()
 {
-    m_min = Float32_3(std::numeric_limits< Float32 >::max(),
-                      std::numeric_limits< Float32 >::max(),
-                      std::numeric_limits< Float32 >::max());
-    m_max = Float32_3(-std::numeric_limits< Float32 >::max(),
-                      -std::numeric_limits< Float32 >::max(),
-                      -std::numeric_limits< Float32 >::max());
+    m_min = Scalar_3(std::numeric_limits< Scalar >::max(),
+                     std::numeric_limits< Scalar >::max(),
+                     std::numeric_limits< Scalar >::max());
+    m_max = Scalar_3(-std::numeric_limits< Scalar >::max(),
+                     -std::numeric_limits< Scalar >::max(),
+                     -std::numeric_limits< Scalar >::max());
 }
 
 //----------------------------------------------------------------------
 // get rank of this bbox.
 Sint32 BBox32::get_rank() const
 {
-    Float32_3 const diff = m_max - m_min;
+    Scalar_3 const diff = m_max - m_min;
     Sint32 rank_count = 0;
     for(Sint32 i = 0; i < 3; ++i){
         if(diff[i] > 0.0f){
@@ -83,7 +83,7 @@ Sint32 BBox32::get_rank() const
 bool BBox32::has_volume() const
 {
     // for all max > min.
-    Float32_3 const diff = m_max - m_min;
+    Scalar_3 const diff = m_max - m_min;
     for(Sint32 i = 0; i < 3; ++i){
         if(diff[i] <= 0.0f){
             return false;
@@ -94,7 +94,7 @@ bool BBox32::has_volume() const
 
 //----------------------------------------------------------------------
 // insert a point and grow the bbox. (public).
-void BBox32::insert_point(Float32_3 const & newpos)
+void BBox32::insert_point(Scalar_3 const & newpos)
 {
     for(Sint32 i = 0; i < 3; ++i){
         if(m_min[i] > newpos[i]){
@@ -123,14 +123,14 @@ void BBox32::insert_bbox(BBox32 const & bbox)
 
 //----------------------------------------------------------------------
 // get minimal point (public).
-Float32_3 const & BBox32::get_min() const
+Scalar_3 const & BBox32::get_min() const
 {
     return m_min;
 }
 
 //----------------------------------------------------------------------
 // get maximal point (public).
-Float32_3 const & BBox32::get_max() const
+Scalar_3 const & BBox32::get_max() const
 {
     return m_max;
 }

@@ -7,6 +7,9 @@
 
 #include "TriMesh.hh"
 
+#include "Triangle.hh"
+#include "HitRecord.hh"
+
 namespace ifgi
 {
 //----------------------------------------------------------------------
@@ -67,12 +70,12 @@ bool TriMesh::can_intersect() const
 //----------------------------------------------------------------------
 // set geometry data
 void TriMesh::set_data(
-    std::vector< Float32_3 > const & vlist,
-    std::vector< Sint32_3 >  const & fidxlist,
-    std::vector< Float32_3 > const & tclist,
-    std::vector< Sint32_3 >  const & tcidxlist,
-    std::vector< Float32_3 > const & nlist,
-    std::vector< Sint32_3 >  const & nidxlist)
+    std::vector< Scalar_3 > const & vlist,
+    std::vector< Sint32_3 > const & fidxlist,
+    std::vector< Scalar_3 > const & tclist,
+    std::vector< Sint32_3 > const & tcidxlist,
+    std::vector< Scalar_3 > const & nlist,
+    std::vector< Sint32_3 > const & nidxlist)
 {
     assert(!vlist.empty()); // at least, some points must be there.
     m_vertex_vec       = vlist;
@@ -82,13 +85,6 @@ void TriMesh::set_data(
     m_normal_vec       = nlist;
     m_normal_idx_vec   = nidxlist;
     this->update_bbox();
-}
-
-//----------------------------------------------------------------------
-// set global material index.
-void TriMesh::set_material_index(Sint32 mat_idx)
-{
-    m_material_index = mat_idx;
 }
 
 //----------------------------------------------------------------------
@@ -113,7 +109,7 @@ std::string TriMesh::get_info_summary() const
 void TriMesh::update_bbox()
 {
     m_bbox.invalidate();  // reset the bbox
-    for(std::vector< Float32_3 >::const_iterator vi = m_vertex_vec.begin();
+    for(std::vector< Scalar_3 >::const_iterator vi = m_vertex_vec.begin();
         vi != m_vertex_vec.end(); ++vi)
     {
         m_bbox.insert_point(*vi);
@@ -132,34 +128,41 @@ bool TriMesh::is_valid() const
 
 //----------------------------------------------------------------------
 // compute a ray and a trimesh intersection.
-bool TriMesh::ray_intersect(Ray const & ray, HitRecord & hr) const
+bool TriMesh::ray_intersect(Ray const & ray, HitRecord & trimesh_hr) const
 {
-    assert(false);          // NIN
-    // trimesh_hr = HitRecord.HitRecord();
+    trimesh_hr.m_dist = std::numeric_limits< Scalar >::max();
+    trimesh_hr.m_p_hit_primitive = 0;
+    HitRecord tmp_hr;
 
-    // /// following init is make sure only (done in the HitRecord.__init__());
-    // trimesh_hr.dist = sys.float_info.max;
-    // trimesh_hr.hit_primitive = None;
+    Triangle tri; // FIXME. This triangle is constructed every intersection test.
 
-    // for(fi in this->face_idx_vec){
-    //     tri = Triangle();
-    //     tri.set_vertex(this->vertex_vec[fi[0]],
-    //                    this->vertex_vec[fi[1]],
-    //                    this->vertex_vec[fi[2]]);
+    for(std::vector< Sint32_3 >::const_iterator fi = m_face_idx_vec.begin();
+        fi != m_face_idx_vec.end(); ++fi)
+    {
+        assert((*fi)[0] < static_cast< Sint32 >(m_vertex_vec.size()));
+        assert((*fi)[1] < static_cast< Sint32 >(m_vertex_vec.size()));
+        assert((*fi)[2] < static_cast< Sint32 >(m_vertex_vec.size()));
 
-    //     if(!(tri.ray_intersect(_ray, hr))){
-    //         if(trimesh_hr.dist > hr.dist){
-    //             trimesh_hr.dist = hr.dist;
-    //             trimesh_hr.intersect_pos = hr.intersect_pos;
-    //             trimesh_hr.hit_primitive = tri;
-    //             trimesh_hr.hit_basis = hr.hit_basis;
-    //             trimesh_hr.hit_material_index = this->material_index;
-    //         }
-    //     }
-    // }
-    // if(trimesh_hr.hit_primitive != None){
-    //     return true;
-    // }
+        tri.set_vertex(m_vertex_vec[(*fi)[0]],
+                       m_vertex_vec[(*fi)[1]],
+                       m_vertex_vec[(*fi)[2]]);
+        if(!(tri.ray_intersect(ray, tmp_hr))){
+            if(trimesh_hr.m_dist > tmp_hr.m_dist){
+                trimesh_hr.m_dist          = tmp_hr.m_dist;
+                trimesh_hr.m_intersect_pos = tmp_hr.m_intersect_pos;
+                // FIXME should be a triangle? But here local created
+                // one can not be kept in this design. How this
+                // primitive is used?
+                // trimesh_hr.m_p_hit_primitive = this; May not used
+                trimesh_hr.m_hit_onb = tmp_hr.m_hit_onb;
+                trimesh_hr.m_hit_material_index = this->get_material_index();
+            }
+        }
+    }
+
+    if(trimesh_hr.m_dist < std::numeric_limits< Scalar >::max()){
+        return true;
+    }
     return false;
 }
 

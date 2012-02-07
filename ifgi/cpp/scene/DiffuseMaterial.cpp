@@ -153,12 +153,12 @@ void DiffuseMaterial::explicit_brdf(// _hit_onb, _out_v0, _out_v1, _tex_point, _
     ) const
 {
     // 1/pi * pho
-    out_brdf = Float32(M_1_PI) * m_p_texture_ref->value(); //_tex_uv, _tex_point
+    out_brdf = Scalar(M_1_PI) * m_p_texture_ref->value(); //_tex_uv, _tex_point
 }
 
 //----------------------------------------------------------------------
 // explicit brdf
-Float32_3 DiffuseMaterial::diffuse_direction(// _hit_onb, _incident_dir, _hemisphere_sampler
+Scalar_3 DiffuseMaterial::diffuse_direction(// _hit_onb, _incident_dir, _hemisphere_sampler
     ) const
 {
     // v_on_hs = _hemisphere_sampler.get_sample();
@@ -172,7 +172,7 @@ Float32_3 DiffuseMaterial::diffuse_direction(// _hit_onb, _incident_dir, _hemisp
 
     std::cout << "NIN DiffuseMaterial::diffuse_direction" << std::endl;
 
-    return Float32_3();
+    return Scalar_3();
 }
 
 //----------------------------------------------------------------------

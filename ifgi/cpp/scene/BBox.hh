@@ -19,7 +19,8 @@ class Ray;
 class HiiRecord;
 
 //----------------------------------------------------------------------
-/// BBox. axis aligned 3D bounding box. Float32
+/// BBox. axis aligned 3D bounding box. Scalar. FIXME This should be
+/// BBoxScalar.
 class BBox32 : public IPrimitive
 {
 public:
@@ -66,7 +67,7 @@ public:
 
     /// insert a point and grow the bbox. (public).
     /// \param[in] newpos newly inserted point
-    void insert_point(Float32_3 const & newpos);
+    void insert_point(Scalar_3 const & newpos);
 
     /// insert a bbox and grow the bbox.
     /// \param[in] bbox bounding box to be inserted.
@@ -74,11 +75,11 @@ public:
 
     /// get minimal point (public).
     /// \return minimal point (numpy.array[3]);
-    Float32_3 const & get_min() const;
+    Scalar_3 const & get_min() const;
 
     /// get maximal point (public).
     /// \return maximal point (numpy.array[3]);
-    Float32_3 const & get_max() const;
+    Scalar_3 const & get_max() const;
 
     /// equal?
     /// comparison  with other. If exact the same, return True
@@ -93,9 +94,9 @@ public:
 
 private:
     /// min point of this bounding box
-    Float32_3 m_min;
+    Scalar_3 m_min;
     /// max point of this bounding box
-    Float32_3 m_max;
+    Scalar_3 m_max;
 };
 
 } // namespace ifgi

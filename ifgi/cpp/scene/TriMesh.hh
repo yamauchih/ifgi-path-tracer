@@ -52,19 +52,30 @@ public:
     /// \param[in]  tcidxlist texture coordinate index list
     /// \param[in]  nlist     normal list
     /// \param[in]  nidxlist  normal index list
-    void set_data(std::vector< Float32_3 > const & vlist,
-                  std::vector< Sint32_3 >  const & fidxlist,
-                  std::vector< Float32_3 > const & tclist,
-                  std::vector< Sint32_3 >  const & tcidxlist,
-                  std::vector< Float32_3 > const & nlist,
-                  std::vector< Sint32_3 >  const & nidxlist);
+    void set_data(std::vector< Scalar_3 > const & vlist,
+                  std::vector< Sint32_3 > const & fidxlist,
+                  std::vector< Scalar_3 > const & tclist,
+                  std::vector< Sint32_3 > const & tcidxlist,
+                  std::vector< Scalar_3 > const & nlist,
+                  std::vector< Sint32_3 > const & nidxlist);
 
     /// set global material index.
     ///
     /// \param[in] mat_idx global material index.
     ///
     /// FIXME: shall I push this information to each triangles?
-    void set_material_index(Sint32 mat_idx);
+    void set_material_index(Sint32 mat_idx)
+    {
+        m_material_index = mat_idx;
+    }
+
+    /// get global material index.
+    ///
+    /// \return global material index.
+    Sint32 get_material_index() const
+    {
+        return m_material_index;
+    }
 
     /// get summary information
     ///
@@ -88,17 +99,17 @@ public:
 
 private:
     /// vertex position vector
-    std::vector< Float32_3 > m_vertex_vec;
+    std::vector< Scalar_3 > m_vertex_vec;
     /// triangle face index vector
-    std::vector< Sint32_3 >  m_face_idx_vec;
+    std::vector< Sint32_3 > m_face_idx_vec;
     /// texture coordinate vector.
-    std::vector< Float32_3 > m_texcoord_vec;
+    std::vector< Scalar_3 > m_texcoord_vec;
     /// texture coordinate index vector
-    std::vector< Sint32_3 >  m_texcoord_idx_vec;
+    std::vector< Sint32_3 > m_texcoord_idx_vec;
     /// normal vector
-    std::vector< Float32_3 > m_normal_vec;
+    std::vector< Scalar_3 > m_normal_vec;
     /// normal index vector
-    std::vector< Sint32_3 >  m_normal_idx_vec;
+    std::vector< Sint32_3 > m_normal_idx_vec;
     /// bounding box of this triangle mesh
     BBox32 m_bbox;
     /// global material index of this geometry (valid after

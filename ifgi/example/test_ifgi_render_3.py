@@ -53,7 +53,7 @@ class TestIfgiRender3(unittest.TestCase):
 
         # render frames
         self.__ifgi_cpp_render_core.prepare_rendering()
-        max_frame      = 2000
+        max_frame      = 10
         save_per_frame = 50
         self.__ifgi_cpp_render_core.render_n_frame(max_frame, save_per_frame)
 

@@ -71,7 +71,7 @@ void EnvironmentMaterial::explicit_brdf(// _hit_onb, out_v0, out_v1, tex_point, 
     Color & out_brdf
     ) const
 {
-    out_brdf = Float32(M_1_PI) * m_p_texture_ref->value();
+    out_brdf = static_cast< Scalar >(M_1_PI) * m_p_texture_ref->value();
 }
 
 //----------------------------------------------------------------------

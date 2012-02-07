@@ -97,12 +97,12 @@ public:
     /// \param[in] incident_dir incident direction
     /// \param[in] hemisphere_sampler   uniform sampler on a hemisphere
     /// \return outgoing direction, None if not supported
-    virtual Float32_3 diffuse_direction(// hit_onb, incident_dir, hemisphere_sampler
+    virtual Scalar_3 diffuse_direction(// hit_onb, incident_dir, hemisphere_sampler
         ) const
     {
         assert(this->is_diffuse());
         throw Exception("IMaterial::diffuse_direction: not supported");
-        return Float32_3();
+        return Scalar_3();
     }
 
     /// explicit brdf
@@ -114,13 +114,13 @@ public:
     /// \param[in,out] rnd_seed randomnumber seed
     /// \param[out] tex_color texture color
     /// \param[out] v_out outgoing vector?
-    virtual Float32_3 specular_direction(//hit_onb, incident_dir, tex_point, tex_uv,
+    virtual Scalar_3 specular_direction(//hit_onb, incident_dir, tex_point, tex_uv,
         // rnd_seed, tex_color, v_out
         ) const
     {
         assert(this->is_specular());
         throw Exception("IMaterial::specular_direction: not supported");
-        return Float32_3();
+        return Scalar_3();
     }
 
         // \return true when supported
@@ -139,13 +139,13 @@ public:
     /// \param[out] v_out outgoing vector?
     ///
     /// \return true when supported
-    virtual Float32_3 transmission_direction(//_hit_onb, incident_dir, tex_point, tex_uv,
+    virtual Scalar_3 transmission_direction(//_hit_onb, incident_dir, tex_point, tex_uv,
                                              //rnd_seed, ext_color, fresnel_scale, v_out);
         ) const
     {
         assert(this->is_transmissive());
         throw Exception("IMaterial::transmission_direction: not supported");
-        return Float32_3();
+        return Scalar_3();
     }
 
     /// is diffuse?

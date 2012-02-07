@@ -89,7 +89,7 @@ std::string Camera::get_camera_name() const
 
 //----------------------------------------------------------------------
 // set eye position.
-void Camera::set_eye_pos(Float32_3 const & eye_pos)
+void Camera::set_eye_pos(Scalar_3 const & eye_pos)
 {
     m_eye_pos = eye_pos;
     this->compute_screen_parameter();
@@ -97,14 +97,14 @@ void Camera::set_eye_pos(Float32_3 const & eye_pos)
 
 //----------------------------------------------------------------------
 // get eye position.
-Float32_3 const & Camera::get_eye_pos() const
+Scalar_3 const & Camera::get_eye_pos() const
 {
     return m_eye_pos;
 }
 
 //----------------------------------------------------------------------
 // set view direction.
-void Camera::set_view_dir(Float32_3 const & view_dir)
+void Camera::set_view_dir(Scalar_3 const & view_dir)
 {
     m_view_dir = view_dir;
     m_view_dir.normalize();
@@ -113,19 +113,19 @@ void Camera::set_view_dir(Float32_3 const & view_dir)
 
 //----------------------------------------------------------------------
 // get view direction.
-Float32_3 const & Camera::get_view_dir() const
+Scalar_3 const & Camera::get_view_dir() const
 {
     return m_view_dir;
 }
 
 //----------------------------------------------------------------------
 // set lookat position.
-void Camera::set_eye_lookat_pos(Float32_3 const & eye_pos,
-                                Float32_3 const & lookat_pos)
+void Camera::set_eye_lookat_pos(Scalar_3 const & eye_pos,
+                                Scalar_3 const & lookat_pos)
 {
     m_eye_pos  = eye_pos;
-    Float32_3 const lookat_vec = lookat_pos - eye_pos;
-    Float32 const dist = lookat_vec.norm();
+    Scalar_3 const lookat_vec = lookat_pos - eye_pos;
+    Scalar const dist = lookat_vec.norm();
     assert(dist > 0);
 
     m_target_dist = dist;
@@ -135,7 +135,7 @@ void Camera::set_eye_lookat_pos(Float32_3 const & eye_pos,
 
 //----------------------------------------------------------------------
 // set up direction.
-void Camera::set_up_dir(Float32_3 const & up_dir)
+void Camera::set_up_dir(Scalar_3 const & up_dir)
 {
     m_up_dir = up_dir;
     m_up_dir.normalize();
@@ -144,56 +144,56 @@ void Camera::set_up_dir(Float32_3 const & up_dir)
 
 //----------------------------------------------------------------------
 // get up direction.
-Float32_3 const & Camera::get_up_dir() const
+Scalar_3 const & Camera::get_up_dir() const
 {
     return m_up_dir;
 }
 
 //----------------------------------------------------------------------
 // set fovy as radian.
-void Camera::set_fovy_rad(Float32 fovy_rad)
+void Camera::set_fovy_rad(Scalar fovy_rad)
 {
     m_fovy_rad = fovy_rad;
 }
 
 //----------------------------------------------------------------------
 // get fovy as radian.
-Float32 Camera::get_fovy_rad() const
+Scalar Camera::get_fovy_rad() const
 {
     return m_fovy_rad;
 }
 
 //----------------------------------------------------------------------
 // set aspect ratio.
-void Camera::set_aspect_ratio(Float32 aspect_ratio)
+void Camera::set_aspect_ratio(Scalar aspect_ratio)
 {
     m_aspect_ratio = aspect_ratio;
 }
 
 //----------------------------------------------------------------------
 // get aspect ratio.
-Float32 Camera::get_aspect_ratio() const
+Scalar Camera::get_aspect_ratio() const
 {
     return m_aspect_ratio;
 }
 
 //----------------------------------------------------------------------
 // set z near plane distance.
-void Camera::set_z_near(Float32 z_near)
+void Camera::set_z_near(Scalar z_near)
 {
     m_z_near = z_near;
 }
 
 //----------------------------------------------------------------------
 // get z near plane distance.
-Float32 Camera::get_z_near() const
+Scalar Camera::get_z_near() const
 {
     return m_z_near;
 }
 
 //----------------------------------------------------------------------
 // set z far plane distance.
-void Camera::set_z_far(Float32 z_far)
+void Camera::set_z_far(Scalar z_far)
 {
 //----------------------------------------------------------------------
     /// print "set_z_far: ", z_far
@@ -202,7 +202,7 @@ void Camera::set_z_far(Float32 z_far)
 
 //----------------------------------------------------------------------
 // get z far plane distance.
-Float32 Camera::get_z_far()const
+Scalar Camera::get_z_far()const
 {
     return m_z_far;
 }
@@ -258,49 +258,49 @@ void Camera::set_projection(Uint32 projection)
 
 //----------------------------------------------------------------------
 // get target (lookat point) distance.
-Float32 Camera::get_target_distance() const
+Scalar Camera::get_target_distance() const
 {
     return m_target_dist;
 }
 
 //----------------------------------------------------------------------
 // set target (lookat point) distance.
-void Camera::set_target_distance(Float32 target_dist)
+void Camera::set_target_distance(Scalar target_dist)
 {
     m_target_dist = target_dist;
 }
 
 //----------------------------------------------------------------------
 // get lens to screen distance.
-Float32 Camera::get_lens_to_screen_distance() const
+Scalar Camera::get_lens_to_screen_distance() const
 {
     return m_lens_screen_dist;
 }
 
 //----------------------------------------------------------------------
 // get focal length
-Float32 Camera::get_focal_length() const
+Scalar Camera::get_focal_length() const
 {
     return m_focal_length;
 }
 
 //----------------------------------------------------------------------
 // set focal length.
-void Camera::set_focal_length(Float32 focal_len)
+void Camera::set_focal_length(Scalar focal_len)
 {
     m_focal_length = focal_len;
 }
 
 //----------------------------------------------------------------------
 // get lens to fim distance.
-Float32 Camera::get_lens_to_film_distance() const
+Scalar Camera::get_lens_to_film_distance() const
 {
     return m_lens_film_dist;
 }
 
 //----------------------------------------------------------------------
 // set lens to fim distance.
-void Camera::set_lens_to_film_distance(Float32 l2f_dist)
+void Camera::set_lens_to_film_distance(Scalar l2f_dist)
 {
     m_lens_film_dist = l2f_dist;
 }
@@ -311,7 +311,7 @@ void Camera::set_lens_to_film_distance(Float32 l2f_dist)
 // \param[in] dy delta y normalized screen coordinate [0,1]
 // \return a ray
 // FIXME: don't new the Ray
-// Ray get_ray(Float32 dx, Float32 dy)
+// Ray get_ray(Scalar dx, Scalar dy)
 // {
 //     target =  m_LB_corner + dx * m_ex + dy * m_ey;
 //     vdir   =  target - m_eye_pos;
@@ -322,14 +322,14 @@ void Camera::set_lens_to_film_distance(Float32 l2f_dist)
 
 //----------------------------------------------------------------------
 // set orthogonal projection width.
-void Camera::set_ortho_width(Float32 ortho_width)
+void Camera::set_ortho_width(Scalar ortho_width)
 {
     m_ortho_width = ortho_width;
 }
 
 //----------------------------------------------------------------------
 // get orthogonal projection width.
-Float32 Camera::get_ortho_width() const
+Scalar Camera::get_ortho_width() const
 {
     return m_ortho_width;
 }
@@ -576,36 +576,36 @@ void Camera::set_config_dict(Dictionary const & dict)
 
 
     if(dict.is_defined("eye_pos")){
-        Float32_3 const ep = dict.get< Float32_3 > ("eye_pos");
+        Scalar_3 const ep = dict.get< Scalar_3 > ("eye_pos");
         this->set_eye_pos(ep);
     }
 
     if(dict.is_defined("view_dir")){
-        Float32_3 const vd = dict.get< Float32_3 >("view_dir");
+        Scalar_3 const vd = dict.get< Scalar_3 >("view_dir");
         this->set_view_dir(vd);
     }
 
     if(dict.is_defined("up_dir")){
-        Float32_3 const ud = dict.get< Float32_3 >("up_dir");
+        Scalar_3 const ud = dict.get< Scalar_3 >("up_dir");
         this->set_up_dir(ud);
     }
 
     if(dict.is_defined("fovy_rad")){
-        this->set_fovy_rad(dict.get< Float32 >("fovy_rad"));
+        this->set_fovy_rad(dict.get< Scalar >("fovy_rad"));
     }
 
     if(dict.is_defined("aspect_ratio")){
-        this->set_aspect_ratio(dict.get< Float32 >("aspect_ratio"));
+        this->set_aspect_ratio(dict.get< Scalar >("aspect_ratio"));
     }
 
     if(dict.is_defined("z_near")){
-        this->set_z_near(dict.get< Float32 >("z_near"));
+        this->set_z_near(dict.get< Scalar >("z_near"));
         /// print "DEBUG: set z_near", float(_config["z_near"]);
     }
 
     if(dict.is_defined("z_far")){
-        this->set_z_far(dict.get< Float32 >("z_far"));
-        /// print "DEBUG: set z_far", dict.get< Float32 >("z_far");
+        this->set_z_far(dict.get< Scalar >("z_far"));
+        /// print "DEBUG: set z_far", dict.get< Scalar >("z_far");
     }
 
     if(dict.is_defined("projection")){
@@ -613,19 +613,19 @@ void Camera::set_config_dict(Dictionary const & dict)
     }
 
     if(dict.is_defined("target_dist")){
-        this->set_target_distance(dict.get< Float32 >("target_dist"));
+        this->set_target_distance(dict.get< Scalar >("target_dist"));
     }
 
     if(dict.is_defined("focal_length")){
-        this->set_focal_length(dict.get< Float32 >("focal_length"));
+        this->set_focal_length(dict.get< Scalar >("focal_length"));
     }
 
     // if(dict.is_defined("lens_screen_dist")){
-    //     this->set_lens_to_screen_distance(dict.get< Float32 >("lens_screen_dist"));
+    //     this->set_lens_to_screen_distance(dict.get< Scalar >("lens_screen_dist"));
     // }
 
     if(dict.is_defined("lens_film_dist")){
-        this->set_lens_to_film_distance(dict.get< Float32 >("lens_film_dist"));
+        this->set_lens_to_film_distance(dict.get< Scalar >("lens_film_dist"));
     }
 
     if(dict.is_defined("resolution_x")){
@@ -666,12 +666,12 @@ Dictionary Camera::get_config_dict() const
 void Camera::compute_screen_parameter()
 {
     // // get center
-    // Float32_3 const center = m_eye_pos + m_lens_screen_dist * m_view_dir;
+    // Scalar_3 const center = m_eye_pos + m_lens_screen_dist * m_view_dir;
 
     // // get left bottom corner
-    // Float32 const halffovy   = 0.5 * m_fovy_rad;
-    // Float32 const halfwidth  = m_lens_screen_dist * tan(halffovy);
-    // Float32 const halfheight = m_lens_screen_dist * tan(halffovy * m_aspect_ratio);
+    // Scalar const halffovy   = 0.5 * m_fovy_rad;
+    // Scalar const halfwidth  = m_lens_screen_dist * tan(halffovy);
+    // Scalar const halfheight = m_lens_screen_dist * tan(halffovy * m_aspect_ratio);
 
     // // get basis
     // [m_ex, m_ey, m_view_dir] = this->get_coordinate_system();

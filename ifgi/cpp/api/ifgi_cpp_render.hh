@@ -121,22 +121,22 @@ private:
 
     /// ray scene intersection
     ///
-    /// \param[in] ray ray 
-    /// \param[out] hr  hit record. valid when return true
+    /// \param[in] ray ray
+    /// \param[out] closest_hr closest hit record. valid when return true
     /// \return true when hit something.
-    bool ray_scene_intersection(Ray const & ray, HitRecord & hr);
+    bool ray_scene_intersection(Ray const & ray, HitRecord & closest_hr);
 
     /// compute a framebuffer color and store it
     ///
     /// \param[in] p_img   image film (RGBA)
     /// \param[in] pixel_x pixel position x
     /// \param[in] pixel_x pixel position y
-    /// \param[in] ray     ray 
+    /// \param[in] ray     ray
     /// \param[in] nframe  current frame number
     void compute_color(
         ImageFilm * p_img,
         Sint32 pixel_x,
-        Sint32 pixel_y, 
+        Sint32 pixel_y,
         Ray & ray,
         Sint32 nframe);
 

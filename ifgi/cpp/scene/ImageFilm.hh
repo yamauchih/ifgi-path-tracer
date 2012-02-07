@@ -54,7 +54,7 @@ public:
     ///
     /// \param[in] aidx array index (x,y,z)
     /// \return a value of (x,y,z)
-    Float32 const get_value(Sint32_3 const & aidx) const
+    Scalar const get_value(Sint32_3 const & aidx) const
     {
         return m_framebuffer.get(aidx[0], aidx[1], aidx[2]);
     }
@@ -63,7 +63,7 @@ public:
     ///
     /// \param[in] aidx array index (x,y,z)
     /// \param[in] val  value to set
-    void set_value(Sint32_3 const & aidx, Float32 val)
+    void set_value(Sint32_3 const & aidx, Scalar val)
     {
         m_framebuffer.set(aidx[0], aidx[1], aidx[2], val);
     }
