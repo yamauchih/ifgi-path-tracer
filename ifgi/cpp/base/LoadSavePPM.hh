@@ -25,9 +25,9 @@ namespace ifgi
    \return true when the load is succeeded.
 */
 extern bool
-loadPPMArray3D(const std::string&          _loadfname,
-	       Array3D< float >& _a3d,
-	       const bool                  _isverbose = false);
+loadPPMArray3D(const std::string& _loadfname,
+               Array3D< float >&  _a3d,
+               const bool         _isverbose = false);
 
 //--------------------------------------------------------------------------------
 /**
@@ -40,8 +40,8 @@ loadPPMArray3D(const std::string&          _loadfname,
 */
 extern bool
 saveArray3DPPM(const Array3D< float >& _a3d,
-	       const std::string&                _savefname,
-	       const bool                        _isverbose = false);
+               const std::string&      _savefname,
+               const bool              _isverbose = false);
 
 //--------------------------------------------------------------------------------
 } // namespace ifgi

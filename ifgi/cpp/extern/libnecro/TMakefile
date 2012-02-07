@@ -1,8 +1,9 @@
 # -*-Mode: tcl -*-
 # ============================================================
-# TMakefile for ifgi
+# TMakefile for ifgi/cpp/extern
 # Copyright (C) 2010-2011 Yamauchi Hitoshi
 # Sunday Researcher
 # ============================================================
-subdir { extern }
-subdir { base scene api }
+
+# bitmap.cpp is an example for how to use gfi.h
+# lappend EXCLUDE bitmap.cpp

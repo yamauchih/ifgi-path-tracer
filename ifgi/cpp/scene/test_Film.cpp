@@ -32,7 +32,7 @@ TEST(ImageFilmTest, ImageFilmLineSaveTest)
     }
     
     // save a file
-    // NIN film.save_file("test_film_result.png");
+    film.save_file("test_film_result.ppm");
 }
 
 int main(int argc, char **argv)

@@ -87,65 +87,13 @@ public:
     /// \param[in] col color to be filled
     void fill_color(Color const & col);
 
-
     /// save the buffer contents to a file.
     /// \param[in] filename output file name
-    // bool save_file(std::string const & filename)
-    // {
-    //     imgsize  = (m_resolution[0], m_resolution[1]);
-    //     print imgsize
-
-    //     if(m_resolution[2] == 1){
-    //         /// grayscale -> convert to RGB
-    //         bg_white = (255, 255, 255);
-    //         img = Image.new("RGB", imgsize, bg_white);
-
-    //         for x in xrange(0, m_resolution[0], 1){
-    //             for y in xrange(0, m_resolution[1], 1){
-    //                 col = this->get_color(_pos);
-    //                 /// duplicate the channels
-    //                 ucharcol = (255 * col[0], 255 * col[0], 255 * col[0]);
-    //                 img.putpixel((x, m_resolution[1] - y - 1), ucharcol);
-    //                 }
-    //             }
-    //     }
-    //     elif(m_resolution[2] == 3){
-    //         // RGB
-    //         bg_white = (255, 255, 255);
-    //         img = Image.new("RGB", imgsize, bg_white);
-
-    //         for x in xrange(0, m_resolution[0], 1){
-    //             for y in xrange(0, m_resolution[1], 1){
-    //                 col = this->get_color(_pos);
-    //                 ucharcol = (255 * col[0], 255 * col[1], 255 * col[2]);
-    //                 img.putpixel((x, m_resolution[1] - y - 1), ucharcol);
-
-    //     elif(m_resolution[2] == 4){
-    //         /// RGBA
-    //         bg_white = (255, 255, 255, 255);
-    //         img = Image.new("RGBA", imgsize, bg_white);
-
-    //         for x in xrange(0, m_resolution[0], 1){
-    //             for y in xrange(0, m_resolution[1], 1){
-    //                 col = 255 * this->get_color((x, y));
-    //                 ucharcol = (int(col[0]), int(col[1]), int(col[2]), int(col[3]));
-    //                 img.putpixel((x, m_resolution[1] - y - 1), ucharcol);
-    //     else:
-    //         raise StandardError, ("supported number of channels are 1, 3, && 4, only.");
-
-    //     img.save(_filename);
-    //                 }
+    bool save_file(std::string const & filename);
 
     /// get human readable string
     /// \return string representation of this object
-    std::string to_string() const
-    {
-        Sint32_3 const dim = m_framebuffer.getDimension();
-        std::stringstream sstr;
-        sstr << "[name: " << m_buffername << ", resolution: ("
-             << dim[0] << " " << dim[1] << " " << dim[2] << ")]";
-        return sstr.str();
-    }
+    std::string to_string() const;
 
 private:
     /// buffer name

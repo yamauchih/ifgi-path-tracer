@@ -10,3 +10,20 @@ lappend link::PROJLIBS cpp/base
 
 # not yet ready
 lappend EXCLUDE test_Primitive.cpp
+
+
+#
+# additional clean entry
+#
+target core_bk_clean ALWAYS_BUILD {
+    set deletebakupfile [glob -nocomplain *~]
+    append deletebakupfile " core a.out TAGS"
+    append deletebakupfile " test_film_result.ppm"
+    puts -nonewline "file delete -- "
+    foreach f ${deletebakupfile} {
+	file delete -force -- ${f}
+	puts -nonewline "${f} "
+    }
+    puts ""
+}
+depend clean core_bk_clean
