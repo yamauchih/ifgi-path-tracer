@@ -7,6 +7,7 @@
 
 #include "ImageFilm.hh"
 #include <cpp/base/LoadSavePPM.hh>
+#include <cpp/base/GfiIO.hh>
 
 namespace ifgi
 {
@@ -81,14 +82,24 @@ void ImageFilm::fill_color(Color const & col)
 
 //----------------------------------------------------------------------
 // save the buffer contents to a file.
-bool ImageFilm::save_file(std::string const & filename)
+bool ImageFilm::save_file(std::string const & filename,
+                          std::string const & filetype)
 {
     Sint32_3 imgsize = m_framebuffer.getDimension();
     std::cout << "DEBUG: save_file: imgsize = " << imgsize << std::endl;
         
-    bool const is_verbose = true;
-    bool const ret = saveArray3DPPM(m_framebuffer, filename, is_verbose);
-    return ret;
+    if(filetype == "ppm"){
+        bool const is_verbose = true;
+        bool const ret = saveArray3DPPM(m_framebuffer, filename, is_verbose);
+        return ret;
+    }
+    else if(filetype == "gfi"){
+        bool const ret = save_gfi_to_array3d(m_framebuffer, filename);
+        return ret;
+    }
+    throw Exception("Unknown filetype [" + filetype + "]");
+
+    return false;
 }
 
 //----------------------------------------------------------------------

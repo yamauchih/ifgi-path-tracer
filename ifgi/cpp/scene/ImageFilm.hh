@@ -89,7 +89,9 @@ public:
 
     /// save the buffer contents to a file.
     /// \param[in] filename output file name
-    bool save_file(std::string const & filename);
+    /// \param[in] filetype output file type. {"ppm","gfi"}
+    /// \return true when succeeded
+    bool save_file(std::string const & filename, std::string const & file_type);
 
     /// get human readable string
     /// \return string representation of this object
