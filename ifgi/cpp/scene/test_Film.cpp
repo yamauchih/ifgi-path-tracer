@@ -11,13 +11,13 @@
 #include <gtest/gtest.h>
 
 
-/// Test Primitive
+/// Test ImageFilm
 /// TEST(test_case_name, test_name)
 TEST(ImageFilmTest, ImageFilmLineSaveTest)
 {
     ifgi::ImageFilm film(ifgi::Sint32_3(128, 100, 4), "RGBA");
     ASSERT_EQ(film.to_string(), std::string("[name: RGBA, resolution: (128 100 4)]"));
-    
+
     ifgi::Sint32_3 const res = film.get_resolution();
     ASSERT_EQ(res, ifgi::Sint32_3(128, 100, 4));
 
@@ -30,7 +30,7 @@ TEST(ImageFilmTest, ImageFilmLineSaveTest)
         film.put_color(i, i, red);
         ASSERT_EQ(film.get_color(i, i), red);
     }
-    
+
     // save a file
     ASSERT_EQ(film.save_file("test_film_result.ppm", "ppm"), true);
     ASSERT_EQ(film.save_file("test_film_result.gfi", "gfi"), true);

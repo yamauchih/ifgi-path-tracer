@@ -122,20 +122,6 @@ void BBox32::insert_bbox(BBox32 const & bbox)
 }
 
 //----------------------------------------------------------------------
-// get minimal point (public).
-Scalar_3 const & BBox32::get_min() const
-{
-    return m_min;
-}
-
-//----------------------------------------------------------------------
-// get maximal point (public).
-Scalar_3 const & BBox32::get_max() const
-{
-    return m_max;
-}
-
-//----------------------------------------------------------------------
 // equal?
 bool BBox32::equal(BBox32 const & other) const
 {

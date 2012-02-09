@@ -54,7 +54,7 @@ public:
     /// invalidate this bbox.
     /// The bbox has no volume after invalidate().
     void invalidate();
-    
+
     /// get rank of this bbox.
     /// The number of m_max > m_min satisfied axis.
     /// \return True when this bbox has area.
@@ -75,11 +75,17 @@ public:
 
     /// get minimal point (public).
     /// \return minimal point (numpy.array[3]);
-    Scalar_3 const & get_min() const;
+    Scalar_3 const & get_min() const
+    {
+        return m_min;
+    }
 
     /// get maximal point (public).
     /// \return maximal point (numpy.array[3]);
-    Scalar_3 const & get_max() const;
+    Scalar_3 const & get_max() const
+    {
+        return m_max;
+    }
 
     /// equal?
     /// comparison  with other. If exact the same, return True
