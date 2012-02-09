@@ -40,7 +40,7 @@ public:
     /// get bounding box of this node
     /// This should not be called.
     /// \return invalid bbox
-    // virtual BBox32 const & get_bbox() const; DELETME
+    // virtual BBoxScalar const & get_bbox() const; DELETME
 
     /// Does this node have a bounding box?
     /// \return False, material has no bounding box

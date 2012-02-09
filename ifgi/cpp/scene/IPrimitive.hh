@@ -16,7 +16,7 @@ namespace ifgi
 {
 
 // forward declarations
-class BBox32;
+class BBoxScalar;
 class Ray;
 class HitRecord;
 
@@ -64,7 +64,7 @@ public:
 
     /// get the bounding box. interface method.
     /// \return bounding box of this primitive.
-    virtual BBox32 const & get_bbox() const = 0;
+    virtual BBoxScalar const & get_bbox() const = 0;
 
     /// can this primitive intersect with a ray?
     ///

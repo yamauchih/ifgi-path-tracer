@@ -103,12 +103,12 @@ public:
 
     /// get bounding box of this node
     /// \return bounding box
-    BBox32 const & get_bbox() const;
+    BBoxScalar const & get_bbox() const;
 
     /// assign bbox value.
     /// set the bbox object. (bbox is cloned before set.);
     /// \param[in] bbox bounding box to be assigned.
-    // void set_bbox(BBox32 const & bbox)
+    // void set_bbox(BBoxScalar const & bbox)
     // {
     //     m_p_prim_ref->set_bbox(bbox);
     // }

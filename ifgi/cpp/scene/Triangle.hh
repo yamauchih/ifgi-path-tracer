@@ -33,7 +33,7 @@ public:
 
     /// get the bounding box. interface method.
     /// \return bounding box of this primitive.
-    virtual BBox32 const & get_bbox() const;
+    virtual BBoxScalar const & get_bbox() const;
 
     /// can a triangle intersect with a ray? Yes.
     virtual bool can_intersect() const;
@@ -60,7 +60,7 @@ private:
     /// triangle vertices
     Scalar_3 m_vertex[3];
     /// bounding box of this triangle
-    BBox32 m_bbox;
+    BBoxScalar m_bbox;
 };
 
 } // namespace ifgi

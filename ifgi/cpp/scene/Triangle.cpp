@@ -41,7 +41,7 @@ std::string Triangle::get_classname() const
 
 //----------------------------------------------------------------------
 // get the bounding box. interface method.
-BBox32 const & Triangle::get_bbox() const
+BBoxScalar const & Triangle::get_bbox() const
 {
     if(m_bbox.get_rank() < 2){
         throw Exception("Invalid triangle, no bounding box.");

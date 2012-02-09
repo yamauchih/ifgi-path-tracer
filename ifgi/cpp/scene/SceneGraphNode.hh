@@ -128,7 +128,7 @@ public:
 
     /// get bounding box of this node
     /// \return bounding box
-    BBox32 const & get_bbox() const
+    BBoxScalar const & get_bbox() const
     {
         return m_bbox;
     }
@@ -146,7 +146,7 @@ public:
     /// assign bbox value.
     /// set the bbox object. (bbox is cloned before set.);
     /// \param bbox bounding box to be assigned.
-    void set_bbox(BBox32 const & bbox)
+    void set_bbox(BBoxScalar const & bbox)
     {
         m_bbox = bbox;
     }
@@ -179,7 +179,7 @@ private:
     /// children of this node
     std::vector< SceneGraphNode * > m_children;
     /// bounding box of this node
-    BBox32 m_bbox;
+    BBoxScalar m_bbox;
     /// node name
     std::string m_nodename;
 };

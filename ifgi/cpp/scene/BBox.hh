@@ -19,15 +19,14 @@ class Ray;
 class HiiRecord;
 
 //----------------------------------------------------------------------
-/// BBox. axis aligned 3D bounding box. Scalar. FIXME This should be
-/// BBoxScalar.
-class BBox32 : public IPrimitive
+/// BBox. axis aligned 3D bounding box. Scalar.
+class BBoxScalar : public IPrimitive
 {
 public:
     /// default constructor
-    BBox32();
+    BBoxScalar();
     /// destructor
-    virtual ~BBox32()
+    virtual ~BBoxScalar()
     {
         // empty
     }
@@ -38,7 +37,7 @@ public:
 
     /// get the bounding box
     /// \return this
-    virtual BBox32 const & get_bbox() const;
+    virtual BBoxScalar const & get_bbox() const;
 
     /// can bbox primitive intersect with a ray?
     /// \return true
@@ -71,7 +70,7 @@ public:
 
     /// insert a bbox and grow the bbox.
     /// \param[in] bbox bounding box to be inserted.
-    void insert_bbox(BBox32 const & bbox);
+    void insert_bbox(BBoxScalar const & bbox);
 
     /// get minimal point (public).
     /// \return minimal point (numpy.array[3]);
@@ -92,7 +91,7 @@ public:
     /// otherwise False.
     /// \param[in] other other bounding box to compare
     /// \return true when equal
-    bool equal(BBox32 const & other) const;
+    bool equal(BBoxScalar const & other) const;
 
     /// string representation (public).
     /// \return string representation of this object.

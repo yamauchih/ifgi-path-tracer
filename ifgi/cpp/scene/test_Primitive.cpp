@@ -74,7 +74,7 @@ TEST(PrimitiveTest, BBoxTest)
     Scalar_3 const minp(-2.0, -1.0,  1.2);
     Scalar_3 const maxp(-0.2,  1.0,  5.5);
     Scalar_3 ipos( 0.0,  0.0,  0.0);
-    BBox32 bbox;
+    BBoxScalar bbox;
     for(Sint32 p = 0; p < 1000; ++p){
         for(Sint32 i = 0; i < 3; ++i){
             ipos[i] = drand48() * (maxp[i] - minp[i]) + minp[i];

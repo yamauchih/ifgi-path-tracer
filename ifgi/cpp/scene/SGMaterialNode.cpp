@@ -35,10 +35,10 @@ bool SGMaterialNode::is_primitive_node() const
 
 //----------------------------------------------------------------------
 // get bounding box of this node
-// BBox32 const & SGMaterialNode::get_bbox() const
+// BBoxScalar const & SGMaterialNode::get_bbox() const
 // {
 //     assert(false);
-//     return BBox32();
+//     return BBoxScalar();
 // }
 
 //----------------------------------------------------------------------

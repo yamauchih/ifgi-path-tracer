@@ -39,7 +39,7 @@ public:
 
     /// get the bounding box. interface method.
     /// \return bounding box of this primitive.
-    virtual BBox32 const & get_bbox() const;
+    virtual BBoxScalar const & get_bbox() const;
 
     /// can TriMesh primitive intersect with a ray? no.
     /// This object needs refinement.
@@ -111,7 +111,7 @@ private:
     /// normal index vector
     std::vector< Sint32_3 > m_normal_idx_vec;
     /// bounding box of this triangle mesh
-    BBox32 m_bbox;
+    BBoxScalar m_bbox;
     /// global material index of this geometry (valid after
     /// preprocessing);
     Sint32 m_material_index;

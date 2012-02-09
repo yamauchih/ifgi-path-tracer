@@ -15,7 +15,7 @@ namespace ifgi
 {
 //----------------------------------------------------------------------
 // default constructor
-BBox32::BBox32()
+BBoxScalar::BBoxScalar()
     :
     IPrimitive()
 {
@@ -24,37 +24,37 @@ BBox32::BBox32()
 
 //----------------------------------------------------------------------
 //  get class name (public).
-std::string BBox32::get_classname() const
+std::string BBoxScalar::get_classname() const
 {
-    return std::string("BBox32");
+    return std::string("BBoxScalar");
 }
 
 //----------------------------------------------------------------------
 // get the bounding box
-BBox32 const & BBox32::get_bbox() const
+BBoxScalar const & BBoxScalar::get_bbox() const
 {
     return *this;
 }
 
 //----------------------------------------------------------------------
 // can bbox primitive intersect with a ray?
-bool BBox32::can_intersect() const
+bool BBoxScalar::can_intersect() const
 {
     return true;
 }
 
 //----------------------------------------------------------------------
 // compute ray intersection. interface method.
-bool BBox32::ray_intersect(Ray const & ray, HitRecord & hr) const
+bool BBoxScalar::ray_intersect(Ray const & ray, HitRecord & hr) const
 {
-    std::cout << "NIN BBox32::ray_intersect" << std::endl;
+    std::cout << "NIN BBoxScalar::ray_intersect" << std::endl;
     assert(false);
     return false;
 }
 
 //----------------------------------------------------------------------
 // invalidate this bbox.
-void BBox32::invalidate()
+void BBoxScalar::invalidate()
 {
     m_min = Scalar_3(std::numeric_limits< Scalar >::max(),
                      std::numeric_limits< Scalar >::max(),
@@ -66,7 +66,7 @@ void BBox32::invalidate()
 
 //----------------------------------------------------------------------
 // get rank of this bbox.
-Sint32 BBox32::get_rank() const
+Sint32 BBoxScalar::get_rank() const
 {
     Scalar_3 const diff = m_max - m_min;
     Sint32 rank_count = 0;
@@ -80,7 +80,7 @@ Sint32 BBox32::get_rank() const
 
 //----------------------------------------------------------------------
 // has this bbox volume?.
-bool BBox32::has_volume() const
+bool BBoxScalar::has_volume() const
 {
     // for all max > min.
     Scalar_3 const diff = m_max - m_min;
@@ -94,7 +94,7 @@ bool BBox32::has_volume() const
 
 //----------------------------------------------------------------------
 // insert a point and grow the bbox. (public).
-void BBox32::insert_point(Scalar_3 const & newpos)
+void BBoxScalar::insert_point(Scalar_3 const & newpos)
 {
     for(Sint32 i = 0; i < 3; ++i){
         if(m_min[i] > newpos[i]){
@@ -114,7 +114,7 @@ void BBox32::insert_point(Scalar_3 const & newpos)
 
 //----------------------------------------------------------------------
 // insert a bbox and grow the bbox.
-void BBox32::insert_bbox(BBox32 const & bbox)
+void BBoxScalar::insert_bbox(BBoxScalar const & bbox)
 {
     assert(bbox.get_rank() > 0); // handle line/plane case.
     this->insert_point(bbox.get_min());
@@ -123,7 +123,7 @@ void BBox32::insert_bbox(BBox32 const & bbox)
 
 //----------------------------------------------------------------------
 // equal?
-bool BBox32::equal(BBox32 const & other) const
+bool BBoxScalar::equal(BBoxScalar const & other) const
 {
     if(this == &other){    // if the same object, true
         return true;
@@ -136,10 +136,10 @@ bool BBox32::equal(BBox32 const & other) const
 
 //----------------------------------------------------------------------
 // string representation (public).
-std::string BBox32::to_string() const
+std::string BBoxScalar::to_string() const
 {
     std::stringstream sstr;
-    sstr << "BBox32[" << m_min << "]-[" << m_max << "]";
+    sstr << "BBoxScalar[" << m_min << "]-[" << m_max << "]";
     return sstr.str();
 }
 

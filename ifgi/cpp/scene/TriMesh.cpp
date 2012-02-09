@@ -55,7 +55,7 @@ std::string TriMesh::get_classname() const
 
 //----------------------------------------------------------------------
 // get the bounding box. interface method.
-BBox32 const & TriMesh::get_bbox() const
+BBoxScalar const & TriMesh::get_bbox() const
 {
     return m_bbox;
 }

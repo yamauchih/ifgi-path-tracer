@@ -89,7 +89,7 @@ void SGPrimitiveNode::set_primitive(IPrimitive * p_prim)
 
 //----------------------------------------------------------------------
 // get bounding box of this node
-BBox32 const & SGPrimitiveNode::get_bbox() const
+BBoxScalar const & SGPrimitiveNode::get_bbox() const
 {
     if(m_p_prim_ref == 0){
         throw Exception("No primitive set [" + this->get_classname() +
@@ -100,7 +100,7 @@ BBox32 const & SGPrimitiveNode::get_bbox() const
 
 //----------------------------------------------------------------------
 // assign bbox value.
-// void SGPrimitiveNode::set_bbox(BBox32 const & bbox)
+// void SGPrimitiveNode::set_bbox(BBoxScalar const & bbox)
 // {
 //     m_primitive.set_bbox(bbox);
 // }
