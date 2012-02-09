@@ -5,6 +5,7 @@
 # Sunday Researcher
 # ============================================================
 module { cxx gtest }
+module { run_unittest }
 
 # lappend EXCLUDE test_Dict.cpp
 
@@ -25,8 +26,8 @@ target core_bk_clean ALWAYS_BUILD {
     append deletebakupfile " unit_disk_uniform_sampler_res.ppm"
     puts -nonewline "file delete -- "
     foreach f ${deletebakupfile} {
-	file delete -force -- ${f}
-	puts -nonewline "${f} "
+        file delete -force -- ${f}
+        puts -nonewline "${f} "
     }
     puts ""
 }

@@ -5,12 +5,12 @@
 # Sunday Researcher
 # ============================================================
 module { cxx gtest }
+module { run_unittest }
 
 lappend link::PROJLIBS cpp/base
 
 # not yet ready
 # lappend EXCLUDE test_Primitive.cpp
-
 
 #
 # additional clean entry

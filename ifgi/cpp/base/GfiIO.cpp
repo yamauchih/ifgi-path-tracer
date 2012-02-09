@@ -13,7 +13,6 @@
 
 #include <cassert>
 #include <fstream>
-// #include "Date.hh"
 
 namespace ifgi {
 
@@ -22,6 +21,7 @@ namespace ifgi {
 bool load_gfi_to_array3d(std::string const & loadfname,
                          Array3D_Float32 &   a3d)
 {
+    std::cerr << "NIN load_gfi_to_array3d" << std::endl;
     // gfi_image_header header;
     // gfi_error_code code = gfi_read_image_header(&header, bmf->fp);
     // if (code != GFI_SUCCESS)
