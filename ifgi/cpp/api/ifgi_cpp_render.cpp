@@ -171,6 +171,11 @@ int IfgiCppRender::render_n_frame(Sint32 max_frame, Sint32 save_per_frame)
     assert(max_frame > 0);
     assert(save_per_frame > 0);
 
+    // std::cout << "DEBUG: waiting for a number input." << std::endl;
+    // int x;
+    // std::cin >> x;              // debug: wait for input
+    // DELETEME
+
     for(int i = 0; i < max_frame; ++i){
         this->render_single_frame(i);
         std::stringstream sstr;
@@ -250,11 +255,17 @@ bool IfgiCppRender::ray_scene_intersection(Ray const & ray, HitRecord & closest_
     for(std::vector< TriMesh * >::const_iterator tmi = m_p_trimesh_vec.begin();
         tmi != m_p_trimesh_vec.end(); ++tmi)
     {
+        std::cout << (*tmi)->get_info_summary() << std::endl;
         if((*tmi)->ray_intersect(ray, tmp_hr)){
+            std::cout << "IfgiCppRender::ray_scene_intersection: HIT"  << std::endl;
+
             // hit
             if(closest_hr.m_dist > tmp_hr.m_dist){
                 closest_hr = tmp_hr; // FIXME. Maybe not necessary to copy alll
             }
+        }
+        else{
+            std::cout << "IfgiCppRender::ray_scene_intersection: NoHit"  << std::endl;
         }
     }
 
@@ -281,10 +292,12 @@ void IfgiCppRender::compute_color(
     ray.set_path_length(-1);
     for(Sint32 path_len = 0; path_len < max_path_length; ++path_len){
         bool const is_hit = this->ray_scene_intersection(ray, hr);
-        // if(is_hit){
-        //     // hit somthing, lookup material
-        //     assert(hr.hit_material_index >= 0);
-        //     mat = m_scene_geo_mat.material_list[hr.hit_material_index];
+        if(is_hit){
+            std::cout << "Hit" << std::endl;
+
+            // hit somthing, lookup material
+            assert(hr.m_hit_material_index >= 0);
+            // mat = m_scene_geo_mat.material_list[hr.hit_material_index];
         //     // only Lambert
         //     // mat.explicit_brdf(hr.hit_basis, out_v0, out_v1, tex_point, tex_uv);
         //     /// print "DEBUG: mat ref ", mat.explicit_brdf(None, None, None, None, None);
@@ -311,7 +324,7 @@ void IfgiCppRender::compute_color(
         //                                   m_p_hemisphere_sampler);
         //     ray.set_origin(copy.deepcopy(hr.intersect_pos));
         //     ray.set_dir(copy.deepcopy(out_v));
-        // }
+        }
         // else{
         //     // done. hit to the environmnt.
         //     // FIXME: currently assume the environment color is always constant
@@ -373,8 +386,7 @@ Sint32 IfgiCppRender::render_single_frame(Sint32 nframe)
             // FIXME Ray preallocation
             current_camera.get_ray(nx, ny, eye_ray);
 
-            // print eye_ray
-            // print nx, ny
+            // std::cout << "[" << x << " " << y << "]" << eye_ray.to_string() << std::endl;
             this->compute_color(p_img, x, y, eye_ray, nframe);
         }
     }

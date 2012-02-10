@@ -146,6 +146,9 @@ bool TriMesh::ray_intersect(Ray const & ray, HitRecord & trimesh_hr) const
         tri.set_vertex(m_vertex_vec[(*fi)[0]],
                        m_vertex_vec[(*fi)[1]],
                        m_vertex_vec[(*fi)[2]]);
+
+        std::cout << "DEBUG: " << tri.to_string() << std::endl;
+
         if(!(tri.ray_intersect(ray, tmp_hr))){
             if(trimesh_hr.m_dist > tmp_hr.m_dist){
                 trimesh_hr.m_dist          = tmp_hr.m_dist;

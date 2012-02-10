@@ -126,4 +126,15 @@ void Triangle::update_bbox()
 }
 
 //----------------------------------------------------------------------
+// get string representation
+std::string Triangle::to_string() const
+{
+    std::stringstream sstr;
+    sstr << m_vertex[0] << " "
+         << m_vertex[1] << " "
+         << m_vertex[2];
+    return sstr.str();
+}
+
+//----------------------------------------------------------------------
 } // namespace ifgi

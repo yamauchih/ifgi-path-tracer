@@ -56,6 +56,10 @@ public:
     /// update bounding box
     void update_bbox();
 
+    /// get string representation
+    /// \return string representation
+    std::string to_string() const;
+
 private:
     /// triangle vertices
     Scalar_3 m_vertex[3];
