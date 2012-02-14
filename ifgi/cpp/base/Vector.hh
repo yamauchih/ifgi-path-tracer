@@ -22,19 +22,19 @@ namespace ifgi
 
 // forward declaration for friends. 'friend' in the Vector template
 // class needs declaration.
-template< typename Scalar, int DIM > class Vector;
-template< typename Scalar >
-Vector<Scalar,3> cross(Vector<Scalar,3> const & v0,
-                       Vector<Scalar,3> const & v1);
+template< typename ScalarType, int DIM > class Vector;
+template< typename ScalarType >
+Vector<ScalarType,3> cross(Vector<ScalarType,3> const & v0,
+                       Vector<ScalarType,3> const & v1);
 
 //----------------------------------------------------------------------
 
-/// A vector is an array of size DIM of type Scalar
-template< typename Scalar, int DIM >
+/// A vector is an array of size DIM of type ScalarType
+template< typename ScalarType, int DIM >
 class Vector {
 public:
     /// the type of the scalar used in this template
-    typedef Scalar value_type;
+    typedef ScalarType value_type;
     /// returns size DIM of the vector
     static inline int dim() { return DIM; }
 
@@ -47,7 +47,7 @@ public:
 
     /// constructor with 1 explicit value. only valid for 1 DIM
     /// \param[in] v0 first component of vector
-    explicit inline Vector(Scalar const & v0)
+    explicit inline Vector(ScalarType const & v0)
     {
         assert(DIM == 1);
         m_value[0] = v0;
@@ -56,7 +56,7 @@ public:
     /// constructor with 2 explicit values. only valid for 2 DIM
     /// \param[in] v0 v0 component of vector
     /// \param[in] v1 v1 component of vector
-    explicit inline Vector(Scalar const & v0, Scalar const & v1)
+    explicit inline Vector(ScalarType const & v0, ScalarType const & v1)
     {
         assert(DIM == 2);
         m_value[0] = v0;
@@ -67,8 +67,8 @@ public:
     /// \param[in] v0 v0 component of vector
     /// \param[in] v1 v1 component of vector
     /// \param[in] v2 v2 component of vector
-    explicit inline Vector(Scalar const & v0, Scalar const & v1,
-                           Scalar const & v2)
+    explicit inline Vector(ScalarType const & v0, ScalarType const & v1,
+                           ScalarType const & v2)
     {
         assert(DIM == 3);
         m_value[0] = v0;
@@ -81,8 +81,8 @@ public:
     /// \param[in] v1 v1 component of vector
     /// \param[in] v2 v2 component of vector
     /// \param[in] v3 v3 component of vector
-    explicit inline Vector(Scalar const & v0, Scalar const & v1,
-                           Scalar const & v2, Scalar const & v3)
+    explicit inline Vector(ScalarType const & v0, ScalarType const & v1,
+                           ScalarType const & v2, ScalarType const & v3)
     {
         assert(DIM == 4);
         m_value[0] = v0;
@@ -92,53 +92,53 @@ public:
     }
 
     /// Construct from a value array
-    // explicit inline Vector(const Scalar value[DIM])
+    // explicit inline Vector(const ScalarType value[DIM])
     // {
-    //     memcpy(m_value, m_value, DIM * sizeof(Scalar));
+    //     memcpy(m_value, m_value, DIM * sizeof(ScalarType));
     // }
 
     /// copy constructor (same kind of vector)
     /// \param[in] rhs right hand side
-    inline Vector(Vector< Scalar, DIM > const &rhs)
+    inline Vector(Vector< ScalarType, DIM > const &rhs)
     {
         this->operator=(rhs);
     }
 
     /// operator=
     /// \param[in] rhs right hand side
-    inline Vector< Scalar, DIM > &operator=(Vector< Scalar, DIM > const & rhs)
+    inline Vector< ScalarType, DIM > &operator=(Vector< ScalarType, DIM > const & rhs)
     {
         if(&rhs != this){
-            memcpy(m_value, rhs.m_value, DIM * sizeof(Scalar));
+            memcpy(m_value, rhs.m_value, DIM * sizeof(ScalarType));
         }
         return *this;
     }
 
     /// get idx'th element read-write
     /// \param[in] idx right hand side
-    inline Scalar & operator[](int idx)
+    inline ScalarType & operator[](int idx)
     {
         assert((idx >= 0) && (idx < DIM));
         return m_value[idx];
     }
 
     /// get idx'th element read-only
-    inline Scalar const & operator[](int idx) const
+    inline ScalarType const & operator[](int idx) const
     {
         assert((idx >= 0) && (idx < DIM));
         return m_value[idx];
     }
 
     /// compose vector containing the same value in each component
-    // static inline Vector< Scalar, DIM > vectorize(Scalar value) {
-    //     Vector< Scalar, DIM > result;
+    // static inline Vector< ScalarType, DIM > vectorize(ScalarType value) {
+    //     Vector< ScalarType, DIM > result;
     //     for(int i=0; i<N; i++)
     //         result[i] = value;
     //     return result;
     // }
 
     /// component-wise comparison
-    inline bool operator==(Vector< Scalar, DIM> const & rhs) const
+    inline bool operator==(Vector< ScalarType, DIM> const & rhs) const
     {
         for(int i = 0; i < DIM; ++i){
             if(m_value[i] != rhs.m_value[i]){
@@ -149,7 +149,7 @@ public:
     }
 
     /// component-wise comparison
-    inline bool operator!=(Vector< Scalar, DIM > const & rhs) const
+    inline bool operator!=(Vector< ScalarType, DIM > const & rhs) const
     {
         for(int i = 0; i < DIM; i++){
             if(m_value[i] != rhs.m_value[i]){
@@ -161,26 +161,26 @@ public:
 
     /// get norm of the vector
     /// \return norm of the vector
-    inline Scalar norm() const
+    inline ScalarType norm() const
     {
-        return((Scalar)sqrt((double)this->sqrnorm()));
+        return((ScalarType)sqrt((double)this->sqrnorm()));
     }
 
     /// get squared norm of the vector
     /// \return squared norm of the vector
-    inline Scalar sqrnorm() const
+    inline ScalarType sqrnorm() const
     {
         return this->dot(*this);
     }
 
     /// compute maximum norm (absolute value), return maximum position
     /// in _pos; leave vector unchanged
-    // inline Scalar maxNorm(int& _pos) const {
-    //     Scalar sMax = absolute(m_value[0]);
+    // inline ScalarType maxNorm(int& _pos) const {
+    //     ScalarType sMax = absolute(m_value[0]);
     //     int    iMax = 0;
 
     //     for (int i=1;i<N;++i) {
-    //         Scalar a=absolute(m_value[i]);
+    //         ScalarType a=absolute(m_value[i]);
     //         if (a>sMax) {
     //             sMax=a;
     //             iMax=i;
@@ -191,24 +191,24 @@ public:
     // }
 
     /// compute maximum norm; leave vector unchanged
-    // inline Scalar maxNorm() const {
+    // inline ScalarType maxNorm() const {
     //     int pos;
     //     return maxNorm(pos);
     // }
 
     /// normalize vector, return normalized vector
-    inline Vector< Scalar, DIM > & normalize()
+    inline Vector< ScalarType, DIM > & normalize()
     {
-        Scalar const n = norm();
-        assert(n != Scalar(0));
-        *this *= Scalar(1)/n;
+        ScalarType const n = norm();
+        assert(n != ScalarType(0));
+        *this *= ScalarType(1)/n;
         return *this;
     }
 
     // /// return the maximal component
-    // inline Scalar max_component() const
+    // inline ScalarType max_component() const
     // {
-    //     Scalar m;
+    //     ScalarType m;
     //     bool first=true;
     //     for(int i=0; i<N; i++)
     //         if(first) { m=m_value[i]; first=false; }
@@ -217,9 +217,9 @@ public:
     // }
 
     // /// return the minimal component
-    // inline Scalar min_component() const
+    // inline ScalarType min_component() const
     // {
-    //     Scalar m;
+    //     ScalarType m;
     //     bool first=true;
     //     for(int i=0; i<N; i++)
     //         if(first) { m=m_value[i]; first=false; }
@@ -228,25 +228,25 @@ public:
     // }
 
     // /// component-wise min
-    // inline Vector< Scalar, DIM > min(const Vector< Scalar, DIM > &rhs) {
-    //     Vector< Scalar, DIM > res;
+    // inline Vector< ScalarType, DIM > min(const Vector< ScalarType, DIM > &rhs) {
+    //     Vector< ScalarType, DIM > res;
     //     for (int i = 0; i < N; i++)
     //         res[i] = std::min(m_value[i],rhs[i]);
     //     return res;
     // }
 
     // /// component-wise max
-    // inline Vector< Scalar, DIM > max(const Vector< Scalar, DIM > &rhs) {
-    //     Vector< Scalar, DIM > res;
+    // inline Vector< ScalarType, DIM > max(const Vector< ScalarType, DIM > &rhs) {
+    //     Vector< ScalarType, DIM > res;
     //     for (int i = 0; i < N; i++)
     //         res[i] = std::max(m_value[i],rhs[i]);
     //     return res;
     // }
 
     /// compute scalar product with anrhs vector of same type
-    inline Scalar dot(const Vector< Scalar, DIM > & rhs) const
+    inline ScalarType dot(const Vector< ScalarType, DIM > & rhs) const
     {
-        Scalar dotprd(0.0);
+        ScalarType dotprd(0.0);
         for(int i = 0; i < DIM; ++i){
             dotprd += m_value[i] * rhs.m_value[i];
         }
@@ -254,7 +254,7 @@ public:
     }
 
     /// component-wise self-multiplication with scalar
-    inline const Vector< Scalar, DIM > & operator*=(const Scalar &s)
+    inline const Vector< ScalarType, DIM > & operator*=(const ScalarType &s)
     {
         for(int i = 0; i < DIM; ++i){
             m_value[i] *= s;
@@ -263,38 +263,63 @@ public:
      }
 
     /// component-wise multiplication with scalar
-    inline Vector< Scalar, DIM > operator*(Scalar const & s) const
+    inline Vector< ScalarType, DIM > operator*(ScalarType const & s) const
     {
-        Vector< Scalar, DIM > v(*this);
+        Vector< ScalarType, DIM > v(*this);
         return v *= s;
     }
 
     /// component-wise self-multiplication
-    // inline const Vector< Scalar, DIM >& operator*=(const Vector< Scalar, DIM > &rhs) {
-    //     for(int i=0; i<N; i++) m_value[i] *= rhs[i]; return *this; }
+    inline const Vector< ScalarType, DIM >& operator*=(Vector< ScalarType, DIM > const & rhs)
+    {
+        for(int i = 0; i < DIM; i++){
+            m_value[i] *= rhs[i];
+        }
+        return *this;
+    }
 
     /// component-wise multiplication
-    // inline Vector< Scalar, DIM > operator*(const Vector< Scalar, DIM > &rhs) const {
-    //     Vector< Scalar, DIM > v(*this); return v*=rhs; }
+    inline Vector< ScalarType, DIM > operator*(const Vector< ScalarType, DIM > &rhs) const
+    {
+        Vector< ScalarType, DIM > v(*this);
+        return v *= rhs;
+    }
 
     /// component-wise self-division by scalar
-    // inline const Vector< Scalar, DIM > &operator/=(const Scalar &s) {
-    //     for(int i=0; i<N; i++) m_value[i] /= s; return *this; }
+    inline const Vector< ScalarType, DIM > &operator/=(const ScalarType &s)
+    {
+        assert(s != ScalarType(0.0));
+        for(int i=0; i < DIM; ++i){
+            m_value[i] /= s;
+        }
+        return *this;
+    }
 
     /// component-wise division by scalar
-    // inline Vector< Scalar, DIM > operator/(const Scalar &s) const {
-    //     Vector< Scalar, DIM > v(*this); return v/=s; }
+    inline Vector< ScalarType, DIM > operator/(const ScalarType &s) const
+    {
+        Vector< ScalarType, DIM > v(*this);
+        return v /= s;
+    }
 
     /// component-wise self-division
-    // inline const Vector< Scalar, DIM > &operator/=(const Vector< Scalar, DIM > &rhs) {
-    //     for(int i=0; i<N; i++) m_value[i] /= rhs[i]; return *this; }
+    inline const Vector< ScalarType, DIM > &operator/=(const Vector< ScalarType, DIM > &rhs)
+    {
+        for(int i = 0; i < DIM; ++i){
+            m_value[i] /= rhs[i];
+        }
+        return *this;
+    }
 
     /// component-wise division
-    // inline Vector< Scalar, DIM > operator/(const Vector< Scalar, DIM > &rhs) const {
-    //     Vector< Scalar, DIM > v(*this); return v/=rhs; }
+    inline Vector< ScalarType, DIM > operator/(const Vector< ScalarType, DIM > &rhs) const
+    {
+        Vector< ScalarType, DIM > v(*this);
+        return v/=rhs;
+    }
 
     /// vector difference from this
-    inline Vector< Scalar, DIM > & operator-=(Vector< Scalar, DIM > const & rhs)
+    inline Vector< ScalarType, DIM > & operator-=(Vector< ScalarType, DIM > const & rhs)
     {
         for(int i = 0; i < DIM; ++i){
             m_value[i] -= rhs.m_value[i];
@@ -303,16 +328,16 @@ public:
     }
 
     /// vector difference
-    inline Vector< Scalar, DIM > operator-(Vector< Scalar, DIM > const & rhs) const
+    inline Vector< ScalarType, DIM > operator-(Vector< ScalarType, DIM > const & rhs) const
     {
-        Vector< Scalar, DIM > v(*this); v -= rhs;
+        Vector< ScalarType, DIM > v(*this); v -= rhs;
         return v;
     }
 
     /// vector self-addition. *this is updated.
     /// \param[in] rhs right hand side
     /// \return computation result
-    inline Vector< Scalar, DIM > & operator+=(Vector< Scalar, DIM > const & rhs)
+    inline Vector< ScalarType, DIM > & operator+=(Vector< ScalarType, DIM > const & rhs)
     {
         for(int i = 0; i < DIM; ++i)
         {
@@ -324,17 +349,17 @@ public:
     /// vector addition
     /// \param[in] rhs right hand side
     /// \return computation result
-    inline Vector< Scalar, DIM > operator+(const Vector< Scalar, DIM > &rhs) const
+    inline Vector< ScalarType, DIM > operator+(const Vector< ScalarType, DIM > &rhs) const
     {
-        Vector< Scalar, DIM > v(*this);
+        Vector< ScalarType, DIM > v(*this);
         v += rhs;
         return v;
     }
 
     /// unary minus
-    inline Vector< Scalar, DIM > operator-() const
+    inline Vector< ScalarType, DIM > operator-() const
     {
-        Vector< Scalar, DIM > v(*this);
+        Vector< ScalarType, DIM > v(*this);
         for(int i = 0; i < DIM; ++i)
         {
             v.m_value[i] = -v.m_value[i];
@@ -345,35 +370,35 @@ public:
     /// cross product: only defined for vectors of dimension 3
     /// specialization in one parameter is not possible. This is
     /// friend declaration, this needs forward declaration.
-    friend Vector< Scalar, 3 > cross<> (Vector< Scalar, 3 > const & v0,
-                                        Vector< Scalar, 3 > const & v1);
+    friend Vector< ScalarType, 3 > cross<> (Vector< ScalarType, 3 > const & v0,
+                                        Vector< ScalarType, 3 > const & v1);
 
     // /** central projection 4D->3D (w=1). this is only defined for 4D. */
-    // inline Vector<Scalar,3> centralProjection() const {
+    // inline Vector<ScalarType,3> centralProjection() const {
     //     assert(!"centralProjection not defined for this type");
-    //     return Vector<Scalar,3>(); }
+    //     return Vector<ScalarType,3>(); }
 
     // /** projects the vector into a plane (3D) normal to the given vector, which
     //     must have unit length. self is modified and the new vector is returned. */
-    // inline const Vector< Scalar, DIM >& projectNormalTo(const Vector< Scalar, DIM >& v) {
-    //     Scalar sprod = (*this|v);
+    // inline const Vector< ScalarType, DIM >& projectNormalTo(const Vector< ScalarType, DIM >& v) {
+    //     ScalarType sprod = (*this|v);
     //     for(int i=0; i < DIM; ++i) m_value[i] -= (v.m_value[i]*sprod); return *this; }
 
-    // /** component-wise apply function object with Scalar operator()(Scalar). */
+    // /** component-wise apply function object with ScalarType operator()(ScalarType). */
     // template<typename func>
-    // inline Vector< Scalar, DIM > apply(const func& f) const {
-    //     Vector< Scalar, DIM > result;
+    // inline Vector< ScalarType, DIM > apply(const func& f) const {
+    //     Vector< ScalarType, DIM > result;
     //     for(int i=0; i < DIM; ++i) result[i] = f(m_value[i]);
     //     return result; }
 
 private:
-    /// The vector value of the template Scalar type.
-    Scalar m_value[DIM];
+    /// The vector value of the template ScalarType type.
+    ScalarType m_value[DIM];
 };
 
 /// output a vector by printing its space-separated compontens
-template< typename Scalar, int DIM >
-inline std::ostream & operator<<(std::ostream & os, Vector< Scalar, DIM > const & vec)
+template< typename ScalarType, int DIM >
+inline std::ostream & operator<<(std::ostream & os, Vector< ScalarType, DIM > const & vec)
 {
     for(int i=0; i < DIM-1; ++i){
         os << vec[i] << " ";
@@ -384,15 +409,15 @@ inline std::ostream & operator<<(std::ostream & os, Vector< Scalar, DIM > const 
 }
 
 /// scalar * Vector
-template< typename Scalar, int DIM >
-inline Vector< Scalar, DIM > operator*(Scalar s, Vector< Scalar, DIM > const & v )
+template< typename ScalarType, int DIM >
+inline Vector< ScalarType, DIM > operator*(ScalarType s, Vector< ScalarType, DIM > const & v )
 {
     return v * s;
 }
 
 /** read the space-separated components of a vector from a stream */
-template<typename Scalar,int DIM>
-inline std::istream& operator>>(std::istream & is, Vector< Scalar, DIM > & vec)
+template<typename ScalarType,int DIM>
+inline std::istream& operator>>(std::istream & is, Vector< ScalarType, DIM > & vec)
 {
     for(int i=0; i < DIM; ++i){
         is >> vec[i];
@@ -539,11 +564,11 @@ Vector< Float64, 4 >::sqrnorm() const
 //----------------------------------------------------------------------
 
 /// cross product: only defined for Float32_3, Float64_3
-template< typename Scalar >
-inline Vector< Scalar, 3 > cross(Vector< Scalar, 3 > const & v0,
-                                 Vector< Scalar, 3 > const & v1)
+template< typename ScalarType >
+inline Vector< ScalarType, 3 > cross(Vector< ScalarType, 3 > const & v0,
+                                 Vector< ScalarType, 3 > const & v1)
 {
-    return Vector< Scalar, 3 >(
+    return Vector< ScalarType, 3 >(
         v0.m_value[1] * v1.m_value[2] - v0.m_value[2] * v1.m_value[1],
         v0.m_value[2] * v1.m_value[0] - v0.m_value[0] * v1.m_value[2],
         v0.m_value[0] * v1.m_value[1] - v0.m_value[1] * v1.m_value[0]);
@@ -581,11 +606,11 @@ Vector< Float32, 3 >::dot(Vector< Float32, 3 > const & rhs) const
 
 // /** add direction (DIM-1) to a DIM vector. ret = p + d*t. Only valid for
 //     homogenous points (4D) and 3D direction vector */
-// template<typename Scalar>
-// inline Vector<Scalar,4> add_direction(const Vector<Scalar,4>& p,
-// 				      const Vector<Scalar,3>& d,
-// 				      Scalar t=1.0) {
-//     Vector<Scalar,4> p_tmp(p);
+// template<typename ScalarType>
+// inline Vector<ScalarType,4> add_direction(const Vector<ScalarType,4>& p,
+// 				      const Vector<ScalarType,3>& d,
+// 				      ScalarType t=1.0) {
+//     Vector<ScalarType,4> p_tmp(p);
 //     p_tmp.centralProjection();
 //     p_tmp[0] += d[0]*t;
 //     p_tmp[1] += d[1]*t;
@@ -675,7 +700,7 @@ typedef Vector< Float64, 3 > Float64_3;
 typedef Vector< Float64, 4 > Float64_4;
 
 
-/// Scalar vector 2
+/// ScalarType vector 2
 typedef Vector< Scalar, 2 > Scalar_2;
 /// Scalar vector 3
 typedef Vector< Scalar, 3 > Scalar_3;
@@ -684,7 +709,7 @@ typedef Vector< Scalar, 4 > Scalar_4;
 
 
 /// Color definition
-typedef Vector< Float32, 4 > Color;
+typedef Scalar_4 Color;
 
 //@}
 } // namespace ifgi

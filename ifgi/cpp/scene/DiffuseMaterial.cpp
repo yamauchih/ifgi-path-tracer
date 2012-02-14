@@ -9,6 +9,8 @@
 
 #include <cpp/base/Exception.hh>
 #include <cpp/base/Dictionary.hh>
+#include <cpp/base/OrthonomalBasis.hh>
+#include <cpp/base/SamplerUnitHemisphereUniform.hh>
 
 #include "ITexture.hh"
 
@@ -158,21 +160,22 @@ void DiffuseMaterial::explicit_brdf(// _hit_onb, _out_v0, _out_v1, _tex_point, _
 
 //----------------------------------------------------------------------
 // explicit brdf
-Scalar_3 DiffuseMaterial::diffuse_direction(// _hit_onb, _incident_dir, _hemisphere_sampler
-    ) const
+Scalar_3 DiffuseMaterial::diffuse_direction(
+    OrthonomalBasis const & hit_onb,
+    Scalar_3 const & incident_dir, 
+    SamplerUnitHemisphereUniform * p_hemisphere_sampler) const
 {
-    // v_on_hs = _hemisphere_sampler.get_sample();
-    // v_out =
-    //     v_on_hs[0] * _hit_onb.u() +
-    //     v_on_hs[1] * _hit_onb.v() +
-    //     v_on_hs[2] * _hit_onb.w();
+    assert(p_hemisphere_sampler != 0);
+    Scalar_3 const v_on_hs = p_hemisphere_sampler->get_sample();
+    Scalar_3 const v_out =
+        v_on_hs[0] * hit_onb.u() +
+        v_on_hs[1] * hit_onb.v() +
+        v_on_hs[2] * hit_onb.w();
 
-    // // need normalize?
-    // assert(abs(numpy.linalg.norm(v_out) - 1.0) < 0.00001);
+    // need normalize?
+    assert(fabs(v_out.norm() - 1.0) < 0.00001);
 
-    std::cout << "NIN DiffuseMaterial::diffuse_direction" << std::endl;
-
-    return Scalar_3();
+    return v_out;
 }
 
 //----------------------------------------------------------------------

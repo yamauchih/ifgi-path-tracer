@@ -34,15 +34,15 @@ public:
 
     /// get sample point on a unit hemisphere
     /// \return (x,y,z)
-    Float32_3 get_sample()
+    Scalar_3 get_sample()
     {
         // p = [-1,1]x[-1,1]
-        Float32_2 const p = m_udus.get_sample();
+        Scalar_2 const p = m_udus.get_sample();
 
-        Float32 const x = p[0];
-        Float32 const y = p[1];
-        Float32 const z = sqrtf(std::max(0.0f, 1 - x * x - y * y));
-        Float32_3 const v(x, y, z);
+        Scalar const x = p[0];
+        Scalar const y = p[1];
+        Scalar const z = sqrtf(std::max(0.0f, 1 - x * x - y * y));
+        Scalar_3 const v(x, y, z);
         // v should be a normalized vector. see in the test.
         // r = ifgimath.normalize_vec(v);
 

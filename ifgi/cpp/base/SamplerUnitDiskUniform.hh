@@ -32,7 +32,7 @@ public:
     /// get sample point on an unit disk
     ///
     /// \return (x,y)
-    Float32_2 get_sample()
+    Scalar_2 get_sample()
     {
         double u1 = drand48();
         double u2 = drand48();
@@ -41,7 +41,7 @@ public:
         double x  = r * cos(t);
         double y  = r * sin(t);
 
-        return Float32_2(static_cast< float >(x), static_cast< float >(y));
+        return Scalar_2(static_cast< Scalar >(x), static_cast< Scalar >(y));
     }
 
 private:

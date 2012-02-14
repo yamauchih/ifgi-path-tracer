@@ -16,6 +16,8 @@ namespace ifgi {
 //----------------------------------------------------------------------
 // forward declaration
 class Dictionary;
+class OrthonomalBasis;
+class SamplerUnitHemisphereUniform; // FIXME
 
 //----------------------------------------------------------------------
 /// material interface
@@ -96,9 +98,11 @@ public:
     /// \param[in] hit_onb hit point orthonomal basis
     /// \param[in] incident_dir incident direction
     /// \param[in] hemisphere_sampler   uniform sampler on a hemisphere
-    /// \return outgoing direction, None if not supported
-    virtual Scalar_3 diffuse_direction(// hit_onb, incident_dir, hemisphere_sampler
-        ) const
+    /// \return outgoing vector
+    virtual Scalar_3 diffuse_direction(
+        OrthonomalBasis const & hit_onb,
+        Scalar_3 const & incident_dir, 
+        SamplerUnitHemisphereUniform * p_hemisphere_sampler) const
     {
         assert(this->is_diffuse());
         throw Exception("IMaterial::diffuse_direction: not supported");

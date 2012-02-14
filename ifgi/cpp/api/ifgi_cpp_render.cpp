@@ -297,33 +297,65 @@ void IfgiCppRender::compute_color(
 
             // hit somthing, lookup material
             assert(hr.m_hit_material_index >= 0);
+            IMaterial * p_mat = SceneDB::instance()->peek_material(hr.m_hit_material_index);
+            assert(p_mat != 0);
+
+            // only Lambert/Diffuse material
+            Color brdf_col;      // FIXME: preallocation
+            p_mat->explicit_brdf(brdf_col);
+            // probability is 1/pi, here, constant importance,
+            // therefore, divided by (1/pi) = multiplied by pi
+            Color const refl = ray.get_reflectance() * static_cast< Scalar >(M_PI) * brdf_col;
+            ray.set_reflectance(refl);
+
+            if(p_mat->is_emit()){
+                // only Lambert emittance
+                // p_mat->emit_radiance(_hit_onb, light_out_dir, tex_point, tex_uv));
+                Color emit_rad;
+                p_mat->emit_radiance(emit_rad);
+                Color const inten = ray.get_intensity() + ray.get_reflectance() * emit_rad;
+                ray.set_intensity(inten);
+                // hit the light source
+                std::cout << "DEBUG: Hit a light source at path length = " << ray.get_path_length()
+                          << std::endl;
+                is_update_intensity = true;
+                break;
+            }
+            // Do not stop by reflectance criterion. (if stop, it's wrong.);
+            
+            // update ray information
+            Scalar_3 const out_v = p_mat->diffuse_direction(hr.m_hit_onb, ray.get_dir(),
+                                                            m_p_hemisphere_sampler);
+            ray.set_origin(hr.m_intersect_pos);
+            ray.set_dir(out_v);
+
             // mat = m_scene_geo_mat.material_list[hr.hit_material_index];
-        //     // only Lambert
-        //     // mat.explicit_brdf(hr.hit_basis, out_v0, out_v1, tex_point, tex_uv);
-        //     /// print "DEBUG: mat ref ", mat.explicit_brdf(None, None, None, None, None);
+            // // only Lambert
+            // // mat.explicit_brdf(hr.hit_basis, out_v0, out_v1, tex_point, tex_uv);
+            // /// print "DEBUG: mat ref ", mat.explicit_brdf(None, None, None, None, None);
 
-        //     // probability is 1/pi, here, constant importance,
-        //     // therefore, divided by (1/pi) = multiplied by pi
-        //     brdf = M_PI * mat.explicit_brdf(None, None, None, None, None);
-        //     ray.reflectance = (ray.reflectance * brdf);
-        //     if(mat.is_emit()){
-        //         // only Lambert emittance
-        //         // mat.emit_radiance(_hit_onb, light_out_dir, tex_point, tex_uv));
-        //         ray.intensity = ray.intensity +
-        //             (ray.reflectance * mat.emit_radiance(None, None, None, None));
-        //         // hit the light source
+            //     // probability is 1/pi, here, constant importance,
+            //     // therefore, divided by (1/pi) = multiplied by pi
+            //     brdf = M_PI * mat.explicit_brdf(None, None, None, None, None);
+            //     ray.reflectance = (ray.reflectance * brdf);
+            //     if(mat.is_emit()){
+            //         // only Lambert emittance
+            //         // mat.emit_radiance(_hit_onb, light_out_dir, tex_point, tex_uv));
+            //         ray.intensity = ray.intensity +
+            //             (ray.reflectance * mat.emit_radiance(None, None, None, None));
+            //         // hit the light source
 
-        //         // print "DEBUG: Hit a light source at path length = ", ray.path_length
-        //         //     is_update_intensity = True;
-        //         break;
-        //     }
-        //     // Do not stop by reflectance criterion. (if stop, it"s wrong.);
+            //         // print "DEBUG: Hit a light source at path length = ", ray.path_length
+            //         //     is_update_intensity = True;
+            //         break;
+            //     }
+            //     // Do not stop by reflectance criterion. (if stop, it"s wrong.);
 
-        //     // update ray information
-        //     out_v = mat.diffuse_direction(hr.hit_basis, ray.get_dir(),
-        //                                   m_p_hemisphere_sampler);
-        //     ray.set_origin(copy.deepcopy(hr.intersect_pos));
-        //     ray.set_dir(copy.deepcopy(out_v));
+            //     // update ray information
+            //     out_v = mat.diffuse_direction(hr.hit_basis, ray.get_dir(),
+            //                                   m_p_hemisphere_sampler);
+            //     ray.set_origin(copy.deepcopy(hr.intersect_pos));
+            //     ray.set_dir(copy.deepcopy(out_v));
         }
         // else{
         //     // done. hit to the environmnt.
@@ -343,13 +375,13 @@ void IfgiCppRender::compute_color(
     }
 
     // now we know the color
-    // assert(m_p_framebuffer != 0);
-    // Scalar const s_nframe = static_cast< Scalar >(nframe);
-    // Scalar const s_one(1.0);
-    // if (is_update_intensity == true){ /// && (ray.path_length == 2);
-    //     col = s_nframe * col_buf.get_color((_pixel_x, pixel_y)) + ray.intensity;
-    //     m_p_framebuffer->put_color(pixel_x, pixel_y, col/(s_nframe + s_one));
-    // }
+    assert(m_p_framebuffer != 0);
+    Scalar const s_nframe = static_cast< Scalar >(nframe);
+    Scalar const s_one(1.0);
+    if(is_update_intensity == true){ // && (ray.path_length == 2);
+        Color const col = s_nframe * m_p_framebuffer->get_color(pixel_x, pixel_y) + ray.get_intensity();
+        m_p_framebuffer->put_color(pixel_x, pixel_y, col/(s_nframe + s_one));
+    }
 }
 
 //----------------------------------------------------------------------

@@ -73,7 +73,7 @@ public:
     /// \param[in] _tex_uv    texture uv coordinate (if surface)
     /// \param[out] _out_emit_rad (output) emit radiance
     virtual void emit_radiance(//_hit_onb, _light_out_dir, _tex_point, _tex_uv
-        Color & out_emit_rad
+        Scalar_4 & out_emit_rad
         ) const ;
 
     /// ambient response
@@ -99,14 +99,14 @@ public:
         ) const;
 
     /// explicit brdf
-    /// \param[in] _hit_onb hit point orthonomal basis
-    /// \param[in] _incident_dir incident direction
-    /// \param[in] _hemisphere_sampler uniform sampler on a hemisphere
-    /// \param[out] _v_out outgoing vector?
-    ///
-    /// \return outgoing direction, None if not supported
-    virtual Scalar_3 diffuse_direction(// _hit_onb, _incident_dir, _hemisphere_sampler
-        ) const ;
+    /// \param[in] hit_onb hit point orthonomal basis
+    /// \param[in] incident_dir incident direction
+    /// \param[in] hemisphere_sampler uniform sampler on a hemisphere
+    /// \return outgoing vector
+    virtual Scalar_3 diffuse_direction(
+        OrthonomalBasis const & hit_onb,
+        Scalar_3 const & incident_dir, 
+        SamplerUnitHemisphereUniform * p_hemisphere_sampler) const;
 
     /// is diffuse?
     /// \return true when diffuse

@@ -68,8 +68,8 @@ public:
         }
         for(Sint32 y = 0; y < m_ysize; ++y){
             for(Sint32 x = 0; x < m_xsize; ++x){
-                m_sample_loc.set(x, y, 0, (static_cast< Float32 >(x) + 0.5f)); // x
-                m_sample_loc.set(x, y, 1, (static_cast< Float32 >(y) + 0.5f)); // y
+                m_sample_loc.set(x, y, 0, (static_cast< Scalar >(x) + 0.5f)); // x
+                m_sample_loc.set(x, y, 1, (static_cast< Scalar >(y) + 0.5f)); // y
             }
         }
     }

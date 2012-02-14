@@ -143,6 +143,32 @@ public:
         return m_path_length;
     }
 
+    /// set the reflectance
+    /// \param[in] refl reflectance
+    void set_reflectance(Scalar_4 const & refl)
+    {
+        m_reflectance = refl;
+    }
+    /// get the refrectance
+    /// \return reflectance
+    Scalar_4 const & get_reflectance() const
+    {
+        return m_reflectance;
+    }
+
+    /// set the intensity
+    /// \param[in] inten intensity
+    void set_intensity(Scalar_4 const & inten)
+    {
+        m_intensity = inten;
+    }
+    /// get the intensity
+    /// \return intensity
+    Scalar_4 const & get_intensity() const
+    {
+        return m_intensity;
+    }
+
     /// string representation of this object
     /// \return string representation of this object
     std::string to_string() const
