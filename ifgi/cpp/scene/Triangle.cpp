@@ -60,6 +60,7 @@ bool Triangle::can_intersect() const
 // compute ray intersection. interface method.
 bool Triangle::ray_intersect(Ray const & ray, HitRecord & hr) const
 {
+    // std::cout << "Triangle::ray_intersect" << std::endl;
     // Cramer's rule based ray-triangle intersection
 
     // get s1
@@ -68,6 +69,7 @@ bool Triangle::ray_intersect(Ray const & ray, HitRecord & hr) const
     Scalar_3 const s1  = cross(ray.get_dir(), e2);
     Scalar   const div = s1.dot(e1);
     if(div == 0.0){
+        // DELETEME std::cout << "nohit: dotprod" << std::endl;
         return false;
     }
     Scalar const inv_div = Scalar(1.0) / div;
@@ -76,6 +78,7 @@ bool Triangle::ray_intersect(Ray const & ray, HitRecord & hr) const
     Scalar_3 const d  = ray.get_origin() - m_vertex[0];
     Scalar   const b1 = d.dot(s1) * inv_div;
     if((b1 < 0.0) || (b1 > 1.0)){
+        // std::cout << "nohit: b1" << std::endl;
         return false;
     }
 
@@ -83,16 +86,18 @@ bool Triangle::ray_intersect(Ray const & ray, HitRecord & hr) const
     Scalar_3 const s2 = cross(d, e1);
     Scalar   const b2 = ray.get_dir().dot(s2) * inv_div;
     if((b2 < 0.0) || ((b1 + b2) > 1.0)){
+        // DELETEME std::cout << "nohit: b1" << std::endl;
         return false;
     }
 
     // get intersection point (distance t);
     Scalar const t = e2.dot(s2) * inv_div;
     if((t < ray.get_min_t()) || (t > ray.get_max_t())){
+        // DELETEME std::cout << "nohit: backside" << std::endl;
         return false;
     }
 
-    std::cout << "Hit: t = " << t << ", b1 = " << b1 << ", b2 = " << b2 << std::endl;
+    // std::cout << "Hit: t = " << t << ", b1 = " << b1 << ", b2 = " << b2 << std::endl;
     hr.m_dist = t;
     hr.m_intersect_pos = m_vertex[0] + b1 * e1 + b2 * e2;
     // hr.m_p_hit_primitive = this;
@@ -130,9 +135,9 @@ void Triangle::update_bbox()
 std::string Triangle::to_string() const
 {
     std::stringstream sstr;
-    sstr << m_vertex[0] << " "
-         << m_vertex[1] << " "
-         << m_vertex[2];
+    sstr << "[" << m_vertex[0] << "]["
+         << m_vertex[1] << "]["
+         << m_vertex[2] << "]";
     return sstr.str();
 }
 

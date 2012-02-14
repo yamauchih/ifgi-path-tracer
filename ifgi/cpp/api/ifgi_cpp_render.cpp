@@ -255,9 +255,9 @@ bool IfgiCppRender::ray_scene_intersection(Ray const & ray, HitRecord & closest_
     for(std::vector< TriMesh * >::const_iterator tmi = m_p_trimesh_vec.begin();
         tmi != m_p_trimesh_vec.end(); ++tmi)
     {
-        std::cout << (*tmi)->get_info_summary() << std::endl;
+        // DELETEME std::cout << (*tmi)->get_info_summary() << std::endl;
         if((*tmi)->ray_intersect(ray, tmp_hr)){
-            std::cout << "IfgiCppRender::ray_scene_intersection: HIT"  << std::endl;
+            // std::cout << "IfgiCppRender::ray_scene_intersection: HIT"  << std::endl;
 
             // hit
             if(closest_hr.m_dist > tmp_hr.m_dist){
@@ -265,7 +265,7 @@ bool IfgiCppRender::ray_scene_intersection(Ray const & ray, HitRecord & closest_
             }
         }
         else{
-            std::cout << "IfgiCppRender::ray_scene_intersection: NoHit"  << std::endl;
+            // std::cout << "IfgiCppRender::ray_scene_intersection: NoHit"  << std::endl;
         }
     }
 
@@ -293,7 +293,7 @@ void IfgiCppRender::compute_color(
     for(Sint32 path_len = 0; path_len < max_path_length; ++path_len){
         bool const is_hit = this->ray_scene_intersection(ray, hr);
         if(is_hit){
-            std::cout << "Hit" << std::endl;
+            // std::cout << "Hit" << std::endl;
 
             // hit somthing, lookup material
             assert(hr.m_hit_material_index >= 0);
@@ -365,6 +365,9 @@ Sint32 IfgiCppRender::render_single_frame(Sint32 nframe)
     assert(res_x > 0);
     assert(res_y > 0);
 
+    Dictionary dict = current_camera.get_config_dict();
+    dict.write(std::cout, "Render_Single_Frame: ");
+    
     // screen space sampler
     SamplerStratifiedRegular srs;
     srs.compute_sample(0, res_x - 1, 0, res_y - 1);
@@ -386,7 +389,9 @@ Sint32 IfgiCppRender::render_single_frame(Sint32 nframe)
             // FIXME Ray preallocation
             current_camera.get_ray(nx, ny, eye_ray);
 
-            // std::cout << "[" << x << " " << y << "]" << eye_ray.to_string() << std::endl;
+            // DELETEME
+            // std::cout << "DEBUG: Ray: [" << x << " " << y << "]: "
+            //           << eye_ray.to_string() << std::endl;
             this->compute_color(p_img, x, y, eye_ray, nframe);
         }
     }

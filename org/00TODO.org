@@ -16,6 +16,7 @@ lookup material in the SceneDB
 ** TODO TriMesh, Triangle intersection
 
 ** TODO cpp implementation
+*** Camera::compute_screen_parameter()
 *** api/ifgi_cpp_render.cpp::compute_color
 *** Sampler, Sampler's unit test
 *** render_frame, render_single_frame, save_frame

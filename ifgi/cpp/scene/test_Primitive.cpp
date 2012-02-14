@@ -5,10 +5,11 @@
 /// \file
 /// \brief test primitive
 
-#include "Triangle.hh"
+#include "Camera.hh"
+#include "HitRecord.hh"
 #include "ImageFilm.hh"
 #include "Ray.hh"
-#include "HitRecord.hh"
+#include "Triangle.hh"
 
 #include <gtest/gtest.h>
 
@@ -16,7 +17,44 @@ using namespace ifgi;
 
 /// Test Primitive, triangle ray intersection test
 /// TEST(test_case_name, test_name)
-TEST(PrimitiveTest, RayTriIntersectionTest)
+TEST(PrimitiveTest, RayTriIntersectionTest1)
+{
+    // One ray and one trianle
+    // create a triangle
+    Scalar_3 p0( 1.0f, 0.0f,    0.0f);
+    Scalar_3 p1( 0.0f, 1.7321f, 0.0f);
+    Scalar_3 p2(-1.0f, 0.0f,    0.0f);
+
+    Dictionary cam_dict;
+    cam_dict.set("cam_name", "default");
+    cam_dict.set("eye_pos", "0.0 0.64 0.76");
+    cam_dict.set("view_dir", "0.0 0.0 -1.0");
+    cam_dict.set("up_dir", "0.0 1.0 0.0");
+    cam_dict.set("z_near", "0.1");
+    cam_dict.set("z_far", "10000");
+    cam_dict.set("resolution_x", "64");
+    cam_dict.set("resolution_y", "64");
+
+    Camera cam;
+    cam.set_config_dict(cam_dict);
+
+    Triangle tri;
+    tri.set_vertex(p0, p1, p2);
+    // std::cout << "tri.to_string(): " << tri.to_string() << std::endl;
+
+    HitRecord hr;
+
+    Ray r;
+    cam.get_ray(0.5, 0.5, r);
+    // std::cout << "Ray: " << r.to_string() << std::endl;
+
+    hr.initialize();
+    ASSERT_EQ(tri.ray_intersect(r, hr), true);
+}
+
+/// Test Primitive, triangle ray intersection test
+/// TEST(test_case_name, test_name)
+TEST(PrimitiveTest, RayTriIntersectionTest2)
 {
     Scalar const iw = 50.0;
     Scalar const ih = 50.0;
@@ -53,7 +91,7 @@ TEST(PrimitiveTest, RayTriIntersectionTest)
             r.initialize(origin, dir, min_t, max_t);
             hr.initialize();
             if(tri.ray_intersect(r, hr)){
-                std::cout << "Hit: " << origin << std::endl;
+                // std::cout << "test_Primitive: Hit: " << origin << std::endl;
                 img.put_color(x, y, red);
             }
         }
@@ -63,7 +101,6 @@ TEST(PrimitiveTest, RayTriIntersectionTest)
     img.save_file(fname, "ppm");
     std::cout << "Saved ... [" << fname << "]" << std::endl;
 }
-
 
 /// Test Primitive, triangle ray intersection test
 /// TEST(test_case_name, test_name)

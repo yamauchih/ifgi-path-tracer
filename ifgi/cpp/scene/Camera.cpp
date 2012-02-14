@@ -238,22 +238,31 @@ void Camera::set_projection(Uint32 projection)
 
 //----------------------------------------------------------------------
 // Get the camera coordinate system as OpenGL (left hand);
-//
-// Get orthonrmal basis for camera coordinate system {_ex,_ey,_ez}.
-// \return [ex, ey, ez]  [right, up, viewingDriection()] system.
-// def Camera::get_coordinate_system()
+// void Camera::get_coordinate_system(Scalar_3 & ex,
+//                                    Scalar_3 & ey,
+//                                    Scalar_3 & ez) const
 // {
-//     ex  = cross(m_view_dir, m_up_dir);
-//     ex /= numpy.linalg.norm(ex);
-//     ey  = cross(ex, m_view_dir);
-//     ey /= numpy.linalg.norm(ey);
-//     assert(abs(numpy.linalg.norm(m_view_dir) - 1) < 0.000001);
+//     ex = cross(m_view_dir, m_up_dir);
+//     ex.normalize();
+//     ey = cross(ex, m_view_dir);
+//     ey.normalize();
+
+//     assert(fabs(m_view_dir.norm() - 1.0) < 0.000001);
+
+//     // ex /= numpy.linalg.norm(ex);
+//     // ey  = cross(ex, m_view_dir);
+//     // ey /= numpy.linalg.norm(ey);
+//     // assert(abs(numpy.linalg.norm(m_view_dir) - 1) < 0.000001);
 
 //     /// print "ex = " + str(ex);
 //     /// print "ey = " + str(ey);
 //     /// print "ez = " + str(m_view_dir);
 
-//     return [ex, ey, m_view_dir];
+//     // return [ex, ey, m_view_dir];
+    
+//     rightvec = ex;
+//     upvec    = ey;
+//     viewvec  = m_view_dir;
 // }
 
 //----------------------------------------------------------------------
@@ -304,21 +313,6 @@ void Camera::set_lens_to_film_distance(Scalar l2f_dist)
 {
     m_lens_film_dist = l2f_dist;
 }
-
-//----------------------------------------------------------------------
-// get ray.
-// \param[in] dx delta x normalized screen coordinate [0,1]
-// \param[in] dy delta y normalized screen coordinate [0,1]
-// \return a ray
-// FIXME: don't new the Ray
-// Ray get_ray(Scalar dx, Scalar dy)
-// {
-//     target =  m_LB_corner + dx * m_ex + dy * m_ey;
-//     vdir   =  target - m_eye_pos;
-//     vdir.normalize();
-//     return Ray(m_eye_pos, vdir, m_z_near, m_z_far);
-// }
-// NIN
 
 //----------------------------------------------------------------------
 // set orthogonal projection width.
@@ -665,26 +659,26 @@ Dictionary Camera::get_config_dict() const
 // compute screen parameters.
 void Camera::compute_screen_parameter()
 {
-    // // get center
-    // Scalar_3 const center = m_eye_pos + m_lens_screen_dist * m_view_dir;
+    // get center
+    Scalar_3 const center = m_eye_pos + m_lens_screen_dist * m_view_dir;
 
-    // // get left bottom corner
-    // Scalar const halffovy   = 0.5 * m_fovy_rad;
-    // Scalar const halfwidth  = m_lens_screen_dist * tan(halffovy);
-    // Scalar const halfheight = m_lens_screen_dist * tan(halffovy * m_aspect_ratio);
+    // get left bottom corner
+    Scalar const halffovy   = 0.5 * m_fovy_rad;
+    Scalar const halfwidth  = m_lens_screen_dist * tan(halffovy);
+    Scalar const halfheight = m_lens_screen_dist * tan(halffovy * m_aspect_ratio);
 
-    // // get basis
-    // [m_ex, m_ey, m_view_dir] = this->get_coordinate_system();
+    // get basis    
+    Scalar_3 ex, ey, ez;
+    get_coordinate_system(m_view_dir, m_up_dir, ex, ey, ez);
 
-    // m_LB_corner = (center - (halfwidth * m_ex + halfheight * m_ey));
+    m_LB_corner = (center - (halfwidth * ex + halfheight * ey));
 
-    // // print "DEBUG: halfwidth  = " + str(halfwidth);
-    // // print "DEBUG: halfheight = " + str(halfheight);
+    // std::cout << "DEBUG: halfwidth, halfheight = " << halfwidth
+    //           << ", " << halfheight << std::endl;
 
-    // m_ex = 2.0 * halfwidth  * m_ex;
-    // m_ey = 2.0 * halfheight * m_ey;
-
-    // NIN
+    m_ex = Scalar(2.0) * halfwidth  * ex;
+    m_ey = Scalar(2.0) * halfheight * ey;
+    // m_view_dir = ez;
 }
 
 //----------------------------------------------------------------------

@@ -67,7 +67,8 @@ class TestIfgiRender3(unittest.TestCase):
 
         print 'creating a scene'
         # create scenegraph by the ifgi scene parser
-        _infilepath = '../../sampledata/cornel_box.ifgi'
+        # _infilepath = '../../sampledata/cornel_box.ifgi'
+        _infilepath = '../../sampledata/one_tri_full.ifgi'
         ifgireader = IfgiSceneReader.IfgiSceneReader()
         if(not ifgireader.read(_infilepath)):
             raise StandardError, ('load file [' + _infilepath + '] failed.')

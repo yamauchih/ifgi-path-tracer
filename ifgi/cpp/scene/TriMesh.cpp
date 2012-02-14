@@ -147,9 +147,10 @@ bool TriMesh::ray_intersect(Ray const & ray, HitRecord & trimesh_hr) const
                        m_vertex_vec[(*fi)[1]],
                        m_vertex_vec[(*fi)[2]]);
 
-        std::cout << "DEBUG: " << tri.to_string() << std::endl;
+        // std::cout << "DEBUG: tri.to_string(): " << tri.to_string() << std::endl;
 
-        if(!(tri.ray_intersect(ray, tmp_hr))){
+        tmp_hr.initialize();
+        if(tri.ray_intersect(ray, tmp_hr)){
             if(trimesh_hr.m_dist > tmp_hr.m_dist){
                 trimesh_hr.m_dist          = tmp_hr.m_dist;
                 trimesh_hr.m_intersect_pos = tmp_hr.m_intersect_pos;
@@ -164,7 +165,7 @@ bool TriMesh::ray_intersect(Ray const & ray, HitRecord & trimesh_hr) const
     }
 
     if(trimesh_hr.m_dist < std::numeric_limits< Scalar >::max()){
-        std::cout << "Ray hit to TriMesh." << std::endl;
+        // DELETEME std::cout << "Ray hit to TriMesh." << std::endl;
         return true;
     }
     return false;

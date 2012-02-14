@@ -157,9 +157,38 @@ public:
 
     /// Get the camera coordinate system as OpenGL (left hand);
     ///
-    /// Get orthonrmal basis for camera coordinate system {_ex,_ey,_ez}.
-    /// \return [ex, ey, ez]  [right, up, viewingDriection()] system.
-    // def get_coordinate_system()
+    /// Get orthonrmal basis for camera coordinate system {ex,ey,ez}.
+    ///
+    /// \param[out] rightvec right direction vector
+    /// \param[out] upvec    up direction vector
+    /// \param[out] viewvec  view direction vector
+    // void get_coordinate_system(Scalar_3 & rightvec,
+    //                            Scalar_3 & upvec,
+    //                            Scalar_3 & viewvec) const;
+    static inline void get_coordinate_system(Scalar_3 const & view_dir,
+                                             Scalar_3 const & up_dir,
+                                             Scalar_3 & ex,
+                                             Scalar_3 & ey,
+                                             Scalar_3 & ez)
+    {
+        ex = cross(view_dir, up_dir);
+        ex.normalize();
+        ey = cross(ex, view_dir);
+        ey.normalize();
+        // assumed view dir is normalized
+        assert(fabs(view_dir.norm() - 1.0) < 0.000001);
+        ez = view_dir;
+
+        // ex  = numpy.cross(self.__view_dir, self.__up_dir)
+        // ex /= numpy.linalg.norm(ex);
+        // ey  = cross(ex, m_view_dir);
+        // ey /= numpy.linalg.norm(ey);
+        // assert(abs(numpy.linalg.norm(m_view_dir) - 1) < 0.000001);
+        // print "ex = " + str(ex);
+        // print "ey = " + str(ey);
+        // print "ez = " + str(m_view_dir);
+        // return [ex, ey, m_view_dir];
+    }
 
     /// get target (lookat point) distance.
     /// \return eye to lookat point (target) distance.
@@ -196,6 +225,9 @@ public:
     /// \param[out] a ray initialized for (dx, dy)
     void get_ray(Scalar dx, Scalar dy, Ray & out_ray)
     {
+        assert((dx >= Scalar(0.0)) && (dx <= Scalar(1.0)));
+        assert((dy >= Scalar(0.0)) && (dy <= Scalar(1.0)));
+
         Scalar_3 const target =  m_LB_corner + dx * m_ex + dy * m_ey;
         Scalar_3 vdir   =  target - m_eye_pos;
         vdir.normalize();
