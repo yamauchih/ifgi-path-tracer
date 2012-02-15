@@ -60,10 +60,10 @@ public:
         Sint32_3 const new_dim(m_xsize, m_ysize, 2);
         if(m_sample_loc.getDimension() != new_dim){
             // resize the buffer
-            std::stringstream sstr;
-            sstr << "resize the sample location from " << m_sample_loc.getDimension()
-                 << " to " << new_dim << "\n";
-            ILog::instance()->debug(sstr.str());
+            // std::stringstream sstr;
+            // sstr << "resize the sample location from " << m_sample_loc.getDimension()
+            //      << " to " << new_dim << "\n";
+            // ILog::instance()->debug(sstr.str());
             m_sample_loc.resizeBuffer(new_dim);
         }
         for(Sint32 y = 0; y < m_ysize; ++y){

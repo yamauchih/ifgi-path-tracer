@@ -30,7 +30,7 @@ namespace ifgi {
 // constructor
 IfgiCppRender::IfgiCppRender()
     :
-    m_p_framebuffer(0),
+    m_p_cur_framebuffer_ref(0),
     m_p_mat_group_node_ref(0),
     m_p_mesh_group_node_ref(0),
     m_p_hemisphere_sampler(0)
@@ -176,6 +176,12 @@ int IfgiCppRender::render_n_frame(Sint32 max_frame, Sint32 save_per_frame)
     // std::cin >> x;              // debug: wait for input
     // DELETEME
 
+    // set the framebuffer
+    Camera & current_camera = m_camera;
+    ImageFilm * p_img = current_camera.peek_film("RGBA");
+    assert(p_img != 0);
+    m_p_cur_framebuffer_ref = p_img;
+
     for(int i = 0; i < max_frame; ++i){
         this->render_single_frame(i);
         std::stringstream sstr;
@@ -278,7 +284,6 @@ bool IfgiCppRender::ray_scene_intersection(Ray const & ray, HitRecord & closest_
 //----------------------------------------------------------------------
 // compute a color
 void IfgiCppRender::compute_color(
-    ImageFilm * p_img,
     Sint32 pixel_x,
     Sint32 pixel_y,
     Ray & ray,
@@ -316,7 +321,8 @@ void IfgiCppRender::compute_color(
                 Color const inten = ray.get_intensity() + ray.get_reflectance() * emit_rad;
                 ray.set_intensity(inten);
                 // hit the light source
-                std::cout << "DEBUG: Hit a light source at path length = " << ray.get_path_length()
+                std::cout << "DEBUG: Hit a light source at path length = "
+                          << ray.get_path_length()
                           << std::endl;
                 is_update_intensity = true;
                 break;
@@ -375,12 +381,13 @@ void IfgiCppRender::compute_color(
     }
 
     // now we know the color
-    assert(m_p_framebuffer != 0);
+    assert(m_p_cur_framebuffer_ref != 0);
     Scalar const s_nframe = static_cast< Scalar >(nframe);
     Scalar const s_one(1.0);
     if(is_update_intensity == true){ // && (ray.path_length == 2);
-        Color const col = s_nframe * m_p_framebuffer->get_color(pixel_x, pixel_y) + ray.get_intensity();
-        m_p_framebuffer->put_color(pixel_x, pixel_y, col/(s_nframe + s_one));
+        Color const col = s_nframe * m_p_cur_framebuffer_ref->get_color(pixel_x, pixel_y)
+            + ray.get_intensity();
+        m_p_cur_framebuffer_ref->put_color(pixel_x, pixel_y, col/(s_nframe + s_one));
     }
 }
 
@@ -389,8 +396,9 @@ void IfgiCppRender::compute_color(
 Sint32 IfgiCppRender::render_single_frame(Sint32 nframe)
 {
     Camera & current_camera = m_camera;
-    ImageFilm * p_img = current_camera.peek_film("RGBA");
-    assert(p_img != 0);
+    // current frame buffer must be the same as the current camera's framebuffer
+    // In render_n_frame().
+    assert(m_p_cur_framebuffer_ref == current_camera.peek_film("RGBA"));
 
     Sint32 const res_x = current_camera.get_resolution_x();
     Sint32 const res_y = current_camera.get_resolution_y();
@@ -398,7 +406,7 @@ Sint32 IfgiCppRender::render_single_frame(Sint32 nframe)
     assert(res_y > 0);
 
     Dictionary dict = current_camera.get_config_dict();
-    dict.write(std::cout, "Render_Single_Frame: ");
+    // dict.write(std::cout, "Render_Single_Frame: ");
     
     // screen space sampler
     SamplerStratifiedRegular srs;
@@ -424,7 +432,7 @@ Sint32 IfgiCppRender::render_single_frame(Sint32 nframe)
             // DELETEME
             // std::cout << "DEBUG: Ray: [" << x << " " << y << "]: "
             //           << eye_ray.to_string() << std::endl;
-            this->compute_color(p_img, x, y, eye_ray, nframe);
+            this->compute_color(x, y, eye_ray, nframe);
         }
     }
 
@@ -436,8 +444,19 @@ Sint32 IfgiCppRender::render_single_frame(Sint32 nframe)
 // save a frame
 Sint32 IfgiCppRender::save_frame(Sint32 frame_count)
 {
-    std::cerr << "IfgiCppRender::save_frame: NIN" << std::endl;
-    return 1;
+    std::stringstream sstr;
+    sstr << "frame_" << frame_count;
+    assert(m_p_cur_framebuffer_ref != 0);
+    bool ret_ppm = m_p_cur_framebuffer_ref->save_file(sstr.str() + ".ppm", "ppm");
+    bool ret_gfi = m_p_cur_framebuffer_ref->save_file(sstr.str() + ".gfi", "gfi");
+    if(!ret_ppm){
+        std::cout << "fail to save " << sstr.str() << ".ppm" << std::endl;
+    }
+    if(!ret_gfi){
+        std::cout << "faile to save " << sstr.str() << ".gfi" << std::endl;
+    }
+
+    return ret_ppm && ret_gfi;
 }
 
 //----------------------------------------------------------------------

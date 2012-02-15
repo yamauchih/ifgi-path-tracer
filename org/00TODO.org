@@ -12,11 +12,10 @@ lookup material in the SceneDB
 ** 2012-2-9(Thu)
 ** DONE Added gfi save.
 ** DONE tmk ckeck (run_unittest.tmk)
-
-** TODO TriMesh, Triangle intersection
+** TODO TriMesh, Triangle intersection, Camera::compute_screen_parameter
 
 ** TODO cpp implementation
-*** Camera::compute_screen_parameter()
+*** Currentlt doesn't hit the light source, why?
 *** api/ifgi_cpp_render.cpp::compute_color
 *** Sampler, Sampler's unit test
 *** render_frame, render_single_frame, save_frame

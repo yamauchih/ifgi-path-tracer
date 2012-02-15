@@ -128,13 +128,11 @@ private:
 
     /// compute a framebuffer color and store it
     ///
-    /// \param[in] p_img   image film (RGBA)
     /// \param[in] pixel_x pixel position x
     /// \param[in] pixel_x pixel position y
     /// \param[in] ray     ray
     /// \param[in] nframe  current frame number
     void compute_color(
-        ImageFilm * p_img,
         Sint32 pixel_x,
         Sint32 pixel_y,
         Ray & ray,
@@ -161,8 +159,8 @@ private:
     SceneGraph m_scene_graph;
     /// current camera
     Camera m_camera;
-    /// current RGBA buffer
-    ImageFilm * m_p_framebuffer;
+    /// current RGBA buffer reference
+    ImageFilm *  m_p_cur_framebuffer_ref;
     /// material group node reference
     SceneGraphNode * m_p_mat_group_node_ref;
     /// mesh group node reference

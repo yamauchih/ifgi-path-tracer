@@ -53,8 +53,8 @@ class TestIfgiRender3(unittest.TestCase):
 
         # render frames
         self.__ifgi_cpp_render_core.prepare_rendering()
-        max_frame      = 10
-        save_per_frame = 50
+        max_frame      = 1000
+        save_per_frame = 100
         self.__ifgi_cpp_render_core.render_n_frame(max_frame, save_per_frame)
 
         ifgi_stat = self.__ifgi_cpp_render_core.shutdown()
@@ -67,8 +67,8 @@ class TestIfgiRender3(unittest.TestCase):
 
         print 'creating a scene'
         # create scenegraph by the ifgi scene parser
-        # _infilepath = '../../sampledata/cornel_box.ifgi'
-        _infilepath = '../../sampledata/one_tri_full.ifgi'
+        _infilepath = '../../sampledata/cornel_box.ifgi'
+        # _infilepath = '../../sampledata/one_tri_full.ifgi'
         ifgireader = IfgiSceneReader.IfgiSceneReader()
         if(not ifgireader.read(_infilepath)):
             raise StandardError, ('load file [' + _infilepath + '] failed.')

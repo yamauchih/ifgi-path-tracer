@@ -1,0 +1,42 @@
+# ifgi_scene 0
+#
+# one triangle with material information.
+# Copyright (C) 2011 Yamauchi, Hitoshi
+#
+
+# The camera is located at always hit rays position.
+def camera {
+    cam_name = default
+    eye_pos = 0.0 0.64 0.76
+    view_dir = 0.0 0.0 -1.0
+    up_dir = 0.0 1.0 0.0
+    # fovy_rad = 
+    # aspect_ratio = 
+    z_near = 0.1
+    z_far = 10000
+    # projection = 
+    # target_dist = 
+    # focal_length = 
+    # lens_screen_dist = 
+    # lens_film_dist = 
+    resolution_x = 64
+    resolution_y = 64
+}
+
+#
+# matreial definition
+#
+def material {
+    mat_name = one_tri_mat
+    mat_type = lambert
+    diffuse_color = 1.0 0.0 0.0 1.0
+}
+#
+# geometry
+#
+def geometry {
+    geo_name = one_tri
+    material = one_tri_mat
+    geo_file_type = obj
+    geo_file_name = one_tri.obj
+}
