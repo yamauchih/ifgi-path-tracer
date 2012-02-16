@@ -30,10 +30,11 @@ namespace ifgi {
 // constructor
 IfgiCppRender::IfgiCppRender()
     :
+    m_p_hemisphere_sampler(0),
     m_p_cur_framebuffer_ref(0),
     m_p_mat_group_node_ref(0),
     m_p_mesh_group_node_ref(0),
-    m_p_hemisphere_sampler(0)
+    m_p_envmat_ref(0)
 {
     // empty
 }
@@ -161,6 +162,9 @@ int IfgiCppRender::prepare_rendering()
     // create sampler
     this->setup_sampler();
 
+    // setup environment
+    this->setup_environment();
+
     return 0;
 }
 
@@ -176,11 +180,15 @@ int IfgiCppRender::render_n_frame(Sint32 max_frame, Sint32 save_per_frame)
     // std::cin >> x;              // debug: wait for input
     // DELETEME
 
-    // set the framebuffer
-    Camera & current_camera = m_camera;
-    ImageFilm * p_img = current_camera.peek_film("RGBA");
-    assert(p_img != 0);
-    m_p_cur_framebuffer_ref = p_img;
+    // set the framebuffer DELETEME, Done in the prepare_rendering
+    // Camera & current_camera = m_camera;
+    // ImageFilm * p_img = current_camera.peek_film("RGBA");
+    // assert(p_img != 0);
+
+    // check the setup
+    assert(m_p_cur_framebuffer_ref == m_camera.peek_film("RGBA"));
+    assert(m_p_hemisphere_sampler  != 0);
+    assert(m_p_envmat_ref != 0);
 
     for(int i = 0; i < max_frame; ++i){
         this->render_single_frame(i);
@@ -202,6 +210,11 @@ void IfgiCppRender::clear_scene()
 {
     this->clear_trimesh_memory();
     this->clear_node_memory();
+    this->clear_sampler_memory();
+
+    // dereference
+    m_p_cur_framebuffer_ref = 0;
+    m_p_envmat_ref = 0;
 }
 
 //----------------------------------------------------------------------
@@ -240,7 +253,12 @@ void IfgiCppRender::setup_framebuffer()
 
     ImageFilm * p_rgba = new ImageFilm(Sint32_3(res_x, res_y, 4), "RGBA");
     m_camera.set_film(p_rgba);
-    ILog::instance()->info("added ImageFilm: " + p_rgba->get_buffername() + "\n");
+
+    // set it as the current framebuffer
+    m_p_cur_framebuffer_ref = p_rgba;
+
+    ILog::instance()->info("added ImageFilm: " + p_rgba->get_buffername() +
+                           ", set it as the current framebuffer.\n");
 }
 
 //----------------------------------------------------------------------
@@ -250,6 +268,30 @@ void IfgiCppRender::setup_sampler()
     assert(m_p_hemisphere_sampler == 0);
 
     m_p_hemisphere_sampler = new SamplerUnitHemisphereUniform;
+}
+
+//----------------------------------------------------------------------
+// set up sampler
+void IfgiCppRender::clear_sampler_memory()
+{
+    if(m_p_hemisphere_sampler != 0){
+        delete m_p_hemisphere_sampler;
+        m_p_hemisphere_sampler = 0;
+    }
+}
+
+//----------------------------------------------------------------------
+// set up emvironment
+void IfgiCppRender::setup_environment()
+{
+    Sint32 const envmat_idx = SceneDB::instance()->get_material_index_by_name("default_env");
+    if(envmat_idx < 0){
+        ILog::instance()->warn("not found 'default_env' in SceneDB.");
+        return;
+    }
+    m_p_envmat_ref =
+        dynamic_cast< EnvironmentMaterial* >(SceneDB::instance()->peek_material(envmat_idx));
+    assert(m_p_envmat_ref != 0);
 }
 
 //----------------------------------------------------------------------
@@ -294,8 +336,8 @@ void IfgiCppRender::compute_color(
 
     // FIXME max_path_length is here
     Sint32 const max_path_length = 10;
-    ray.set_path_length(-1);
     for(Sint32 path_len = 0; path_len < max_path_length; ++path_len){
+        ray.set_path_length(path_len);
         bool const is_hit = this->ray_scene_intersection(ray, hr);
         if(is_hit){
             // std::cout << "Hit" << std::endl;
@@ -316,14 +358,13 @@ void IfgiCppRender::compute_color(
                 // p_mat->emit_radiance(_hit_onb, light_out_dir, tex_point, tex_uv));
                 Color emit_rad;
                 p_mat->emit_radiance(emit_rad);
-                Color const inten = ray.get_intensity() + ray.get_reflectance() * emit_rad;
-                ray.set_intensity(inten);
+                Color const intencity = ray.get_intensity() + ray.get_reflectance() * emit_rad;
+                ray.set_intensity(intencity);
                 // hit the light source
                 // std::cout << "DEBUG: Hit a light source at path length = "
                 //           << ray.get_path_length()
                 //           << std::endl;
                 is_update_intensity = true;
-                // ray.set_path_length(path_len); // FIXME: debug purpose
                 break;
             }
             // Do not stop by reflectance criterion. (if stop, it's wrong.);
@@ -340,19 +381,14 @@ void IfgiCppRender::compute_color(
         else{
             // done. hit to the environmnt.
             // FIXME: currently assume the environment color is always constant
-            // hit_onb = None;
-            //     light_out_dir = None;
-            //     tex_point = None;
-            //     tex_uv = None;
-            //     // print "DEBUG: ray int = ", ray.intensity, ", ref = " , ray.reflectance
-            //     amb_col = m_environment_mat.ambient_response(hit_onb, light_out_dir,
-            //                                                  tex_point, tex_uv);
-            //     ray.intensity = ray.intensity + (ray.reflectance * amb_col);
-            //     is_update_intensity = True;
-            // print "DEBUG: hit env, amb_col = ", amb_col
-            // std::cout << "DEBUG: hit env" << std::endl;
 
-            // ray.set_path_length(path_len); // FIXME: debug purpose
+            // std::cout << "DEBUG: ray intencity = " << ray.get_intensity()
+            //           << ", reflectance = " << ray.get_reflectance() << std::endl;
+            Color const amb_col   = m_p_envmat_ref->ambient_response();
+            Color const intencity = ray.get_intensity() + ray.get_reflectance() * amb_col;
+            ray.set_intensity(intencity);
+            is_update_intensity = true;
+            // std::cout << "DEBUG: hit env: col = " << amb_col << std::endl;
             break;
         }
     }
@@ -384,7 +420,7 @@ Sint32 IfgiCppRender::render_single_frame(Sint32 nframe)
 
     Dictionary dict = current_camera.get_config_dict();
     // dict.write(std::cout, "Render_Single_Frame: ");
-    
+
     // screen space sampler
     SamplerStratifiedRegular srs;
     srs.compute_sample(0, res_x - 1, 0, res_y - 1);

@@ -7,6 +7,8 @@
 \file
 \brief ifgi base utility"""
 
+import time
+
 def has_dict_all_key(_dict, _key_list):
     """check a dict has all key list
     \param[in] _dict     dictionary to be checked
@@ -31,3 +33,9 @@ def get_dict_missing_key(_dict, _key_list):
             ret.append(k)
 
     return ret
+
+def get_current_localtime_str():
+    """get current localtime string as year-month-date time
+    """
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+

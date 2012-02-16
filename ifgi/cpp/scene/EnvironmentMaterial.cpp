@@ -58,11 +58,9 @@ bool EnvironmentMaterial::is_emit() const
 
 //----------------------------------------------------------------------
 // ambient response
-void EnvironmentMaterial::ambient_response(//_hit_onb, incident_dir, tex_point, tex_uv
-    Color & out_amb_res
-    ) const
+Color EnvironmentMaterial::ambient_response() const
 {
-    out_amb_res = m_p_texture_ref->value();
+    return m_p_texture_ref->value();
 }
 
 //----------------------------------------------------------------------

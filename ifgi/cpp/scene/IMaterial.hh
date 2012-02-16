@@ -69,9 +69,8 @@ public:
     /// \param[in] incident_dir incident direction
     /// \param[in] tex_point texture 3d point (if solid)
     /// \param[in] tex_uv    texture uv coordinate (if surface)
-    /// \param[out] out_amb_res  (output) ambient responce
-    virtual void ambient_response(//_hit_onb, incident_dir, tex_point, tex_uv
-        Color & out_amb_res
+    /// \return ambient responce
+    virtual Color ambient_response(//_hit_onb, incident_dir, tex_point, tex_uv
         ) const
     {
         throw Exception("IMaterial::ambient_response: not supported");
@@ -101,7 +100,7 @@ public:
     /// \return outgoing vector
     virtual Scalar_3 diffuse_direction(
         OrthonomalBasis const & hit_onb,
-        Scalar_3 const & incident_dir, 
+        Scalar_3 const & incident_dir,
         SamplerUnitHemisphereUniform * p_hemisphere_sampler) const
     {
         assert(this->is_diffuse());

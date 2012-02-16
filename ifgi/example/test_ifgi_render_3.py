@@ -16,7 +16,7 @@ import unittest
 import numpy, random, copy, math
 
 # package import: specify a directory and file.
-from ifgi.base    import Sampler
+from ifgi.base    import Sampler, ifgi_util
 from ifgi.ptracer import IfgiSys
 from ifgi.scene   import SceneGraph, Primitive, Film, test_scene_util, IfgiSceneReader
 from ifgi.scene   import SceneUtil
@@ -28,20 +28,20 @@ class TestIfgiRender3(unittest.TestCase):
 
     def test_render(self):
         """test rendering"""
+
+        print
+        print 'StartTime: ' + ifgi_util.get_current_localtime_str()
+
         # get ifgi system
         ifgi_inst = IfgiSys.IfgiSys()
         ifgi_stat = ifgi_inst.start()
         assert(ifgi_stat == True)
 
         # random.seed(0)
-        # unit hemisphere uniform sampler
-        # self.__hemisphere_sampler = Sampler.UnitHemisphereUniformSampler()
 
-        # FIXME random.uniform(0,1)
-
-        self.__image_xsize = 50
-        self.__image_ysize = 50
-        self.__max_path_length = 10 # 2...for direct light only
+        self.__image_xsize = 32
+        self.__image_ysize = 32
+        self.__max_path_length = 10 # 2...for direct light only: FIXME not used
 
         # C++ rendering translator. This translator has a cpp
         # rendering core which has scenegraph, material, primitives...
@@ -53,11 +53,13 @@ class TestIfgiRender3(unittest.TestCase):
 
         # render frames
         self.__ifgi_cpp_render_core.prepare_rendering()
-        max_frame      = 1000
+        max_frame      = 10000
         save_per_frame = 100
         self.__ifgi_cpp_render_core.render_n_frame(max_frame, save_per_frame)
 
         ifgi_stat = self.__ifgi_cpp_render_core.shutdown()
+
+        print 'EndTime: ', ifgi_util.get_current_localtime_str()
 
 
     def __create_scene(self):
@@ -79,7 +81,7 @@ class TestIfgiRender3(unittest.TestCase):
         cam_dict = ifgireader.camera_dict_dict['default']
         print 'resize the camera resolution from ['    +\
             str(cam_dict['resolution_x'])  + ' '     +\
-            str(cam_dict['resolution_y'])  + '] -> ' +\
+            str(cam_dict['resolution_y'])  + '] -> [' +\
             str(self.__image_xsize)  + ' '     +\
             str(self.__image_ysize)  + ']'
         cam_dict['resolution_x'] = self.__image_xsize

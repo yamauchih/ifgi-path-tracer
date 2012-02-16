@@ -16,7 +16,7 @@ import unittest
 import numpy, random, copy, math
 
 # package import: specify a directory and file.
-from ifgi.base    import Sampler
+from ifgi.base    import Sampler, ifgi_util
 from ifgi.ptracer import IfgiSys
 from ifgi.scene   import SceneGraph, Primitive, Film, test_scene_util, IfgiSceneReader
 from ifgi.scene   import SceneUtil
@@ -27,6 +27,10 @@ class TestIfgiRender2(unittest.TestCase):
 
     def test_render(self):
         """test rendering"""
+
+        print
+        print 'StartTime: ' + ifgi_util.get_current_localtime_str()
+
         # get ifgi system
         ifgi_inst = IfgiSys.IfgiSys()
         ifgi_stat = ifgi_inst.start()
@@ -55,11 +59,13 @@ class TestIfgiRender2(unittest.TestCase):
 
         # reder frames
         # max_frame      = 2000
-        max_frame      = 1
+        max_frame      = 1000
         save_per_frame = 50
         self.__render_all_frame(max_frame, save_per_frame)
 
         ifgi_stat = ifgi_inst.shutdown()
+
+        print 'EndTime: ', ifgi_util.get_current_localtime_str()
 
 
     def __create_scene(self):
@@ -226,7 +232,7 @@ class TestIfgiRender2(unittest.TestCase):
         """
         for nf in xrange(0, _max_frame):
             self.__render_frame(nf)
-            print 'reder frame ', nf
+            print 'render frame ', nf
             if ((nf != 0) and (nf % _save_per_frame == 0)):
                 self.__save_frame(nf)
         self.__save_frame(0)

@@ -12,6 +12,7 @@
 
 #include <cpp/base/Dictionary.hh>
 #include <cpp/scene/SceneGraph.hh>
+#include <cpp/scene/EnvironmentMaterial.hh>
 
 namespace ifgi {
 
@@ -118,6 +119,11 @@ private:
 
     /// set up sampler
     void setup_sampler();
+    /// clear sampler memory
+    void clear_sampler_memory();
+
+    /// set up emvironment
+    void setup_environment();
 
     /// ray scene intersection
     ///
@@ -159,14 +165,20 @@ private:
     SceneGraph m_scene_graph;
     /// current camera
     Camera m_camera;
+    /// hemisphere sampler
+    SamplerUnitHemisphereUniform * m_p_hemisphere_sampler;
+
+    //----------------------------------------------------------------------
+    // references (not owner)
+
     /// current RGBA buffer reference
     ImageFilm *  m_p_cur_framebuffer_ref;
     /// material group node reference
     SceneGraphNode * m_p_mat_group_node_ref;
     /// mesh group node reference
     SceneGraphNode * m_p_mesh_group_node_ref;
-    /// hemisphere sampler
-    SamplerUnitHemisphereUniform * m_p_hemisphere_sampler;
+    /// environment reference
+    EnvironmentMaterial * m_p_envmat_ref;
 };
 
 } // namespace ifgi

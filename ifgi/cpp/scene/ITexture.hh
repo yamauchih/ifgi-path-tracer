@@ -32,6 +32,7 @@ public:
     /// \param[in] _uv    texture uv coordinate (if surface)
     /// \param[in] _point texture point in 3d (if solid)
     /// \return texture color value
+    /// FIXME may return const &.
     virtual Color value(// _uv, _point
         ) const = 0;
 };
