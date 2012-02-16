@@ -105,7 +105,7 @@ public:
     /// \return outgoing vector
     virtual Scalar_3 diffuse_direction(
         OrthonomalBasis const & hit_onb,
-        Scalar_3 const & incident_dir, 
+        Scalar_3 const & incident_dir,
         SamplerUnitHemisphereUniform * p_hemisphere_sampler) const;
 
     /// is diffuse?

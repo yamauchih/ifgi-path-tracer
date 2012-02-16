@@ -299,12 +299,10 @@ void IfgiCppRender::compute_color(
         bool const is_hit = this->ray_scene_intersection(ray, hr);
         if(is_hit){
             // std::cout << "Hit" << std::endl;
-
             // hit somthing, lookup material
             assert(hr.m_hit_material_index >= 0);
             IMaterial * p_mat = SceneDB::instance()->peek_material(hr.m_hit_material_index);
             assert(p_mat != 0);
-
             // only Lambert/Diffuse material
             Color brdf_col;      // FIXME: preallocation
             p_mat->explicit_brdf(brdf_col);
@@ -321,63 +319,42 @@ void IfgiCppRender::compute_color(
                 Color const inten = ray.get_intensity() + ray.get_reflectance() * emit_rad;
                 ray.set_intensity(inten);
                 // hit the light source
-                std::cout << "DEBUG: Hit a light source at path length = "
-                          << ray.get_path_length()
-                          << std::endl;
+                // std::cout << "DEBUG: Hit a light source at path length = "
+                //           << ray.get_path_length()
+                //           << std::endl;
                 is_update_intensity = true;
+                // ray.set_path_length(path_len); // FIXME: debug purpose
                 break;
             }
             // Do not stop by reflectance criterion. (if stop, it's wrong.);
-            
+
             // update ray information
             Scalar_3 const out_v = p_mat->diffuse_direction(hr.m_hit_onb, ray.get_dir(),
                                                             m_p_hemisphere_sampler);
             ray.set_origin(hr.m_intersect_pos);
             ray.set_dir(out_v);
 
-            // mat = m_scene_geo_mat.material_list[hr.hit_material_index];
-            // // only Lambert
-            // // mat.explicit_brdf(hr.hit_basis, out_v0, out_v1, tex_point, tex_uv);
-            // /// print "DEBUG: mat ref ", mat.explicit_brdf(None, None, None, None, None);
-
-            //     // probability is 1/pi, here, constant importance,
-            //     // therefore, divided by (1/pi) = multiplied by pi
-            //     brdf = M_PI * mat.explicit_brdf(None, None, None, None, None);
-            //     ray.reflectance = (ray.reflectance * brdf);
-            //     if(mat.is_emit()){
-            //         // only Lambert emittance
-            //         // mat.emit_radiance(_hit_onb, light_out_dir, tex_point, tex_uv));
-            //         ray.intensity = ray.intensity +
-            //             (ray.reflectance * mat.emit_radiance(None, None, None, None));
-            //         // hit the light source
-
-            //         // print "DEBUG: Hit a light source at path length = ", ray.path_length
-            //         //     is_update_intensity = True;
-            //         break;
-            //     }
-            //     // Do not stop by reflectance criterion. (if stop, it"s wrong.);
-
-            //     // update ray information
-            //     out_v = mat.diffuse_direction(hr.hit_basis, ray.get_dir(),
-            //                                   m_p_hemisphere_sampler);
-            //     ray.set_origin(copy.deepcopy(hr.intersect_pos));
-            //     ray.set_dir(copy.deepcopy(out_v));
+            // std::cout << "DEBUG: " << p_mat->get_material_name()
+            //           << " " << ray.to_string() << std::endl;
         }
-        // else{
-        //     // done. hit to the environmnt.
-        //     // FIXME: currently assume the environment color is always constant
-        //     hit_onb = None;
-        //     light_out_dir = None;
-        //     tex_point = None;
-        //     tex_uv = None;
-        //     // print "DEBUG: ray int = ", ray.intensity, ", ref = " , ray.reflectance
-        //     amb_col = m_environment_mat.ambient_response(hit_onb, light_out_dir,
-        //                                                  tex_point, tex_uv);
-        //     ray.intensity = ray.intensity + (ray.reflectance * amb_col);
-        //     is_update_intensity = True;
-        //     // print "DEBUG: hit env, amb_col = ", amb_col
-        //     break;
-        // }
+        else{
+            // done. hit to the environmnt.
+            // FIXME: currently assume the environment color is always constant
+            // hit_onb = None;
+            //     light_out_dir = None;
+            //     tex_point = None;
+            //     tex_uv = None;
+            //     // print "DEBUG: ray int = ", ray.intensity, ", ref = " , ray.reflectance
+            //     amb_col = m_environment_mat.ambient_response(hit_onb, light_out_dir,
+            //                                                  tex_point, tex_uv);
+            //     ray.intensity = ray.intensity + (ray.reflectance * amb_col);
+            //     is_update_intensity = True;
+            // print "DEBUG: hit env, amb_col = ", amb_col
+            // std::cout << "DEBUG: hit env" << std::endl;
+
+            // ray.set_path_length(path_len); // FIXME: debug purpose
+            break;
+        }
     }
 
     // now we know the color

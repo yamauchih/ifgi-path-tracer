@@ -34,8 +34,12 @@ DiffuseMaterial::DiffuseMaterial(std::string const & mat_name,
 // set emit color
 void DiffuseMaterial::set_emit_color(Color const & emit_color)
 {
-    // all zeros -> no emit
-    if(emit_color == Color(0.0, 0.0, 0.0, 0.0)){
+    // first three components count.
+    Scalar const zero(0.0);
+    if((emit_color[0] == zero) &&
+       (emit_color[1] == zero) &&
+       (emit_color[2] == zero))
+    {
         m_emit_color = emit_color;
         m_is_emit_color = false;
         return;
@@ -47,8 +51,15 @@ void DiffuseMaterial::set_emit_color(Color const & emit_color)
                             "minus emission.");
         }
     }
-
     m_emit_color = emit_color;
+
+    // if any component > 0.0, emit.
+    if((emit_color[0] > zero) ||
+       (emit_color[1] > zero) ||
+       (emit_color[2] > zero))
+    {
+        m_is_emit_color = true;
+    }
 }
 
 

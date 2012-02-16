@@ -1,4 +1,4 @@
-* Task ifgi path tracer 2012-2-7(Tue)
+* Task ifgi path tracer 2012-2-16(Thu)
 
 ** top5
 
@@ -15,12 +15,10 @@ lookup material in the SceneDB
 ** TODO TriMesh, Triangle intersection, Camera::compute_screen_parameter
 
 ** TODO cpp implementation
-*** Currentlt doesn't hit the light source, why?
-*** api/ifgi_cpp_render.cpp::compute_color
+*** add environment map
 *** Sampler, Sampler's unit test
-*** render_frame, render_single_frame, save_frame
-*** IfgiCppRender::render_single_frame()
 *** Stop using Float32, but Scalar typedef for later double possibility.
+*** Use OpenMP
 
 ** TODO Install
 *** Eclipse (on new machine)
