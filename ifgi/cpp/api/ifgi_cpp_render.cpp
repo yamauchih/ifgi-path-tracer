@@ -180,11 +180,6 @@ int IfgiCppRender::render_n_frame(Sint32 max_frame, Sint32 save_per_frame)
     // std::cin >> x;              // debug: wait for input
     // DELETEME
 
-    // set the framebuffer DELETEME, Done in the prepare_rendering
-    // Camera & current_camera = m_camera;
-    // ImageFilm * p_img = current_camera.peek_film("RGBA");
-    // assert(p_img != 0);
-
     // check the setup
     assert(m_p_cur_framebuffer_ref == m_camera.peek_film("RGBA"));
     assert(m_p_hemisphere_sampler  != 0);
@@ -257,8 +252,11 @@ void IfgiCppRender::setup_framebuffer()
     // set it as the current framebuffer
     m_p_cur_framebuffer_ref = p_rgba;
 
-    ILog::instance()->info("added ImageFilm: " + p_rgba->get_buffername() +
-                           ", set it as the current framebuffer.\n");
+    std::stringstream sstr;
+    sstr << "added ImageFilm: " << p_rgba->get_buffername()
+         << " [" << res_x << " " << res_y << "]"
+         << ", set it as the current framebuffer.\n";
+    ILog::instance()->info(sstr.str());
 }
 
 //----------------------------------------------------------------------
@@ -303,10 +301,7 @@ bool IfgiCppRender::ray_scene_intersection(Ray const & ray, HitRecord & closest_
     for(std::vector< TriMesh * >::const_iterator tmi = m_p_trimesh_vec.begin();
         tmi != m_p_trimesh_vec.end(); ++tmi)
     {
-        // DELETEME std::cout << (*tmi)->get_info_summary() << std::endl;
         if((*tmi)->ray_intersect(ray, tmp_hr)){
-            // std::cout << "IfgiCppRender::ray_scene_intersection: HIT"  << std::endl;
-
             // hit
             if(closest_hr.m_dist > tmp_hr.m_dist){
                 closest_hr = tmp_hr; // FIXME. Maybe not necessary to copy alll
@@ -433,7 +428,10 @@ Sint32 IfgiCppRender::render_single_frame(Sint32 nframe)
     Sint32 const XDIR = 0;
     Sint32 const YDIR = 1;
     Ray eye_ray;
+
+#pragma omp parallel for private(eye_ray)
     for(Sint32 y = 0; y < res_y; ++y){
+
         for(Sint32 x = 0; x < res_x; ++x){
             // get normalized coordinate
             Scalar const nx = srs.get_sample(x, y, XDIR) * inv_xsz;
@@ -442,9 +440,6 @@ Sint32 IfgiCppRender::render_single_frame(Sint32 nframe)
             // FIXME Ray preallocation
             current_camera.get_ray(nx, ny, eye_ray);
 
-            // DELETEME
-            // std::cout << "DEBUG: Ray: [" << x << " " << y << "]: "
-            //           << eye_ray.to_string() << std::endl;
             this->compute_color(x, y, eye_ray, nframe);
         }
     }

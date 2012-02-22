@@ -17,8 +17,8 @@ def camera {
     # focal_length = 
     # lens_screen_dist = 
     # lens_film_dist = 
-    resolution_x = 64
-    resolution_y = 64
+    resolution_x = 128
+    resolution_y = 128
 }
 
 #

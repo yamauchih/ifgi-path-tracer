@@ -14,10 +14,12 @@ lookup material in the SceneDB
 ** DONE tmk ckeck (run_unittest.tmk)
 ** 2012-2-16(Thu)
 *** DONE TriMesh, Triangle intersection, Camera::compute_screen_parameter, add environment map
+*** cpp implementation is 162 times faster than python implementation
 
 ** TODO cpp implementation
 ** max path length is not regarded
 ** save filename
+** check out OpenMP
 
 *** Sampler, Sampler's unit test
 *** Stop using Float32, but Scalar typedef for later double possibility.

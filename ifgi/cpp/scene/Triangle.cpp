@@ -69,7 +69,6 @@ bool Triangle::ray_intersect(Ray const & ray, HitRecord & hr) const
     Scalar_3 const s1  = cross(ray.get_dir(), e2);
     Scalar   const div = s1.dot(e1);
     if(div == 0.0){
-        // DELETEME std::cout << "nohit: dotprod" << std::endl;
         return false;
     }
     Scalar const inv_div = Scalar(1.0) / div;
@@ -86,14 +85,12 @@ bool Triangle::ray_intersect(Ray const & ray, HitRecord & hr) const
     Scalar_3 const s2 = cross(d, e1);
     Scalar   const b2 = ray.get_dir().dot(s2) * inv_div;
     if((b2 < 0.0) || ((b1 + b2) > 1.0)){
-        // DELETEME std::cout << "nohit: b1" << std::endl;
         return false;
     }
 
     // get intersection point (distance t);
     Scalar const t = e2.dot(s2) * inv_div;
     if((t < ray.get_min_t()) || (t > ray.get_max_t())){
-        // DELETEME std::cout << "nohit: backside" << std::endl;
         return false;
     }
 

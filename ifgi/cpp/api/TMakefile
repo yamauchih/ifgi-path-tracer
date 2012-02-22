@@ -10,6 +10,10 @@
 
 module { cxx }
 
+# for OpenMP
+lappend cxx::FLAGS "-fopenmp"
+lappend link::FLAGS "-fopenmp"
+
 # the python module name
 set MOD_CPP_SOURCE_BASE ifgi_python_cpp_translator_mod
 

@@ -5,8 +5,7 @@
 #
 def camera {
     cam_name = default
-    # eye_pos = 278.0 273.0 -800.0
-    eye_pos = 278.0 273.0 -300.0
+    eye_pos = 278.0 273.0 -800.0
     view_dir = 0.0 0.0 1.0
     up_dir = 0.0 1.0 0.0
     # fovy_rad = 
@@ -52,18 +51,18 @@ def geometry {
 # Light
 # light 5-8
 #
-# def material {
-#     mat_name = light_mat
-#     mat_type = lambert
-#     diffuse_color = 1.0 1.0 1.0 1.0
-#     emit_color = 10.0 10.0 10.0 1.0
-# }
-# def geometry {
-#     geo_name = light
-#     material = light_mat
-#     geo_file_type = obj
-#     geo_file_name = cornel_box.light.obj
-# }
+def material {
+    mat_name = light_mat
+    mat_type = lambert
+    diffuse_color = 1.0 1.0 1.0 1.0
+    emit_color = 10.0 10.0 10.0 1.0
+}
+def geometry {
+    geo_name = light
+    material = light_mat
+    geo_file_type = obj
+    geo_file_name = cornel_box.light.obj
+}
 
 #
 # Ceiling
@@ -134,31 +133,31 @@ def geometry {
 # Short block
 # white 25-44
 #
-# def material {
-#     mat_name = shortblock_mat
-#     mat_type = lambert
-#     diffuse_color = 1.0 1.0 1.0 1.0
-# }
-# def geometry {
-#     geo_name = shortblock
-#     material = shortblock_mat
-#     geo_file_type = obj
-#     geo_file_name = cornel_box.shortblock.obj
-# }
+def material {
+    mat_name = shortblock_mat
+    mat_type = lambert
+    diffuse_color = 1.0 1.0 1.0 1.0
+}
+def geometry {
+    geo_name = shortblock
+    material = shortblock_mat
+    geo_file_type = obj
+    geo_file_name = cornel_box.shortblock.obj
+}
 
 #
 # Tall block
 # white 45-64
 #
-# def material {
-#     mat_name = tallblock_mat
-#     mat_type = lambert
-#     diffuse_color = 1.0 1.0 1.0 1.0
-# }
-# def geometry {
-#     geo_name = tallblock
-#     material = tallblock_mat
-#     geo_file_type = obj
-#     geo_file_name = cornel_box.tallblock.obj
-# }
+def material {
+    mat_name = tallblock_mat
+    mat_type = lambert
+    diffuse_color = 1.0 1.0 1.0 1.0
+}
+def geometry {
+    geo_name = tallblock
+    material = tallblock_mat
+    geo_file_type = obj
+    geo_file_name = cornel_box.tallblock.obj
+}
 
