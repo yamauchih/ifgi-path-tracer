@@ -17,9 +17,11 @@ lookup material in the SceneDB
 *** cpp implementation is 162 times faster than python implementation
 
 ** TODO cpp implementation
+** StopWatch, RNG (ANSIC, glibc, MT boost version also).
 ** max path length is not regarded
 ** save filename
 ** check out OpenMP
+
 
 *** Sampler, Sampler's unit test
 *** Stop using Float32, but Scalar typedef for later double possibility.
