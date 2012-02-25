@@ -24,4 +24,18 @@ module { python.boost python.boost_config }
 
 # lappend EXCLUDE ifgi_cpp_render.cpp
 
-
+#
+# additional clean entry
+#
+target core_bk_clean ALWAYS_BUILD {
+    set deletebakupfile [glob -nocomplain *~]
+    append deletebakupfile " core a.out TAGS"
+    append deletebakupfile " build_mod.sh"
+    puts -nonewline "file delete -- "
+    foreach f ${deletebakupfile} {
+	file delete -force -- ${f}
+	puts -nonewline "${f} "
+    }
+    puts ""
+}
+depend clean core_bk_clean

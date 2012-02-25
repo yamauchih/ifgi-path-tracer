@@ -22,7 +22,6 @@ TEST(RNG, RNGLinearCongANSIC)
     for(int i = 0; i < 1024 * 1024 * 1024; ++i){
         sum += p_rng->rand_float32();
     }
-
 }
 
 int main(int argc, char **argv)
