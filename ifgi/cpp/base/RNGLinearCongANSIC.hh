@@ -18,18 +18,18 @@ namespace ifgi {
 ///
 /// Implementation assumes these are used thread locally, not over
 /// multiple threads (thread non-safe)
-class RNGLinearCong
+class RNGLinearCongANSIC : public IRNG
 {
 public:
     /// constructor
-    RNGLinearCong()
+    RNGLinearCongANSIC()
         :
         m_state(0)
     {
         // empty
     }
     /// destructor
-    virtual ~RNGLinearCong()
+    virtual ~RNGLinearCongANSIC()
     {
         // empty
     }
@@ -52,18 +52,18 @@ public:
 
     /// get pseudo-random floating number ranged in [0, 1)
     /// \return float pseudo-random number ranged in [0, 1)
-    virtual Float32 rand_float32() const
+    virtual Float32 rand_float32()
     {
         Float32 const rndf    = static_cast< Float32 >(this->rand_uint32());
         Float32 const maxrndf =
             static_cast< Float32 >((static_cast< Uint64 >(this->rand_max_uint32()) + 1ull));
 
-        return rnd / Float32;
+        return rndf / maxrndf;
     }
 
     /// get pseudo-random Uint32 number ranged in [0, rand_max_uint32()]
     /// \return Uint32 pseudo-random number ranged in [0, rand_max_uint32()]
-    virtual Uint32 rand_uint32() const
+    virtual Uint32 rand_uint32()
     {
         // (aaX+cc)%mm
         Uint64 const aa = 1103515245llu;
@@ -85,9 +85,9 @@ private:
 
 private:
   /// copy constructor, never used.
-  RNGLinearCong(const RNGLinearCong& _rhs);
+  RNGLinearCongANSIC(const RNGLinearCongANSIC& _rhs);
   /// operator=, never used.
-  const RNGLinearCong& operator=(const RNGLinearCong& _rhs);
+  const RNGLinearCongANSIC& operator=(const RNGLinearCongANSIC& _rhs);
 };
 
 

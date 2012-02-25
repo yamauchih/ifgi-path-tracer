@@ -20,9 +20,9 @@ class IRNG
 {
 public:
     /// constructor
-    IRNG();
+    IRNG(){}
     /// destructor
-    virtual ~IRNG();
+    virtual ~IRNG(){}
 
     /// set state (seed). maybe some of the generator needs more state
     /// information.
@@ -36,11 +36,11 @@ public:
 
     /// get pseudo-random floating number ranged in [0, 1)
     /// \return float pseudo-random number ranged in [0, 1)
-    virtual Float32 rand_float32() const = 0;
+    virtual Float32 rand_float32() = 0;
 
     /// get pseudo-random Uint32 number ranged in [0, rand_max_uint32()]
     /// \return Uint32 pseudo-random number ranged in [0, rand_max_uint32()]
-    virtual Uint32  rand_uint32() const = 0;
+    virtual Uint32  rand_uint32() = 0;
 
     /// get max Uint32 pseudo-random number
     /// \return max Uint32  pseudo-random number
