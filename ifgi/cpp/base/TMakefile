@@ -16,6 +16,7 @@ module { run_unittest }
 
 lappend EXCLUDE SamplerUnitHemisphereUniform.cpp
 lappend EXCLUDE SamplerStratifiedRegular.cpp
+lappend EXCLUDE test_rng.cc
 
 #
 # additional clean entry

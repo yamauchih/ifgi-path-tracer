@@ -1,18 +1,19 @@
 //----------------------------------------------------------------------
-// ifgi c++ implementation: Date.hh
+// ifgi c++ implementation
 // Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file
-/// \brief Date unit test
+/// \brief Date and StopWatch test
 #ifndef DOXYGEN_SKIP
 
 #include "Date.hh"
+#include "StopWatch.hh"
 #include <unistd.h>
 
 #include <gtest/gtest.h>
 
 // Tests DateTest
-TEST(DateTest, Date)
+TEST(TimerTest, Date)
 {
     ifgi::Date date1;
     usleep(1000000);
@@ -35,6 +36,18 @@ TEST(DateTest, Date)
     std::cout << "date1.getTimeAsDouble() = "   << d1d
               << ", date2.getTimeAsDouble() = " << d2d
               << ", diff = " << d2d - d1d << std::endl;
+}
+
+// Tests StopWatch
+TEST(TimerTest, StopWatch)
+{
+    ifgi::StopWatch sw;
+
+    sw.run();
+    usleep(123456);
+    sw.stop();
+
+    std::cout << sw << " sec.";
 }
 
 int main(int argc, char **argv)

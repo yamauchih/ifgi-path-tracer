@@ -1,23 +1,11 @@
-* Task ifgi path tracer 2012-2-16(Thu)
+* Task ifgi path tracer 2012-2-25(Sat)
 
 ** top5
 
-** 2012-1-9(Mon)
-*** DONE MaterialFactory, Dictionary, complete DiffuseMaterial, EnvironmentMaterial
-lookup material in the SceneDB
-** 2012-1-18(Wed)
-*** DONE push the TriMesh to C++ code. add camera resolution, Fix the example renderer.
-** 2012-1-19(Wed)
-*** DONE Separate python -> cpp translator and rendering core library, added ImageFilm.
-** 2012-2-9(Thu)
-** DONE Added gfi save.
-** DONE tmk ckeck (run_unittest.tmk)
-** 2012-2-16(Thu)
-*** DONE TriMesh, Triangle intersection, Camera::compute_screen_parameter, add environment map
-*** cpp implementation is 162 times faster than python implementation
+** DONE 2012-2-24(Sat) StopWatch
 
 ** TODO cpp implementation
-** StopWatch, RNG (ANSIC, glibc, MT boost version also).
+** RNG (ANSIC, glibc, MT boost version also).
 ** max path length is not regarded
 ** save filename
 ** check out OpenMP
