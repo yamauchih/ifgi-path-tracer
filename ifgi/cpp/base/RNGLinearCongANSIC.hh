@@ -34,6 +34,10 @@ public:
         // empty
     }
 
+    /// get class name. interface method.
+    /// \return class name
+    virtual std::string get_classname() const { return "RNGLinearCongANSIC"; }
+
     /// set state (seed). maybe some of the generator needs more state
     /// information.
     ///

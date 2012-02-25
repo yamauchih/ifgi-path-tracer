@@ -10,6 +10,7 @@
 #include "SamplerUnitHemisphereUniform.hh"
 #include "Array3D.hh"
 #include "LoadSavePPM.hh"
+#include "StopWatch.hh"
 
 #include <gtest/gtest.h>
 
@@ -79,13 +80,26 @@ TEST(SamplarTest, UnitDiskUniform)
 TEST(SamplarTest, UnitHemisphereUniform)
 {
     SamplerUnitHemisphereUniform uhus;
-    int const sample_count = 100;
+    int const sample_count = 1024 * 1024 * 16;
 
-    for(int i = 0; i < sample_count; ++i){
-        Scalar_3 const v   = uhus.get_sample();
-        Scalar const v_len = v.norm();
-        assert(abs(v_len - 1.0) < 0.00001);
+    StopWatch sw;
+    sw.run();
+
+    // with #pragma omp parallel
+    //   prng: drand48: 9.37715e+06 samples/sec (1 core, -max)
+    //   prng: drand48: 7.1548e+06  samples/sec (2 core, -max)
+    {
+// #pragma omp parallel
+        for(int i = 0; i < sample_count; ++i){
+            Scalar_3 const v   = uhus.get_sample();
+            Scalar const v_len = v.norm();
+            assert(abs(v_len - 1.0) < 0.00001);
+        }
     }
+    sw.stop();
+    std::cout << "prng: drand48: "
+              << static_cast< Float64 >(sample_count) / sw.get_accumulated_time()
+              << std::endl;
 }
 
 int main(int argc, char **argv)

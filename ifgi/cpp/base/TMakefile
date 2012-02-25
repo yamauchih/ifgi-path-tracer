@@ -16,7 +16,10 @@ module { run_unittest }
 
 lappend EXCLUDE SamplerUnitHemisphereUniform.cpp
 lappend EXCLUDE SamplerStratifiedRegular.cpp
-# lappend EXCLUDE test_rng.cc
+
+# for OpenMP
+lappend cxx::FLAGS "-fopenmp"
+lappend link::FLAGS "-fopenmp"
 
 #
 # additional clean entry

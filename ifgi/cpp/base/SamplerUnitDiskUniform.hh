@@ -8,6 +8,7 @@
 #define IFGI_PATH_TRACER_IFGI_CPP_BASE_SAMPLERUNITDISKUNIFORM_HH
 
 #include "Vector.hh"
+#include "IRNG.hh"
 
 namespace ifgi
 {
@@ -32,7 +33,7 @@ public:
     /// get sample point on an unit disk
     ///
     /// \return (x,y)
-    Scalar_2 get_sample()
+    Scalar_2 get_sample() // IRNG * p_rng
     {
         double u1 = drand48();
         double u2 = drand48();

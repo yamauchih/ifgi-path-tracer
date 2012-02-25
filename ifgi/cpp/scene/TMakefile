@@ -12,6 +12,11 @@ lappend link::PROJLIBS cpp/base
 # not yet ready
 # lappend EXCLUDE test_Primitive.cpp
 
+# for OpenMP
+# lappend cxx::FLAGS "-fopenmp"
+# lappend link::FLAGS "-fopenmp"
+
+
 #
 # additional clean entry
 #

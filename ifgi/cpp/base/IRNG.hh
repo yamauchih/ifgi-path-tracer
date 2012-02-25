@@ -24,6 +24,10 @@ public:
     /// destructor
     virtual ~IRNG(){}
 
+    /// get class name. interface method.
+    /// \return class name
+    virtual std::string get_classname() const = 0;
+
     /// set state (seed). maybe some of the generator needs more state
     /// information.
     ///
