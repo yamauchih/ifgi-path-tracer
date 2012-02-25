@@ -6,7 +6,8 @@
 
 ** TODO cpp implementation
 ** RNG (ANSIC, glibc, MT boost version also).
-** RNG multithread comparison blog
+** RNG multithread comparison blog.
+** RNG test simple control of the threading.
 ** max path length is not regarded
 ** save filename
 ** check out OpenMP
