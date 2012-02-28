@@ -50,6 +50,13 @@ public:
     /// \return max Uint32  pseudo-random number
     virtual Uint32  rand_max_uint32() const = 0;
 
+    /// clone method. To enable IRNG * can clone the instance.
+    ///
+    /// \return cloned object. Maybe some of the generator can not
+    /// guatantee the same state, but, at least the type of the
+    /// generator should be the same.
+    virtual IRNG * clone() const = 0;
+
 private:
   /// copy constructor, never used.
   IRNG(const IRNG& _rhs);

@@ -32,6 +32,7 @@ public:
     virtual ~RNGLinearCongANSIC()
     {
         // empty
+        // std::cout << "~RNGLinearCongANSIC()" << std::endl;
     }
 
     /// get class name. interface method.
@@ -81,6 +82,19 @@ public:
     /// get max Uint32 pseudo-random number
     /// \return max Uint32  pseudo-random number
     virtual Uint32  rand_max_uint32() const { return RAND_MAX; }
+
+
+    /// clone method. To enable IRNG * can clone the instance.
+    ///
+    /// \return cloned object. This class can not guarantee the same
+    /// state.
+    virtual IRNG * clone() const
+    {
+        RNGLinearCongANSIC * p_cloned   = new RNGLinearCongANSIC;
+        p_cloned->m_state = this->m_state;
+
+        return p_cloned;
+    }
 
 
 private:

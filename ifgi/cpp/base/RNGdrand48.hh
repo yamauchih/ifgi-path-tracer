@@ -12,6 +12,7 @@
 #include "Exception.hh"
 
 #include <stdlib.h>
+#include <iostream>
 
 namespace ifgi {
 
@@ -34,6 +35,7 @@ public:
     virtual ~RNGdrand48()
     {
         // empty
+        // std::cout << "~RNGdrand48()" << std::endl;
     }
 
     /// get class name. interface method.
@@ -74,6 +76,19 @@ public:
     /// get max Uint32 pseudo-random number
     /// \return max Uint32  pseudo-random number
     virtual Uint32  rand_max_uint32() const { return RAND_MAX; }
+
+    /// clone method. To enable IRNG * can clone the instance.
+    ///
+    /// \return cloned object. This class can not guarantee the same
+    /// state in the sense of drand48 state. Since we know only the
+    /// seed for the initialization.
+    virtual IRNG * clone() const
+    {
+        RNGdrand48 * p_cloned   = new RNGdrand48;
+        p_cloned->m_state = this->m_state;
+
+        return p_cloned;
+    }
 
 
 private:
