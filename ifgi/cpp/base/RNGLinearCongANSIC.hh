@@ -101,6 +101,9 @@ private:
     /// current state
     Uint32 m_state;
 
+    /// padding more than 4k
+    char * m_p_pad[4096];
+
 private:
   /// copy constructor, never used.
   RNGLinearCongANSIC(const RNGLinearCongANSIC& _rhs);

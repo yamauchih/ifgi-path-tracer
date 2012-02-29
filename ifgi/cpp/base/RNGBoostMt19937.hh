@@ -129,6 +129,8 @@ private:
     boost::variate_generator< RandomNumberGeneratorType, boost::uniform_01< Float32 > > *
     m_p_gen;
 
+    /// padding more than 4k
+    char * m_p_pad[4096];
 
 private:
   /// copy constructor, never used.

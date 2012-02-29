@@ -34,20 +34,21 @@ void test_one_rng(IRNG * p_rng)
         // #pragma omp parallel for num_threads(1)
         // #pragma omp parallel for schedule(static, 128)
         // #pragma omp parallel for reduction (+: sum) num_threads(8) schedule(static, 128)
-        // #pragma omp parallel for num_threads(8)
+#pragma omp parallel for num_threads(8)
+        // #pragma omp parallel for num_threads(2)
         // #pragma omp parallel for reduction (+: sum) num_threads(8)
         for(int i = 0; i < thread_count; ++i){
             IRNG * p_local_rng = p_rng->clone();
             p_local_rng->set_state(static_cast< Uint32 >(i)); // loop local seed
-            ifgi::Float64 subsum = 0.0;
+            // ifgi::Float64 subsum = 0.0;
 
             for(int j = 0; j < inner_loop_count; ++j){
                 ifgi::Float32 const rval = p_local_rng->rand_float32();
                 // std::cout << rval << std::endl;
-                subsum += rval;
+                // subsum += rval;
             }
 
-            sum += subsum;
+            // sum += subsum;
             delete p_local_rng;
             // std::cout << i << std::endl;
         }
@@ -67,8 +68,8 @@ TEST(RNG, RNGLinearCongANSIC)
 {
     // int const num_gen = 64;
     // int const num_gen = 1024; // for parallel test
-    ifgi::RNGdrand48 rng_drand48;
-    test_one_rng(&rng_drand48);
+    // ifgi::RNGdrand48 rng_drand48;
+    // test_one_rng(&rng_drand48);
 
     ifgi::RNGLinearCongANSIC rng_lc_ansi;
     test_one_rng(&rng_lc_ansi);
@@ -100,22 +101,36 @@ RNGLinearCongANSIC
 generate only
 sec/1 = (/ (+ 6.86185 6.88404 6.84343) 3.0) 6.863
 sec/8 = (/ (+ 4.96344 4.96344 4.34758) 3.0) 4.76  (/ 6.83 4.76) 1.43x
+sec/8 + pad4k = (/ (+ 1.50831 1.52851 1.54587) 3.0) 1.53 (/ 6.83 1.53) 4.46x
 
 reduction sum
 sec/1 = (/ (+ 7.33411 7.33411 7.38451) 3.0) 7.35
 sec/8 = (/ (+ 4.49677 3.36367 3.47537) 3.0) 3.78   (/ 7.35 3.78) 1.94x
+sec/8 + pad4k = (/ (+ 1.7397 1.7597 1.76412) 3.0) 1.75 (/ 7.35 1.75) 4.2x
 
 
 RNGBoostMt19937
 generate only
 sec/1 = (/ (+ 6.66189 6.66942 6.67134) 3.0) 6.67
 sec/8 = (/ (+ 2.90426 2.90426 2.92496) 3.0) 2.91 (/ 6.67 2.91) 2.29x
+sec/8 + pad4k = (/ (+ 2.48792 2.76232 2.86079) 3.0) 2.70 (/ 6.67 2.70) 2.47x
 
 reduction sum
 sec/1 = (/ (+ 7.64572 7.64572 7.77004) 3.0) 7.69
 sec/8 = (/ (+ 2.58749 2.89932 2.97508) 3.0) 2.82 (/ 7.69 2.82) 2.73x
+sec/8 +pad4k = (/ (+ 2.62841 3.05907 2.60437) 3.0) 2.76 (/ 7.69 2.76) 2.78x
 
 #endif
+
+
+
+
+
+
+
+
+
+
 
 
 
