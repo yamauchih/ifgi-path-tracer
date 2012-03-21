@@ -1,5 +1,5 @@
 //----------------------------------------------------------------------
-// ifgi c++ implementation: Date.hh
+// ifgi c++ implementation: unit test for RingBuffer
 // Copyright (C) 2010-2012 Yamauchi, Hitoshi
 //----------------------------------------------------------------------
 /// \file

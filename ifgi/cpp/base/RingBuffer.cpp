@@ -13,6 +13,19 @@
 namespace ifgi
 {
 //----------------------------------------------------------------------
+// default constructor. With default buffer size 1024.
+RingBuffer::RingBuffer()
+    :
+    m_data_buf(),
+    m_buf_size(0),
+    m_begin_idx(0),
+    m_end_idx(0),
+    m_data_size(0)
+{
+    this->resize_buffer(1024);
+}
+
+//----------------------------------------------------------------------
 // constructor
 RingBuffer::RingBuffer(size_t buf_size)
     :

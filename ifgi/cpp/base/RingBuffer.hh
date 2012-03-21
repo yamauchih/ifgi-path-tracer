@@ -25,6 +25,8 @@ public:
     typedef Float64 value_type;
 
 public:
+    /// default constructor. With default buffer size 1024.
+    RingBuffer();
     /// constructor
     /// \param[in] buf_size initial buffer size
     explicit RingBuffer(size_t buf_size);
@@ -181,8 +183,6 @@ private:
     size_t m_data_size;
 
 private:
-    /// default constructor, disabled unless proven useful
-    RingBuffer();
     /// copy constructor, disabled unless proven useful
     RingBuffer(const RingBuffer& _rhs);
     /// operator=, disabled unless proven useful
