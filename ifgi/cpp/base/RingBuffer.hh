@@ -33,6 +33,9 @@ public:
     /// destructor
     ~RingBuffer();
 
+    /// clear the buffer. No capacity changes.
+    void clear();
+
     /// set the buffer size. The data is lost.
     /// \param[in] buf_size buffer size
     void resize_buffer(size_t buf_size);

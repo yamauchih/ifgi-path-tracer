@@ -50,6 +50,15 @@ RingBuffer::~RingBuffer()
 }
 
 //----------------------------------------------------------------------
+// clear the buffer
+void RingBuffer::clear()
+{
+    m_begin_idx = 0;
+    m_end_idx   = 0;
+    m_data_size = 0;
+}
+
+//----------------------------------------------------------------------
 // set the buffer size. The data is lost.
 void RingBuffer::resize_buffer(size_t buf_size)
 {
