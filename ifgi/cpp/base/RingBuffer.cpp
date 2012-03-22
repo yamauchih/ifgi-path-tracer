@@ -75,7 +75,7 @@ void RingBuffer::resize_buffer(size_t buf_size)
 
 //----------------------------------------------------------------------
 // push back a data at the end
-void RingBuffer::push_back(value_type const & dat)
+void RingBuffer::push_back(value_type const & val)
 {
     if(this->full()){
         // remove the begin and push back at the end
@@ -87,12 +87,12 @@ void RingBuffer::push_back(value_type const & dat)
         // position. No end move, but the size is increase.
         ++m_data_size;
         assert(m_end_idx < m_data_buf.size());
-        m_data_buf[m_end_idx] = dat;
+        m_data_buf[m_end_idx] = val;
     }
     else{
         this->inc_end();
         assert(m_end_idx < m_data_buf.size());
-        m_data_buf[m_end_idx] = dat;
+        m_data_buf[m_end_idx] = val;
     }
 }
 

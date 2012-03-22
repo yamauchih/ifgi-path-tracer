@@ -12,15 +12,26 @@
 
 using namespace ifgi;
 
+// enable debug logging when DEBUG_OUTPUT_MESSAGE is defined.
+// #define DEBUG_OUTPUT_MESSAGE
+
+/// logging
+void println_message(std::string const & mes)
+{
+#ifdef DEBUG_OUTPUT_MESSAGE
+    std::cout << mes << std::endl;
+#endif
+}
+
 /// print ring buffer
 void print_ring_buffer(RingBuffer & rb)
 {
+    std::stringstream sstr;
     for(RingBuffer::iterator ri = rb.begin(); ri != rb.end(); ++ri){
-        std::cout << (*ri) << " ";
+        sstr << (*ri) << " ";
     }
-    std::cout << std::endl;
+    println_message(sstr.str());
 }
-
 
 /// Tests ring buffer
 /// TEST(test_case_name, test_name)
@@ -32,18 +43,18 @@ TEST(RingBuffer, RingBufferTest)
     ASSERT_EQ(rb.empty(), true);
     ASSERT_EQ(rb.full(),  false);
 
-    std::cout << rb.to_string() << std::endl;
+    println_message(rb.to_string());
     for(int i = 0; i < 15; ++i){
         ASSERT_EQ(rb.size(), (static_cast< size_t >(i) >= bufsize) ? bufsize : i);
         rb.push_back(static_cast< Float64 >(i));
 
-        std::cout << rb.to_string() << std::endl;
+        println_message(rb.to_string());
         print_ring_buffer(rb);
     }
     ASSERT_EQ(rb.size(),  bufsize);
 
     rb.clear();
-    std::cout << rb.to_string() << std::endl;
+    println_message(rb.to_string());
 
     bufsize = 6;
     rb.resize_buffer(bufsize);
@@ -51,7 +62,7 @@ TEST(RingBuffer, RingBufferTest)
     for(int i = 0; i < 12; ++i){
         rb.push_back(static_cast< Float64 >(i));
 
-        std::cout << rb.to_string() << std::endl;
+        println_message(rb.to_string());
         print_ring_buffer(rb);
     }
 

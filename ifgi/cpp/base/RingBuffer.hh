@@ -16,9 +16,11 @@
 
 namespace ifgi
 {
-/// a ring buffer (actually a fixed size ring buffer)
+/// a ring buffer
 ///
-/// Keep up to n data and get its statistics.
+/// Notation
+/// - capacity(): the buffer size (allocated memory size).
+/// - size():     number of the valid data in the buffer.
 class RingBuffer {
 public:
     /// data type
@@ -36,39 +38,47 @@ public:
     /// clear the buffer. No capacity changes.
     void clear();
 
-    /// set the buffer size. The data is lost.
+    /// set the buffer size. The data will be lost.
     /// \param[in] buf_size buffer size
     void resize_buffer(size_t buf_size);
 
     /// push back a data at the end
-    void push_back(value_type const & dat);
+    /// \param[in] val the value to be inserted at the end of the buffer.
+    void push_back(value_type const & val);
 
-    /// pop front the data
+    /// pop front the data. Removed a data at the top of the buffer.
     void pop_front();
 
-    /// get front. access to the 0th data.
+    /// get front. access to the 0-th data.
+    /// \return the data value at the top of the ring buffer
     value_type const & front() const;
 
-    /// get back. access to the n-1th data.
+    /// get back. access to the last data.
+    /// \return the data value at the end of the ring buffer
     value_type const & back() const;
 
     /// get valid data size
+    /// \return the number of valid data in the buffer. 0 when empty().
     size_t size() const;
 
     /// get the capacity (buffer size)
+    /// \return allocated buffer memory size (number of elements can be hold.)
     size_t capacity() const;
 
     /// is empty the data?
+    /// \return true when the buffer is empty, false otherwise.
     bool empty() const;
 
     /// is full the buffer?
+    /// \return true when the buffer is full, false otherwise.
     bool full() const;
 
     /// to string
+    /// \return string representation of this object.
     std::string to_string() const;
 
 public:
-    /// iterator
+    /// Ring buffer forward iterator
     class iterator
     {
     public:
@@ -93,12 +103,12 @@ public:
         /// destructor
         ~iterator(){
             m_p_ringbuffer_ref = 0;
-            m_i_idx = ~0;   // invalid
+            m_i_idx = ~0;   // make this iterator invalid (or end)
         }
-        /// advance by one
+        /// advance the iterator by one
         iterator& operator++(){
             if(m_i_idx == size_t(~0)){
-                return (*this); // once invalid, stay it
+                return (*this); // once invalid, stay the invalid state
             }
 
             if(m_i_idx == m_i_end_idx){
@@ -116,6 +126,7 @@ public:
         }
 
         /// equal?
+        /// \return true when the iterator is equal
         bool operator==(const iterator & ii) const {
             assert(m_p_ringbuffer_ref == ii.m_p_ringbuffer_ref);
             assert(m_i_begin_idx == ii.m_i_begin_idx);
@@ -125,6 +136,7 @@ public:
             return m_i_idx == ii.m_i_idx;
         }
         /// not equal?
+        /// \return true when the iterator is not equal
         bool operator!=(const iterator& ii) const {
             assert(m_p_ringbuffer_ref == ii.m_p_ringbuffer_ref);
             assert(m_i_begin_idx == ii.m_i_begin_idx);
@@ -135,6 +147,7 @@ public:
         }
 
         /// dereference
+        /// \return value of the iterator's pointing instance
         RingBuffer::value_type operator*() const {
             // std::cout << "m_i_idx: " << m_i_idx << std::endl;
             assert(m_i_idx < m_p_ringbuffer_ref->m_data_buf.size());
@@ -143,12 +156,11 @@ public:
         }
 
     private:
-        /// default constructor, prohibit until proben useful
+        /// default constructor, prohibit until proven useful
         iterator();
 
     private:
-
-        /// refeence to the ring buffer
+        /// the reference to the ring buffer
         RingBuffer * m_p_ringbuffer_ref;
         /// begin index const copy
         size_t const m_i_begin_idx;
@@ -162,9 +174,11 @@ public:
 
 public:
     /// iterator begin
+    /// \return iterator of beginning of the ring buffer
     iterator begin();
 
     /// iterator end
+    /// \return iterator of end of the ring buffer
     iterator end();
 
 private:
